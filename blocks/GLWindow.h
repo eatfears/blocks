@@ -10,7 +10,6 @@ class GLWindow
 {
 public:
 	GLWindow(void);
-	GLWindow(int iResolution);
 	~GLWindow(void);
 
 	void KillGLWindow(void);
@@ -29,4 +28,9 @@ public:
 	bool  active;					// Флаг активности окна, установленный в true по умолчанию
 
 	Tiles tTiles;
+
+	GLfloat x, y, z;
+
+	GLfloat g_fSpinZ, g_fSpinY;
+	bool bMousing;
 };

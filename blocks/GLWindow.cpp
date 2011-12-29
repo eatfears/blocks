@@ -2,14 +2,10 @@
 
 LRESULT  CALLBACK WndProc( HWND, UINT, WPARAM, LPARAM );
 
-GLWindow::GLWindow(int iResolution)
-{
-	active = true;
-}
-
 GLWindow::GLWindow(void)
 {
 	active = true;
+	bMousing = true;
 }
 
 GLWindow::~GLWindow(void)			// Корректное разрушение окна
@@ -76,12 +72,11 @@ void GLWindow::ReSizeGLScene( GLsizei width, GLsizei height )	// Изменить размер
 
 	glViewport( 0, 0, width, height );							// Сброс текущей области вывода
 	glMatrixMode( GL_PROJECTION );								// Выбор матрицы проекций
-
 	glLoadIdentity();											// Сброс матрицы проекции
 
 
 	// Вычисление соотношения геометрических размеров для окна
-	gluPerspective( 45.0f, (GLfloat)width/(GLfloat)height, 0.1f, 200.0f );
+	gluPerspective( 45.0f, (GLfloat)width/(GLfloat)height, 0.1f, 10000.0f );
 	glMatrixMode( GL_MODELVIEW );								// Выбор матрицы вида модели
 	glLoadIdentity();											// Сброс матрицы вида модели
 }
@@ -230,21 +225,31 @@ int GLWindow::DrawGLScene()
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );		// Очистить экран и буфер глубины
 	glLoadIdentity();											// Сбросить текущую матрицу
 
-	glTranslatef(10.0f, -20.0f,-55);	// Сдвинемся влево на 1.5 единицы и
 
+	glRotatef( -g_fSpinY, 1.0f, 0.0f, 0.0f );
+	glRotatef( -g_fSpinZ, 0.0f, 1.0f, 0.0f );
+	glTranslatef(-x, -y, z);
 
 	GLfloat fXcoord = 0 , fYcoord = 0, fZcoord = 0;
-	GLfloat fBrightness = 1;
-
-	GlTile(0,0,0);
-	GlTile(-1,0,0);
-	GlTile(-1,1,0);
-	GlTile(-1,2,0);
-	GlTile(-2,2,1);
+	GLfloat fBrightness = 0.6;
 
 
-	
-	return true;	// Прорисовка прошла успешно
+	glColor3f(fBrightness, fBrightness, fBrightness);
+
+	for (int i = 0; i < 100; i++)
+		for (int j = 0; j < 100; j++)
+	{
+		GlTile(j,-1,-i);
+	}
+
+
+	for (int i = 0; i < 1000; i++)
+			for (int k = 0; k < 100; k++)
+		{
+			GlTile(rand()%100,k,-rand()%100);
+		}
+
+	return true;
 }
 
 void GLWindow::GlTile(int X, int Y, int Z)
@@ -254,44 +259,33 @@ void GLWindow::GlTile(int X, int Y, int Z)
 	GLfloat fXcoord = X*TILE_SIZE, fYcoord = Y*TILE_SIZE, fZcoord = Z*TILE_SIZE;
 
 	fXcoord -= TILE_SIZE/2.0;
-	fYcoord -= TILE_SIZE/2.0;
+	fZcoord -= TILE_SIZE/2.0;
 
-	glColor3f((GLfloat)rand()/(GLfloat)RAND_MAX, (GLfloat)rand()/(GLfloat)RAND_MAX, (GLfloat)rand()/(GLfloat)RAND_MAX);
 
 	glVertex3f (fXcoord, fYcoord, fZcoord);
 	glVertex3f (fXcoord, fYcoord + TILE_SIZE, fZcoord);
 	glVertex3f (fXcoord + TILE_SIZE, fYcoord + TILE_SIZE, fZcoord);
 	glVertex3f (fXcoord + TILE_SIZE, fYcoord, fZcoord);
 
-	glColor3f((GLfloat)rand()/(GLfloat)RAND_MAX, (GLfloat)rand()/(GLfloat)RAND_MAX, (GLfloat)rand()/(GLfloat)RAND_MAX);
-
 	glVertex3f (fXcoord, fYcoord, fZcoord + TILE_SIZE);
 	glVertex3f (fXcoord, fYcoord + TILE_SIZE, fZcoord + TILE_SIZE);
 	glVertex3f (fXcoord + TILE_SIZE, fYcoord + TILE_SIZE, fZcoord + TILE_SIZE);
 	glVertex3f (fXcoord + TILE_SIZE, fYcoord, fZcoord + TILE_SIZE);
-
-	glColor3f((GLfloat)rand()/(GLfloat)RAND_MAX, (GLfloat)rand()/(GLfloat)RAND_MAX, (GLfloat)rand()/(GLfloat)RAND_MAX);
 
 	glVertex3f (fXcoord, fYcoord, fZcoord);
 	glVertex3f (fXcoord, fYcoord, fZcoord + TILE_SIZE);
 	glVertex3f (fXcoord, fYcoord + TILE_SIZE, fZcoord + TILE_SIZE);
 	glVertex3f (fXcoord, fYcoord + TILE_SIZE, fZcoord);
 
-	glColor3f((GLfloat)rand()/(GLfloat)RAND_MAX, (GLfloat)rand()/(GLfloat)RAND_MAX, (GLfloat)rand()/(GLfloat)RAND_MAX);
-
 	glVertex3f (fXcoord + TILE_SIZE, fYcoord, fZcoord);
 	glVertex3f (fXcoord + TILE_SIZE, fYcoord, fZcoord + TILE_SIZE);
 	glVertex3f (fXcoord + TILE_SIZE, fYcoord + TILE_SIZE, fZcoord + TILE_SIZE);
 	glVertex3f (fXcoord + TILE_SIZE, fYcoord + TILE_SIZE, fZcoord);
 
-	glColor3f((GLfloat)rand()/(GLfloat)RAND_MAX, (GLfloat)rand()/(GLfloat)RAND_MAX, (GLfloat)rand()/(GLfloat)RAND_MAX);
-
 	glVertex3f (fXcoord, fYcoord, fZcoord);
 	glVertex3f (fXcoord, fYcoord, fZcoord + TILE_SIZE);
 	glVertex3f (fXcoord + TILE_SIZE, fYcoord, fZcoord + TILE_SIZE);
 	glVertex3f (fXcoord + TILE_SIZE, fYcoord, fZcoord);
-
-	glColor3f((GLfloat)rand()/(GLfloat)RAND_MAX, (GLfloat)rand()/(GLfloat)RAND_MAX, (GLfloat)rand()/(GLfloat)RAND_MAX);
 
 	glVertex3f (fXcoord, fYcoord + TILE_SIZE, fZcoord);
 	glVertex3f (fXcoord, fYcoord + TILE_SIZE, fZcoord + TILE_SIZE);

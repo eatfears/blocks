@@ -7,6 +7,10 @@
 #include "gsl/gsl_randist.h"
 gsl_rng *randNumGen;
 
+#define MOUSE_SENSIVITY 1.5
+
+#define TORAD(x) x*0.01745329251994329576923690768489
+#define TODEG(x) x*57.295779513082320876798154814105
 
 #pragma comment( lib, "opengl32.lib" ) // Искать OpenGL32.lib при линковке
 #pragma comment( lib, "glu32.lib" )    // Искать GLu32.lib при линковке
@@ -20,10 +24,8 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 	WPARAM  wParam,							// Дополнительная информация
 	LPARAM  lParam)							// Дополнительная информация
 {
-
-	srand(time(NULL));
-	randNumGen = gsl_rng_alloc(gsl_rng_mt19937);
-
+	static POINT ptLastMousePosit;
+	static POINT ptCurrentMousePosit;
 
 	switch (uMsg)							// Проверка сообщения для окна
 	{
@@ -69,6 +71,63 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 			glwWnd.keys[wParam] = false;			//  Если так, мы присваиваем этой ячейке false
 			return 0;						// Возвращаемся
 		}
+		
+/*	case WM_LBUTTONDOWN:
+		{
+
+			ptLastMousePosit.x = ptCurrentMousePosit.x = LOWORD (lParam);
+			ptLastMousePosit.y = ptCurrentMousePosit.y = HIWORD (lParam);
+			bMousing = true;
+		}
+		break;*/
+/*
+	case WM_LBUTTONUP:
+		{
+			bMousing = false;
+		}
+		break;
+		*/
+	case WM_MOUSEMOVE:						
+		{
+			if(glwWnd.bMousing)
+			{
+				glwWnd.bMousing = false;
+				ptCurrentMousePosit.x = LOWORD (lParam);
+				ptCurrentMousePosit.y = HIWORD (lParam);
+
+				{
+					glwWnd.g_fSpinZ -= (ptCurrentMousePosit.x - ptLastMousePosit.x)/MOUSE_SENSIVITY;
+					glwWnd.g_fSpinY -= (ptCurrentMousePosit.y - ptLastMousePosit.y)/MOUSE_SENSIVITY;
+				}
+
+				while(glwWnd.g_fSpinZ >= 360.0)
+					glwWnd.g_fSpinZ -= 360.0;
+
+				while(glwWnd.g_fSpinZ > 0.0)
+					glwWnd.g_fSpinZ += 360.0;
+
+				if(glwWnd.g_fSpinY < -90.0) glwWnd.g_fSpinY = -90.0;
+				if(glwWnd.g_fSpinY > 90.0) glwWnd.g_fSpinY = 90.0;
+
+				ptLastMousePosit.x = ptCurrentMousePosit.x;
+				ptLastMousePosit.y = ptCurrentMousePosit.y;
+
+
+			
+			RECT rcClient; 
+
+			GetWindowRect(hWnd, &rcClient); 
+			SetCursorPos((rcClient.left+rcClient.right)/2,(rcClient.top + rcClient.bottom)/2);
+			}
+			else 
+			{
+				glwWnd.bMousing = true;
+				ptLastMousePosit.x = LOWORD (lParam);
+				ptLastMousePosit.y = HIWORD (lParam);
+			}
+
+			return 0;						// Возвращаемся
+		}
 
 	case WM_SIZE:							// Изменены размеры OpenGL окна
 		{
@@ -99,6 +158,11 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 		srand(time(NULL));
 		randNumGen = gsl_rng_alloc(gsl_rng_mt19937);
 
+
+		glwWnd.y = 10.0;
+		GLfloat step = 1.2;
+		ShowCursor(FALSE);
+
 		while( !done )							// Цикл продолжается, пока done не равно true
 		{
 			
@@ -116,8 +180,8 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 			}
 			else								// Если нет сообщений
 			{
-				// Прорисовываем сцену.
-				//if( glwWnd.active )					// Активна ли программа?
+				// Прорисовываем сцену
+				if( glwWnd.active )					// Активна ли программа?
 				{
 					if(glwWnd.keys[VK_ESCAPE])			// Было ли нажата клавиша ESC?
 					{
@@ -125,6 +189,30 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 					}
 					else						// Не время для выхода, обновим экран.
 					{
+						if(glwWnd.keys['W']) 
+						{
+							glwWnd.x -= step*sin(TORAD(glwWnd.g_fSpinZ));
+							glwWnd.z += step*cos(TORAD(glwWnd.g_fSpinZ));
+						}
+						if(glwWnd.keys['S']) 
+						{
+							glwWnd.x += step*sin(TORAD(glwWnd.g_fSpinZ));
+							glwWnd.z -= step*cos(TORAD(glwWnd.g_fSpinZ));
+						}
+						if(glwWnd.keys['D']) 
+						{
+							glwWnd.x += step*cos(TORAD(glwWnd.g_fSpinZ));
+							glwWnd.z += step*sin(TORAD(glwWnd.g_fSpinZ));
+						}
+						if(glwWnd.keys['A']) 
+						{
+							glwWnd.x -= step*cos(TORAD(glwWnd.g_fSpinZ));
+							glwWnd.z -= step*sin(TORAD(glwWnd.g_fSpinZ));
+						}
+
+						if(glwWnd.keys['R']) glwWnd.y += step; //r
+						if(glwWnd.keys['F']) glwWnd.y -= step; //f
+
 						glwWnd.DrawGLScene();
 
 						SwapBuffers( glwWnd.hDC );		// Меняем буфер (двойная буферизация)
