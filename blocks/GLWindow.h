@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Tiles.h"
+#include "Character.h"
 
 class GLWindow
 {
@@ -15,9 +16,12 @@ public:
 	void KillGLWindow(void);
 	int InitGL(void);
 	void ReSizeGLScene( GLsizei width, GLsizei height );
-	bool CreateGLWindow( LPCSTR title, int width, int height, int bits);
+	bool CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int bits);
 	int DrawGLScene();
 	void GlTile(int X, int Y, int Z);
+
+
+	GLsizei width, height;
 
 	HGLRC  hRC;						// ѕосто€нный контекст рендеринга
 	HDC  hDC;						// ѕриватный контекст устройства GDI
@@ -27,10 +31,12 @@ public:
 	bool  keys[256];				// ћассив, используемый дл€ операций с клавиатурой
 	bool  active;					// ‘лаг активности окна, установленный в true по умолчанию
 
-	Tiles tTiles;
+	void AddTile(unsigned long x, unsigned long y, unsigned long z, char mat);
+	int RmTile(unsigned long x, unsigned long y, unsigned long z);
+	int Hash(unsigned long x, unsigned long y, unsigned long z);
+	Tiles *tTiles;
 
-	GLfloat x, y, z;
-
-	GLfloat g_fSpinZ, g_fSpinY;
+	Character player;
 	bool bMousing;
+
 };

@@ -11,6 +11,6 @@ public:
 	Tiles(void);
 	~Tiles(void);
 	
-	int Number;
+	//int Number;
 };
 

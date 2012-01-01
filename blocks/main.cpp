@@ -9,8 +9,8 @@ gsl_rng *randNumGen;
 
 #define MOUSE_SENSIVITY 1.5
 
-#define TORAD(x) x*0.01745329251994329576923690768489
-#define TODEG(x) x*57.295779513082320876798154814105
+#define TORAD(gfPosX) gfPosX*0.01745329251994329576923690768489
+#define TODEG(gfPosX) gfPosX*57.295779513082320876798154814105
 
 #pragma comment( lib, "opengl32.lib" ) // Искать OpenGL32.lib при линковке
 #pragma comment( lib, "glu32.lib" )    // Искать GLu32.lib при линковке
@@ -26,6 +26,7 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 {
 	static POINT ptLastMousePosit;
 	static POINT ptCurrentMousePosit;
+	static RECT rcClient; 
 
 	switch (uMsg)							// Проверка сообщения для окна
 	{
@@ -96,28 +97,24 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 				ptCurrentMousePosit.y = HIWORD (lParam);
 
 				{
-					glwWnd.g_fSpinZ -= (ptCurrentMousePosit.x - ptLastMousePosit.x)/MOUSE_SENSIVITY;
-					glwWnd.g_fSpinY -= (ptCurrentMousePosit.y - ptLastMousePosit.y)/MOUSE_SENSIVITY;
+					glwWnd.player.gfSpinY -= (ptCurrentMousePosit.x - ptLastMousePosit.x)/MOUSE_SENSIVITY;
+					glwWnd.player.gfSpinX -= (ptCurrentMousePosit.y - ptLastMousePosit.y)/MOUSE_SENSIVITY;
 				}
 
-				while(glwWnd.g_fSpinZ >= 360.0)
-					glwWnd.g_fSpinZ -= 360.0;
+				while(glwWnd.player.gfSpinY >= 360.0)
+					glwWnd.player.gfSpinY -= 360.0;
 
-				while(glwWnd.g_fSpinZ > 0.0)
-					glwWnd.g_fSpinZ += 360.0;
+				while(glwWnd.player.gfSpinY < 0.0)
+					glwWnd.player.gfSpinY += 360.0;
 
-				if(glwWnd.g_fSpinY < -90.0) glwWnd.g_fSpinY = -90.0;
-				if(glwWnd.g_fSpinY > 90.0) glwWnd.g_fSpinY = 90.0;
+				if(glwWnd.player.gfSpinX < -90.0) glwWnd.player.gfSpinX = -90.0;
+				if(glwWnd.player.gfSpinX > 90.0) glwWnd.player.gfSpinX = 90.0;
 
 				ptLastMousePosit.x = ptCurrentMousePosit.x;
 				ptLastMousePosit.y = ptCurrentMousePosit.y;
 
-
-			
-			RECT rcClient; 
-
-			GetWindowRect(hWnd, &rcClient); 
-			SetCursorPos((rcClient.left+rcClient.right)/2,(rcClient.top + rcClient.bottom)/2);
+				GetWindowRect(hWnd, &rcClient); 
+				SetCursorPos((rcClient.left+rcClient.right)/2,(rcClient.top + rcClient.bottom)/2);
 			}
 			else 
 			{
@@ -134,6 +131,17 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 			glwWnd.ReSizeGLScene( LOWORD(lParam), HIWORD(lParam) );	// Младшее слово=Width, старшее слово=Height
 			return 0;						// Возвращаемся
 		}
+
+	case WM_MOUSEHOVER:
+		{
+			ShowCursor(FALSE);
+		}
+
+	case WM_MOUSELEAVE:
+		{
+			ShowCursor(TRUE);
+		}
+		break;
 	}
 
 	// пересылаем все необработанные сообщения DefWindowProc
@@ -148,6 +156,7 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 	{
 		MSG  msg;								// Структура для хранения сообщения Windows
 		BOOL  done = false;						// Логическая переменная для выхода из цикла
+		ShowCursor(FALSE);
 
 		// Создать наше OpenGL окно
 		if( !glwWnd.CreateGLWindow("Blocks", 400, 400, 32) )
@@ -159,9 +168,8 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 		randNumGen = gsl_rng_alloc(gsl_rng_mt19937);
 
 
-		glwWnd.y = 10.0;
+		glwWnd.player.gfPosY = 10.0;
 		GLfloat step = 1.2;
-		ShowCursor(FALSE);
 
 		while( !done )							// Цикл продолжается, пока done не равно true
 		{
@@ -191,27 +199,30 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 					{
 						if(glwWnd.keys['W']) 
 						{
-							glwWnd.x -= step*sin(TORAD(glwWnd.g_fSpinZ));
-							glwWnd.z += step*cos(TORAD(glwWnd.g_fSpinZ));
+							glwWnd.player.gfPosX -= step*sin(TORAD(glwWnd.player.gfSpinY));
+							glwWnd.player.gfPosZ += step*cos(TORAD(glwWnd.player.gfSpinY));
 						}
 						if(glwWnd.keys['S']) 
 						{
-							glwWnd.x += step*sin(TORAD(glwWnd.g_fSpinZ));
-							glwWnd.z -= step*cos(TORAD(glwWnd.g_fSpinZ));
+							glwWnd.player.gfPosX += step*sin(TORAD(glwWnd.player.gfSpinY));
+							glwWnd.player.gfPosZ -= step*cos(TORAD(glwWnd.player.gfSpinY));
 						}
 						if(glwWnd.keys['D']) 
 						{
-							glwWnd.x += step*cos(TORAD(glwWnd.g_fSpinZ));
-							glwWnd.z += step*sin(TORAD(glwWnd.g_fSpinZ));
+							glwWnd.player.gfPosX += step*cos(TORAD(glwWnd.player.gfSpinY));
+							glwWnd.player.gfPosZ += step*sin(TORAD(glwWnd.player.gfSpinY));
 						}
 						if(glwWnd.keys['A']) 
 						{
-							glwWnd.x -= step*cos(TORAD(glwWnd.g_fSpinZ));
-							glwWnd.z -= step*sin(TORAD(glwWnd.g_fSpinZ));
+							glwWnd.player.gfPosX -= step*cos(TORAD(glwWnd.player.gfSpinY));
+							glwWnd.player.gfPosZ -= step*sin(TORAD(glwWnd.player.gfSpinY));
 						}
 
-						if(glwWnd.keys['R']) glwWnd.y += step; //r
-						if(glwWnd.keys['F']) glwWnd.y -= step; //f
+						if(glwWnd.keys['R']) glwWnd.player.gfPosY += step; //r
+						if(glwWnd.keys['F']) glwWnd.player.gfPosY -= step; //f
+
+						if(glwWnd.keys['Q']) 
+							glwWnd.RmTile(0, -1, 0);
 
 						glwWnd.DrawGLScene();
 
