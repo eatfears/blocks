@@ -3,33 +3,62 @@
 LRESULT  CALLBACK WndProc( HWND, UINT, WPARAM, LPARAM );
 
 GLWindow::GLWindow(void)
-{
+{	
 	active = true;
 	bMousing = false;
 
 	tTiles = new Tiles[0x100000];
 	
-	for (int i = 0 ; i< 200 ; i++)
-		for (int k = 0 ; k < 2 ; k++)
+	//AddTile(0,-1,0,MATERIAL_YES);
+	//AddTile(3,-1,0,MATERIAL_YES);
+	//AddTile(0,-1,3,MATERIAL_YES);
+
+	/*
+	AddTile(10,0,0,MATERIAL_YES);
+	AddTile(0,1,0,MATERIAL_YES);
+	AddTile(0,-3,0,MATERIAL_YES);
+	AddTile(1,0,0,MATERIAL_YES);
+	AddTile(-1,0,0,MATERIAL_YES);
+	/**/
+	for (int i = 0 ; i< 10 ; i++)
+		for (int k = 0 ; k < 1 ; k++)
 	{
-		AddTile(rand()%200-100,k,rand()%200-100,MATERIAL_YES);
+		AddTile(rand()%100-50,k,rand()%100-50,MATERIAL_YES);
 	}
 
-	for (int i = 0; i < 200; i++)
-		for (int k = 0; k < 200; k++)
+	for (int j = 1; j <= 10; j++)
+	for (int i = 0; i < 100; i++)
+		for (int k = 0; k < 100; k++)
 		{
-			AddTile(i-100,-1,k-100,MATERIAL_YES);
+			AddTile(i-50,-j,k-50,MATERIAL_YES);
 		}
 
 	/**/
 }
 
-void GLWindow::AddTile(unsigned long x, unsigned long y, unsigned long z, char mat)
+GLuint textures[2];
+
+GLvoid LoadGLTextures()
+{
+	/*
+	glGenTextures(1, textures);
+
+
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, 16, 16, 0, GLenum format, GLenum type, const GLvoid *pixels);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GLenum p2);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GLenum p2);
+glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);*/
+
+}
+
+void GLWindow::AddTile(signed long x, signed long y, signed long z, char mat)
 {
 	tTiles[Hash(x, y, z)].push_front(Tile(x, y, z, mat));
 }
 
-int GLWindow::RmTile(unsigned long x, unsigned long y, unsigned long z)
+int GLWindow::RmTile(signed long x, signed long y, signed long z)
 {
 	int bin = Hash(x, y, z);
 	auto it = begin(tTiles[bin]);
@@ -47,7 +76,7 @@ int GLWindow::RmTile(unsigned long x, unsigned long y, unsigned long z)
 	return 1;
 }
 
-int GLWindow::Hash(unsigned long x, unsigned long y, unsigned long z)
+int GLWindow::Hash(signed long x, signed long y, signed long z)
 {
 
 	return (x & 0xff) + ((y & 0xff)<<8) + ((z & 0xf)<<16);
@@ -105,24 +134,18 @@ int GLWindow::InitGL(void)											// Все установки касаемо OpenGL происходят 
 	glDepthFunc( GL_LEQUAL );									// Тип теста глубины
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );		// Улучшение в вычислении перспективы
 
-
-
-
-
 	//glClearColor (10.3, 0.3, 0.3, 1.0);
 
 	// рассчет освещения 
-
 	glEnable(GL_LIGHTING);
 
-	// двухсторонний расчет освещения 
+	// рассчет текстур
+	glEnable(GL_TEXTURE_2D);
 
+	// двухсторонний расчет освещения 
 	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
-	// автоматическое приведение нормалей к
-
-	// единичной длине
-
+	// автоматическое приведение нормалей к единичной длине
 	glEnable(GL_NORMALIZE);
 
 	return true;												// Инициализация прошла успешно
@@ -239,14 +262,12 @@ bool GLWindow::CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int 
 		return false;						// Вернуть false
 	}
 
-
 	if( !( PixelFormat = ChoosePixelFormat( hDC, &pfd ) ) )     // Найден ли подходящий формат пикселя?
 	{
 		KillGLWindow();						// Восстановить экран
 		MessageBox( NULL, "Can't Find A Suitable PixelFormat.", "ERROR", MB_OK | MB_ICONEXCLAMATION );
 		return false;						// Вернуть false
 	}
-
 
 	if( !SetPixelFormat( hDC, PixelFormat, &pfd ) )     // Возможно ли установить Формат Пикселя?
 	{
@@ -286,26 +307,30 @@ bool GLWindow::CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int 
 	return true;							// Всё в порядке!
 }
 
-#define TILE_SIZE 10
+
+double round(double x)
+{
+	if ( x - floor(x) >= 0.5) return ceil(x);
+	return floor(x);
+}
+
+#define TILE_SIZE 10.0
 
 // Здесь будет происходить вся прорисовка
 int GLWindow::DrawGLScene()   
 {
-
 	glEnable(GL_DEPTH_TEST);
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );		// Очистить экран и буфер глубины
 	glLoadIdentity();											// Сбросить текущую матрицу
 
-
-	glRotatef( -player.gfSpinX, 1.0f, 0.0f, 0.0f );
-	glRotatef( -player.gfSpinY, 0.0f, 1.0f, 0.0f );
-	glTranslatef(-player.gfPosX, -player.gfPosY, player.gfPosZ);
-
+	glRotated( -player.gfSpinX, 1.0, 0.0, 0.0 );
+	glRotated( -player.gfSpinY, 0.0, 1.0, 0.0 );
+	glTranslated(-player.gfPosX, -player.gfPosY, -player.gfPosZ);
 
 	GLfloat material_diffuse[] = {1.0, 1.0, 1.0, 1.0};
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, material_diffuse);
 
-	glTranslatef(0, 30, 0);
+	glTranslated(0, 30, 0);
 	GLfloat light2_diffuse[] = {0.2, 0.2, 0.2};
 	GLfloat light2_position[] = {0.0, 0.0, 0.0, 1.0};
 	glEnable(GL_LIGHT2);
@@ -314,16 +339,17 @@ int GLWindow::DrawGLScene()
 	glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.0);
 	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.0);
 	glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0);
-	glTranslatef(0, -30, 0);
+	glTranslated(0, -30, 0);
 
-	GLfloat fXcoord = 0, fYcoord = 0, fZcoord = 0;
-	GLfloat fBrightness = 0.6;
+	GLdouble fXcoord = 0, fYcoord = 0, fZcoord = 0;
+	GLdouble dBrightness = 0.6;
 
 	glNormal3f(0.0, 1.0, 0.0);
-	glColor3f(fBrightness, fBrightness, fBrightness);
+	glColor3d(dBrightness, dBrightness, dBrightness);
 
 
 	for( int i = 0; i < 0x100000; i++)
+//	for( int i = 0; i < 0x100000; i++)
 	{
 		auto it = begin(tTiles[i]);
 
@@ -351,57 +377,119 @@ int GLWindow::DrawGLScene()
 			GlTile(rand()%100,k,-rand()%100);
 		}
 */
-
-
-
 	GLint    viewport[4];    // параметры viewport-a.
 	GLdouble projection[16]; // матрица проекции.
 	GLdouble modelview[16];  // видовая матрица.
-	GLfloat vx,vy,vz;       // координаты курсора мыши в системе координат viewport-a.
+	GLfloat vz;       // координаты курсора мыши в системе координат viewport-a.
 	GLdouble wx,wy,wz;       // возвращаемые мировые координаты.
 
 	glGetIntegerv(GL_VIEWPORT,viewport);           // узнаём параметры viewport-a.
 	glGetDoublev(GL_PROJECTION_MATRIX,projection); // узнаём матрицу проекции.
 	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);   // узнаём видовую матрицу.
 
+	glReadPixels(width/2, height/2, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &vz);
+	gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, &wx, &wy, &wz);
 
-		glReadPixels(width/2, height/2, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &vz);
-		gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, &wx, &wy, &wz);
 
+	GLdouble yerr, xerr, zerr;
+	xerr = wx + TILE_SIZE/2;
+	yerr = wy;
+	zerr = wz + TILE_SIZE/2;
+
+		
+	while (yerr < -1) yerr += TILE_SIZE;
+	while (yerr > TILE_SIZE + 1) yerr -= TILE_SIZE;
+
+	yerr = abs(yerr);
+	if(yerr > abs(yerr - TILE_SIZE)) yerr = abs(yerr - TILE_SIZE); 
+		
+	while (xerr < - 1) xerr += TILE_SIZE;
+	while (xerr > TILE_SIZE + 1) xerr -= TILE_SIZE;
+
+	xerr = abs(xerr);
+	if(xerr > abs(xerr - TILE_SIZE)) xerr = abs(xerr - TILE_SIZE); 
+		
+	while (zerr < - 1) zerr += TILE_SIZE;
+	while (zerr > TILE_SIZE + 1) zerr -= TILE_SIZE;
+
+	zerr = abs(zerr);
+	if(zerr > abs(zerr - TILE_SIZE)) zerr = abs(zerr - TILE_SIZE); 
+		
+	signed long xx, yy, zz;
+
+	if((zerr < xerr)&&(zerr < yerr))
+	{
+		xx = floor(wx/TILE_SIZE + 0.5);
+		yy = floor(wy/TILE_SIZE);
+		
+		if(player.gfPosZ < wz) zz = round(wz/TILE_SIZE + 0.5);
+		if(player.gfPosZ > wz) zz = round(wz/TILE_SIZE - 0.5);
+	}
+
+	if((xerr < zerr)&&(xerr < yerr))
+	{
+		zz = floor(wz/TILE_SIZE + 0.5);
+		yy = floor(wy/TILE_SIZE);
+		
+		if(player.gfPosX < wx) xx = round(wx/TILE_SIZE + 0.5);
+		if(player.gfPosX > wx) xx = round(wx/TILE_SIZE - 0.5);
+	}
+		
+	if((yerr < xerr)&&(yerr < zerr))
+	{
+		xx = floor(wx/TILE_SIZE + 0.5);
+		zz = floor(wz/TILE_SIZE + 0.5);
+		
+		if(player.gfPosY < wy) yy = round(wy/TILE_SIZE);
+		if(player.gfPosY > wy) yy = round(wy/TILE_SIZE - 1.0);
+	}
+
+	if(keys['E']) {
+		RmTile(xx,yy,zz);
+		FILE * file;
+		file = fopen("out.txt", "w+");
+		fprintf(file, "%f\t%f\t%f|\t%d\t%d\t%d", wx, wy, wz, xx, yy, zz);
+		fclose(file);
+	}
+
+
+	/**/
+	/*
 		glBegin(GL_QUADS);
 
 		double sz = 1;
-		glVertex3f (wx - sz, wy - sz, wz + sz);
-		glVertex3f (wx - sz, wy + sz, wz + sz);
-		glVertex3f (wx + sz, wy + sz, wz + sz);
-		glVertex3f (wx + sz, wy - sz, wz + sz);
+		glVertex3d (wx - sz, wy - sz, wz + sz);
+		glVertex3d (wx - sz, wy + sz, wz + sz);
+		glVertex3d (wx + sz, wy + sz, wz + sz);
+		glVertex3d (wx + sz, wy - sz, wz + sz);
 
-		glVertex3f (wx - sz, wy - sz, wz - sz);
-		glVertex3f (wx - sz, wy + sz, wz - sz);
-		glVertex3f (wx + sz, wy + sz, wz - sz);
-		glVertex3f (wx + sz, wy - sz, wz - sz);
+		glVertex3d (wx - sz, wy - sz, wz - sz);
+		glVertex3d (wx - sz, wy + sz, wz - sz);
+		glVertex3d (wx + sz, wy + sz, wz - sz);
+		glVertex3d (wx + sz, wy - sz, wz - sz);
 
-		glVertex3f (wx - sz, wy + sz, wz - sz);
-		glVertex3f (wx - sz, wy + sz, wz + sz);
-		glVertex3f (wx + sz, wy + sz, wz + sz);
-		glVertex3f (wx + sz, wy + sz, wz - sz);
+		glVertex3d (wx - sz, wy + sz, wz - sz);
+		glVertex3d (wx - sz, wy + sz, wz + sz);
+		glVertex3d (wx + sz, wy + sz, wz + sz);
+		glVertex3d (wx + sz, wy + sz, wz - sz);
 
-		glVertex3f (wx - sz, wy - sz, wz - sz);
-		glVertex3f (wx - sz, wy - sz, wz + sz);
-		glVertex3f (wx + sz, wy - sz, wz + sz);
-		glVertex3f (wx + sz, wy - sz, wz - sz);
+		glVertex3d (wx - sz, wy - sz, wz - sz);
+		glVertex3d (wx - sz, wy - sz, wz + sz);
+		glVertex3d (wx + sz, wy - sz, wz + sz);
+		glVertex3d (wx + sz, wy - sz, wz - sz);
 
-		glVertex3f (wx + sz, wy - sz, wz - sz);
-		glVertex3f (wx + sz, wy - sz, wz + sz);
-		glVertex3f (wx + sz, wy + sz, wz + sz);
-		glVertex3f (wx + sz, wy + sz, wz - sz);
+		glVertex3d (wx + sz, wy - sz, wz - sz);
+		glVertex3d (wx + sz, wy - sz, wz + sz);
+		glVertex3d (wx + sz, wy + sz, wz + sz);
+		glVertex3d (wx + sz, wy + sz, wz - sz);
 
-		glVertex3f (wx - sz, wy - sz, wz - sz);
-		glVertex3f (wx - sz, wy - sz, wz + sz);
-		glVertex3f (wx - sz, wy + sz, wz + sz);
-		glVertex3f (wx - sz, wy + sz, wz - sz);
+		glVertex3d (wx - sz, wy - sz, wz - sz);
+		glVertex3d (wx - sz, wy - sz, wz + sz);
+		glVertex3d (wx - sz, wy + sz, wz + sz);
+		glVertex3d (wx - sz, wy + sz, wz - sz);
 		
 		glEnd();
+
 		/**/
 	return true;
 }
@@ -410,46 +498,46 @@ void GLWindow::GlTile(int X, int Y, int Z)
 {
 	glBegin(GL_QUADS);
 
-	GLfloat fXcoord = X*TILE_SIZE, fYcoord = Y*TILE_SIZE, fZcoord = Z*TILE_SIZE;
+	GLdouble dXcoord = X*TILE_SIZE, dYcoord = Y*TILE_SIZE, dZcoord = Z*TILE_SIZE;
 
-	fXcoord -= TILE_SIZE/2;
-	fZcoord -= TILE_SIZE/2;
+	dXcoord -= TILE_SIZE/2;
+	dZcoord -= TILE_SIZE/2;
 
 	//glNormal3f(0.0, 0.0, 1.0);
 
-	glVertex3f (fXcoord, fYcoord, fZcoord);
-	glVertex3f (fXcoord, fYcoord + TILE_SIZE, fZcoord);
-	glVertex3f (fXcoord + TILE_SIZE, fYcoord + TILE_SIZE, fZcoord);
-	glVertex3f (fXcoord + TILE_SIZE, fYcoord, fZcoord);
+	glVertex3d (dXcoord, dYcoord, dZcoord);
+	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
+	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
+	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
 
-	glVertex3f (fXcoord, fYcoord, fZcoord + TILE_SIZE);
-	glVertex3f (fXcoord, fYcoord + TILE_SIZE, fZcoord + TILE_SIZE);
-	glVertex3f (fXcoord + TILE_SIZE, fYcoord + TILE_SIZE, fZcoord + TILE_SIZE);
-	glVertex3f (fXcoord + TILE_SIZE, fYcoord, fZcoord + TILE_SIZE);
+	glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
+	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
 
 	//glNormal3f(1.0, 0.0, 0.0);
 
-	glVertex3f (fXcoord, fYcoord, fZcoord);
-	glVertex3f (fXcoord, fYcoord, fZcoord + TILE_SIZE);
-	glVertex3f (fXcoord, fYcoord + TILE_SIZE, fZcoord + TILE_SIZE);
-	glVertex3f (fXcoord, fYcoord + TILE_SIZE, fZcoord);
+	glVertex3d (dXcoord, dYcoord, dZcoord);
+	glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
+	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
 
-	glVertex3f (fXcoord + TILE_SIZE, fYcoord, fZcoord);
-	glVertex3f (fXcoord + TILE_SIZE, fYcoord, fZcoord + TILE_SIZE);
-	glVertex3f (fXcoord + TILE_SIZE, fYcoord + TILE_SIZE, fZcoord + TILE_SIZE);
-	glVertex3f (fXcoord + TILE_SIZE, fYcoord + TILE_SIZE, fZcoord);
+	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
+	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
+	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
 
 	//glNormal3f(0.0, 1.0, 0.0);
 
-	glVertex3f (fXcoord, fYcoord, fZcoord);
-	glVertex3f (fXcoord, fYcoord, fZcoord + TILE_SIZE);
-	glVertex3f (fXcoord + TILE_SIZE, fYcoord, fZcoord + TILE_SIZE);
-	glVertex3f (fXcoord + TILE_SIZE, fYcoord, fZcoord);
+	glVertex3d (dXcoord, dYcoord, dZcoord);
+	glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
+	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
+	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
 
-	glVertex3f (fXcoord, fYcoord + TILE_SIZE, fZcoord);
-	glVertex3f (fXcoord, fYcoord + TILE_SIZE, fZcoord + TILE_SIZE);
-	glVertex3f (fXcoord + TILE_SIZE, fYcoord + TILE_SIZE, fZcoord + TILE_SIZE);
-	glVertex3f (fXcoord + TILE_SIZE, fYcoord + TILE_SIZE, fZcoord);
+	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
+	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
 
 	glEnd();
 }

@@ -169,7 +169,7 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 
 
 		glwWnd.player.gfPosY = 10.0;
-		GLfloat step = 1.2;
+		GLdouble step = 1.2;
 
 		while( !done )							// Цикл продолжается, пока done не равно true
 		{
@@ -200,22 +200,22 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 						if(glwWnd.keys['W']) 
 						{
 							glwWnd.player.gfPosX -= step*sin(TORAD(glwWnd.player.gfSpinY));
-							glwWnd.player.gfPosZ += step*cos(TORAD(glwWnd.player.gfSpinY));
+							glwWnd.player.gfPosZ -= step*cos(TORAD(glwWnd.player.gfSpinY));
 						}
 						if(glwWnd.keys['S']) 
 						{
 							glwWnd.player.gfPosX += step*sin(TORAD(glwWnd.player.gfSpinY));
-							glwWnd.player.gfPosZ -= step*cos(TORAD(glwWnd.player.gfSpinY));
+							glwWnd.player.gfPosZ += step*cos(TORAD(glwWnd.player.gfSpinY));
 						}
 						if(glwWnd.keys['D']) 
 						{
 							glwWnd.player.gfPosX += step*cos(TORAD(glwWnd.player.gfSpinY));
-							glwWnd.player.gfPosZ += step*sin(TORAD(glwWnd.player.gfSpinY));
+							glwWnd.player.gfPosZ -= step*sin(TORAD(glwWnd.player.gfSpinY));
 						}
 						if(glwWnd.keys['A']) 
 						{
 							glwWnd.player.gfPosX -= step*cos(TORAD(glwWnd.player.gfSpinY));
-							glwWnd.player.gfPosZ -= step*sin(TORAD(glwWnd.player.gfSpinY));
+							glwWnd.player.gfPosZ += step*sin(TORAD(glwWnd.player.gfSpinY));
 						}
 
 						if(glwWnd.keys['R']) glwWnd.player.gfPosY += step; //r

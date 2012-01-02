@@ -31,9 +31,9 @@ public:
 	bool  keys[256];				// ћассив, используемый дл€ операций с клавиатурой
 	bool  active;					// ‘лаг активности окна, установленный в true по умолчанию
 
-	void AddTile(unsigned long x, unsigned long y, unsigned long z, char mat);
-	int RmTile(unsigned long x, unsigned long y, unsigned long z);
-	int Hash(unsigned long x, unsigned long y, unsigned long z);
+	void AddTile(signed long x, signed long y, signed long z, char mat);
+	int RmTile(signed long x, signed long y, signed long z);
+	int Hash(signed long x, signed long y, signed long z);
 	Tiles *tTiles;
 
 	Character player;

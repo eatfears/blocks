@@ -9,7 +9,7 @@ public:
 	Character(void);
 	~Character(void);
 
-	GLfloat gfPosX, gfPosY, gfPosZ;
-	GLfloat gfSpinY, gfSpinX;
+	GLdouble gfPosX, gfPosY, gfPosZ;
+	GLdouble gfSpinY, gfSpinX;
 };
 
