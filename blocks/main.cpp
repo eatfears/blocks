@@ -194,9 +194,9 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 					}
 					else						// Не время для выхода, обновим экран.
 					{
-
-
 						glwWnd.DrawGLScene();
+						glwWnd.Control();
+						glwWnd.GetFrameTime();
 
 						SwapBuffers( glwWnd.hDC );		// Меняем буфер (двойная буферизация)
 					}

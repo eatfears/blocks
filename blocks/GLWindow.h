@@ -20,7 +20,6 @@ public:
 	int DrawGLScene();
 	void GlTile(int X, int Y, int Z);
 
-
 	GLsizei width, height;
 
 	HGLRC  hRC;						// Постоянный контекст рендеринга
@@ -39,8 +38,9 @@ public:
 
 	void GetCenterCoords(GLdouble *wx, GLdouble *wy, GLdouble *wz);
 	void Control();
+	void GetFrameTime();
 
 	Character player;
 	bool bMousing;
-
+	GLdouble g_FrameInterval;
 };

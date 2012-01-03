@@ -2,9 +2,18 @@
 
 LRESULT  CALLBACK WndProc( HWND, UINT, WPARAM, LPARAM );
 
-
 #define TORAD(gfPosX) gfPosX*0.01745329251994329576923690768489
 #define TODEG(gfPosX) gfPosX*57.295779513082320876798154814105
+
+#define TILE_SIZE 10.0
+
+#define STEP_DOWNSTEP	0.5
+#define MAX_DOWNSTEP	7.0
+#define MAX_SPEED		3.0
+#define PLAYER_HEIGHT	15.0
+#define AIR_ACCEL		0.05
+#define JUMP_STR		3.2
+#define WALK_SPEED		1.5
 
 
 GLWindow::GLWindow(void)
@@ -33,10 +42,10 @@ GLWindow::GLWindow(void)
 	}
 
 	for (int j = 1; j <= 10; j++)
-	for (int i = 0; i < 100; i++)
-		for (int k = 0; k < 100; k++)
+	for (int i = 0; i < 20; i++)
+		for (int k = 0; k < 20; k++)
 		{
-			AddTile(i-50,-j,k-50,MATERIAL_YES);
+			AddTile(i-10,-j,k-10,MATERIAL_YES);
 		}
 
 	/**/
@@ -79,7 +88,6 @@ Tile* GLWindow::FindTile(signed long x, signed long y, signed long z)
 {
 	int bin = Hash(x, y, z);
 	auto it = begin(tTiles[bin]);
-	Tile *res;
 
 	while(it < tTiles[bin].end())
 	{
@@ -88,10 +96,8 @@ Tile* GLWindow::FindTile(signed long x, signed long y, signed long z)
 	}
 	if (it == tTiles[bin].end()) return NULL;
 
-	res = &(*it);
-	return res;
+	return &(*it);
 }
-
 
 int GLWindow::RmTile(signed long x, signed long y, signed long z)
 {
@@ -194,7 +200,6 @@ void GLWindow::ReSizeGLScene( GLsizei width, GLsizei height )	// Изменить размер
 	glMatrixMode( GL_PROJECTION );								// Выбор матрицы проекций
 	glLoadIdentity();											// Сброс матрицы проекции
 
-
 	// Вычисление соотношения геометрических размеров для окна
 	gluPerspective( 45.0f, (GLfloat)width/(GLfloat)height, 0.1f, 10000.0f );
 	glMatrixMode( GL_MODELVIEW );								// Выбор матрицы вида модели
@@ -239,14 +244,12 @@ bool GLWindow::CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int 
 		return false;									// Выход и возвращение функцией значения false
 	}
 
-	
 	dwExStyle  =   WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;		// Расширенный стиль окна
 	dwStyle    =   WS_OVERLAPPEDWINDOW;				// Обычный стиль окна
 	
 	AdjustWindowRectEx( &WindowRect, dwStyle, false, dwExStyle );   // Подбирает окну подходящие размеры
 
 	if( !( hWnd = CreateWindowEx(  dwExStyle,			// Расширенный стиль для окна
-
 		"OpenGL",							// Имя класса
 		title,								// Заголовок окна
 		WS_CLIPSIBLINGS |					// Требуемый стиль для окна
@@ -339,22 +342,11 @@ bool GLWindow::CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int 
 	return true;							// Всё в порядке!
 }
 
-
 double round(double x)
 {
 	if ( x - floor(x) >= 0.5) return ceil(x);
 	return floor(x);
 }
-
-#define TILE_SIZE 10.0
-
-#define STEP_DOWNSTEP 0.5
-#define MAX_DOWNSTEP 7.0
-#define MAX_SPEED 3.0
-#define PLAYER_HEIGHT 15.0
-#define AIR_ACCEL 0.05
-#define JUMP_STR 3.2
-#define WALK_SPEED 2.0
 
 void GLWindow::GetCenterCoords(GLdouble *wx, GLdouble *wy, GLdouble *wz)
 {
@@ -397,10 +389,22 @@ void GetPlane(GLdouble wx,GLdouble wy,GLdouble wz,GLdouble *xerr,GLdouble *yerr,
 }
 
 
+void GLWindow::GetFrameTime()
+{
+	double currentTime = (double)timeGetTime() * 0.02;
+
+    static double frameTime = currentTime;  // Время последнего кадра
+
+    // Интервал времени, прошедшего с прошлого кадра
+    g_FrameInterval = currentTime - frameTime;
+
+    frameTime = currentTime;
+	//g_FrameInterval = 0.1;
+}
+
 void GLWindow::Control()
 {
-	static GLdouble step = WALK_SPEED;
-	static GLdouble downstep = 0;
+	GLdouble step = g_FrameInterval*WALK_SPEED;
 
 	if(keys['W']) 
 	{
@@ -411,8 +415,8 @@ void GLWindow::Control()
 		}
 		else
 		{
-			player.gfVelX -= AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
-			player.gfVelZ -= AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
+			player.gfVelX -= g_FrameInterval*AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
+			player.gfVelZ -= g_FrameInterval*AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
 		}
 	}
 	if(keys['S']) 
@@ -424,8 +428,8 @@ void GLWindow::Control()
 		}
 		else
 		{
-			player.gfVelX += AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
-			player.gfVelZ += AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
+			player.gfVelX += g_FrameInterval*AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
+			player.gfVelZ += g_FrameInterval*AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
 		}
 	}
 	if(keys['D']) 
@@ -454,23 +458,20 @@ void GLWindow::Control()
 			player.gfVelZ += AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
 		}
 	}
-
+	
 	GLdouble ko = player.gfVelX*player.gfVelX + player.gfVelZ*player.gfVelZ;
-	if(ko > MAX_SPEED*MAX_SPEED)
+	if(ko > g_FrameInterval*g_FrameInterval*MAX_SPEED*MAX_SPEED)
 	{
 		ko = pow(ko, 0.5);
-		player.gfVelX = player.gfVelX*MAX_SPEED/ko;
-		player.gfVelZ = player.gfVelZ*MAX_SPEED/ko;
+		player.gfVelX = player.gfVelX*g_FrameInterval*MAX_SPEED/ko;
+		player.gfVelZ = player.gfVelZ*g_FrameInterval*MAX_SPEED/ko;
 	}
-
-	player.gfPosX += player.gfVelX;
-	player.gfPosZ += player.gfVelZ;
-
+	
 	if(keys['X'])
 	{
 		if(!player.falling)
 		{
-			downstep = -JUMP_STR;
+			player.gfVelY = -g_FrameInterval*JUMP_STR;
 			player.falling = true;
 			player.gfPosY += 0.1;
 		}
@@ -559,43 +560,72 @@ void GLWindow::Control()
 		// 		fclose(file);
 	}
 
+	{
+		signed long xx, yy, zz;
+		GLdouble wx = player.gfPosX + player.gfVelX;
+		GLdouble wy = player.gfPosY - PLAYER_HEIGHT + 0.1;
+		GLdouble wz = player.gfPosZ;
 
+		xx = floor(wx/TILE_SIZE + 0.5);
+		zz = floor(wz/TILE_SIZE + 0.5);
+		yy = floor(wy/TILE_SIZE);
 
-	GLdouble wx = player.gfPosX;
-	GLdouble wy = player.gfPosY - PLAYER_HEIGHT;
-	GLdouble wz = player.gfPosZ;
+		if((FindTile(xx, yy, zz) == NULL)&&(FindTile(xx, yy + 1, zz) == NULL))
+			player.gfPosX += player.gfVelX;
+		else player.gfVelX = 0;
+	}
+	{
+		signed long xx, yy, zz;
+		GLdouble wx = player.gfPosX;
+		GLdouble wy = player.gfPosY - PLAYER_HEIGHT + 0.1;
+		GLdouble wz = player.gfPosZ + player.gfVelZ;
+
+		xx = floor(wx/TILE_SIZE + 0.5);
+		zz = floor(wz/TILE_SIZE + 0.5);
+		yy = floor(wy/TILE_SIZE);
+
+		if((FindTile(xx, yy, zz) == NULL)&&(FindTile(xx, yy + 1, zz) == NULL))
+			player.gfPosZ += player.gfVelZ;
+		else player.gfVelZ = 0;
+	}
 
 	if(player.falling)
 	{
-		player.gfPosY -= downstep;
-		if(downstep < MAX_DOWNSTEP)
-			downstep += STEP_DOWNSTEP;
-	}else
+		player.gfPosY -= player.gfVelY;
+		if(player.gfVelY < g_FrameInterval*MAX_DOWNSTEP)
+			player.gfVelY += g_FrameInterval*g_FrameInterval*STEP_DOWNSTEP;
+	}
+	
+	{
+		signed long xx, yy, zz;
+		GLdouble wx = player.gfPosX;
+		GLdouble wy = player.gfPosY - PLAYER_HEIGHT;
+		GLdouble wz = player.gfPosZ;
+
+		xx = floor(wx/TILE_SIZE + 0.5);
+		zz = floor(wz/TILE_SIZE + 0.5);
+		yy = floor(wy/TILE_SIZE);
+
+		if(FindTile(xx, yy, zz) == NULL) player.falling = true;
+		else
+		{
+			player.gfVelY = 0;
+			if(player.falling)
+			{	
+				player.falling = false;
+				player.gfPosY = (yy + 1)*TILE_SIZE + PLAYER_HEIGHT - 0.001;
+			}
+		}
+
+	}
+
+	if(!player.falling)
 	{
 		player.gfVelX = 0;
 		player.gfVelZ = 0;
 	}
-
-	signed long xx, yy, zz;
-
-	xx = floor(wx/TILE_SIZE + 0.5);
-	zz = floor(wz/TILE_SIZE + 0.5);
-	yy = floor(wy/TILE_SIZE);
-
-	if(FindTile(xx, yy, zz) == NULL) player.falling = true;
-	else
-	{
-		downstep = 0;
-		if(player.falling)
-		{	
-			player.falling = false;
-			player.gfPosY = (yy + 1)*TILE_SIZE + PLAYER_HEIGHT - 0.001;
-		}
-	}
-
-
+	
 }
-
 // Здесь будет происходить вся прорисовка
 int GLWindow::DrawGLScene()   
 {
@@ -640,8 +670,6 @@ int GLWindow::DrawGLScene()
 	}
 	
 	glDisable(GL_LIGHT2);
-
-	Control();
 
 	return true;
 }
