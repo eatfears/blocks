@@ -31,10 +31,14 @@ public:
 	bool  keys[256];				// ћассив, используемый дл€ операций с клавиатурой
 	bool  active;					// ‘лаг активности окна, установленный в true по умолчанию
 
-	void AddTile(signed long x, signed long y, signed long z, char mat);
+	Tile* FindTile(signed long x, signed long y, signed long z);
+	int AddTile(signed long x, signed long y, signed long z, char mat);
 	int RmTile(signed long x, signed long y, signed long z);
 	int Hash(signed long x, signed long y, signed long z);
 	Tiles *tTiles;
+
+	void GetCenterCoords(GLdouble *wx, GLdouble *wy, GLdouble *wz);
+	void Control();
 
 	Character player;
 	bool bMousing;

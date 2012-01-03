@@ -9,8 +9,6 @@ gsl_rng *randNumGen;
 
 #define MOUSE_SENSIVITY 1.5
 
-#define TORAD(gfPosX) gfPosX*0.01745329251994329576923690768489
-#define TODEG(gfPosX) gfPosX*57.295779513082320876798154814105
 
 #pragma comment( lib, "opengl32.lib" ) // Искать OpenGL32.lib при линковке
 #pragma comment( lib, "glu32.lib" )    // Искать GLu32.lib при линковке
@@ -168,8 +166,7 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 		randNumGen = gsl_rng_alloc(gsl_rng_mt19937);
 
 
-		glwWnd.player.gfPosY = 10.0;
-		GLdouble step = 1.2;
+		glwWnd.player.gfPosY = 20.0;
 
 		while( !done )							// Цикл продолжается, пока done не равно true
 		{
@@ -197,32 +194,7 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 					}
 					else						// Не время для выхода, обновим экран.
 					{
-						if(glwWnd.keys['W']) 
-						{
-							glwWnd.player.gfPosX -= step*sin(TORAD(glwWnd.player.gfSpinY));
-							glwWnd.player.gfPosZ -= step*cos(TORAD(glwWnd.player.gfSpinY));
-						}
-						if(glwWnd.keys['S']) 
-						{
-							glwWnd.player.gfPosX += step*sin(TORAD(glwWnd.player.gfSpinY));
-							glwWnd.player.gfPosZ += step*cos(TORAD(glwWnd.player.gfSpinY));
-						}
-						if(glwWnd.keys['D']) 
-						{
-							glwWnd.player.gfPosX += step*cos(TORAD(glwWnd.player.gfSpinY));
-							glwWnd.player.gfPosZ -= step*sin(TORAD(glwWnd.player.gfSpinY));
-						}
-						if(glwWnd.keys['A']) 
-						{
-							glwWnd.player.gfPosX -= step*cos(TORAD(glwWnd.player.gfSpinY));
-							glwWnd.player.gfPosZ += step*sin(TORAD(glwWnd.player.gfSpinY));
-						}
 
-						if(glwWnd.keys['R']) glwWnd.player.gfPosY += step; //r
-						if(glwWnd.keys['F']) glwWnd.player.gfPosY -= step; //f
-
-						if(glwWnd.keys['Q']) 
-							glwWnd.RmTile(0, -1, 0);
 
 						glwWnd.DrawGLScene();
 

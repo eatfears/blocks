@@ -2,10 +2,16 @@
 
 LRESULT  CALLBACK WndProc( HWND, UINT, WPARAM, LPARAM );
 
+
+#define TORAD(gfPosX) gfPosX*0.01745329251994329576923690768489
+#define TODEG(gfPosX) gfPosX*57.295779513082320876798154814105
+
+
 GLWindow::GLWindow(void)
 {	
 	active = true;
 	bMousing = false;
+	player.falling = true;
 
 	tTiles = new Tiles[0x100000];
 	
@@ -53,10 +59,39 @@ glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);*/
 
 }
 
-void GLWindow::AddTile(signed long x, signed long y, signed long z, char mat)
+int GLWindow::AddTile(signed long x, signed long y, signed long z, char mat)
 {
-	tTiles[Hash(x, y, z)].push_front(Tile(x, y, z, mat));
+	int bin = Hash(x, y, z);
+	auto it = begin(tTiles[bin]);
+	
+	while(it < tTiles[bin].end())
+	{
+		if ((it->z == z)&&(it->x == x)&&(it->y == y)) break;
+		it++;
+	}
+	if (it != tTiles[bin].end()) return 0;
+	
+	tTiles[bin].push_front(Tile(x, y, z, mat));
+	return 1;
 }
+
+Tile* GLWindow::FindTile(signed long x, signed long y, signed long z)
+{
+	int bin = Hash(x, y, z);
+	auto it = begin(tTiles[bin]);
+	Tile *res;
+
+	while(it < tTiles[bin].end())
+	{
+		if ((it->z == z)&&(it->x == x)&&(it->y == y)) break;
+		it++;
+	}
+	if (it == tTiles[bin].end()) return NULL;
+
+	res = &(*it);
+	return res;
+}
+
 
 int GLWindow::RmTile(signed long x, signed long y, signed long z)
 {
@@ -68,17 +103,14 @@ int GLWindow::RmTile(signed long x, signed long y, signed long z)
 		if ((it->z == z)&&(it->x == x)&&(it->y == y)) break;
 		it++;
 	}
-
 	if (it == tTiles[bin].end()) return 0;
 
 	tTiles[bin].erase(it);
-
 	return 1;
 }
 
 int GLWindow::Hash(signed long x, signed long y, signed long z)
 {
-
 	return (x & 0xff) + ((y & 0xff)<<8) + ((z & 0xf)<<16);
 }
 
@@ -316,6 +348,254 @@ double round(double x)
 
 #define TILE_SIZE 10.0
 
+#define STEP_DOWNSTEP 0.5
+#define MAX_DOWNSTEP 7.0
+#define MAX_SPEED 3.0
+#define PLAYER_HEIGHT 15.0
+#define AIR_ACCEL 0.05
+#define JUMP_STR 3.2
+#define WALK_SPEED 2.0
+
+void GLWindow::GetCenterCoords(GLdouble *wx, GLdouble *wy, GLdouble *wz)
+{
+	GLint    viewport[4];		// параметры viewport-a.
+	GLdouble projection[16];	// матрица проекции.
+	GLdouble modelview[16];		// видовая матрица.
+	GLfloat vz;					// координаты курсора мыши в системе координат viewport-a.
+
+	glGetIntegerv(GL_VIEWPORT,viewport);           // узнаём параметры viewport-a.
+	glGetDoublev(GL_PROJECTION_MATRIX,projection); // узнаём матрицу проекции.
+	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);   // узнаём видовую матрицу.
+
+	glReadPixels(width/2, height/2, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &vz);
+	gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, wx, wy, wz);
+}
+
+void GetPlane(GLdouble wx,GLdouble wy,GLdouble wz,GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
+{
+	*xerr = wx + TILE_SIZE/2;
+	*yerr = wy;
+	*zerr = wz + TILE_SIZE/2;
+
+	while (*yerr < -1) *yerr += TILE_SIZE;
+	while (*yerr > TILE_SIZE + 1) *yerr -= TILE_SIZE;
+
+	*yerr = abs(*yerr);
+	if(*yerr > abs(*yerr - TILE_SIZE)) *yerr = abs(*yerr - TILE_SIZE); 
+
+	while (*xerr < - 1) *xerr += TILE_SIZE;
+	while (*xerr > TILE_SIZE + 1) *xerr -= TILE_SIZE;
+
+	*xerr = abs(*xerr);
+	if(*xerr > abs(*xerr - TILE_SIZE)) *xerr = abs(*xerr - TILE_SIZE); 
+
+	while (*zerr < - 1) *zerr += TILE_SIZE;
+	while (*zerr > TILE_SIZE + 1) *zerr -= TILE_SIZE;
+
+	*zerr = abs(*zerr);
+	if(*zerr > abs(*zerr - TILE_SIZE)) *zerr = abs(*zerr - TILE_SIZE); 
+}
+
+
+void GLWindow::Control()
+{
+	static GLdouble step = WALK_SPEED;
+	static GLdouble downstep = 0;
+
+	if(keys['W']) 
+	{
+		if(!player.falling)
+		{
+			player.gfVelX -= step*sin(TORAD(player.gfSpinY));
+			player.gfVelZ -= step*cos(TORAD(player.gfSpinY));
+		}
+		else
+		{
+			player.gfVelX -= AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
+			player.gfVelZ -= AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
+		}
+	}
+	if(keys['S']) 
+	{
+		if(!player.falling)
+		{
+			player.gfVelX += step*sin(TORAD(player.gfSpinY));
+			player.gfVelZ += step*cos(TORAD(player.gfSpinY));
+		}
+		else
+		{
+			player.gfVelX += AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
+			player.gfVelZ += AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
+		}
+	}
+	if(keys['D']) 
+	{
+		if(!player.falling)
+		{
+			player.gfVelX += step*cos(TORAD(player.gfSpinY));
+			player.gfVelZ -= step*sin(TORAD(player.gfSpinY));
+		}
+		else
+		{
+			player.gfVelX += AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
+			player.gfVelZ -= AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
+		}
+	}
+	if(keys['A']) 
+	{
+		if(!player.falling)
+		{
+			player.gfVelX -= step*cos(TORAD(player.gfSpinY));
+			player.gfVelZ += step*sin(TORAD(player.gfSpinY));
+		}
+		else
+		{
+			player.gfVelX -= AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
+			player.gfVelZ += AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
+		}
+	}
+
+	GLdouble ko = player.gfVelX*player.gfVelX + player.gfVelZ*player.gfVelZ;
+	if(ko > MAX_SPEED*MAX_SPEED)
+	{
+		ko = pow(ko, 0.5);
+		player.gfVelX = player.gfVelX*MAX_SPEED/ko;
+		player.gfVelZ = player.gfVelZ*MAX_SPEED/ko;
+	}
+
+	player.gfPosX += player.gfVelX;
+	player.gfPosZ += player.gfVelZ;
+
+	if(keys['X'])
+	{
+		if(!player.falling)
+		{
+			downstep = -JUMP_STR;
+			player.falling = true;
+			player.gfPosY += 0.1;
+		}
+	}
+
+	if(keys['E']) 
+	{
+		GLdouble wx,wy,wz;			// возвращаемые мировые координаты.
+		GetCenterCoords(&wx, &wy, &wz);
+
+		GLdouble yerr, xerr, zerr;
+		GetPlane(wx, wy, wz, &xerr, &yerr, &zerr);
+
+		signed long xx, yy, zz;
+
+		if((zerr < xerr)&&(zerr < yerr))
+		{
+			xx = floor(wx/TILE_SIZE + 0.5);
+			yy = floor(wy/TILE_SIZE);
+
+			if(player.gfPosZ < wz) zz = round(wz/TILE_SIZE + 0.5);
+			if(player.gfPosZ > wz) zz = round(wz/TILE_SIZE - 0.5);
+		}
+
+		if((xerr < zerr)&&(xerr < yerr))
+		{
+			zz = floor(wz/TILE_SIZE + 0.5);
+			yy = floor(wy/TILE_SIZE);
+
+			if(player.gfPosX < wx) xx = round(wx/TILE_SIZE + 0.5);
+			if(player.gfPosX > wx) xx = round(wx/TILE_SIZE - 0.5);
+		}
+
+		if((yerr < xerr)&&(yerr < zerr))
+		{
+			xx = floor(wx/TILE_SIZE + 0.5);
+			zz = floor(wz/TILE_SIZE + 0.5);
+
+			if(player.gfPosY < wy) yy = round(wy/TILE_SIZE);
+			if(player.gfPosY > wy) yy = round(wy/TILE_SIZE - 1.0);
+		}
+
+		RmTile(xx,yy,zz);
+	}
+
+	if(keys['Q']) 
+	{
+		GLdouble wx,wy,wz;			// возвращаемые мировые координаты.
+		GetCenterCoords(&wx, &wy, &wz);
+
+		GLdouble yerr, xerr, zerr;
+		GetPlane(wx, wy, wz, &xerr, &yerr, &zerr);
+		signed long xx, yy, zz;
+
+		if((zerr < xerr)&&(zerr < yerr))
+		{
+			xx = floor(wx/TILE_SIZE + 0.5);
+			yy = floor(wy/TILE_SIZE);
+
+			if(player.gfPosZ < wz) zz = round(wz/TILE_SIZE + 0.5) - 1;
+			if(player.gfPosZ > wz) zz = round(wz/TILE_SIZE - 0.5) + 1;
+		}
+
+		if((xerr < zerr)&&(xerr < yerr))
+		{
+			zz = floor(wz/TILE_SIZE + 0.5);
+			yy = floor(wy/TILE_SIZE);
+
+			if(player.gfPosX < wx) xx = round(wx/TILE_SIZE + 0.5) - 1;
+			if(player.gfPosX > wx) xx = round(wx/TILE_SIZE - 0.5) + 1;
+		}
+
+		if((yerr < xerr)&&(yerr < zerr))
+		{
+			xx = floor(wx/TILE_SIZE + 0.5);
+			zz = floor(wz/TILE_SIZE + 0.5);
+
+			if(player.gfPosY < wy) yy = round(wy/TILE_SIZE) - 1;
+			if(player.gfPosY > wy) yy = round(wy/TILE_SIZE - 1.0) + 1;
+		}
+
+		AddTile(xx,yy,zz,MATERIAL_YES);
+		// 		FILE * file;
+		// 		file = fopen("out.txt", "w+");
+		// 		fprintf(file, "%f\t%f\t%f|\t%d\t%d\t%d", wx, wy, wz, xx, yy, zz);
+		// 		fclose(file);
+	}
+
+
+
+	GLdouble wx = player.gfPosX;
+	GLdouble wy = player.gfPosY - PLAYER_HEIGHT;
+	GLdouble wz = player.gfPosZ;
+
+	if(player.falling)
+	{
+		player.gfPosY -= downstep;
+		if(downstep < MAX_DOWNSTEP)
+			downstep += STEP_DOWNSTEP;
+	}else
+	{
+		player.gfVelX = 0;
+		player.gfVelZ = 0;
+	}
+
+	signed long xx, yy, zz;
+
+	xx = floor(wx/TILE_SIZE + 0.5);
+	zz = floor(wz/TILE_SIZE + 0.5);
+	yy = floor(wy/TILE_SIZE);
+
+	if(FindTile(xx, yy, zz) == NULL) player.falling = true;
+	else
+	{
+		downstep = 0;
+		if(player.falling)
+		{	
+			player.falling = false;
+			player.gfPosY = (yy + 1)*TILE_SIZE + PLAYER_HEIGHT - 0.001;
+		}
+	}
+
+
+}
+
 // Здесь будет происходить вся прорисовка
 int GLWindow::DrawGLScene()   
 {
@@ -347,7 +627,6 @@ int GLWindow::DrawGLScene()
 	glNormal3f(0.0, 1.0, 0.0);
 	glColor3d(dBrightness, dBrightness, dBrightness);
 
-
 	for( int i = 0; i < 0x100000; i++)
 //	for( int i = 0; i < 0x100000; i++)
 	{
@@ -355,142 +634,15 @@ int GLWindow::DrawGLScene()
 
 		while(it < tTiles[i].end())
 		{
-			if(it->mat == MATERIAL_YES)
-				GlTile(it->x,it->y,it->z);
+			GlTile(it->x,it->y,it->z);
 			it++;
 		}
 	}
 	
 	glDisable(GL_LIGHT2);
-	/*
-	for (int i = 0; i < 100; i++)
-		for (int j = 0; j < 100; j++)
-	{
-		GlTile(j,-1,-i);
-	}
 
-	*/
-	/*
-	for (int i = 0; i < 100; i++)
-			for (int k = 0; k < 100; k++)
-		{
-			GlTile(rand()%100,k,-rand()%100);
-		}
-*/
-	GLint    viewport[4];    // параметры viewport-a.
-	GLdouble projection[16]; // матрица проекции.
-	GLdouble modelview[16];  // видовая матрица.
-	GLfloat vz;       // координаты курсора мыши в системе координат viewport-a.
-	GLdouble wx,wy,wz;       // возвращаемые мировые координаты.
+	Control();
 
-	glGetIntegerv(GL_VIEWPORT,viewport);           // узнаём параметры viewport-a.
-	glGetDoublev(GL_PROJECTION_MATRIX,projection); // узнаём матрицу проекции.
-	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);   // узнаём видовую матрицу.
-
-	glReadPixels(width/2, height/2, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &vz);
-	gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, &wx, &wy, &wz);
-
-
-	GLdouble yerr, xerr, zerr;
-	xerr = wx + TILE_SIZE/2;
-	yerr = wy;
-	zerr = wz + TILE_SIZE/2;
-
-		
-	while (yerr < -1) yerr += TILE_SIZE;
-	while (yerr > TILE_SIZE + 1) yerr -= TILE_SIZE;
-
-	yerr = abs(yerr);
-	if(yerr > abs(yerr - TILE_SIZE)) yerr = abs(yerr - TILE_SIZE); 
-		
-	while (xerr < - 1) xerr += TILE_SIZE;
-	while (xerr > TILE_SIZE + 1) xerr -= TILE_SIZE;
-
-	xerr = abs(xerr);
-	if(xerr > abs(xerr - TILE_SIZE)) xerr = abs(xerr - TILE_SIZE); 
-		
-	while (zerr < - 1) zerr += TILE_SIZE;
-	while (zerr > TILE_SIZE + 1) zerr -= TILE_SIZE;
-
-	zerr = abs(zerr);
-	if(zerr > abs(zerr - TILE_SIZE)) zerr = abs(zerr - TILE_SIZE); 
-		
-	signed long xx, yy, zz;
-
-	if((zerr < xerr)&&(zerr < yerr))
-	{
-		xx = floor(wx/TILE_SIZE + 0.5);
-		yy = floor(wy/TILE_SIZE);
-		
-		if(player.gfPosZ < wz) zz = round(wz/TILE_SIZE + 0.5);
-		if(player.gfPosZ > wz) zz = round(wz/TILE_SIZE - 0.5);
-	}
-
-	if((xerr < zerr)&&(xerr < yerr))
-	{
-		zz = floor(wz/TILE_SIZE + 0.5);
-		yy = floor(wy/TILE_SIZE);
-		
-		if(player.gfPosX < wx) xx = round(wx/TILE_SIZE + 0.5);
-		if(player.gfPosX > wx) xx = round(wx/TILE_SIZE - 0.5);
-	}
-		
-	if((yerr < xerr)&&(yerr < zerr))
-	{
-		xx = floor(wx/TILE_SIZE + 0.5);
-		zz = floor(wz/TILE_SIZE + 0.5);
-		
-		if(player.gfPosY < wy) yy = round(wy/TILE_SIZE);
-		if(player.gfPosY > wy) yy = round(wy/TILE_SIZE - 1.0);
-	}
-
-	if(keys['E']) {
-		RmTile(xx,yy,zz);
-		FILE * file;
-		file = fopen("out.txt", "w+");
-		fprintf(file, "%f\t%f\t%f|\t%d\t%d\t%d", wx, wy, wz, xx, yy, zz);
-		fclose(file);
-	}
-
-
-	/**/
-	/*
-		glBegin(GL_QUADS);
-
-		double sz = 1;
-		glVertex3d (wx - sz, wy - sz, wz + sz);
-		glVertex3d (wx - sz, wy + sz, wz + sz);
-		glVertex3d (wx + sz, wy + sz, wz + sz);
-		glVertex3d (wx + sz, wy - sz, wz + sz);
-
-		glVertex3d (wx - sz, wy - sz, wz - sz);
-		glVertex3d (wx - sz, wy + sz, wz - sz);
-		glVertex3d (wx + sz, wy + sz, wz - sz);
-		glVertex3d (wx + sz, wy - sz, wz - sz);
-
-		glVertex3d (wx - sz, wy + sz, wz - sz);
-		glVertex3d (wx - sz, wy + sz, wz + sz);
-		glVertex3d (wx + sz, wy + sz, wz + sz);
-		glVertex3d (wx + sz, wy + sz, wz - sz);
-
-		glVertex3d (wx - sz, wy - sz, wz - sz);
-		glVertex3d (wx - sz, wy - sz, wz + sz);
-		glVertex3d (wx + sz, wy - sz, wz + sz);
-		glVertex3d (wx + sz, wy - sz, wz - sz);
-
-		glVertex3d (wx + sz, wy - sz, wz - sz);
-		glVertex3d (wx + sz, wy - sz, wz + sz);
-		glVertex3d (wx + sz, wy + sz, wz + sz);
-		glVertex3d (wx + sz, wy + sz, wz - sz);
-
-		glVertex3d (wx - sz, wy - sz, wz - sz);
-		glVertex3d (wx - sz, wy - sz, wz + sz);
-		glVertex3d (wx - sz, wy + sz, wz + sz);
-		glVertex3d (wx - sz, wy + sz, wz - sz);
-		
-		glEnd();
-
-		/**/
 	return true;
 }
 

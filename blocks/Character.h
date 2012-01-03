@@ -11,5 +11,9 @@ public:
 
 	GLdouble gfPosX, gfPosY, gfPosZ;
 	GLdouble gfSpinY, gfSpinX;
+
+	GLdouble gfVelX, gfVelY, gfVelZ;
+
+	bool falling;
 };
 
