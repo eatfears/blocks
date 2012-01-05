@@ -52,14 +52,13 @@ GLWindow::GLWindow(void)
 		}
 	}
 
-	for (int j = 1; j <= 100; j++)
+	for (int j = 1; j <= 10; j++)
 	{
 		for (int i = 0; i < 1; i++)
 		{
-			for (int k = 0; k < 200; k++)
+			for (int k = 0; k < 100; k++)
 			{
-
-				AddTile(i-0,-j,k-100,MATERIAL_YES);
+				AddTile(i-0,-j,k-50,MATERIAL_YES);
 			}
 		}
 	}
@@ -135,21 +134,21 @@ int GLWindow::AddTile(signed long x, signed long y, signed long z, char mat)
 	}
 	if (it != tTiles[bin].end()) return 0;
 	
-	tTiles[bin].push_front(Tile(x, y, z, mat));
+	tTiles[bin].push_back(Tile(x, y, z, mat));
 	
 	if (!building)
 	{
-		if(!FindTile(x, y + 1, z)) visible[0].push_front(&(tTiles[bin][0]));
+		if(!FindTile(x, y + 1, z)) visible[0].push_back(&(tTiles[bin][0]));
 		else FindTileN(x, y + 1, z, 1);
-		if(!FindTile(x, y - 1, z)) visible[1].push_front(&(tTiles[bin][0]));
+		if(!FindTile(x, y - 1, z)) visible[1].push_back(&(tTiles[bin][0]));
 		else FindTileN(x, y - 1, z, 0);
-		if(!FindTile(x + 1, y, z)) visible[2].push_front(&(tTiles[bin][0]));
+		if(!FindTile(x + 1, y, z)) visible[2].push_back(&(tTiles[bin][0]));
 		else FindTileN(x + 1, y, z, 3);
-		if(!FindTile(x - 1, y, z)) visible[3].push_front(&(tTiles[bin][0]));
+		if(!FindTile(x - 1, y, z)) visible[3].push_back(&(tTiles[bin][0]));
 		else FindTileN(x - 1, y, z, 2);
-		if(!FindTile(x, y, z + 1)) visible[4].push_front(&(tTiles[bin][0]));
+		if(!FindTile(x, y, z + 1)) visible[4].push_back(&(tTiles[bin][0]));
 		else FindTileN(x, y, z + 1, 5);
-		if(!FindTile(x, y, z - 1)) visible[5].push_front(&(tTiles[bin][0]));
+		if(!FindTile(x, y, z - 1)) visible[5].push_back(&(tTiles[bin][0]));
 		else FindTileN(x, y, z - 1, 4);
 	}
 
@@ -198,28 +197,31 @@ int GLWindow::RmTile(signed long x, signed long y, signed long z)
 	}
 	if (it == tTiles[bin].end()) return 0;
 
-	tTiles[bin].erase(it);
 
 	
 	Tile *temp;
 	temp = FindTile(x, y + 1, z); 
 	if(!temp) FindTileN(x, y, z, 0);
-	else visible[1].push_front(temp);
+	else visible[1].push_back(temp);
+	
 	temp = FindTile(x, y - 1, z); 
 	if(!temp) FindTileN(x, y, z, 1);
-	else visible[0].push_front(temp);
+	else visible[0].push_back(temp);
 	temp = FindTile(x + 1, y, z); 
 	if(!temp) FindTileN(x, y, z, 2);
-	else visible[3].push_front(temp);
+	else visible[3].push_back(temp);
 	temp = FindTile(x - 1, y, z); 
 	if(!temp) FindTileN(x, y, z, 3);
-	else visible[2].push_front(temp);
+	else visible[2].push_back(temp);
 	temp = FindTile(x, y, z + 1); 
 	if(!temp) FindTileN(x, y, z, 4);
-	else visible[5].push_front(temp);
+	else visible[5].push_back(temp);
 	temp = FindTile(x, y, z - 1); 
 	if(!temp) FindTileN(x, y, z, 5);
-	else visible[4].push_front(temp);
+	else visible[4].push_back(temp);
+	/**/
+
+	tTiles[bin].erase(it);
 
 	return 1;
 }
@@ -227,6 +229,7 @@ int GLWindow::RmTile(signed long x, signed long y, signed long z)
 signed long GLWindow::Hash(signed long x, signed long y, signed long z)
 {
 	return (x & 0xff) + ((y & 0xff)<<8) + ((z & 0x0f)<<16);
+	//return (x & 0xff) + ((z & 0xff)<<8) + ((y & 0x0f)<<16);
 }
 
 GLWindow::~GLWindow(void)			// Корректное разрушение окна

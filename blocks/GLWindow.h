@@ -4,6 +4,7 @@
 #include <gl\glu.h>
 #include <gl\glaux.h>
 #include <vector>
+#include <list>
 
 #include "Tiles.h"
 #include "Character.h"

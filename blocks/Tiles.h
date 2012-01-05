@@ -1,6 +1,7 @@
 #pragma once
 
 #include <deque>
+#include <vector>
 #include <list>
 #include "Tile.h"
 
