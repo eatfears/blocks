@@ -51,14 +51,14 @@ GLWindow::GLWindow(void)
 			AddTile(rand()%100-50,k,rand()%100-50,MATERIAL_YES);
 		}
 	}
-
+	//100 500 500 1,5 GB
 	for (int j = 1; j <= 10; j++)
 	{
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 50; i++)
 		{
-			for (int k = 0; k < 100; k++)
+			for (int k = 0; k < 50; k++)
 			{
-				AddTile(i-0,-j,k-50,MATERIAL_YES);
+				AddTile(i-25,-j,k-25,MATERIAL_YES);
 			}
 		}
 	}
@@ -66,16 +66,16 @@ GLWindow::GLWindow(void)
 	/**/
 	for (int i = 0; i < 0x100000; i++)
 	{
-		auto it = begin(tTiles[i]);
-
-		while(it < tTiles[i].end())
+		Tiles::iterator it = tTiles[i].begin();
+		
+		while(it != tTiles[i].end())
 		{
-			if(!FindTile(it->x, it->y + 1, it->z)) visible[0].push_front(&*it);
-			if(!FindTile(it->x, it->y - 1, it->z)) visible[1].push_front(&*it);
-			if(!FindTile(it->x + 1, it->y, it->z)) visible[2].push_front(&*it);
-			if(!FindTile(it->x - 1, it->y, it->z)) visible[3].push_front(&*it);
-			if(!FindTile(it->x, it->y, it->z + 1)) visible[4].push_front(&*it);
-			if(!FindTile(it->x, it->y, it->z - 1)) visible[5].push_front(&*it);
+			if(!FindTile(it->x, it->y + 1, it->z)) visible[0].push_back(&*it);
+			if(!FindTile(it->x, it->y - 1, it->z)) visible[1].push_back(&*it);
+			if(!FindTile(it->x + 1, it->y, it->z)) visible[2].push_back(&*it);
+			if(!FindTile(it->x - 1, it->y, it->z)) visible[3].push_back(&*it);
+			if(!FindTile(it->x, it->y, it->z + 1)) visible[4].push_back(&*it);
+			if(!FindTile(it->x, it->y, it->z - 1)) visible[5].push_back(&*it);
 			it++;
 		}
 	}
@@ -125,30 +125,30 @@ GLvoid LoadGLTextures()
 int GLWindow::AddTile(signed long x, signed long y, signed long z, char mat)
 {
 	signed long bin = Hash(x, y, z);
-	auto it = begin(tTiles[bin]);
+	Tiles::iterator it = tTiles[bin].begin();
 	
-	while(it < tTiles[bin].end())
+	while(it != tTiles[bin].end())
 	{
 		if ((it->z == z)&&(it->x == x)&&(it->y == y)) break;
 		it++;
 	}
 	if (it != tTiles[bin].end()) return 0;
 	
-	tTiles[bin].push_back(Tile(x, y, z, mat));
+	tTiles[bin].push_front(Tile(x, y, z, mat));
 	
 	if (!building)
 	{
-		if(!FindTile(x, y + 1, z)) visible[0].push_back(&(tTiles[bin][0]));
+		if(!FindTile(x, y + 1, z)) visible[0].push_back(&(*tTiles[bin].begin()));
 		else FindTileN(x, y + 1, z, 1);
-		if(!FindTile(x, y - 1, z)) visible[1].push_back(&(tTiles[bin][0]));
+		if(!FindTile(x, y - 1, z)) visible[1].push_back(&(*tTiles[bin].begin()));
 		else FindTileN(x, y - 1, z, 0);
-		if(!FindTile(x + 1, y, z)) visible[2].push_back(&(tTiles[bin][0]));
+		if(!FindTile(x + 1, y, z)) visible[2].push_back(&(*tTiles[bin].begin()));
 		else FindTileN(x + 1, y, z, 3);
-		if(!FindTile(x - 1, y, z)) visible[3].push_back(&(tTiles[bin][0]));
+		if(!FindTile(x - 1, y, z)) visible[3].push_back(&(*tTiles[bin].begin()));
 		else FindTileN(x - 1, y, z, 2);
-		if(!FindTile(x, y, z + 1)) visible[4].push_back(&(tTiles[bin][0]));
+		if(!FindTile(x, y, z + 1)) visible[4].push_back(&(*tTiles[bin].begin()));
 		else FindTileN(x, y, z + 1, 5);
-		if(!FindTile(x, y, z - 1)) visible[5].push_back(&(tTiles[bin][0]));
+		if(!FindTile(x, y, z - 1)) visible[5].push_back(&(*tTiles[bin].begin()));
 		else FindTileN(x, y, z - 1, 4);
 	}
 
@@ -173,9 +173,9 @@ void GLWindow::FindTileN(signed long x, signed long y, signed long z, char N)
 Tile* GLWindow::FindTile(signed long x, signed long y, signed long z)
 {
 	signed long bin = Hash(x, y, z);
-	auto it = begin(tTiles[bin]);
+	Tiles::iterator it = tTiles[bin].begin();
 
-	while(it < tTiles[bin].end())
+	while(it != tTiles[bin].end())
 	{
 		if ((it->z == z)&&(it->x == x)&&(it->y == y)) break;
 		it++;
@@ -188,9 +188,9 @@ Tile* GLWindow::FindTile(signed long x, signed long y, signed long z)
 int GLWindow::RmTile(signed long x, signed long y, signed long z)
 {
 	signed long bin = Hash(x, y, z);
-	auto it = begin(tTiles[bin]);
+	Tiles::iterator it = tTiles[bin].begin();
 
-	while(it < tTiles[bin].end())
+	while(it != tTiles[bin].end())
 	{
 		if ((it->z == z)&&(it->x == x)&&(it->y == y)) break;
 		it++;
@@ -228,8 +228,7 @@ int GLWindow::RmTile(signed long x, signed long y, signed long z)
 
 signed long GLWindow::Hash(signed long x, signed long y, signed long z)
 {
-	return (x & 0xff) + ((y & 0xff)<<8) + ((z & 0x0f)<<16);
-	//return (x & 0xff) + ((z & 0xff)<<8) + ((y & 0x0f)<<16);
+	return (x & 0xff) + ((z & 0xff)<<8) + ((y & 0x0f)<<16);
 }
 
 GLWindow::~GLWindow(void)			// Корректное разрушение окна

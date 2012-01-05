@@ -6,7 +6,7 @@
 #include "Tile.h"
 
 class Tiles : 
-	public std::deque<Tile>
+	public std::list<Tile>
 {
 public:
 	Tiles(void);
