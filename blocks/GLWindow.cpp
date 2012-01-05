@@ -42,20 +42,45 @@ GLWindow::GLWindow(void)
 	AddTile(-1,0,0,MATERIAL_YES);
 	/**/
 	
+	building = true;
+
 	for (int i = 0 ; i< 10 ; i++)
-		for (int k = 0 ; k < 1 ; k++)
 	{
-		AddTile(rand()%100-50,k,rand()%100-50,MATERIAL_YES);
+		for (int k = 0 ; k < 1 ; k++)
+		{
+			AddTile(rand()%100-50,k,rand()%100-50,MATERIAL_YES);
+		}
 	}
 
-	for (int j = 1; j <= 10; j++)
-	for (int i = 0; i < 20; i++)
-		for (int k = 0; k < 20; k++)
+	for (int j = 1; j <= 100; j++)
+	{
+		for (int i = 0; i < 1; i++)
 		{
-			AddTile(i-10,-j,k-10,MATERIAL_YES);
+			for (int k = 0; k < 200; k++)
+			{
+
+				AddTile(i-0,-j,k-100,MATERIAL_YES);
+			}
 		}
+	}
 
 	/**/
+	for (int i = 0; i < 0x100000; i++)
+	{
+		auto it = begin(tTiles[i]);
+
+		while(it < tTiles[i].end())
+		{
+			if(!FindTile(it->x, it->y + 1, it->z)) visible[0].push_front(&*it);
+			if(!FindTile(it->x, it->y - 1, it->z)) visible[1].push_front(&*it);
+			if(!FindTile(it->x + 1, it->y, it->z)) visible[2].push_front(&*it);
+			if(!FindTile(it->x - 1, it->y, it->z)) visible[3].push_front(&*it);
+			if(!FindTile(it->x, it->y, it->z + 1)) visible[4].push_front(&*it);
+			if(!FindTile(it->x, it->y, it->z - 1)) visible[5].push_front(&*it);
+			it++;
+		}
+	}
+	building = false;
 }
 
 GLuint textures[10];
@@ -71,8 +96,10 @@ GLvoid LoadGLTextures()
 	texture1 = auxDIBImageLoad("stone_side.bmp");
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
 
@@ -81,8 +108,8 @@ GLvoid LoadGLTextures()
 	texture1 = auxDIBImageLoad("stone_top.bmp");
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
 
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
 
@@ -90,15 +117,15 @@ GLvoid LoadGLTextures()
 	texture1 = auxDIBImageLoad("stone_down.bmp");
 	glBindTexture(GL_TEXTURE_2D, textures[2]);
 
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
 }
 
 int GLWindow::AddTile(signed long x, signed long y, signed long z, char mat)
 {
-	int bin = Hash(x, y, z);
+	signed long bin = Hash(x, y, z);
 	auto it = begin(tTiles[bin]);
 	
 	while(it < tTiles[bin].end())
@@ -110,25 +137,27 @@ int GLWindow::AddTile(signed long x, signed long y, signed long z, char mat)
 	
 	tTiles[bin].push_front(Tile(x, y, z, mat));
 	
-	if(!FindTile(x, y + 1, z)) visible[0].push_front(&(tTiles[bin][0]));
-	else FindTileN(x, y + 1, z, 1);
-	if(!FindTile(x, y - 1, z)) visible[1].push_front(&(tTiles[bin][0]));
-	else FindTileN(x, y - 1, z, 0);
-	if(!FindTile(x + 1, y, z)) visible[2].push_front(&(tTiles[bin][0]));
-	else FindTileN(x + 1, y, z, 3);
-	if(!FindTile(x - 1, y, z)) visible[3].push_front(&(tTiles[bin][0]));
-	else FindTileN(x - 1, y, z, 2);
-	if(!FindTile(x, y, z + 1)) visible[4].push_front(&(tTiles[bin][0]));
-	else FindTileN(x, y, z + 1, 5);
-	if(!FindTile(x, y, z - 1)) visible[5].push_front(&(tTiles[bin][0]));
-	else FindTileN(x, y, z - 1, 4);
-	
+	if (!building)
+	{
+		if(!FindTile(x, y + 1, z)) visible[0].push_front(&(tTiles[bin][0]));
+		else FindTileN(x, y + 1, z, 1);
+		if(!FindTile(x, y - 1, z)) visible[1].push_front(&(tTiles[bin][0]));
+		else FindTileN(x, y - 1, z, 0);
+		if(!FindTile(x + 1, y, z)) visible[2].push_front(&(tTiles[bin][0]));
+		else FindTileN(x + 1, y, z, 3);
+		if(!FindTile(x - 1, y, z)) visible[3].push_front(&(tTiles[bin][0]));
+		else FindTileN(x - 1, y, z, 2);
+		if(!FindTile(x, y, z + 1)) visible[4].push_front(&(tTiles[bin][0]));
+		else FindTileN(x, y, z + 1, 5);
+		if(!FindTile(x, y, z - 1)) visible[5].push_front(&(tTiles[bin][0]));
+		else FindTileN(x, y, z - 1, 4);
+	}
+
 	return 1;
 }
 
 void GLWindow::FindTileN(signed long x, signed long y, signed long z, char N)
 {
-	int bin = Hash(x, y, z);
 	auto it = begin(visible[N]);
 	
 	while(it < visible[N].end())
@@ -144,7 +173,7 @@ void GLWindow::FindTileN(signed long x, signed long y, signed long z, char N)
 
 Tile* GLWindow::FindTile(signed long x, signed long y, signed long z)
 {
-	int bin = Hash(x, y, z);
+	signed long bin = Hash(x, y, z);
 	auto it = begin(tTiles[bin]);
 
 	while(it < tTiles[bin].end())
@@ -159,7 +188,7 @@ Tile* GLWindow::FindTile(signed long x, signed long y, signed long z)
 
 int GLWindow::RmTile(signed long x, signed long y, signed long z)
 {
-	int bin = Hash(x, y, z);
+	signed long bin = Hash(x, y, z);
 	auto it = begin(tTiles[bin]);
 
 	while(it < tTiles[bin].end())
@@ -195,9 +224,9 @@ int GLWindow::RmTile(signed long x, signed long y, signed long z)
 	return 1;
 }
 
-int GLWindow::Hash(signed long x, signed long y, signed long z)
+signed long GLWindow::Hash(signed long x, signed long y, signed long z)
 {
-	return (x & 0xff) + ((y & 0xff)<<8) + ((z & 0xf)<<16);
+	return (x & 0xff) + ((y & 0xff)<<8) + ((z & 0x0f)<<16);
 }
 
 GLWindow::~GLWindow(void)			// Корректное разрушение окна
@@ -480,7 +509,7 @@ void GLWindow::GetFrameTime()
     g_FrameInterval = currentTime - frameTime;
 
     frameTime = currentTime;
-	g_FrameInterval = 0.1;
+	//g_FrameInterval = 0.1;
 }
 
 void GLWindow::Control()
@@ -736,7 +765,7 @@ int GLWindow::DrawGLScene()
 	GLdouble fXcoord = 0, fYcoord = 0, fZcoord = 0;
 	GLdouble dBrightness = 0.6;
 
-	glNormal3f(0.0, 1.0, 0.0);
+	glNormal3d(0.0, 1.0, 0.0);
 	glColor3d(dBrightness, dBrightness, dBrightness);
 
 
@@ -744,7 +773,6 @@ int GLWindow::DrawGLScene()
 	glBegin(GL_QUADS);
 		
 	for( int i = 0; i < 6; i++)
-//	for( int i = 0; i < 0x100000; i++)
 	{
 		auto it = begin(visible[i]);
 
@@ -757,7 +785,14 @@ int GLWindow::DrawGLScene()
 		if(i == 2)
 		{
 			glEnd();
+			glNormal3d(-1.0, 0.0, 0.0);
 			glBindTexture(GL_TEXTURE_2D, textures[0]);
+			glBegin(GL_QUADS);
+		}
+		if(i == 4)
+		{
+			glEnd();
+			glNormal3d(0.0, 0.0, -1.0);
 			glBegin(GL_QUADS);
 		}
 
@@ -775,7 +810,7 @@ int GLWindow::DrawGLScene()
 	return true;
 }
 
-void GLWindow::GlTile(int X, int Y, int Z, char N)
+void GLWindow::GlTile(signed long  X, signed long Y, signed long Z, char N)
 {
 	GLdouble dXcoord = X*TILE_SIZE, dYcoord = Y*TILE_SIZE, dZcoord = Z*TILE_SIZE;
 

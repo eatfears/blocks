@@ -19,7 +19,7 @@ public:
 	void ReSizeGLScene( GLsizei width, GLsizei height );
 	bool CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int bits);
 	int DrawGLScene();
-	void GlTile(int X, int Y, int Z, char N);
+	void GlTile(signed long X, signed long Y, signed long Z, char N);
 
 	GLsizei width, height;
 
@@ -35,7 +35,7 @@ public:
 	void FindTileN(signed long x, signed long y, signed long z, char N);
 	int AddTile(signed long x, signed long y, signed long z, char mat);
 	int RmTile(signed long x, signed long y, signed long z);
-	int Hash(signed long x, signed long y, signed long z);
+	signed long Hash(signed long x, signed long y, signed long z);
 	Tiles *tTiles;
 
 	std::deque<Tile *> *visible;
@@ -47,4 +47,6 @@ public:
 	Character player;
 	bool bMousing;
 	GLdouble g_FrameInterval;
+
+	bool building;
 };
