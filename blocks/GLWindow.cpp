@@ -24,9 +24,15 @@ GLWindow::GLWindow(void)
 
 	tTiles = new Tiles[0x100000];
 	
-	//AddTile(0,-1,0,MATERIAL_YES);
-	//AddTile(3,-1,0,MATERIAL_YES);
-	//AddTile(0,-1,3,MATERIAL_YES);
+	visible = new std::deque<Tile *>[6];
+	/*
+	AddTile(0,-1,0,MATERIAL_YES);
+	AddTile(3,-1,0,MATERIAL_YES);
+	AddTile(2,-1,0,MATERIAL_YES);
+	AddTile(1,-1,0,MATERIAL_YES);
+	AddTile(0,-1,1,MATERIAL_YES);
+	AddTile(0,-1,2,MATERIAL_YES);
+	AddTile(0,-1,3,MATERIAL_YES);
 
 	/*
 	AddTile(10,0,0,MATERIAL_YES);
@@ -35,6 +41,7 @@ GLWindow::GLWindow(void)
 	AddTile(1,0,0,MATERIAL_YES);
 	AddTile(-1,0,0,MATERIAL_YES);
 	/**/
+	
 	for (int i = 0 ; i< 10 ; i++)
 		for (int k = 0 ; k < 1 ; k++)
 	{
@@ -102,7 +109,37 @@ int GLWindow::AddTile(signed long x, signed long y, signed long z, char mat)
 	if (it != tTiles[bin].end()) return 0;
 	
 	tTiles[bin].push_front(Tile(x, y, z, mat));
+	
+	if(!FindTile(x, y + 1, z)) visible[0].push_front(&(tTiles[bin][0]));
+	else FindTileN(x, y + 1, z, 1);
+	if(!FindTile(x, y - 1, z)) visible[1].push_front(&(tTiles[bin][0]));
+	else FindTileN(x, y - 1, z, 0);
+	if(!FindTile(x + 1, y, z)) visible[2].push_front(&(tTiles[bin][0]));
+	else FindTileN(x + 1, y, z, 3);
+	if(!FindTile(x - 1, y, z)) visible[3].push_front(&(tTiles[bin][0]));
+	else FindTileN(x - 1, y, z, 2);
+	if(!FindTile(x, y, z + 1)) visible[4].push_front(&(tTiles[bin][0]));
+	else FindTileN(x, y, z + 1, 5);
+	if(!FindTile(x, y, z - 1)) visible[5].push_front(&(tTiles[bin][0]));
+	else FindTileN(x, y, z - 1, 4);
+	
 	return 1;
+}
+
+void GLWindow::FindTileN(signed long x, signed long y, signed long z, char N)
+{
+	int bin = Hash(x, y, z);
+	auto it = begin(visible[N]);
+	
+	while(it < visible[N].end())
+	{
+		if ((it[0]->z == z)&&(it[0]->x == x)&&(it[0]->y == y)) break;
+		it++;
+	}
+	if (it == visible[N].end()) return;
+
+	visible[N].erase(it);
+	return;
 }
 
 Tile* GLWindow::FindTile(signed long x, signed long y, signed long z)
@@ -133,6 +170,28 @@ int GLWindow::RmTile(signed long x, signed long y, signed long z)
 	if (it == tTiles[bin].end()) return 0;
 
 	tTiles[bin].erase(it);
+
+	
+	Tile *temp;
+	temp = FindTile(x, y + 1, z); 
+	if(!temp) FindTileN(x, y, z, 0);
+	else visible[1].push_front(temp);
+	temp = FindTile(x, y - 1, z); 
+	if(!temp) FindTileN(x, y, z, 1);
+	else visible[0].push_front(temp);
+	temp = FindTile(x + 1, y, z); 
+	if(!temp) FindTileN(x, y, z, 2);
+	else visible[3].push_front(temp);
+	temp = FindTile(x - 1, y, z); 
+	if(!temp) FindTileN(x, y, z, 3);
+	else visible[2].push_front(temp);
+	temp = FindTile(x, y, z + 1); 
+	if(!temp) FindTileN(x, y, z, 4);
+	else visible[5].push_front(temp);
+	temp = FindTile(x, y, z - 1); 
+	if(!temp) FindTileN(x, y, z, 5);
+	else visible[4].push_front(temp);
+
 	return 1;
 }
 
@@ -421,7 +480,7 @@ void GLWindow::GetFrameTime()
     g_FrameInterval = currentTime - frameTime;
 
     frameTime = currentTime;
-	//g_FrameInterval = 0.1;
+	g_FrameInterval = 0.1;
 }
 
 void GLWindow::Control()
@@ -463,8 +522,8 @@ void GLWindow::Control()
 		}
 		else
 		{
-			player.gfVelX += AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
-			player.gfVelZ -= AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
+			player.gfVelX += g_FrameInterval*AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
+			player.gfVelZ -= g_FrameInterval*AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
 		}
 	}
 	if(keys['A']) 
@@ -476,8 +535,8 @@ void GLWindow::Control()
 		}
 		else
 		{
-			player.gfVelX -= AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
-			player.gfVelZ += AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
+			player.gfVelX -= g_FrameInterval*AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
+			player.gfVelZ += g_FrameInterval*AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
 		}
 	}
 	
@@ -538,7 +597,7 @@ void GLWindow::Control()
 
 		RmTile(xx,yy,zz);
 	}
-
+	
 	if(keys['Q']) 
 	{
 		GLdouble wx,wy,wz;			// возвращаемые мировые координаты.
@@ -646,6 +705,7 @@ void GLWindow::Control()
 		player.gfVelX = 0;
 		player.gfVelZ = 0;
 	}
+	//player.falling = 1;
 	
 }
 // Здесь будет происходить вся прорисовка
@@ -679,35 +739,56 @@ int GLWindow::DrawGLScene()
 	glNormal3f(0.0, 1.0, 0.0);
 	glColor3d(dBrightness, dBrightness, dBrightness);
 
-	for( int i = 0; i < 0x100000; i++)
+
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	glBegin(GL_QUADS);
+		
+	for( int i = 0; i < 6; i++)
 //	for( int i = 0; i < 0x100000; i++)
 	{
-		auto it = begin(tTiles[i]);
+		auto it = begin(visible[i]);
 
-		while(it < tTiles[i].end())
+		if(i == 1)
 		{
-			GlTile(it->x,it->y,it->z);
+			glEnd();
+			glBindTexture(GL_TEXTURE_2D, textures[2]);
+			glBegin(GL_QUADS);
+		}
+		if(i == 2)
+		{
+			glEnd();
+			glBindTexture(GL_TEXTURE_2D, textures[0]);
+			glBegin(GL_QUADS);
+		}
+
+		while(it < visible[i].end())
+		{
+			GlTile(it[0]->x,it[0]->y,it[0]->z, i);
 			it++;
 		}
 	}
-	
+
+		glEnd();
+
 	glDisable(GL_LIGHT2);
 
 	return true;
 }
 
-void GLWindow::GlTile(int X, int Y, int Z)
+void GLWindow::GlTile(int X, int Y, int Z, char N)
 {
 	GLdouble dXcoord = X*TILE_SIZE, dYcoord = Y*TILE_SIZE, dZcoord = Z*TILE_SIZE;
 
 	dXcoord -= TILE_SIZE/2;
 	dZcoord -= TILE_SIZE/2;
 
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	//glBindTexture(GL_TEXTURE_2D, textures[0]);
 
-	glBegin(GL_QUADS);
+	//glBegin(GL_QUADS);
 	//glNormal3f(0.0, 0.0, 1.0);
-	glTexCoord2f(1.0f, 0.0f);
+	if(N == 5)
+	{
+		glTexCoord2f(1.0f, 0.0f);
 	glVertex3d (dXcoord, dYcoord, dZcoord);
 	glTexCoord2f(1.0f, 1.0f);
 	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
@@ -715,7 +796,10 @@ void GLWindow::GlTile(int X, int Y, int Z)
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
 	glTexCoord2f(0.0f, 0.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
+	}
 
+	if(N == 4)
+	{
 	glTexCoord2f(0.0f, 0.0f);
 	glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
 	glTexCoord2f(0.0f, 1.0f);
@@ -724,9 +808,11 @@ void GLWindow::GlTile(int X, int Y, int Z)
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
 	glTexCoord2f(1.0f, 0.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
-
+	}
 	//glNormal3f(1.0, 0.0, 0.0);
 
+	if(N == 3)
+	{
 	glTexCoord2f(0.0f, 0.0f);
 	glVertex3d (dXcoord, dYcoord, dZcoord);
 	glTexCoord2f(1.0f, 0.0f);
@@ -735,7 +821,10 @@ void GLWindow::GlTile(int X, int Y, int Z)
 	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
 	glTexCoord2f(0.0f, 1.0f);
 	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
+	}
 
+	if(N == 2)
+	{
 	glTexCoord2f(1.0f, 0.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
 	glTexCoord2f(0.0f, 0.0f);
@@ -744,12 +833,15 @@ void GLWindow::GlTile(int X, int Y, int Z)
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
 	glTexCoord2f(1.0f, 1.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
-	glEnd();
+	//glEnd();
+	}
 
-	glBindTexture(GL_TEXTURE_2D, textures[2]);
+	//glBindTexture(GL_TEXTURE_2D, textures[2]);
 
-	glBegin(GL_QUADS);
+	//glBegin(GL_QUADS);
 	//glNormal3f(0.0, 1.0, 0.0);
+	if(N == 1)
+	{
 	glTexCoord2f(1.0f, 0.0f);
 	glVertex3d (dXcoord, dYcoord, dZcoord);
 	glTexCoord2f(0.0f, 0.0f);
@@ -758,11 +850,14 @@ void GLWindow::GlTile(int X, int Y, int Z)
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
 	glTexCoord2f(1.0f, 1.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
-	glEnd();
+}
+	//glEnd();
 
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	//glBindTexture(GL_TEXTURE_2D, textures[1]);
 
-	glBegin(GL_QUADS);
+	//glBegin(GL_QUADS);
+	if(N == 0)
+	{	
 	glTexCoord2f(1.0f, 0.0f);
 	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
 	glTexCoord2f(0.0f, 0.0f);
@@ -771,5 +866,6 @@ void GLWindow::GlTile(int X, int Y, int Z)
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
 	glTexCoord2f(1.0f, 1.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
-	glEnd();
+	}
+	//glEnd();
 }
