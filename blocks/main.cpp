@@ -12,6 +12,7 @@ gsl_rng *randNumGen;
 
 #pragma comment( lib, "opengl32.lib" ) // Искать OpenGL32.lib при линковке
 #pragma comment( lib, "glu32.lib" )    // Искать GLu32.lib при линковке
+#pragma comment( lib, "Glaux.lib" )    // Искать Glaux.lib при линковке
 
 using namespace std;
 

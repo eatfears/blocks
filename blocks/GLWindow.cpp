@@ -51,21 +51,42 @@ GLWindow::GLWindow(void)
 	/**/
 }
 
-GLuint textures[2];
+GLuint textures[10];
 
 GLvoid LoadGLTextures()
 {
-	/*
-	glGenTextures(1, textures);
+	// Загрузка картинки
+	AUX_RGBImageRec *texture1;
+	glGenTextures(3, textures);
 
 
+	// Создание текстуры
+	texture1 = auxDIBImageLoad("stone_side.bmp");
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, 16, 16, 0, GLenum format, GLenum type, const GLvoid *pixels);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GLenum p2);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GLenum p2);
-glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);*/
 
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
+
+
+	// Создание текстуры
+	texture1 = auxDIBImageLoad("stone_top.bmp");
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
+
+	// Создание текстуры
+	texture1 = auxDIBImageLoad("stone_down.bmp");
+	glBindTexture(GL_TEXTURE_2D, textures[2]);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
 }
 
 int GLWindow::AddTile(signed long x, signed long y, signed long z, char mat)
@@ -179,7 +200,8 @@ int GLWindow::InitGL(void)											// Все установки касаемо OpenGL происходят 
 
 	// рассчет текстур
 	glEnable(GL_TEXTURE_2D);
-
+	LoadGLTextures();
+	
 	// двухсторонний расчет освещения 
 	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
@@ -676,48 +698,78 @@ int GLWindow::DrawGLScene()
 
 void GLWindow::GlTile(int X, int Y, int Z)
 {
-	glBegin(GL_QUADS);
-
 	GLdouble dXcoord = X*TILE_SIZE, dYcoord = Y*TILE_SIZE, dZcoord = Z*TILE_SIZE;
 
 	dXcoord -= TILE_SIZE/2;
 	dZcoord -= TILE_SIZE/2;
 
-	//glNormal3f(0.0, 0.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
 
+	glBegin(GL_QUADS);
+	//glNormal3f(0.0, 0.0, 1.0);
+	glTexCoord2f(1.0f, 0.0f);
 	glVertex3d (dXcoord, dYcoord, dZcoord);
+	glTexCoord2f(1.0f, 1.0f);
 	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
+	glTexCoord2f(0.0f, 1.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
+	glTexCoord2f(0.0f, 0.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
 
+	glTexCoord2f(0.0f, 0.0f);
 	glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
+	glTexCoord2f(0.0f, 1.0f);
 	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+	glTexCoord2f(1.0f, 1.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+	glTexCoord2f(1.0f, 0.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
 
 	//glNormal3f(1.0, 0.0, 0.0);
 
+	glTexCoord2f(0.0f, 0.0f);
 	glVertex3d (dXcoord, dYcoord, dZcoord);
+	glTexCoord2f(1.0f, 0.0f);
 	glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
+	glTexCoord2f(1.0f, 1.0f);
 	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+	glTexCoord2f(0.0f, 1.0f);
 	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
 
+	glTexCoord2f(1.0f, 0.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
+	glTexCoord2f(0.0f, 0.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
+	glTexCoord2f(0.0f, 1.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+	glTexCoord2f(1.0f, 1.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
+	glEnd();
 
+	glBindTexture(GL_TEXTURE_2D, textures[2]);
+
+	glBegin(GL_QUADS);
 	//glNormal3f(0.0, 1.0, 0.0);
-
+	glTexCoord2f(1.0f, 0.0f);
 	glVertex3d (dXcoord, dYcoord, dZcoord);
+	glTexCoord2f(0.0f, 0.0f);
 	glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
+	glTexCoord2f(0.0f, 1.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
+	glTexCoord2f(1.0f, 1.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
+	glEnd();
 
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(1.0f, 0.0f);
 	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
+	glTexCoord2f(0.0f, 0.0f);
 	glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+	glTexCoord2f(0.0f, 1.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+	glTexCoord2f(1.0f, 1.0f);
 	glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
-
 	glEnd();
 }
