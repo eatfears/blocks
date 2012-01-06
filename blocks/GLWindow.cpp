@@ -48,17 +48,17 @@ GLWindow::GLWindow(void)
 	{
 		for (int k = 0 ; k < 1 ; k++)
 		{
-			AddTile(rand()%100-50,k,rand()%100-50,MATERIAL_YES);
+			//AddTile(rand()%100-50,k,rand()%100-50,MATERIAL_YES);
 		}
 	}
 	//100 500 500 1,5 GB
-	for (int j = 1; j <= 10; j++)
+	for (int j = 1; j <= 5; j++)
 	{
-		for (int i = 0; i < 50; i++)
+		for (int i = 0; i < 10; i++)
 		{
-			for (int k = 0; k < 50; k++)
+			for (int k = 0; k < 10; k++)
 			{
-				AddTile(i-25,-j,k-25,MATERIAL_YES);
+				AddTile(i-5,-j,k-5,MATERIAL_YES);
 			}
 		}
 	}
@@ -122,9 +122,9 @@ GLvoid LoadGLTextures()
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
 }
 
-int GLWindow::AddTile(signed long x, signed long y, signed long z, char mat)
+int GLWindow::AddTile(signed short x, signed short y, signed short z, char mat)
 {
-	signed long bin = Hash(x, y, z);
+	unsigned long bin = Hash(x, y, z);
 	Tiles::iterator it = tTiles[bin].begin();
 	
 	while(it != tTiles[bin].end())
@@ -155,7 +155,7 @@ int GLWindow::AddTile(signed long x, signed long y, signed long z, char mat)
 	return 1;
 }
 
-void GLWindow::FindTileN(signed long x, signed long y, signed long z, char N)
+void GLWindow::FindTileN(signed short x, signed short y, signed short z, char N)
 {
 	auto it = begin(visible[N]);
 	
@@ -170,9 +170,9 @@ void GLWindow::FindTileN(signed long x, signed long y, signed long z, char N)
 	return;
 }
 
-Tile* GLWindow::FindTile(signed long x, signed long y, signed long z)
+Tile* GLWindow::FindTile(signed short x, signed short y, signed short z)
 {
-	signed long bin = Hash(x, y, z);
+	unsigned long bin = Hash(x, y, z);
 	Tiles::iterator it = tTiles[bin].begin();
 
 	while(it != tTiles[bin].end())
@@ -185,9 +185,9 @@ Tile* GLWindow::FindTile(signed long x, signed long y, signed long z)
 	return &(*it);
 }
 
-int GLWindow::RmTile(signed long x, signed long y, signed long z)
+int GLWindow::RmTile(signed short x, signed short y, signed short z)
 {
-	signed long bin = Hash(x, y, z);
+	unsigned long bin = Hash(x, y, z);
 	Tiles::iterator it = tTiles[bin].begin();
 
 	while(it != tTiles[bin].end())
@@ -226,7 +226,7 @@ int GLWindow::RmTile(signed long x, signed long y, signed long z)
 	return 1;
 }
 
-signed long GLWindow::Hash(signed long x, signed long y, signed long z)
+unsigned long GLWindow::Hash(signed short x, signed short y, signed short z)
 {
 	return (x & 0xff) + ((z & 0xff)<<8) + ((y & 0x0f)<<16);
 }
@@ -512,6 +512,7 @@ void GLWindow::GetFrameTime()
 
     frameTime = currentTime;
 	//g_FrameInterval = 0.1;
+	//0.04;
 }
 
 void GLWindow::Control()
@@ -597,7 +598,7 @@ void GLWindow::Control()
 		GLdouble yerr, xerr, zerr;
 		GetPlane(wx, wy, wz, &xerr, &yerr, &zerr);
 
-		signed long xx, yy, zz;
+		signed short xx, yy, zz;
 
 		if((zerr < xerr)&&(zerr < yerr))
 		{
@@ -636,7 +637,7 @@ void GLWindow::Control()
 
 		GLdouble yerr, xerr, zerr;
 		GetPlane(wx, wy, wz, &xerr, &yerr, &zerr);
-		signed long xx, yy, zz;
+		signed short xx, yy, zz;
 
 		if((zerr < xerr)&&(zerr < yerr))
 		{
@@ -673,7 +674,7 @@ void GLWindow::Control()
 	}
 
 	{
-		signed long xx, yy, zz;
+		signed short xx, yy, zz;
 		GLdouble wx = player.gfPosX + player.gfVelX;
 		GLdouble wy = player.gfPosY - PLAYER_HEIGHT + 0.1;
 		GLdouble wz = player.gfPosZ;
@@ -687,7 +688,7 @@ void GLWindow::Control()
 		else player.gfVelX = 0;
 	}
 	{
-		signed long xx, yy, zz;
+		signed short xx, yy, zz;
 		GLdouble wx = player.gfPosX;
 		GLdouble wy = player.gfPosY - PLAYER_HEIGHT + 0.1;
 		GLdouble wz = player.gfPosZ + player.gfVelZ;
@@ -709,7 +710,7 @@ void GLWindow::Control()
 	}
 	
 	{
-		signed long xx, yy, zz;
+		signed short xx, yy, zz;
 		GLdouble wx = player.gfPosX;
 		GLdouble wy = player.gfPosY - PLAYER_HEIGHT;
 		GLdouble wz = player.gfPosZ;
@@ -812,7 +813,7 @@ int GLWindow::DrawGLScene()
 	return true;
 }
 
-void GLWindow::GlTile(signed long  X, signed long Y, signed long Z, char N)
+void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 {
 	GLdouble dXcoord = X*TILE_SIZE, dYcoord = Y*TILE_SIZE, dZcoord = Z*TILE_SIZE;
 

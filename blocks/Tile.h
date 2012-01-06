@@ -6,13 +6,13 @@
 class Tile
 {
 public:
-	Tile(signed long xc, signed long yc, signed long zc, char zmat)
+	Tile(signed short xc, signed short yc, signed short zc, char zmat)
 	{ x = xc; y = yc; z = zc; mat = zmat; };
 	~Tile (void);
 
-	signed long x;
-	signed long y;
-	signed long z;
+	signed short x;
+	signed short y;
+	signed short z;
 
 	char mat;
 	/*
