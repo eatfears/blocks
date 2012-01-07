@@ -158,7 +158,7 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 		ShowCursor(FALSE);
 
 		// Создать наше OpenGL окно
-		if( !glwWnd.CreateGLWindow("Blocks", 400, 400, 32) )
+		if( !glwWnd.CreateGLWindow("Blocks", 800, 600, 32) )
 		{
 			return 0;							// Выйти, если окно не может быть создано
 		}

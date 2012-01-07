@@ -87,6 +87,7 @@
   <ItemGroup>
     <ClInclude Include="Character.h" />
     <ClInclude Include="GLWindow.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Tiles.h" />
     <ClInclude Include="blocks.h" />
@@ -97,6 +98,14 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Tiles.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="blocks.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="stone_down.bmp" />
+    <None Include="stone_side.bmp" />
+    <None Include="stone_top.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

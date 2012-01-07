@@ -15,6 +15,9 @@
     <Filter Include="Заголовочные файлы\Viewport">
       <UniqueIdentifier>{d640797f-2761-496a-b5b0-6749c1f0327f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Textures">
+      <UniqueIdentifier>{a92437bb-0cb5-4b57-8688-448dc5c4db0c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -49,5 +52,22 @@
     <ClInclude Include="Character.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="blocks.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="stone_side.bmp">
+      <Filter>Textures</Filter>
+    </None>
+    <None Include="stone_down.bmp">
+      <Filter>Textures</Filter>
+    </None>
+    <None Include="stone_top.bmp">
+      <Filter>Textures</Filter>
+    </None>
   </ItemGroup>
 </Project>
