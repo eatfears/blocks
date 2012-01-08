@@ -8,6 +8,7 @@
 
 #include "Tiles.h"
 #include "Character.h"
+#include "Material.h"
 
 class GLWindow
 {
@@ -30,7 +31,7 @@ public:
 	HWND  hWnd;						// Здесь будет хранится дескриптор окна
 	HINSTANCE  hInstance;           // Здесь будет хранится дескриптор приложения
 
-	bool  keys[256];				// Массив, используемый для операций с клавиатурой
+	//bool  keys[256];				// Массив, используемый для операций с клавиатурой
 	bool  active;					// Флаг активности окна, установленный в true по умолчанию
 
 	Tile* FindTile(signed short x, signed short y, signed short z);
@@ -39,7 +40,7 @@ public:
 	int RmTile(signed short x, signed short y, signed short z);
 	unsigned long Hash(signed short x, signed short y, signed short z);
 	Tiles *tTiles;
-
+	Material MaterialLib;
 	std::deque<Tile *> *visible;
 
 	void GetCenterCoords(GLdouble *wx, GLdouble *wy, GLdouble *wz);

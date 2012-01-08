@@ -62,13 +62,13 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 
 	case WM_KEYDOWN:						// Была ли нажата кнопка?
 		{
-			glwWnd.keys[wParam] = true;			// Если так, мы присваиваем этой ячейке true
+			glwWnd.player.keys[wParam] = true;			// Если так, мы присваиваем этой ячейке true
 			return 0;						// Возвращаемся
 		}
 
 	case WM_KEYUP:							// Была ли отпущена клавиша?
 		{
-			glwWnd.keys[wParam] = false;			//  Если так, мы присваиваем этой ячейке false
+			glwWnd.player.keys[wParam] = false;			//  Если так, мы присваиваем этой ячейке false
 			return 0;						// Возвращаемся
 		}
 		
@@ -189,7 +189,7 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 				// Прорисовываем сцену
 				if( glwWnd.active )					// Активна ли программа?
 				{
-					if(glwWnd.keys[VK_ESCAPE])			// Было ли нажата клавиша ESC?
+					if(glwWnd.player.keys[VK_ESCAPE])			// Было ли нажата клавиша ESC?
 					{
 						done = true;			// ESC говорит об останове выполнения программы
 					}

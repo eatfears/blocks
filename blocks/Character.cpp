@@ -23,6 +23,7 @@
 
 Character::Character(void)
 {
+	falling = true;
 }
 
 
@@ -173,24 +174,28 @@ void Character::Control(GLdouble g_FrameInterval)
 
 	if(keys['Q']) 
 	{
+		int ix, iy, iz;
 		if((zerr < xerr)&&(zerr < yerr))
 		{
-			if(gfPosZ < wz) zz -= 1;
-			if(gfPosZ > wz) zz += 1;
+			if(gfPosZ < wz) iz = zz - 1;
+			if(gfPosZ > wz) iz = zz + 1;
 		}
 		if((xerr < zerr)&&(xerr < yerr))
 		{
-			if(gfPosX < wx) xx -= 1;
-			if(gfPosX > wx) xx += 1;
+			if(gfPosX < wx) ix = xx - 1;
+			if(gfPosX > wx) ix = xx + 1;
 		}
 		if((yerr < xerr)&&(yerr < zerr))
 		{
-			if(gfPosY < wy) yy -= 1;
-			if(gfPosY > wy) yy += 1;
+			if(gfPosY < wy) iy = yy - 1;
+			if(gfPosY > wy) iy = yy + 1;
 		}
 
-		//AddTile(xx,yy,zz,1);
+		//AddTile(ix,iy,iz,1);
 	}
+
+	gfPosX += g_FrameInterval*gfVelX;
+	gfPosZ += g_FrameInterval*gfVelZ;
 
 	/*{
 		signed short xx, yy, zz;

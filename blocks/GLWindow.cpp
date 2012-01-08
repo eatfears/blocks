@@ -1,26 +1,8 @@
 #include "GLWindow.h"
 #include "resource.h"
+#include "Blocks_Definitions.h"
 
 LRESULT  CALLBACK WndProc( HWND, UINT, WPARAM, LPARAM );
-
-#define TORAD(gfPosX) gfPosX*0.01745329251994329576923690768489
-#define TODEG(gfPosX) gfPosX*57.295779513082320876798154814105
-
-#define TILE_SIZE 10.0
-
-#define STEP_DOWNSTEP	0.6
-#define MAX_DOWNSTEP	7.0
-#define PLAYER_HEIGHT	15.0
-#define AIR_ACCEL		0.12
-#define JUMP_STR		4.0
-#define WALK_SPEED		1.5
-
-#define SPRINT_KOEF		2.0
-
-#define FOG_COLOR		0.5f,0.5f,0.8f,1.0f
-#define FOG_DENSITY		10.0
-#define FOG_START		TILE_SIZE*10
-#define MAX_VIEV_DIST	TILE_SIZE*80
 
 GLuint textures[100];
 GLfloat fogColor[4]= {FOG_COLOR}; // Цвет тумана
@@ -29,10 +11,10 @@ GLWindow::GLWindow(void)
 {
 	active = true;
 	bMousing = false;
-	player.falling = true;
 
 	tTiles = new Tiles[0x100000];
-	
+	MaterialLib.InitMaterials();
+
 	visible = new std::deque<Tile *>[6];
 	/*
 	AddTile(0,-1,0,MATERIAL_YES);
@@ -53,22 +35,27 @@ GLWindow::GLWindow(void)
 	
 	building = true;
 
-	for (int i = 0 ; i< 10 ; i++)
+	for (int i = 0 ; i< 40 ; i++)
 	{
 		for (int k = 0 ; k < 1 ; k++)
 		{
-			AddTile(rand()%100-50,k,rand()%100-50,MATERIAL_YES);
+			AddTile(rand()%100-50,k,rand()%100-50,MAT_STONE);
+			AddTile(rand()%100-50,k,rand()%100-50,MAT_SAND);
+			AddTile(rand()%100-50,k,rand()%100-50,MAT_DIRT);
+			AddTile(rand()%100-50,k,rand()%100-50,MAT_GRASS);
+			AddTile(rand()%100-50,k,rand()%100-50,MAT_NO);
 		}
 	}
 
 	//100 500 500 1,5 GB
-	for (int j = 1; j <= 100; j++)
+	for (int j = 1; j <= 5; j++)
 	{
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < 40; i++)
 		{
-			for (int k = 0; k < 100; k++)
-			{
-				AddTile(i-50,-j,k-50,MATERIAL_YES);
+			for (int k = 0; k < 40; k++)
+			{				
+				//AddTile(i-20,-j,k-20,rand()%4+1);
+				AddTile(i-20,-j,k-20,MAT_GRASS);
 			}
 		}
 	}
@@ -98,8 +85,8 @@ GLvoid LoadGLTextures()
 	BITMAP  BMP;                    // структура изображения
 
 	// Три ID для изображений, которые мы хотим загрузить из файла ресурсов
-	byte  Texture[]={IDB_STONE_SIDE, IDB_STONE_TOP, IDB_STONE_DOWN};
-	
+	byte  Texture[]={0, IDB_DIRT, IDB_GRASS_TOP, IDB_GRASS_SIDE, IDB_STONE, IDB_SAND};
+
 	glGenTextures(sizeof(Texture), textures); // создаем 3 текстуры (sizeof(Texture)=3 ID's)
 	for (int i = 0; i < sizeof(Texture); i++)	// цикл по всем ID (изображений)
 	{
@@ -127,6 +114,7 @@ GLvoid LoadGLTextures()
 			
 			DeleteObject(hBMP);              // удаление объекта изображения
 		}
+		else textures[i] = NULL;
 	}
 }
 
@@ -205,7 +193,6 @@ int GLWindow::RmTile(signed short x, signed short y, signed short z)
 	}
 	if (it == tTiles[bin].end()) return 0;
 
-
 	
 	Tile *temp;
 	temp = FindTile(x, y + 1, z); 
@@ -241,7 +228,7 @@ unsigned long GLWindow::Hash(signed short x, signed short y, signed short z)
 
 GLWindow::~GLWindow(void)			// Корректное разрушение окна
 {
-
+	//delete[] tTiles;
 }
 
 void GLWindow::KillGLWindow(void)
@@ -529,39 +516,29 @@ int GLWindow::DrawGLScene()
 
 	GLdouble dBrightness = 1.0;
 	glColor3d(dBrightness, dBrightness, dBrightness);
-	
-	glNormal3d(0.0, 1.0, 0.0);
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
+
+
+	int iCurrTex = 0;
 	glBegin(GL_QUADS);
-		
+
 	for( int i = 0; i < 6; i++)
 	{
 		auto it = begin(visible[i]);
-
-		if(i == 1)
-		{
-			glEnd();
-			glBindTexture(GL_TEXTURE_2D, textures[2]);
-			glBegin(GL_QUADS);
-		}
-		if(i == 2)
-		{
-			glEnd();
-			glNormal3d(-1.0, 0.0, 0.0);
-			glBindTexture(GL_TEXTURE_2D, textures[0]);
-			glBegin(GL_QUADS);
-		}
-		if(i == 4)
-		{
-			glEnd();
-			glNormal3d(0.0, 0.0, -1.0);
-			glBegin(GL_QUADS);
-		}
-
+		
 		while(it < visible[i].end())
 		{
+
 			if((abs(it[0]->x*TILE_SIZE - player.gfPosX) < MAX_VIEV_DIST + 10*TILE_SIZE) && (abs(it[0]->y*TILE_SIZE - player.gfPosY) < MAX_VIEV_DIST + 10*TILE_SIZE) && (abs(it[0]->z*TILE_SIZE - player.gfPosZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
+			{
+				if(iCurrTex != MaterialLib.mMater[it[0]->mat].iTex[i])
+				{
+					iCurrTex = MaterialLib.mMater[it[0]->mat].iTex[i];
+					glEnd();
+					glBindTexture(GL_TEXTURE_2D, textures[iCurrTex]);
+					glBegin(GL_QUADS);
+				}
 				GlTile(it[0]->x,it[0]->y,it[0]->z, i);
+			}
 			it++;
 		}
 	}
@@ -615,7 +592,7 @@ void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 
 	switch(N)
 	{
-	case 0:
+	case TOP:
 		{	
 			//Верхняя грань
 			glTexCoord2f(1.0f, 0.0f);
@@ -627,7 +604,7 @@ void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 			glTexCoord2f(1.0f, 1.0f);
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
 		}break;
-	case 1:
+	case DOWN:
 		{
 			//Нижняя грань
 			glTexCoord2f(1.0f, 0.0f);
@@ -639,7 +616,7 @@ void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 			glTexCoord2f(1.0f, 1.0f);
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
 		}break;
-	case 2:
+	case RIGHT:
 		{
 			//Правая грань
 			glTexCoord2f(1.0f, 0.0f);
@@ -651,7 +628,7 @@ void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 			glTexCoord2f(1.0f, 1.0f);
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
 		}break;
-	case 3:
+	case LEFT:
 		{
 			//Левая грань
 			glTexCoord2f(0.0f, 0.0f);
@@ -663,7 +640,7 @@ void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 			glTexCoord2f(0.0f, 1.0f);
 			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
 		}break;
-	case 4:
+	case BACK:
 		{
 			//Задняя грань
 			glTexCoord2f(0.0f, 0.0f);
@@ -675,7 +652,7 @@ void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 			glTexCoord2f(1.0f, 0.0f);
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
 		}break;
-	case 5:
+	case FRONT:
 		{
 			//Передняя грань
 			glTexCoord2f(1.0f, 0.0f);

@@ -1,8 +1,5 @@
 #pragma once
 
-#define MATERIAL_NO		0
-#define MATERIAL_YES	1
-
 class Tile
 {
 public:
@@ -15,11 +12,4 @@ public:
 	signed short z;
 
 	char mat;
-	/*
-	Tile *tUpTile;
-	Tile *tDownTile;
-	Tile *tLeftTile;
-	Tile *tRightTile;
-	Tile *tFrontTile;
-	Tile *tBottomTile;*/
 };

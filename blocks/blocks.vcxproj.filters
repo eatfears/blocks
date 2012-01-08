@@ -35,6 +35,9 @@
     <ClCompile Include="Character.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLWindow.h">
@@ -55,8 +58,31 @@
     <ClInclude Include="resource.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Blocks_Definitions.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="blocks.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="textures\stone.bmp">
+      <Filter>Textures</Filter>
+    </None>
+    <None Include="textures\dirt.bmp">
+      <Filter>Textures</Filter>
+    </None>
+    <None Include="textures\grass_side.bmp">
+      <Filter>Textures</Filter>
+    </None>
+    <None Include="textures\grass_top.bmp">
+      <Filter>Textures</Filter>
+    </None>
+    <None Include="textures\sand.bmp">
+      <Filter>Textures</Filter>
+    </None>
   </ItemGroup>
 </Project>
