@@ -197,6 +197,8 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 					{
 						glwWnd.DrawGLScene();
 						glwWnd.Control();
+						glwWnd.DrawInterface();
+
 						glwWnd.GetFrameTime();
 
 						SwapBuffers( glwWnd.hDC );		// Меняем буфер (двойная буферизация)

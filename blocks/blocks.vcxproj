@@ -102,11 +102,6 @@
   <ItemGroup>
     <ResourceCompile Include="blocks.rc" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="stone_down.bmp" />
-    <None Include="stone_side.bmp" />
-    <None Include="stone_top.bmp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

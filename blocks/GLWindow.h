@@ -21,6 +21,7 @@ public:
 	bool CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int bits);
 	int DrawGLScene();
 	void GlTile(signed short X, signed short Y, signed short Z, char N);
+	void DrawInterface();
 
 	GLsizei width, height;
 

@@ -59,15 +59,4 @@
   <ItemGroup>
     <ResourceCompile Include="blocks.rc" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="stone_side.bmp">
-      <Filter>Textures</Filter>
-    </None>
-    <None Include="stone_down.bmp">
-      <Filter>Textures</Filter>
-    </None>
-    <None Include="stone_top.bmp">
-      <Filter>Textures</Filter>
-    </None>
-  </ItemGroup>
 </Project>

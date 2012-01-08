@@ -17,7 +17,7 @@ LRESULT  CALLBACK WndProc( HWND, UINT, WPARAM, LPARAM );
 
 #define SPRINT_KOEF		2.0
 
-#define FOG_COLOR		0.5f,0.5f,0.5f,1.0f
+#define FOG_COLOR		0.5f,0.5f,0.8f,1.0f
 #define FOG_DENSITY		10.0
 #define FOG_START		TILE_SIZE*10
 #define MAX_VIEV_DIST	TILE_SIZE*80
@@ -64,11 +64,11 @@ GLWindow::GLWindow(void)
 	//100 500 500 1,5 GB
 	for (int j = 1; j <= 100; j++)
 	{
-		for (int i = 0; i < 400; i++)
+		for (int i = 0; i < 100; i++)
 		{
-			for (int k = 0; k < 400; k++)
+			for (int k = 0; k < 100; k++)
 			{
-				AddTile(i-200,-j,k-200,MATERIAL_YES);
+				AddTile(i-50,-j,k-50,MATERIAL_YES);
 			}
 		}
 	}
@@ -109,11 +109,7 @@ GLvoid LoadGLTextures()
 		if (hBMP)				// существует ли изображение?
 		{						// если да …
 
-			GetObject(hBMP,sizeof(BMP), &BMP);	
-			// получить объект
-			// hBMP: указатель на графический объект
-			// sizeof(BMP): размер буфера для информации по объекту
-			// BMP - Буфер информации по объекту
+			GetObject(hBMP,sizeof(BMP), &BMP);
 
 			// режим сохранения пикселей (равнение по двойному слову / 4 Bytes)
 			glPixelStorei(GL_UNPACK_ALIGNMENT,4);
@@ -123,48 +119,15 @@ GLvoid LoadGLTextures()
 			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 
 			// линейная фильтрация Mipmap GL_LINEAR_MIPMAP_LINEAR
-			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST_MIPMAP_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 			
 			// генерация Mipmapped текстуры (3 байта, ширина, высота и данные из BMP)
-			gluBuild2DMipmaps(GL_TEXTURE_2D, 3, BMP.bmWidth, BMP.bmHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, BMP.bmBits);
-			//glTexImage2D(GL_TEXTURE_2D, 0, 3, BMP.bmWidth, BMP.bmHeight, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, BMP.bmBits);
+			//gluBuild2DMipmaps(GL_TEXTURE_2D, 3, BMP.bmWidth, BMP.bmHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, BMP.bmBits);
+			glTexImage2D(GL_TEXTURE_2D, 0, 3, BMP.bmWidth, BMP.bmHeight, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, BMP.bmBits);
 			
 			DeleteObject(hBMP);              // удаление объекта изображения
 		}
 	}
-	/*
-	// Загрузка картинки
-	//AUX_RGBImageRec *texture1;
-	//glGenTextures(3, textures);
-
-	texture1 = auxDIBImageLoad("stone_side.bmp");
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-
-	//glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
-	
-	// Создание текстуры
-	texture1 = auxDIBImageLoad("stone_top.bmp");
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
-
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
-
-	// Создание текстуры
-	texture1 = auxDIBImageLoad("stone_down.bmp");
-	glBindTexture(GL_TEXTURE_2D, textures[2]);
-
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
-	*/
 }
 
 int GLWindow::AddTile(signed short x, signed short y, signed short z, char mat)
@@ -331,7 +294,7 @@ int GLWindow::InitGL(void)											// Все установки касаемо OpenGL происходят 
 	//glClearColor (10.3, 0.3, 0.3, 1.0);
 
 	// рассчет освещения 
-	glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHTING);
 
 	// рассчет текстур
 	glEnable(GL_TEXTURE_2D);
@@ -637,87 +600,77 @@ void GLWindow::Control()
 		}
 	}
 
+	//Выделение куба
+	GLdouble wx,wy,wz;			// возвращаемые мировые координаты.
+	GetCenterCoords(&wx, &wy, &wz);
+
+	GLdouble yerr, xerr, zerr;
+	GetPlane(wx, wy, wz, &xerr, &yerr, &zerr);
+
+	signed short xx, yy, zz;
+
+	if((zerr < xerr)&&(zerr < yerr))
+	{
+		xx = floor(wx/TILE_SIZE + 0.5);
+		yy = floor(wy/TILE_SIZE);
+
+		if(player.gfPosZ < wz) zz = round(wz/TILE_SIZE + 0.5);
+		if(player.gfPosZ > wz) zz = round(wz/TILE_SIZE - 0.5);
+	}
+	if((xerr < zerr)&&(xerr < yerr))
+	{
+		zz = floor(wz/TILE_SIZE + 0.5);
+		yy = floor(wy/TILE_SIZE);
+
+		if(player.gfPosX < wx) xx = round(wx/TILE_SIZE + 0.5);
+		if(player.gfPosX > wx) xx = round(wx/TILE_SIZE - 0.5);
+	}
+	if((yerr < xerr)&&(yerr < zerr))
+	{
+		xx = floor(wx/TILE_SIZE + 0.5);
+		zz = floor(wz/TILE_SIZE + 0.5);
+
+		if(player.gfPosY < wy) yy = round(wy/TILE_SIZE);
+		if(player.gfPosY > wy) yy = round(wy/TILE_SIZE - 1.0);
+	}
+
+	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glColor3d(0.1, 0.1, 0.1);
+	glLineWidth (2.0);
+	glBegin(GL_QUADS);
+	if (FindTile(xx,yy,zz))
+		for(int i = 0; i < 6; i++)
+			GlTile(xx,yy,zz,i);
+	glEnd();
+	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+	
+
 	if(keys['E']) 
 	{
-		GLdouble wx,wy,wz;			// возвращаемые мировые координаты.
-		GetCenterCoords(&wx, &wy, &wz);
-
-		GLdouble yerr, xerr, zerr;
-		GetPlane(wx, wy, wz, &xerr, &yerr, &zerr);
-
-		signed short xx, yy, zz;
-
-		if((zerr < xerr)&&(zerr < yerr))
-		{
-			xx = floor(wx/TILE_SIZE + 0.5);
-			yy = floor(wy/TILE_SIZE);
-
-			if(player.gfPosZ < wz) zz = round(wz/TILE_SIZE + 0.5);
-			if(player.gfPosZ > wz) zz = round(wz/TILE_SIZE - 0.5);
-		}
-
-		if((xerr < zerr)&&(xerr < yerr))
-		{
-			zz = floor(wz/TILE_SIZE + 0.5);
-			yy = floor(wy/TILE_SIZE);
-
-			if(player.gfPosX < wx) xx = round(wx/TILE_SIZE + 0.5);
-			if(player.gfPosX > wx) xx = round(wx/TILE_SIZE - 0.5);
-		}
-
-		if((yerr < xerr)&&(yerr < zerr))
-		{
-			xx = floor(wx/TILE_SIZE + 0.5);
-			zz = floor(wz/TILE_SIZE + 0.5);
-
-			if(player.gfPosY < wy) yy = round(wy/TILE_SIZE);
-			if(player.gfPosY > wy) yy = round(wy/TILE_SIZE - 1.0);
-		}
-
 		RmTile(xx,yy,zz);
 	}
 	
 	if(keys['Q']) 
 	{
-		GLdouble wx,wy,wz;			// возвращаемые мировые координаты.
-		GetCenterCoords(&wx, &wy, &wz);
-
-		GLdouble yerr, xerr, zerr;
-		GetPlane(wx, wy, wz, &xerr, &yerr, &zerr);
-		signed short xx, yy, zz;
-
 		if((zerr < xerr)&&(zerr < yerr))
 		{
-			xx = floor(wx/TILE_SIZE + 0.5);
-			yy = floor(wy/TILE_SIZE);
-
-			if(player.gfPosZ < wz) zz = round(wz/TILE_SIZE + 0.5) - 1;
-			if(player.gfPosZ > wz) zz = round(wz/TILE_SIZE - 0.5) + 1;
+			if(player.gfPosZ < wz) zz -= 1;
+			if(player.gfPosZ > wz) zz += 1;
 		}
-
 		if((xerr < zerr)&&(xerr < yerr))
 		{
-			zz = floor(wz/TILE_SIZE + 0.5);
-			yy = floor(wy/TILE_SIZE);
-
-			if(player.gfPosX < wx) xx = round(wx/TILE_SIZE + 0.5) - 1;
-			if(player.gfPosX > wx) xx = round(wx/TILE_SIZE - 0.5) + 1;
+			if(player.gfPosX < wx) xx -= 1;
+			if(player.gfPosX > wx) xx += 1;
 		}
-
 		if((yerr < xerr)&&(yerr < zerr))
 		{
-			xx = floor(wx/TILE_SIZE + 0.5);
-			zz = floor(wz/TILE_SIZE + 0.5);
-
-			if(player.gfPosY < wy) yy = round(wy/TILE_SIZE) - 1;
-			if(player.gfPosY > wy) yy = round(wy/TILE_SIZE - 1.0) + 1;
+			if(player.gfPosY < wy) yy -= 1;
+			if(player.gfPosY > wy) yy += 1;
 		}
 
 		AddTile(xx,yy,zz,MATERIAL_YES);
-		// 		FILE * file;
-		// 		file = fopen("out.txt", "w+");
-		// 		fprintf(file, "%f\t%f\t%f|\t%d\t%d\t%d", wx, wy, wz, xx, yy, zz);
-		// 		fclose(file);
 	}
 
 	{
@@ -797,12 +750,14 @@ int GLWindow::DrawGLScene()
 	glRotated( -player.gfSpinX, 1.0, 0.0, 0.0 );
 	glRotated( -player.gfSpinY, 0.0, 1.0, 0.0 );
 	glTranslated(-player.gfPosX, -player.gfPosY, -player.gfPosZ);
+	
 
+	/*
 	GLfloat material_diffuse[] = {1.0, 1.0, 1.0, 1.0};
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, material_diffuse);
-
+	
 	glTranslated(0, 30, 0);
-	GLfloat light2_diffuse[] = {0.2f, 0.2f, 0.2f};
+	GLfloat light2_diffuse[] = {0.9f, 0.9f, 0.9f};
 	GLfloat light2_position[] = {0.0f, 0.0f, 0.0f, 1.0f};
 	glEnable(GL_LIGHT2);
 	glLightfv(GL_LIGHT2, GL_DIFFUSE, light2_diffuse);
@@ -811,6 +766,8 @@ int GLWindow::DrawGLScene()
 	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.0);
 	glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0);
 	glTranslated(0, -30, 0);
+	*/
+
 
 	glEnable(GL_FOG);						// Включает туман (GL_FOG)
 	glFogi(GL_FOG_MODE,  GL_LINEAR);			// Выбираем тип тумана
@@ -820,12 +777,10 @@ int GLWindow::DrawGLScene()
 	glFogf(GL_FOG_START, FOG_START);		// Глубина, с которой начинается туман
 	glFogf(GL_FOG_END, MAX_VIEV_DIST);		// Глубина, где туман заканчивается.
 
-	GLdouble fXcoord = 0, fYcoord = 0, fZcoord = 0;
-	GLdouble dBrightness = 0.6;
-
-	glNormal3d(0.0, 1.0, 0.0);
+	GLdouble dBrightness = 1.0;
 	glColor3d(dBrightness, dBrightness, dBrightness);
 	
+	glNormal3d(0.0, 1.0, 0.0);
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
 	glBegin(GL_QUADS);
 		
@@ -855,16 +810,35 @@ int GLWindow::DrawGLScene()
 
 		while(it < visible[i].end())
 		{
-			GlTile(it[0]->x,it[0]->y,it[0]->z, i);
+			if((abs(it[0]->x*TILE_SIZE - player.gfPosX) < MAX_VIEV_DIST + 10*TILE_SIZE) && (abs(it[0]->y*TILE_SIZE - player.gfPosY) < MAX_VIEV_DIST + 10*TILE_SIZE) && (abs(it[0]->z*TILE_SIZE - player.gfPosZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
+				GlTile(it[0]->x,it[0]->y,it[0]->z, i);
 			it++;
 		}
 	}
 
-		glEnd();
+	glEnd();
 
 	glDisable(GL_LIGHT2);
 
 	return true;
+}
+
+void GLWindow::DrawInterface()
+{
+	glLoadIdentity();											// Сбросить текущую матрицу
+
+	glTranslated(0, 0, -0.1);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3d(1.0, 1.0, 1.0);
+	glLineWidth (2.0);
+	glBegin(GL_LINES);
+	glVertex2d(0.0,-0.001);
+	glVertex2d(0.0,0.001);
+
+	glVertex2d(-0.001,0.0);
+	glVertex2d(0.001,0.0);
+	glEnd();
+	glTranslated(0, 0, 0.1);
 }
 
 void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
