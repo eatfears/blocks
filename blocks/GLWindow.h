@@ -31,11 +31,12 @@ public:
 	HWND  hWnd;						// Здесь будет хранится дескриптор окна
 	HINSTANCE  hInstance;           // Здесь будет хранится дескриптор приложения
 
-	//bool  keys[256];				// Массив, используемый для операций с клавиатурой
 	bool  active;					// Флаг активности окна, установленный в true по умолчанию
+	bool	fullscreen;
 
 	Tile* FindTile(signed short x, signed short y, signed short z);
-	void FindTileN(signed short x, signed short y, signed short z, char N);
+	void HideTile(signed short x, signed short y, signed short z, char N);
+	void ShowTile(Tile *tTile, char N);
 	int AddTile(signed short x, signed short y, signed short z, char mat);
 	int RmTile(signed short x, signed short y, signed short z);
 	unsigned long Hash(signed short x, signed short y, signed short z);
@@ -43,6 +44,7 @@ public:
 	Material MaterialLib;
 	std::deque<Tile *> *visible;
 
+	bool Loop();
 	void GetCenterCoords(GLdouble *wx, GLdouble *wy, GLdouble *wz);
 	void Control();
 	void GetFrameTime();

@@ -1,9 +1,13 @@
 #pragma once
 
-#define TORAD(gfPosX) gfPosX*0.01745329251994329576923690768489
-#define TODEG(gfPosX) gfPosX*57.295779513082320876798154814105
+#define TORAD(ang)		ang*0.01745329251994329576923690768489
+#define TODEG(ang)		ang*57.295779513082320876798154814105
 
-#define TILE_SIZE 10.0
+#define RESX			640
+#define RESY			480
+#define BITS			32
+
+#define TILE_SIZE		10.0
 
 #define STEP_DOWNSTEP	0.6
 #define MAX_DOWNSTEP	7.0
@@ -19,9 +23,9 @@
 #define FOG_START		TILE_SIZE*10
 #define MAX_VIEV_DIST	TILE_SIZE*80
 
-#define TOP			0
-#define DOWN		1
-#define RIGHT		2
-#define LEFT		3
-#define BACK		4
-#define FRONT		5
+#define TOP				0
+#define DOWN			1
+#define RIGHT			2
+#define LEFT			3
+#define BACK			4
+#define FRONT			5

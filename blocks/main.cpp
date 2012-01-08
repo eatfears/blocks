@@ -148,67 +148,47 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 }
 
 
-int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
-	HINSTANCE  hPrevInstance,				// Дескриптор родительского приложения
+int WINAPI WinMain(  HINSTANCE  hInstance,
+	HINSTANCE  hPrevInstance,
 	LPSTR    lpCmdLine,						// Параметры командной строки
 	int    nCmdShow )						// Состояние отображения окна
+{
+	MSG  msg;
+	BOOL  done = false;
+	ShowCursor(FALSE);
+
+	// Создать наше OpenGL окно
+	if(!glwWnd.CreateGLWindow("Blocks", RESX, RESY, BITS))
 	{
-		MSG  msg;								// Структура для хранения сообщения Windows
-		BOOL  done = false;						// Логическая переменная для выхода из цикла
-		ShowCursor(FALSE);
+		return 0;
+	}
 
-		// Создать наше OpenGL окно
-		if( !glwWnd.CreateGLWindow("Blocks", 800, 600, 32) )
+	srand(time(NULL));
+	randNumGen = gsl_rng_alloc(gsl_rng_mt19937);
+
+	glwWnd.player.gfPosY = 20.0;
+
+	while( !done )							// Цикл продолжается, пока done не равно true
+	{
+		if( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )	// Есть ли в очереди какое-нибудь сообщение?
 		{
-			return 0;							// Выйти, если окно не может быть создано
-		}
-
-		srand(time(NULL));
-		randNumGen = gsl_rng_alloc(gsl_rng_mt19937);
-
-
-		glwWnd.player.gfPosY = 20.0;
-
-		while( !done )							// Цикл продолжается, пока done не равно true
-		{
-			
-			if( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )	// Есть ли в очереди какое-нибудь сообщение?
+			if( msg.message == WM_QUIT )    // Мы поучили сообщение о выходе?
 			{
-				if( msg.message == WM_QUIT )    // Мы поучили сообщение о выходе?
-				{
-					done = true;				// Если так, done=true
-				}
-				else							// Если нет, обрабатывает сообщения
-				{
-					TranslateMessage( &msg );   // Переводим сообщение
-					DispatchMessage( &msg );	// Отсылаем сообщение
-				}
+				done = true;				// Если так, done=true
 			}
-			else								// Если нет сообщений
+			else							// Если нет, обрабатывает сообщения
 			{
-				// Прорисовываем сцену
-				if( glwWnd.active )					// Активна ли программа?
-				{
-					if(glwWnd.player.keys[VK_ESCAPE])			// Было ли нажата клавиша ESC?
-					{
-						done = true;			// ESC говорит об останове выполнения программы
-					}
-					else						// Не время для выхода, обновим экран.
-					{
-						glwWnd.DrawGLScene();
-						glwWnd.GetCenterCoords(&glwWnd.player.wx, &glwWnd.player.wy, &glwWnd.player.wz);
-						glwWnd.player.Control(glwWnd.g_FrameInterval);
-						glwWnd.DrawInterface();
-
-						glwWnd.GetFrameTime();
-
-						SwapBuffers( glwWnd.hDC );		// Меняем буфер (двойная буферизация)
-					}
-				}
+				TranslateMessage( &msg );   // Переводим сообщение
+				DispatchMessage( &msg );	// Отсылаем сообщение
 			}
 		}
+		else								// Если нет сообщений
+		{
+			done = glwWnd.Loop();
+		}
+	}
 
-		glwWnd.KillGLWindow();						// Разрушаем окно
-		return ( msg.wParam );					// Выходим из программы
+	glwWnd.KillGLWindow();						// Разрушаем окно
+	return ( msg.wParam );					// Выходим из программы
 }
 

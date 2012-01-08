@@ -1,68 +1,68 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Файлы исходного кода">
+    <Filter Include="Textures">
+      <UniqueIdentifier>{a92437bb-0cb5-4b57-8688-448dc5c4db0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Заголовочные файлы">
+    <Filter Include="Source\Viewport">
+      <UniqueIdentifier>{ddac37aa-3001-410b-a71f-ad939de4c6e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Файлы исходного кода\Viewport">
-      <UniqueIdentifier>{ddac37aa-3001-410b-a71f-ad939de4c6e0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Заголовочные файлы\Viewport">
+    <Filter Include="Headers\Viewport">
       <UniqueIdentifier>{d640797f-2761-496a-b5b0-6749c1f0327f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Textures">
-      <UniqueIdentifier>{a92437bb-0cb5-4b57-8688-448dc5c4db0c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Файлы исходного кода</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="GLWindow.cpp">
-      <Filter>Файлы исходного кода\Viewport</Filter>
+      <Filter>Source\Viewport</Filter>
     </ClCompile>
     <ClCompile Include="Tiles.cpp">
-      <Filter>Файлы исходного кода</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Tile.cpp">
-      <Filter>Файлы исходного кода</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Character.cpp">
-      <Filter>Файлы исходного кода</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
-      <Filter>Файлы исходного кода</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLWindow.h">
-      <Filter>Заголовочные файлы\Viewport</Filter>
+      <Filter>Headers\Viewport</Filter>
     </ClInclude>
     <ClInclude Include="blocks.h">
-      <Filter>Заголовочные файлы</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Tile.h">
-      <Filter>Заголовочные файлы</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Tiles.h">
-      <Filter>Заголовочные файлы</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Character.h">
-      <Filter>Заголовочные файлы</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Заголовочные файлы</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
-      <Filter>Заголовочные файлы</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Blocks_Definitions.h">
-      <Filter>Заголовочные файлы</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

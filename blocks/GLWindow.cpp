@@ -5,12 +5,13 @@
 LRESULT  CALLBACK WndProc( HWND, UINT, WPARAM, LPARAM );
 
 GLuint textures[100];
-GLfloat fogColor[4]= {FOG_COLOR}; // Цвет тумана
+GLfloat fogColor[4]= {FOG_COLOR};
 
 GLWindow::GLWindow(void)
 {
 	active = true;
 	bMousing = false;
+	fullscreen = false;
 
 	tTiles = new Tiles[0x100000];
 	MaterialLib.InitMaterials();
@@ -54,7 +55,6 @@ GLWindow::GLWindow(void)
 		{
 			for (int k = 0; k < 40; k++)
 			{				
-				//AddTile(i-20,-j,k-20,rand()%4+1);
 				AddTile(i-20,-j,k-20,MAT_GRASS);
 			}
 		}
@@ -67,12 +67,12 @@ GLWindow::GLWindow(void)
 		
 		while(it != tTiles[i].end())
 		{
-			if(!FindTile(it->x, it->y + 1, it->z)) visible[0].push_back(&*it);
-			if(!FindTile(it->x, it->y - 1, it->z)) visible[1].push_back(&*it);
-			if(!FindTile(it->x + 1, it->y, it->z)) visible[2].push_back(&*it);
-			if(!FindTile(it->x - 1, it->y, it->z)) visible[3].push_back(&*it);
-			if(!FindTile(it->x, it->y, it->z + 1)) visible[4].push_back(&*it);
-			if(!FindTile(it->x, it->y, it->z - 1)) visible[5].push_back(&*it);
+			if(!FindTile(it->x, it->y + 1, it->z)) ShowTile(&*it,TOP);
+			if(!FindTile(it->x, it->y - 1, it->z)) ShowTile(&*it,DOWN);
+			if(!FindTile(it->x + 1, it->y, it->z)) ShowTile(&*it,RIGHT);
+			if(!FindTile(it->x - 1, it->y, it->z)) ShowTile(&*it,LEFT);
+			if(!FindTile(it->x, it->y, it->z + 1)) ShowTile(&*it,BACK);
+			if(!FindTile(it->x, it->y, it->z - 1)) ShowTile(&*it,FRONT);
 			it++;
 		}
 	}
@@ -134,24 +134,24 @@ int GLWindow::AddTile(signed short x, signed short y, signed short z, char mat)
 	
 	if (!building)
 	{
-		if(!FindTile(x, y + 1, z)) visible[0].push_back(&(*tTiles[bin].begin()));
-		else FindTileN(x, y + 1, z, 1);
-		if(!FindTile(x, y - 1, z)) visible[1].push_back(&(*tTiles[bin].begin()));
-		else FindTileN(x, y - 1, z, 0);
-		if(!FindTile(x + 1, y, z)) visible[2].push_back(&(*tTiles[bin].begin()));
-		else FindTileN(x + 1, y, z, 3);
-		if(!FindTile(x - 1, y, z)) visible[3].push_back(&(*tTiles[bin].begin()));
-		else FindTileN(x - 1, y, z, 2);
-		if(!FindTile(x, y, z + 1)) visible[4].push_back(&(*tTiles[bin].begin()));
-		else FindTileN(x, y, z + 1, 5);
-		if(!FindTile(x, y, z - 1)) visible[5].push_back(&(*tTiles[bin].begin()));
-		else FindTileN(x, y, z - 1, 4);
+		if(!FindTile(x, y + 1, z)) ShowTile(&(*tTiles[bin].begin()),TOP);
+		else HideTile(x, y + 1, z, DOWN);
+		if(!FindTile(x, y - 1, z)) ShowTile(&(*tTiles[bin].begin()),DOWN);
+		else HideTile(x, y - 1, z, TOP);
+		if(!FindTile(x + 1, y, z)) ShowTile(&(*tTiles[bin].begin()),RIGHT);
+		else HideTile(x + 1, y, z, LEFT);
+		if(!FindTile(x - 1, y, z)) ShowTile(&(*tTiles[bin].begin()),LEFT);
+		else HideTile(x - 1, y, z, RIGHT);
+		if(!FindTile(x, y, z + 1)) ShowTile(&(*tTiles[bin].begin()),BACK);
+		else HideTile(x, y, z + 1, FRONT);
+		if(!FindTile(x, y, z - 1)) ShowTile(&(*tTiles[bin].begin()),FRONT);
+		else HideTile(x, y, z - 1, BACK);
 	}
 
 	return 1;
 }
 
-void GLWindow::FindTileN(signed short x, signed short y, signed short z, char N)
+void GLWindow::HideTile(signed short x, signed short y, signed short z, char N)
 {
 	auto it = begin(visible[N]);
 	
@@ -164,6 +164,11 @@ void GLWindow::FindTileN(signed short x, signed short y, signed short z, char N)
 
 	visible[N].erase(it);
 	return;
+}
+
+void GLWindow::ShowTile(Tile *tTile, char N)
+{
+	visible[N].push_back(tTile);
 }
 
 Tile* GLWindow::FindTile(signed short x, signed short y, signed short z)
@@ -196,23 +201,23 @@ int GLWindow::RmTile(signed short x, signed short y, signed short z)
 	
 	Tile *temp;
 	temp = FindTile(x, y + 1, z); 
-	if(!temp) FindTileN(x, y, z, 0);
+	if(!temp) HideTile(x, y, z, 0);
 	else visible[1].push_back(temp);
 	
 	temp = FindTile(x, y - 1, z); 
-	if(!temp) FindTileN(x, y, z, 1);
+	if(!temp) HideTile(x, y, z, 1);
 	else visible[0].push_back(temp);
 	temp = FindTile(x + 1, y, z); 
-	if(!temp) FindTileN(x, y, z, 2);
+	if(!temp) HideTile(x, y, z, 2);
 	else visible[3].push_back(temp);
 	temp = FindTile(x - 1, y, z); 
-	if(!temp) FindTileN(x, y, z, 3);
+	if(!temp) HideTile(x, y, z, 3);
 	else visible[2].push_back(temp);
 	temp = FindTile(x, y, z + 1); 
-	if(!temp) FindTileN(x, y, z, 4);
+	if(!temp) HideTile(x, y, z, 4);
 	else visible[5].push_back(temp);
 	temp = FindTile(x, y, z - 1); 
-	if(!temp) FindTileN(x, y, z, 5);
+	if(!temp) HideTile(x, y, z, 5);
 	else visible[4].push_back(temp);
 	/**/
 
@@ -233,6 +238,12 @@ GLWindow::~GLWindow(void)			// Корректное разрушение окна
 
 void GLWindow::KillGLWindow(void)
 {
+	if (fullscreen)										// Are We In Fullscreen Mode?
+	{
+		ChangeDisplaySettings(NULL,0);					// If So Switch Back To The Desktop
+		ShowCursor(TRUE);								// Show Mouse Pointer
+	}
+
 	if( hRC )										// Существует ли Контекст Рендеринга?
 	{
 		if( !wglMakeCurrent( NULL, NULL ) )			// Возможно ли освободить RC и DC?
@@ -267,30 +278,28 @@ void GLWindow::KillGLWindow(void)
 	}
 }
 
-int GLWindow::InitGL(void)											// Все установки касаемо OpenGL происходят здесь
+int GLWindow::InitGL(void)										// Все установки касаемо OpenGL происходят здесь
 {
-	glShadeModel( GL_SMOOTH );									// Разрешить плавное цветовое сглаживание
-	glClearColor(FOG_COLOR);								// Очистка экрана в черный цвет
-	glClearDepth( 1.0f );										// Разрешить очистку буфера глубины
+	glShadeModel(GL_SMOOTH);									// Разрешить плавное цветовое сглаживание
+	glClearColor(FOG_COLOR);									// Очистка экрана в черный цвет
+	glClearDepth(1.0f);											// Разрешить очистку буфера глубины
 
-	glEnable( GL_DEPTH_TEST );									// Разрешить тест глубины
+	glEnable(GL_DEPTH_TEST);									// Разрешить тест глубины
 
-	glDepthFunc( GL_LEQUAL );									// Тип теста глубины
-	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );		// Улучшение в вычислении перспективы
+	glDepthFunc(GL_LEQUAL);										// Тип теста глубины
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);			// Улучшение в вычислении перспективы
 
-	//glClearColor (10.3, 0.3, 0.3, 1.0);
-
-	// рассчет освещения 
+	//рассчет освещения 
 	//glEnable(GL_LIGHTING);
 
-	// рассчет текстур
+	//рассчет текстур
 	glEnable(GL_TEXTURE_2D);
 	LoadGLTextures();
 	
-	// двухсторонний расчет освещения 
+	//двухсторонний расчет освещения 
 	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
-	// автоматическое приведение нормалей к единичной длине
+	//автоматическое приведение нормалей к единичной длине
 	glEnable(GL_NORMALIZE);
 
 	return true;												// Инициализация прошла успешно
@@ -307,7 +316,7 @@ void GLWindow::ReSizeGLScene( GLsizei width, GLsizei height )	// Изменить размер
 	glMatrixMode( GL_PROJECTION );								// Выбор матрицы проекций
 	glLoadIdentity();											// Сброс матрицы проекции
 
-	// Вычисление соотношения геометрических размеров для окна
+	//Вычисление соотношения геометрических размеров для окна
 	gluPerspective( 45.0f, (GLfloat)width/(GLfloat)height, 0.1f, TILE_SIZE + MAX_VIEV_DIST);
 	glMatrixMode( GL_MODELVIEW );								// Выбор матрицы вида модели
 	glLoadIdentity();											// Сброс матрицы вида модели
@@ -351,8 +360,44 @@ bool GLWindow::CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int 
 		return false;									// Выход и возвращение функцией значения false
 	}
 
-	dwExStyle  =   WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;		// Расширенный стиль окна
-	dwStyle    =   WS_OVERLAPPEDWINDOW;				// Обычный стиль окна
+	if (fullscreen)												// Attempt Fullscreen Mode?
+	{
+		DEVMODE dmScreenSettings;								// Device Mode
+		memset(&dmScreenSettings,0,sizeof(dmScreenSettings));	// Makes Sure Memory's Cleared
+		dmScreenSettings.dmSize=sizeof(dmScreenSettings);		// Size Of The Devmode Structure
+		dmScreenSettings.dmPelsWidth	= width;				// Selected Screen Width
+		dmScreenSettings.dmPelsHeight	= height;				// Selected Screen Height
+		dmScreenSettings.dmBitsPerPel	= bits;					// Selected Bits Per Pixel
+		dmScreenSettings.dmFields=DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT;
+
+		// Try To Set Selected Mode And Get Results.  NOTE: CDS_FULLSCREEN Gets Rid Of Start Bar.
+		if (ChangeDisplaySettings(&dmScreenSettings,CDS_FULLSCREEN)!=DISP_CHANGE_SUCCESSFUL)
+		{
+			// If The Mode Fails, Offer Two Options.  Quit Or Use Windowed Mode.
+			if (MessageBox(NULL,"The Requested Fullscreen Mode Is Not Supported By\nYour Video Card. Use Windowed Mode Instead?","NeHe GL",MB_YESNO|MB_ICONEXCLAMATION)==IDYES)
+			{
+				fullscreen=FALSE;		// Windowed Mode Selected.  Fullscreen = FALSE
+			}
+			else
+			{
+				// Pop Up A Message Box Letting User Know The Program Is Closing.
+				MessageBox(NULL,"Program Will Now Close.","ERROR",MB_OK|MB_ICONSTOP);
+				return FALSE;									// Return FALSE
+			}
+		}
+	}
+
+	if (fullscreen)												// Are We Still In Fullscreen Mode?
+	{
+		dwExStyle=WS_EX_APPWINDOW;								// Window Extended Style
+		dwStyle=WS_POPUP;										// Windows Style
+		ShowCursor(FALSE);										// Hide Mouse Pointer
+	}
+	else
+	{
+		dwExStyle  =   WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;		// Расширенный стиль окна
+		dwStyle    =   WS_OVERLAPPEDWINDOW;				// Обычный стиль окна
+	}
 	
 	AdjustWindowRectEx( &WindowRect, dwStyle, false, dwExStyle );   // Подбирает окну подходящие размеры
 
@@ -665,4 +710,41 @@ void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
 		}break;
 	}
+}
+
+bool GLWindow::Loop()
+{
+	// Прорисовываем сцену
+	if(active)					// Активна ли программа?
+	{
+		if(player.keys[VK_ESCAPE])			// Было ли нажата клавиша ESC?
+		{
+			return true;			// ESC говорит об останове выполнения программы
+		}
+		else						// Не время для выхода, обновим экран.
+		{
+			DrawGLScene();
+			GetCenterCoords(&player.wx, &player.wy, &player.wz);
+			player.Control(g_FrameInterval);
+			DrawInterface();
+
+			GetFrameTime();
+
+			if(player.keys[VK_F1])						// Is F1 Being Pressed?
+			{
+				player.keys[VK_F1] = false;					// If So Make Key FALSE
+				KillGLWindow();						// Kill Our Current Window
+				fullscreen = !fullscreen;				// Toggle Fullscreen / Windowed Mode
+				bMousing = false;
+				// Recreate Our OpenGL Window
+				if(!CreateGLWindow("Blocks", RESX, RESY, BITS))
+				{
+					return true;						// Quit If Window Was Not Created
+				}
+			}
+
+			SwapBuffers(hDC);		// Меняем буфер (двойная буферизация)
+		}
+	}
+	return false;
 }
