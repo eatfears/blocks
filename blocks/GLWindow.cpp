@@ -462,12 +462,6 @@ bool GLWindow::CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int 
 	return true;							// Всё в порядке!
 }
 
-double round(double x)
-{
-	if ( x - floor(x) >= 0.5) return ceil(x);
-	return floor(x);
-}
-
 void GLWindow::GetCenterCoords(GLdouble *wx, GLdouble *wy, GLdouble *wz)
 {
 	GLint    viewport[4];		// параметры viewport-a.
@@ -483,263 +477,19 @@ void GLWindow::GetCenterCoords(GLdouble *wx, GLdouble *wy, GLdouble *wz)
 	gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, wx, wy, wz);
 }
 
-void GetPlane(GLdouble wx,GLdouble wy,GLdouble wz,GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
-{
-	*xerr = wx + TILE_SIZE/2;
-	*yerr = wy;
-	*zerr = wz + TILE_SIZE/2;
-
-	while (*yerr < -1) *yerr += TILE_SIZE;
-	while (*yerr > TILE_SIZE + 1) *yerr -= TILE_SIZE;
-
-	*yerr = abs(*yerr);
-	if(*yerr > abs(*yerr - TILE_SIZE)) *yerr = abs(*yerr - TILE_SIZE); 
-
-	while (*xerr < - 1) *xerr += TILE_SIZE;
-	while (*xerr > TILE_SIZE + 1) *xerr -= TILE_SIZE;
-
-	*xerr = abs(*xerr);
-	if(*xerr > abs(*xerr - TILE_SIZE)) *xerr = abs(*xerr - TILE_SIZE); 
-
-	while (*zerr < - 1) *zerr += TILE_SIZE;
-	while (*zerr > TILE_SIZE + 1) *zerr -= TILE_SIZE;
-
-	*zerr = abs(*zerr);
-	if(*zerr > abs(*zerr - TILE_SIZE)) *zerr = abs(*zerr - TILE_SIZE); 
-}
-
-
 void GLWindow::GetFrameTime()
 {
 	double currentTime = (double)timeGetTime() * 0.025;
 
     static double frameTime = currentTime;  // Время последнего кадра
 
-    // Интервал времени, прошедшего с прошлого кадра
+    //Интервал времени, прошедшего с прошлого кадра
     g_FrameInterval = currentTime - frameTime;
 
     frameTime = currentTime;
 	//g_FrameInterval = 0.1;
-	//0.04;
 }
 
-void GLWindow::Control()
-{
-	GLdouble step = WALK_SPEED;
-	if(keys[VK_SHIFT]) step *= SPRINT_KOEF;
-
-
-	if(keys['W']) 
-	{
-		if(!player.falling)
-		{
-			player.gfVelX -= step*sin(TORAD(player.gfSpinY));
-			player.gfVelZ -= step*cos(TORAD(player.gfSpinY));
-		}
-		else
-		{
-			player.gfVelX -= g_FrameInterval*AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
-			player.gfVelZ -= g_FrameInterval*AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
-		}
-	}
-	if(keys['S']) 
-	{
-		if(!player.falling)
-		{
-			player.gfVelX += step*sin(TORAD(player.gfSpinY));
-			player.gfVelZ += step*cos(TORAD(player.gfSpinY));
-		}
-		else
-		{
-			player.gfVelX += g_FrameInterval*AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
-			player.gfVelZ += g_FrameInterval*AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
-		}
-	}
-	if(keys['D']) 
-	{
-		if(!player.falling)
-		{
-			player.gfVelX += step*cos(TORAD(player.gfSpinY));
-			player.gfVelZ -= step*sin(TORAD(player.gfSpinY));
-		}
-		else
-		{
-			player.gfVelX += g_FrameInterval*AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
-			player.gfVelZ -= g_FrameInterval*AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
-		}
-	}
-	if(keys['A']) 
-	{
-		if(!player.falling)
-		{
-			player.gfVelX -= step*cos(TORAD(player.gfSpinY));
-			player.gfVelZ += step*sin(TORAD(player.gfSpinY));
-		}
-		else
-		{
-			player.gfVelX -= g_FrameInterval*AIR_ACCEL*step*cos(TORAD(player.gfSpinY));
-			player.gfVelZ += g_FrameInterval*AIR_ACCEL*step*sin(TORAD(player.gfSpinY));
-		}
-	}
-	
-	GLdouble ko = player.gfVelX*player.gfVelX + player.gfVelZ*player.gfVelZ;
-	if(ko > step*step)
-	{
-		ko = pow(ko, 0.5);
-		player.gfVelX = player.gfVelX*step/ko;
-		player.gfVelZ = player.gfVelZ*step/ko;
-	}
-	
-	if(keys[VK_SPACE])
-	{
-		if(!player.falling)
-		{
-			player.gfVelY = -JUMP_STR;
-			player.falling = true;
-			player.gfPosY += g_FrameInterval;
-		}
-	}
-
-	//Выделение куба
-	GLdouble wx,wy,wz;			// возвращаемые мировые координаты.
-	GetCenterCoords(&wx, &wy, &wz);
-
-	GLdouble yerr, xerr, zerr;
-	GetPlane(wx, wy, wz, &xerr, &yerr, &zerr);
-
-	signed short xx, yy, zz;
-
-	if((zerr < xerr)&&(zerr < yerr))
-	{
-		xx = floor(wx/TILE_SIZE + 0.5);
-		yy = floor(wy/TILE_SIZE);
-
-		if(player.gfPosZ < wz) zz = round(wz/TILE_SIZE + 0.5);
-		if(player.gfPosZ > wz) zz = round(wz/TILE_SIZE - 0.5);
-	}
-	if((xerr < zerr)&&(xerr < yerr))
-	{
-		zz = floor(wz/TILE_SIZE + 0.5);
-		yy = floor(wy/TILE_SIZE);
-
-		if(player.gfPosX < wx) xx = round(wx/TILE_SIZE + 0.5);
-		if(player.gfPosX > wx) xx = round(wx/TILE_SIZE - 0.5);
-	}
-	if((yerr < xerr)&&(yerr < zerr))
-	{
-		xx = floor(wx/TILE_SIZE + 0.5);
-		zz = floor(wz/TILE_SIZE + 0.5);
-
-		if(player.gfPosY < wy) yy = round(wy/TILE_SIZE);
-		if(player.gfPosY > wy) yy = round(wy/TILE_SIZE - 1.0);
-	}
-
-	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glColor3d(0.1, 0.1, 0.1);
-	glLineWidth (2.0);
-	glBegin(GL_QUADS);
-	if (FindTile(xx,yy,zz))
-		for(int i = 0; i < 6; i++)
-			GlTile(xx,yy,zz,i);
-	glEnd();
-	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	
-
-	if(keys['E']) 
-	{
-		RmTile(xx,yy,zz);
-	}
-	
-	if(keys['Q']) 
-	{
-		if((zerr < xerr)&&(zerr < yerr))
-		{
-			if(player.gfPosZ < wz) zz -= 1;
-			if(player.gfPosZ > wz) zz += 1;
-		}
-		if((xerr < zerr)&&(xerr < yerr))
-		{
-			if(player.gfPosX < wx) xx -= 1;
-			if(player.gfPosX > wx) xx += 1;
-		}
-		if((yerr < xerr)&&(yerr < zerr))
-		{
-			if(player.gfPosY < wy) yy -= 1;
-			if(player.gfPosY > wy) yy += 1;
-		}
-
-		AddTile(xx,yy,zz,MATERIAL_YES);
-	}
-
-	{
-		signed short xx, yy, zz;
-		GLdouble wx = player.gfPosX + player.gfVelX;
-		GLdouble wy = player.gfPosY - PLAYER_HEIGHT + 0.1;
-		GLdouble wz = player.gfPosZ;
-
-		xx = floor(wx/TILE_SIZE + 0.5);
-		zz = floor(wz/TILE_SIZE + 0.5);
-		yy = floor(wy/TILE_SIZE);
-
-		if((FindTile(xx, yy, zz) == NULL)&&(FindTile(xx, yy + 1, zz) == NULL))
-			player.gfPosX += g_FrameInterval*player.gfVelX;
-		else player.gfVelX = 0;
-	}
-	{
-		signed short xx, yy, zz;
-		GLdouble wx = player.gfPosX;
-		GLdouble wy = player.gfPosY - PLAYER_HEIGHT + 0.1;
-		GLdouble wz = player.gfPosZ + player.gfVelZ;
-
-		xx = floor(wx/TILE_SIZE + 0.5);
-		zz = floor(wz/TILE_SIZE + 0.5);
-		yy = floor(wy/TILE_SIZE);
-
-		if((FindTile(xx, yy, zz) == NULL)&&(FindTile(xx, yy + 1, zz) == NULL))
-			player.gfPosZ += g_FrameInterval*player.gfVelZ;
-		else player.gfVelZ = 0;
-	}
-
-	if(player.falling)
-	{
-		player.gfPosY -= g_FrameInterval*player.gfVelY;
-		if(player.gfVelY < MAX_DOWNSTEP)
-			player.gfVelY += g_FrameInterval*STEP_DOWNSTEP;
-	}
-	
-	{
-		signed short xx, yy, zz;
-		GLdouble wx = player.gfPosX;
-		GLdouble wy = player.gfPosY - PLAYER_HEIGHT;
-		GLdouble wz = player.gfPosZ;
-
-		xx = floor(wx/TILE_SIZE + 0.5);
-		zz = floor(wz/TILE_SIZE + 0.5);
-		yy = floor(wy/TILE_SIZE);
-
-		if(FindTile(xx, yy, zz) == NULL) player.falling = true;
-		else
-		{
-			player.gfVelY = 0;
-			if(player.falling)
-			{	
-				player.falling = false;
-				player.gfPosY = (yy + 1)*TILE_SIZE + PLAYER_HEIGHT - 0.001;
-			}
-		}
-
-	}
-
-	if(!player.falling)
-	{
-		player.gfVelX = 0;
-		player.gfVelZ = 0;
-	}
-	//player.falling = 1;
-	
-}
 // Здесь будет происходить вся прорисовка
 int GLWindow::DrawGLScene()   
 {
@@ -769,13 +519,13 @@ int GLWindow::DrawGLScene()
 	*/
 
 
-	glEnable(GL_FOG);						// Включает туман (GL_FOG)
-	glFogi(GL_FOG_MODE,  GL_LINEAR);			// Выбираем тип тумана
-	glFogfv(GL_FOG_COLOR, fogColor);		// Устанавливаем цвет тумана
-	glFogf(GL_FOG_DENSITY, FOG_DENSITY);	// Насколько густым будет туман
-	glHint(GL_FOG_HINT, GL_DONT_CARE);		// Вспомогательная установка тумана
-	glFogf(GL_FOG_START, FOG_START);		// Глубина, с которой начинается туман
-	glFogf(GL_FOG_END, MAX_VIEV_DIST);		// Глубина, где туман заканчивается.
+	glEnable(GL_FOG);
+	glFogi(GL_FOG_MODE,  GL_LINEAR);		//Тип тумана
+	glFogfv(GL_FOG_COLOR, fogColor);
+	glFogf(GL_FOG_DENSITY, FOG_DENSITY);	//Насколько густым будет туман
+	glHint(GL_FOG_HINT, GL_DONT_CARE);		//Вспомогательная установка тумана
+	glFogf(GL_FOG_START, FOG_START);		//Глубина, с которой начинается туман
+	glFogf(GL_FOG_END, MAX_VIEV_DIST);		//Глубина, где туман заканчивается
 
 	GLdouble dBrightness = 1.0;
 	glColor3d(dBrightness, dBrightness, dBrightness);
@@ -825,8 +575,23 @@ int GLWindow::DrawGLScene()
 
 void GLWindow::DrawInterface()
 {
-	glLoadIdentity();											// Сбросить текущую матрицу
+	//Выделение куба
+	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
+	glColor3d(0.1, 0.1, 0.1);
+	glLineWidth (2.0);
+	glBegin(GL_QUADS);
+	if (FindTile(player.xx,player.yy,player.zz))
+		for(int i = 0; i < 6; i++)
+			GlTile(player.xx,player.yy,player.zz,i);
+	glEnd();
+	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+
+	//Сбросить текущую матрицу
+	glLoadIdentity();
+
+	//Рисование прицела
 	glTranslated(0, 0, -0.1);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glColor3d(1.0, 1.0, 1.0);
@@ -852,6 +617,7 @@ void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 	{
 	case 0:
 		{	
+			//Верхняя грань
 			glTexCoord2f(1.0f, 0.0f);
 			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
 			glTexCoord2f(0.0f, 0.0f);
@@ -863,6 +629,7 @@ void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 		}break;
 	case 1:
 		{
+			//Нижняя грань
 			glTexCoord2f(1.0f, 0.0f);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
 			glTexCoord2f(0.0f, 0.0f);
@@ -874,6 +641,7 @@ void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 		}break;
 	case 2:
 		{
+			//Правая грань
 			glTexCoord2f(1.0f, 0.0f);
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
 			glTexCoord2f(0.0f, 0.0f);
@@ -885,6 +653,7 @@ void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 		}break;
 	case 3:
 		{
+			//Левая грань
 			glTexCoord2f(0.0f, 0.0f);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
 			glTexCoord2f(1.0f, 0.0f);
@@ -896,6 +665,7 @@ void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 		}break;
 	case 4:
 		{
+			//Задняя грань
 			glTexCoord2f(0.0f, 0.0f);
 			glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
 			glTexCoord2f(0.0f, 1.0f);
@@ -907,6 +677,7 @@ void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
 		}break;
 	case 5:
 		{
+			//Передняя грань
 			glTexCoord2f(1.0f, 0.0f);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
 			glTexCoord2f(1.0f, 1.0f);

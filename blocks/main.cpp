@@ -196,7 +196,8 @@ int WINAPI WinMain(  HINSTANCE  hInstance,  // Дескриптор приложения
 					else						// Не время для выхода, обновим экран.
 					{
 						glwWnd.DrawGLScene();
-						glwWnd.Control();
+						glwWnd.GetCenterCoords(&glwWnd.player.wx, &glwWnd.player.wy, &glwWnd.player.wz);
+						glwWnd.player.Control(glwWnd.g_FrameInterval);
 						glwWnd.DrawInterface();
 
 						glwWnd.GetFrameTime();
