@@ -183,6 +183,17 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 		}
 	}
 
+	if(keys['4'])
+	{
+		sq = 42;
+		sqb2 = sq/2;
+		for (int k = -2; k <= 0; k++)
+		for (int i = -sqb2; i <= sqb2; i++)
+			for (int j = -sqb2; j <= sqb2; j++)
+				{
+					wWorld.RmTile(i, k, j);	
+				}
+	}
 
 	if(keys['E']) 
 	{

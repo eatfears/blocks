@@ -23,20 +23,21 @@ void World::Build()
 
 	StartBuilding();
 	/*
-	AddTile(0,-1,0,MATERIAL_YES);
-	AddTile(3,-1,0,MATERIAL_YES);
-	AddTile(2,-1,0,MATERIAL_YES);
-	AddTile(1,-1,0,MATERIAL_YES);
-	AddTile(0,-1,1,MATERIAL_YES);
-	AddTile(0,-1,2,MATERIAL_YES);
-	AddTile(0,-1,3,MATERIAL_YES);
+	AddTile(0,-1,0,MAT_STONE);
+	AddTile(3,-1,0,MAT_STONE);
+	AddTile(2,-1,0,MAT_STONE);
+	AddTile(1,-1,0,MAT_STONE);
+	AddTile(0,-1,1,MAT_STONE);
+	AddTile(0,-1,2,MAT_STONE);
+	AddTile(0,-1,3,MAT_STONE);
+	/**/
 
 	/*
-	AddTile(10,0,0,MATERIAL_YES);
-	AddTile(0,1,0,MATERIAL_YES);
-	AddTile(0,-3,0,MATERIAL_YES);
-	AddTile(1,0,0,MATERIAL_YES);
-	AddTile(-1,0,0,MATERIAL_YES);
+	AddTile(10,0,0,MAT_DIRT);
+	AddTile(0,1,0,MAT_DIRT);
+	AddTile(0,-3,0,MAT_STONE);
+	AddTile(1,0,0,MAT_STONE);
+	AddTile(-1,0,0,MAT_STONE);
 	/**/
 	
 	for (int i = 0 ; i< 40 ; i++)
@@ -50,10 +51,20 @@ void World::Build()
 			AddTile(rand()%100-50,k,rand()%100-50,MAT_NO);
 		}
 	}
+	/**/
+	//for (int i = 0; i < 10; i++) AddTile(i,-1,0,rand()%4+1);
+
+	/*
+	AddTile(1,-1,0,MAT_DIRT);
+	AddTile(2,-1,0,MAT_STONE);
+	AddTile(3,-1,0,MAT_STONE);
+	AddTile(4,-1,0,MAT_DIRT);
+	/**/
 
 
+	
 	//100 500 500 1,5 GB
-	for (int j = 1; j <= 5; j++)
+	for (int j = 1; j <= 4; j++)
 	{
 		for (int i = 0; i < 40; i++)
 		{
@@ -64,7 +75,7 @@ void World::Build()
 			}
 		}
 	}
-
+	/**/
 	StopBuilding();
 }
 
@@ -111,6 +122,7 @@ int World::AddTile(signed short x, signed short y, signed short z, char mat)
 
 	if (!building)
 	{
+	
 		if(!FindTile(x, y + 1, z)) ShowTile(&(*tTiles[bin].begin()),TOP);
 		else HideTile(x, y + 1, z, DOWN);
 		if(!FindTile(x, y - 1, z)) ShowTile(&(*tTiles[bin].begin()),DOWN);
@@ -123,6 +135,7 @@ int World::AddTile(signed short x, signed short y, signed short z, char mat)
 		else HideTile(x, y, z + 1, FRONT);
 		if(!FindTile(x, y, z - 1)) ShowTile(&(*tTiles[bin].begin()),FRONT);
 		else HideTile(x, y, z - 1, BACK);
+	/**/
 	}
 
 	return 1;
@@ -139,27 +152,26 @@ int World::RmTile(signed short x, signed short y, signed short z)
 		it++;
 	}
 	if (it == tTiles[bin].end()) return 0;
-
+	
 	Tile *temp;
 	temp = FindTile(x, y + 1, z); 
 	if(!temp) HideTile(x, y, z, 0);
-	else visible[1].push_back(temp);
-
+	else ShowTile(temp, 1);
 	temp = FindTile(x, y - 1, z); 
 	if(!temp) HideTile(x, y, z, 1);
-	else visible[0].push_back(temp);
+	else ShowTile(temp, 0);
 	temp = FindTile(x + 1, y, z); 
 	if(!temp) HideTile(x, y, z, 2);
-	else visible[3].push_back(temp);
+	else ShowTile(temp, 3);
 	temp = FindTile(x - 1, y, z); 
 	if(!temp) HideTile(x, y, z, 3);
-	else visible[2].push_back(temp);
+	else ShowTile(temp, 2);
 	temp = FindTile(x, y, z + 1); 
 	if(!temp) HideTile(x, y, z, 4);
-	else visible[5].push_back(temp);
+	else ShowTile(temp, 5);
 	temp = FindTile(x, y, z - 1); 
 	if(!temp) HideTile(x, y, z, 5);
-	else visible[4].push_back(temp);
+	else ShowTile(temp, 4);
 	/**/
 
 	tTiles[bin].erase(it);
@@ -170,14 +182,16 @@ int World::RmTile(signed short x, signed short y, signed short z)
 void World::ShowTile(Tile *tTile, char N)
 {
 	int iTex = MaterialLib.mMater[tTile->mat].iTex[N];
-
+	
 	auto it = MaterialLib.TexPtr[N][iTex];
-	if(it == visible[N].end())
-	{
+	//Tile *t1 = (*it), *t2 = (*visible[N].end());
+
+	//if(t1 == t2)
 		MaterialLib.TexPtr[N][iTex] = visible[N].insert(it, tTile);
-	}
-	else visible[N].insert(it, tTile);
-//	visible[N].push_back(tTile);
+	
+	//else visible[N].insert(it, tTile);
+
+	//else visible[N].push_back(tTile);
 }
 
 void World::HideTile(signed short x, signed short y, signed short z, char N)
@@ -190,6 +204,21 @@ void World::HideTile(signed short x, signed short y, signed short z, char N)
 		it++;
 	}
 	if (it == visible[N].end()) return;
+
+	int iTex = MaterialLib.mMater[(*it)->mat].iTex[N];
+
+	auto it2 = MaterialLib.TexPtr[N][iTex];
+	Tile *t1 = (*it), *t2 = (*it2);
+	
+	
+	if(t1 == t2)
+	{
+		++MaterialLib.TexPtr[N][iTex];// = ++it2;
+		
+		if(MaterialLib.TexPtr[N][iTex] != visible[N].end())
+		if((*MaterialLib.TexPtr[N][iTex])->mat != t1->mat)
+			MaterialLib.TexPtr[N][iTex] = visible[N].end();
+	}
 
 	visible[N].erase(it);
 	return;
