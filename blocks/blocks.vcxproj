@@ -90,7 +90,6 @@
     <ClInclude Include="GLWindow.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Tile.h" />
     <ClInclude Include="Tiles.h" />
     <ClInclude Include="blocks.h" />
   </ItemGroup>
@@ -99,7 +98,6 @@
     <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Tiles.cpp" />
   </ItemGroup>
   <ItemGroup>

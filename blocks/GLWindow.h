@@ -3,8 +3,7 @@
 #include <gl\gl.h>
 #include <gl\glu.h>
 #include <gl\glaux.h>
-#include <vector>
-#include <list>
+#include <deque>
 
 #include "Tiles.h"
 #include "Character.h"
@@ -21,7 +20,7 @@ public:
 	void ReSizeGLScene( GLsizei width, GLsizei height );
 	bool CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int bits);
 	int DrawGLScene();
-	void GlTile(signed short X, signed short Y, signed short Z, char N);
+	void GlTile(Tile *tTile, char N);
 	void DrawInterface();
 
 	GLsizei width, height;

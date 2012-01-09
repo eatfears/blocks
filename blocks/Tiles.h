@@ -1,9 +1,16 @@
 #pragma once
 
-#include <deque>
-#include <vector>
 #include <list>
-#include "Tile.h"
+
+typedef struct tTile
+{
+	signed short x;
+	signed short y;
+	signed short z;
+
+	char mat;
+
+} Tile;
 
 class Tiles : 
 	public std::list<Tile>

@@ -130,7 +130,8 @@ int GLWindow::AddTile(signed short x, signed short y, signed short z, char mat)
 	}
 	if (it != tTiles[bin].end()) return 0;
 	
-	tTiles[bin].push_front(Tile(x, y, z, mat));
+	Tile t = {x, y, z, mat};
+	tTiles[bin].push_front(t);
 	
 	if (!building)
 	{
@@ -582,7 +583,7 @@ int GLWindow::DrawGLScene()
 					glBindTexture(GL_TEXTURE_2D, textures[iCurrTex]);
 					glBegin(GL_QUADS);
 				}
-				GlTile(it[0]->x,it[0]->y,it[0]->z, i);
+				GlTile(it[0], i);
 			}
 			it++;
 		}
@@ -604,9 +605,9 @@ void GLWindow::DrawInterface()
 	glColor3d(0.1, 0.1, 0.1);
 	glLineWidth (2.0);
 	glBegin(GL_QUADS);
-	if (FindTile(player.xx,player.yy,player.zz))
+	if (Tile *temp = FindTile(player.xx,player.yy,player.zz))
 		for(int i = 0; i < 6; i++)
-			GlTile(player.xx,player.yy,player.zz,i);
+			GlTile(temp,i);
 	glEnd();
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 
@@ -628,9 +629,9 @@ void GLWindow::DrawInterface()
 	glTranslated(0, 0, 0.1);
 }
 
-void GLWindow::GlTile(signed short  X, signed short Y, signed short Z, char N)
+void GLWindow::GlTile(Tile *tTile, char N)
 {
-	GLdouble dXcoord = X*TILE_SIZE, dYcoord = Y*TILE_SIZE, dZcoord = Z*TILE_SIZE;
+	GLdouble dXcoord = tTile->x*TILE_SIZE, dYcoord = tTile->y*TILE_SIZE, dZcoord = tTile->z*TILE_SIZE;
 
 	dXcoord -= TILE_SIZE/2;
 	dZcoord -= TILE_SIZE/2;
@@ -725,6 +726,7 @@ bool GLWindow::Loop()
 		{
 			DrawGLScene();
 			GetCenterCoords(&player.wx, &player.wy, &player.wz);
+			
 			player.Control(g_FrameInterval);
 			DrawInterface();
 

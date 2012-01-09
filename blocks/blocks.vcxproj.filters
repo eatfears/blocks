@@ -29,9 +29,6 @@
     <ClCompile Include="Tiles.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Tile.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Character.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -44,9 +41,6 @@
       <Filter>Headers\Viewport</Filter>
     </ClInclude>
     <ClInclude Include="blocks.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Tile.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Tiles.h">
