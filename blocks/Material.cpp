@@ -1,4 +1,5 @@
 #include "Material.h"
+#include "resource.h"
 #include "Blocks_Definitions.h"
 
 
@@ -9,6 +10,9 @@ Material::Material(void)
 
 Material::~Material(void)
 {
+	glDeleteTextures(TexturesNum,textures);
+	free(textures);
+
 	delete[] mMater;
 }
 
@@ -64,5 +68,48 @@ void Material::InitMaterials()
 			}
 			break;
 		}
+	}
+}
+
+
+GLvoid Material::LoadGLTextures()
+{
+	HBITMAP hBMP;                   // Указатель на изображение
+	BITMAP  BMP;                    // структура изображения
+
+	// Три ID для изображений, которые мы хотим загрузить из файла ресурсов
+	byte  Texture[]={0, IDB_DIRT, IDB_GRASS_TOP, IDB_GRASS_SIDE, IDB_STONE, IDB_SAND};
+
+	TexturesNum = sizeof(Texture);
+	textures = (GLuint *)calloc(TexturesNum, sizeof(GLuint));
+
+	glGenTextures(TexturesNum, textures); // создаем 3 текстуры (sizeof(Texture)=3 ID's)
+	for (int i = 0; i < TexturesNum; i++)	// цикл по всем ID (изображений)
+	{
+		// Создание текстуры
+		hBMP=(HBITMAP)LoadImage(GetModuleHandle(NULL),MAKEINTRESOURCE(Texture[i]), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
+
+		if (hBMP)				// существует ли изображение?
+		{						// если да …
+
+			GetObject(hBMP,sizeof(BMP), &BMP);
+
+			// режим сохранения пикселей (равнение по двойному слову / 4 Bytes)
+			glPixelStorei(GL_UNPACK_ALIGNMENT,4);
+			glBindTexture(GL_TEXTURE_2D, textures[i]);  // связываемся с нашей текстурой
+
+			// линейная фильтрация
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+
+			// линейная фильтрация Mipmap GL_LINEAR_MIPMAP_LINEAR
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+			// генерация Mipmapped текстуры (3 байта, ширина, высота и данные из BMP)
+			//gluBuild2DMipmaps(GL_TEXTURE_2D, 3, BMP.bmWidth, BMP.bmHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, BMP.bmBits);
+			glTexImage2D(GL_TEXTURE_2D, 0, 3, BMP.bmWidth, BMP.bmHeight, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, BMP.bmBits);
+
+			DeleteObject(hBMP);              // удаление объекта изображения
+		}
+		else textures[i] = NULL;
 	}
 }

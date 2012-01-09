@@ -1,10 +1,8 @@
 #include "GLWindow.h"
-#include "resource.h"
 #include "Blocks_Definitions.h"
 
 LRESULT  CALLBACK WndProc( HWND, UINT, WPARAM, LPARAM );
 
-GLuint textures[100];
 GLfloat fogColor[4]= {FOG_COLOR};
 
 GLWindow::GLWindow(void)
@@ -15,45 +13,6 @@ GLWindow::GLWindow(void)
 
 	MaterialLib.InitMaterials();
 	wWorld.Build();
-}
-
-GLvoid LoadGLTextures()
-{
-	HBITMAP hBMP;                   // ”казатель на изображение
-	BITMAP  BMP;                    // структура изображени€
-
-	// “ри ID дл€ изображений, которые мы хотим загрузить из файла ресурсов
-	byte  Texture[]={0, IDB_DIRT, IDB_GRASS_TOP, IDB_GRASS_SIDE, IDB_STONE, IDB_SAND};
-
-	glGenTextures(sizeof(Texture), textures); // создаем 3 текстуры (sizeof(Texture)=3 ID's)
-	for (int i = 0; i < sizeof(Texture); i++)	// цикл по всем ID (изображений)
-	{
-		// —оздание текстуры
-		hBMP=(HBITMAP)LoadImage(GetModuleHandle(NULL),MAKEINTRESOURCE(Texture[i]), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
-	
-		if (hBMP)				// существует ли изображение?
-		{						// если да Е
-
-			GetObject(hBMP,sizeof(BMP), &BMP);
-
-			// режим сохранени€ пикселей (равнение по двойному слову / 4 Bytes)
-			glPixelStorei(GL_UNPACK_ALIGNMENT,4);
-			glBindTexture(GL_TEXTURE_2D, textures[i]);  // св€зываемс€ с нашей текстурой
-
-			// линейна€ фильтраци€
-			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-
-			// линейна€ фильтраци€ Mipmap GL_LINEAR_MIPMAP_LINEAR
-			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-			
-			// генераци€ Mipmapped текстуры (3 байта, ширина, высота и данные из BMP)
-			//gluBuild2DMipmaps(GL_TEXTURE_2D, 3, BMP.bmWidth, BMP.bmHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, BMP.bmBits);
-			glTexImage2D(GL_TEXTURE_2D, 0, 3, BMP.bmWidth, BMP.bmHeight, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, BMP.bmBits);
-			
-			DeleteObject(hBMP);              // удаление объекта изображени€
-		}
-		else textures[i] = NULL;
-	}
 }
 
 GLWindow::~GLWindow(void)			//  орректное разрушение окна
@@ -119,13 +78,14 @@ int GLWindow::InitGL(void)										// ¬се установки касаемо OpenGL происход€т з
 
 	//рассчет текстур
 	glEnable(GL_TEXTURE_2D);
-	LoadGLTextures();
 	
 	//двухсторонний расчет освещени€ 
 	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
 	//автоматическое приведение нормалей к единичной длине
 	glEnable(GL_NORMALIZE);
+
+	MaterialLib.LoadGLTextures();
 
 	return true;												// »нициализаци€ прошла успешно
 }
@@ -394,7 +354,8 @@ int GLWindow::DrawGLScene()
 	for( int i = 0; i < 6; i++)
 	{
 		auto it = begin(wWorld.visible[i]);
-		
+		GLuint *tex = MaterialLib.textures;
+
 		while(it < wWorld.visible[i].end())
 		{
 
@@ -404,7 +365,7 @@ int GLWindow::DrawGLScene()
 				{
 					iCurrTex = MaterialLib.mMater[it[0]->mat].iTex[i];
 					glEnd();
-					glBindTexture(GL_TEXTURE_2D, textures[iCurrTex]);
+					glBindTexture(GL_TEXTURE_2D, tex[iCurrTex]);
 					glBegin(GL_QUADS);
 				}
 				GlTile(it[0], i);

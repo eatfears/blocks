@@ -1,4 +1,10 @@
 #pragma once
+#include <windows.h>
+#include <gl\gl.h>
+#include <gl\glu.h>
+#include <gl\glaux.h>
+
+#include "Tiles.h"
 
 #define MAT_NUMBER			10
 
@@ -38,7 +44,11 @@ public:
 	~Material(void);
 
 	stMater *mMater;
+	GLuint *textures;
+	int TexturesNum;
+
 	void InitMaterials();
+	GLvoid LoadGLTextures();
 
 };
 
