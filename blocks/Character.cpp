@@ -44,7 +44,7 @@ void Character::GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
 	if(*zerr > abs(*zerr - TILE_SIZE)) *zerr = abs(*zerr - TILE_SIZE); 
 }
 
-void Character::Control(GLdouble g_FrameInterval)
+void Character::Control(GLdouble FrameInterval, World &wWorld)
 {
 	GLdouble step = WALK_SPEED;
 	if(keys[VK_SHIFT]) step *= SPRINT_KOEF;
@@ -59,8 +59,8 @@ void Character::Control(GLdouble g_FrameInterval)
 		}
 		else
 		{
-			gfVelX -= g_FrameInterval*AIR_ACCEL*step*sin(TORAD(gfSpinY));
-			gfVelZ -= g_FrameInterval*AIR_ACCEL*step*cos(TORAD(gfSpinY));
+			gfVelX -= FrameInterval*AIR_ACCEL*step*sin(TORAD(gfSpinY));
+			gfVelZ -= FrameInterval*AIR_ACCEL*step*cos(TORAD(gfSpinY));
 		}
 	}
 	if(keys['S']) 
@@ -72,8 +72,8 @@ void Character::Control(GLdouble g_FrameInterval)
 		}
 		else
 		{
-			gfVelX += g_FrameInterval*AIR_ACCEL*step*sin(TORAD(gfSpinY));
-			gfVelZ += g_FrameInterval*AIR_ACCEL*step*cos(TORAD(gfSpinY));
+			gfVelX += FrameInterval*AIR_ACCEL*step*sin(TORAD(gfSpinY));
+			gfVelZ += FrameInterval*AIR_ACCEL*step*cos(TORAD(gfSpinY));
 		}
 	}
 	if(keys['D']) 
@@ -85,8 +85,8 @@ void Character::Control(GLdouble g_FrameInterval)
 		}
 		else
 		{
-			gfVelX += g_FrameInterval*AIR_ACCEL*step*cos(TORAD(gfSpinY));
-			gfVelZ -= g_FrameInterval*AIR_ACCEL*step*sin(TORAD(gfSpinY));
+			gfVelX += FrameInterval*AIR_ACCEL*step*cos(TORAD(gfSpinY));
+			gfVelZ -= FrameInterval*AIR_ACCEL*step*sin(TORAD(gfSpinY));
 		}
 	}
 	if(keys['A']) 
@@ -98,13 +98,13 @@ void Character::Control(GLdouble g_FrameInterval)
 		}
 		else
 		{
-			gfVelX -= g_FrameInterval*AIR_ACCEL*step*cos(TORAD(gfSpinY));
-			gfVelZ += g_FrameInterval*AIR_ACCEL*step*sin(TORAD(gfSpinY));
+			gfVelX -= FrameInterval*AIR_ACCEL*step*cos(TORAD(gfSpinY));
+			gfVelZ += FrameInterval*AIR_ACCEL*step*sin(TORAD(gfSpinY));
 		}
 	}
 
 	GLdouble ko = gfVelX*gfVelX + gfVelZ*gfVelZ;
-	if(ko > step*step)
+	if(ko > WALK_SPEED*WALK_SPEED*SPRINT_KOEF*SPRINT_KOEF)
 	{
 		ko = pow(ko, 0.5);
 		gfVelX = gfVelX*step/ko;
@@ -117,7 +117,7 @@ void Character::Control(GLdouble g_FrameInterval)
 		{
 			gfVelY = -JUMP_STR;
 			falling = true;
-			gfPosY += g_FrameInterval;
+			gfPosY += FrameInterval;
 		}
 	}
 
@@ -149,14 +149,49 @@ void Character::Control(GLdouble g_FrameInterval)
 		if(gfPosY > wy) yy = round(wy/TILE_SIZE - 1.0);
 	}
 
+	int num = 100;
+	int sq = 100;
+	int sqb2 = sq/2;
+	if(keys['1'])
+	{
+		int i = 0;
+		
+		while(i < num)
+		{
+			if(wWorld.AddTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, rand()%4+1))
+				i++;
+		}
+	}
+	if(keys['2'])
+	{
+		int i = 0;
+
+		while(i < num)
+		{
+			if(wWorld.RmTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2))
+				i++;
+		}
+	}
+
+	if(keys['3'])
+	{
+		for (int i = -sqb2; i <= sqb2; i++)
+		for (int j = -sqb2; j <= sqb2; j++)
+		for (int k = -sqb2; k <= sqb2; k++)
+		{
+			wWorld.RmTile(i, j, k);	
+		}
+	}
+
+
 	if(keys['E']) 
 	{
-		//RmTile(xx,yy,zz);
+		wWorld.RmTile(xx,yy,zz);
 	}
 
 	if(keys['Q']) 
 	{
-		int ix, iy, iz;
+		signed short ix = xx, iy = yy, iz = zz;
 		if((zerr < xerr)&&(zerr < yerr))
 		{
 			if(gfPosZ < wz) iz = zz - 1;
@@ -173,11 +208,11 @@ void Character::Control(GLdouble g_FrameInterval)
 			if(gfPosY > wy) iy = yy + 1;
 		}
 
-		//AddTile(ix,iy,iz,1);
+		wWorld.AddTile(ix,iy,iz,MAT_DIRT);
 	}
 
-	gfPosX += g_FrameInterval*gfVelX;
-	gfPosZ += g_FrameInterval*gfVelZ;
+	gfPosX += FrameInterval*gfVelX;
+	gfPosZ += FrameInterval*gfVelZ;
 
 	/*{
 		signed short xx, yy, zz;

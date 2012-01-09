@@ -92,6 +92,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Tiles.h" />
     <ClInclude Include="blocks.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Character.cpp" />
@@ -99,6 +100,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Tiles.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="blocks.rc" />
