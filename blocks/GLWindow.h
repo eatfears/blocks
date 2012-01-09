@@ -33,7 +33,6 @@ public:
 	bool  active;					// Флаг активности окна, установленный в true по умолчанию
 	bool	fullscreen;
 
-	Material MaterialLib;
 	World wWorld;
 
 	bool Loop();

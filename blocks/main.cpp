@@ -168,6 +168,8 @@ int WINAPI WinMain(  HINSTANCE  hInstance,
 
 	glwWnd.player.gfPosY = 20.0;
 
+	glwWnd.wWorld.Build();
+
 	while( !done )							// Цикл продолжается, пока done не равно true
 	{
 		if( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )	// Есть ли в очереди какое-нибудь сообщение?

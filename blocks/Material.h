@@ -3,6 +3,7 @@
 #include <gl\gl.h>
 #include <gl\glu.h>
 #include <gl\glaux.h>
+#include <deque>
 
 #include "Tiles.h"
 
@@ -46,6 +47,8 @@ public:
 	stMater *mMater;
 	GLuint *textures;
 	int TexturesNum;
+
+	std::list<Tile*>::iterator **TexPtr;
 
 	void InitMaterials();
 	GLvoid LoadGLTextures();

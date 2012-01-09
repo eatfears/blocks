@@ -82,6 +82,12 @@ GLvoid Material::LoadGLTextures()
 
 	TexturesNum = sizeof(Texture);
 	textures = (GLuint *)calloc(TexturesNum, sizeof(GLuint));
+	
+	TexPtr = new std::list<Tile*>::iterator *[6];
+	for (int i = 0; i < 6; i++)
+	{
+		TexPtr[i] = new std::list<Tile*>::iterator [TexturesNum];
+	}
 
 	glGenTextures(TexturesNum, textures); // создаем 3 текстуры (sizeof(Texture)=3 ID's)
 	for (int i = 0; i < TexturesNum; i++)	// цикл по всем ID (изображений)

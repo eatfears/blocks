@@ -11,8 +11,6 @@ GLWindow::GLWindow(void)
 	bMousing = false;
 	fullscreen = false;
 
-	MaterialLib.InitMaterials();
-	wWorld.Build();
 }
 
 GLWindow::~GLWindow(void)			// Корректное разрушение окна
@@ -85,7 +83,7 @@ int GLWindow::InitGL(void)										// Все установки касаемо OpenGL происходят з
 	//автоматическое приведение нормалей к единичной длине
 	glEnable(GL_NORMALIZE);
 
-	MaterialLib.LoadGLTextures();
+	wWorld.MaterialLib.LoadGLTextures();
 
 	return true;												// Инициализация прошла успешно
 }
@@ -350,31 +348,38 @@ int GLWindow::DrawGLScene()
 
 	int iCurrTex = 0;
 	glBegin(GL_QUADS);
+	int debnum = 0;
 
 	for( int i = 0; i < 6; i++)
 	{
 		auto it = begin(wWorld.visible[i]);
-		GLuint *tex = MaterialLib.textures;
+		GLuint *tex = wWorld.MaterialLib.textures;
 
-		while(it < wWorld.visible[i].end())
+		while(it != wWorld.visible[i].end())
 		{
 
-			if((abs(it[0]->x*TILE_SIZE - player.gfPosX) < MAX_VIEV_DIST + 10*TILE_SIZE) && (abs(it[0]->y*TILE_SIZE - player.gfPosY) < MAX_VIEV_DIST + 10*TILE_SIZE) && (abs(it[0]->z*TILE_SIZE - player.gfPosZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
+			if((abs((*it)->x*TILE_SIZE - player.gfPosX) < MAX_VIEV_DIST + 10*TILE_SIZE) && (abs((*it)->y*TILE_SIZE - player.gfPosY) < MAX_VIEV_DIST + 10*TILE_SIZE) && (abs((*it)->z*TILE_SIZE - player.gfPosZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
 			{
-				if(iCurrTex != MaterialLib.mMater[it[0]->mat].iTex[i])
+				if(iCurrTex != wWorld.MaterialLib.mMater[(*it)->mat].iTex[i])
 				{
-					iCurrTex = MaterialLib.mMater[it[0]->mat].iTex[i];
+					debnum++;
+					iCurrTex = wWorld.MaterialLib.mMater[(*it)->mat].iTex[i];
 					glEnd();
 					glBindTexture(GL_TEXTURE_2D, tex[iCurrTex]);
 					glBegin(GL_QUADS);
 				}
-				GlTile(it[0], i);
+				GlTile((*it), i);
 			}
 			it++;
 		}
 	}
-
+	//-------------------------
+	FILE *out;
+	out = fopen("1.txt", "w");
+	fprintf(out,"changing tex num: %d", debnum);
+	fclose(out);
 	glEnd();
+	//-------------------------
 
 	glDisable(GL_LIGHT2);
 

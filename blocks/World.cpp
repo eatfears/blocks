@@ -4,7 +4,7 @@
 World::World()
 {
 	tTiles = new Tiles[0x100000];
-	visible = new std::deque<Tile *>[6];
+	visible = new std::list<Tile *>[6];
 }
 
 World::~World()
@@ -13,6 +13,14 @@ World::~World()
 
 void World::Build()
 {
+	MaterialLib.InitMaterials();
+
+	for (int i = 0; i < 6; i++)
+		for (int j = 0; j < MaterialLib.TexturesNum; j++)
+		{
+			MaterialLib.TexPtr[i][j] = visible[i].end();
+		}
+
 	StartBuilding();
 	/*
 	AddTile(0,-1,0,MATERIAL_YES);
@@ -51,6 +59,7 @@ void World::Build()
 		{
 			for (int k = 0; k < 40; k++)
 			{				
+				//AddTile(i-20,-j,k-20,rand()%4+1);
 				AddTile(i-20,-j,k-20,MAT_GRASS);
 			}
 		}
@@ -160,16 +169,24 @@ int World::RmTile(signed short x, signed short y, signed short z)
 
 void World::ShowTile(Tile *tTile, char N)
 {
-	visible[N].push_back(tTile);
+	int iTex = MaterialLib.mMater[tTile->mat].iTex[N];
+
+	auto it = MaterialLib.TexPtr[N][iTex];
+	if(it == visible[N].end())
+	{
+		MaterialLib.TexPtr[N][iTex] = visible[N].insert(it, tTile);
+	}
+	else visible[N].insert(it, tTile);
+//	visible[N].push_back(tTile);
 }
 
 void World::HideTile(signed short x, signed short y, signed short z, char N)
 {
 	auto it = begin(visible[N]);
 
-	while(it < visible[N].end())
+	while(it != visible[N].end())
 	{
-		if ((it[0]->z == z)&&(it[0]->x == x)&&(it[0]->y == y)) break;
+		if (((*it)->z == z)&&((*it)->x == x)&&((*it)->y == y)) break;
 		it++;
 	}
 	if (it == visible[N].end()) return;

@@ -1,5 +1,5 @@
 #pragma once
-#include <deque>
+#include <list>
 
 #include "Tiles.h"
 #include "Material.h"
@@ -10,8 +10,9 @@ public:
 	World();
 	~World();
 
+	Material MaterialLib;
 	Tiles *tTiles;
-	std::deque<Tile *> *visible;
+	std::list<Tile *> *visible;
 
 	void Build();
 	Tile* FindTile(signed short x, signed short y, signed short z);
