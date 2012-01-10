@@ -60,13 +60,13 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 
 	case WM_KEYDOWN:						// Была ли нажата кнопка?
 		{
-			glwWnd.player.keys[wParam] = true;			// Если так, мы присваиваем этой ячейке true
+			glwWnd.player.bKeyboard[wParam] = true;			// Если так, мы присваиваем этой ячейке true
 			return 0;						// Возвращаемся
 		}
 
 	case WM_KEYUP:							// Была ли отпущена клавиша?
 		{
-			glwWnd.player.keys[wParam] = false;			//  Если так, мы присваиваем этой ячейке false
+			glwWnd.player.bKeyboard[wParam] = false;			//  Если так, мы присваиваем этой ячейке false
 			return 0;						// Возвращаемся
 		}
 		
@@ -94,18 +94,18 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 				ptCurrentMousePosit.y = HIWORD (lParam);
 
 				{
-					glwWnd.player.gfSpinY -= (ptCurrentMousePosit.x - ptLastMousePosit.x)/MOUSE_SENSIVITY;
-					glwWnd.player.gfSpinX -= (ptCurrentMousePosit.y - ptLastMousePosit.y)/MOUSE_SENSIVITY;
+					glwWnd.player.dSpinY -= (ptCurrentMousePosit.x - ptLastMousePosit.x)/MOUSE_SENSIVITY;
+					glwWnd.player.dSpinX -= (ptCurrentMousePosit.y - ptLastMousePosit.y)/MOUSE_SENSIVITY;
 				}
 
-				while(glwWnd.player.gfSpinY >= 360.0)
-					glwWnd.player.gfSpinY -= 360.0;
+				while(glwWnd.player.dSpinY >= 360.0)
+					glwWnd.player.dSpinY -= 360.0;
 
-				while(glwWnd.player.gfSpinY < 0.0)
-					glwWnd.player.gfSpinY += 360.0;
+				while(glwWnd.player.dSpinY < 0.0)
+					glwWnd.player.dSpinY += 360.0;
 
-				if(glwWnd.player.gfSpinX < -90.0) glwWnd.player.gfSpinX = -90.0;
-				if(glwWnd.player.gfSpinX > 90.0) glwWnd.player.gfSpinX = 90.0;
+				if(glwWnd.player.dSpinX < -90.0) glwWnd.player.dSpinX = -90.0;
+				if(glwWnd.player.dSpinX > 90.0) glwWnd.player.dSpinX = 90.0;
 
 				ptLastMousePosit.x = ptCurrentMousePosit.x;
 				ptLastMousePosit.y = ptCurrentMousePosit.y;
@@ -164,9 +164,9 @@ int WINAPI WinMain(  HINSTANCE  hInstance,
 	srand(time(NULL));
 	randNumGen = gsl_rng_alloc(gsl_rng_mt19937);
 
-	glwWnd.player.gfPosY = 20.0;
+	glwWnd.player.dPositionY = 20.0;
 
-	glwWnd.wWorld.Build();
+	glwWnd.wWorld.BuildWorld();
 
 	while( !done )							// Цикл продолжается, пока done не равно true
 	{

@@ -34,20 +34,20 @@
 
 typedef struct  
 {
-	int iTex[6];
+	int iTexture[6];
 }stMater;
 
-class Material
+class MaterialLibrary
 {
 public:
-	Material(void);
-	~Material(void);
+	MaterialLibrary();
+	~MaterialLibrary();
 
-	stMater *mMater;
-	GLuint *textures;
-	int TexturesNum;
+	stMater *mMaterial;
+	GLuint *texture;
+	int iNumberOfTextures;
 
-	std::list<Tile*>::iterator **TexPtr;
+	std::list<Tile*>::iterator **TexurePointerInVisible;
 
 	void InitMaterials();
 	GLvoid LoadGLTextures();

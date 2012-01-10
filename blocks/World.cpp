@@ -4,21 +4,21 @@
 World::World()
 {
 	tTiles = new Tiles[0x100000];
-	visible = new std::list<Tile *>[6];
+	DisplayedTiles = new std::list<Tile *>[6];
 }
 
 World::~World()
 {
 }
 
-void World::Build()
+void World::BuildWorld()
 {
 	MaterialLib.InitMaterials();
 
 	for (int i = 0; i < 6; i++)
-		for (int j = 0; j < MaterialLib.TexturesNum; j++)
+		for (int j = 0; j < MaterialLib.iNumberOfTextures; j++)
 		{
-			MaterialLib.TexPtr[i][j] = visible[i].end();
+			MaterialLib.TexurePointerInVisible[i][j] = DisplayedTiles[i].end();
 		}
 
 	StartBuilding();
@@ -87,19 +87,22 @@ void World::StartBuilding()
 void World::StopBuilding()
 {
 	building = false;
-
+	signed short x, y, z;
 	for (int i = 0; i < 0x100000; i++)
 	{
 		Tiles::iterator it = tTiles[i].begin();
 
 		while(it != tTiles[i].end())
 		{
-			if(!FindTile(it->x, it->y + 1, it->z)) ShowTile(&*it,TOP);
-			if(!FindTile(it->x, it->y - 1, it->z)) ShowTile(&*it,DOWN);
-			if(!FindTile(it->x + 1, it->y, it->z)) ShowTile(&*it,RIGHT);
-			if(!FindTile(it->x - 1, it->y, it->z)) ShowTile(&*it,LEFT);
-			if(!FindTile(it->x, it->y, it->z + 1)) ShowTile(&*it,BACK);
-			if(!FindTile(it->x, it->y, it->z - 1)) ShowTile(&*it,FRONT);
+			x = it->sCoordX;
+			y = it->sCoordY;
+			z = it->sCoordZ;
+			if(!FindTile(x, y + 1, z)) ShowTile(&*it,TOP);
+			if(!FindTile(x, y - 1, z)) ShowTile(&*it,DOWN);
+			if(!FindTile(x + 1, y, z)) ShowTile(&*it,RIGHT);
+			if(!FindTile(x - 1, y, z)) ShowTile(&*it,LEFT);
+			if(!FindTile(x, y, z + 1)) ShowTile(&*it,BACK);
+			if(!FindTile(x, y, z - 1)) ShowTile(&*it,FRONT);
 			it++;
 		}
 	}
@@ -107,12 +110,12 @@ void World::StopBuilding()
 
 int World::AddTile(signed short x, signed short y, signed short z, char mat)
 {
-	unsigned long bin = Hash(x, y, z);
+	unsigned long bin = ComputeBin(x, y, z);
 	Tiles::iterator it = tTiles[bin].begin();
 
 	while(it != tTiles[bin].end())
 	{
-		if ((it->z == z)&&(it->x == x)&&(it->y == y)) break;
+		if ((it->sCoordZ == z)&&(it->sCoordX == x)&&(it->sCoordY == y)) break;
 		it++;
 	}
 	if (it != tTiles[bin].end()) return 0;
@@ -141,14 +144,14 @@ int World::AddTile(signed short x, signed short y, signed short z, char mat)
 	return 1;
 }
 
-int World::RmTile(signed short x, signed short y, signed short z)
+int World::RemoveTile(signed short x, signed short y, signed short z)
 {
-	unsigned long bin = Hash(x, y, z);
+	unsigned long bin = ComputeBin(x, y, z);
 	Tiles::iterator it = tTiles[bin].begin();
 
 	while(it != tTiles[bin].end())
 	{
-		if ((it->z == z)&&(it->x == x)&&(it->y == y)) break;
+		if ((it->sCoordZ == z)&&(it->sCoordX == x)&&(it->sCoordY == y)) break;
 		it++;
 	}
 	if (it == tTiles[bin].end()) return 0;
@@ -181,13 +184,13 @@ int World::RmTile(signed short x, signed short y, signed short z)
 
 void World::ShowTile(Tile *tTile, char N)
 {
-	int iTex = MaterialLib.mMater[tTile->mat].iTex[N];
+	int iTex = MaterialLib.mMaterial[tTile->cMaterial].iTexture[N];
 	
-	auto it = MaterialLib.TexPtr[N][iTex];
+	auto it = MaterialLib.TexurePointerInVisible[N][iTex];
 	//Tile *t1 = (*it), *t2 = (*visible[N].end());
 
 	//if(t1 == t2)
-		MaterialLib.TexPtr[N][iTex] = visible[N].insert(it, tTile);
+		MaterialLib.TexurePointerInVisible[N][iTex] = DisplayedTiles[N].insert(it, tTile);
 	
 	//else visible[N].insert(it, tTile);
 
@@ -196,42 +199,42 @@ void World::ShowTile(Tile *tTile, char N)
 
 void World::HideTile(signed short x, signed short y, signed short z, char N)
 {
-	auto it = begin(visible[N]);
+	auto it = begin(DisplayedTiles[N]);
 
-	while(it != visible[N].end())
+	while(it != DisplayedTiles[N].end())
 	{
-		if (((*it)->z == z)&&((*it)->x == x)&&((*it)->y == y)) break;
+		if (((*it)->sCoordZ == z)&&((*it)->sCoordX == x)&&((*it)->sCoordY == y)) break;
 		it++;
 	}
-	if (it == visible[N].end()) return;
+	if (it == DisplayedTiles[N].end()) return;
 
-	int iTex = MaterialLib.mMater[(*it)->mat].iTex[N];
+	int iTex = MaterialLib.mMaterial[(*it)->cMaterial].iTexture[N];
 
-	auto it2 = MaterialLib.TexPtr[N][iTex];
+	auto it2 = MaterialLib.TexurePointerInVisible[N][iTex];
 	Tile *t1 = (*it), *t2 = (*it2);
 	
 	
 	if(t1 == t2)
 	{
-		++MaterialLib.TexPtr[N][iTex];// = ++it2;
+		++MaterialLib.TexurePointerInVisible[N][iTex];// = ++it2;
 		
-		if(MaterialLib.TexPtr[N][iTex] != visible[N].end())
-		if((*MaterialLib.TexPtr[N][iTex])->mat != t1->mat)
-			MaterialLib.TexPtr[N][iTex] = visible[N].end();
+		if(MaterialLib.TexurePointerInVisible[N][iTex] != DisplayedTiles[N].end())
+		if((*MaterialLib.TexurePointerInVisible[N][iTex])->cMaterial != t1->cMaterial)
+			MaterialLib.TexurePointerInVisible[N][iTex] = DisplayedTiles[N].end();
 	}
 
-	visible[N].erase(it);
+	DisplayedTiles[N].erase(it);
 	return;
 }
 
 Tile* World::FindTile(signed short x, signed short y, signed short z)
 {
-	unsigned long bin = Hash(x, y, z);
+	unsigned long bin = ComputeBin(x, y, z);
 	Tiles::iterator it = tTiles[bin].begin();
 
 	while(it != tTiles[bin].end())
 	{
-		if ((it->z == z)&&(it->x == x)&&(it->y == y)) break;
+		if ((it->sCoordZ == z)&&(it->sCoordX == x)&&(it->sCoordY == y)) break;
 		it++;
 	}
 	if (it == tTiles[bin].end()) return NULL;
@@ -239,7 +242,7 @@ Tile* World::FindTile(signed short x, signed short y, signed short z)
 	return &(*it);
 }
 
-unsigned long World::Hash(signed short x, signed short y, signed short z)
+unsigned long World::ComputeBin(signed short x, signed short y, signed short z)
 {
 	return (x & 0xff) + ((z & 0xff)<<8) + ((y & 0x0f)<<16);
 }

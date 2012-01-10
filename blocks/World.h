@@ -10,21 +10,21 @@ public:
 	World();
 	~World();
 
-	Material MaterialLib;
+	MaterialLibrary MaterialLib;
 	Tiles *tTiles;
-	std::list<Tile *> *visible;
+	std::list<Tile *> *DisplayedTiles;
 
-	void Build();
+	void BuildWorld();
 	Tile* FindTile(signed short x, signed short y, signed short z);
 	int AddTile(signed short x, signed short y, signed short z, char mat);
-	int RmTile(signed short x, signed short y, signed short z);
+	int RemoveTile(signed short x, signed short y, signed short z);
 
 private:
 	void StartBuilding();
 	void StopBuilding();
 	void ShowTile(Tile *tTile, char N);
 	void HideTile(signed short x, signed short y, signed short z, char N);
-	unsigned long Hash(signed short x, signed short y, signed short z);
+	unsigned long ComputeBin(signed short x, signed short y, signed short z);
 
 	bool building;
 };

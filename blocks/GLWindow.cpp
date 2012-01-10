@@ -299,7 +299,7 @@ void GLWindow::GetFrameTime()
     static double frameTime = currentTime;  // Время последнего кадра
 
     //Интервал времени, прошедшего с прошлого кадра
-    g_FrameInterval = currentTime - frameTime;
+    FrameInterval = currentTime - frameTime;
 
     frameTime = currentTime;
 	//g_FrameInterval = 0.1;
@@ -312,9 +312,9 @@ int GLWindow::DrawGLScene()
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );		// Очистить экран и буфер глубины
 	glLoadIdentity();											// Сбросить текущую матрицу
 
-	glRotated( -player.gfSpinX, 1.0, 0.0, 0.0 );
-	glRotated( -player.gfSpinY, 0.0, 1.0, 0.0 );
-	glTranslated(-player.gfPosX, -player.gfPosY, -player.gfPosZ);
+	glRotated( -player.dSpinX, 1.0, 0.0, 0.0 );
+	glRotated( -player.dSpinY, 0.0, 1.0, 0.0 );
+	glTranslated(-player.dPositionX, -player.dPositionY, -player.dPositionZ);
 	
 
 	/*
@@ -346,29 +346,31 @@ int GLWindow::DrawGLScene()
 	glColor3d(dBrightness, dBrightness, dBrightness);
 
 
-	int iCurrTex = 0;
+	int iCurrentTexture = 0;
 	glBegin(GL_QUADS);
-	int debnum = 0;
+	int iTextureChangingNum = 0;
 
 	for( int i = 0; i < 6; i++)
 	{
-		auto it = begin(wWorld.visible[i]);
-		GLuint *tex = wWorld.MaterialLib.textures;
+		auto it = begin(wWorld.DisplayedTiles[i]);
+		GLuint *tex = wWorld.MaterialLib.texture;
 
-		while(it != wWorld.visible[i].end())
+		while(it != wWorld.DisplayedTiles[i].end())
 		{
 
-			if((abs((*it)->x*TILE_SIZE - player.gfPosX) < MAX_VIEV_DIST + 10*TILE_SIZE) && (abs((*it)->y*TILE_SIZE - player.gfPosY) < MAX_VIEV_DIST + 10*TILE_SIZE) && (abs((*it)->z*TILE_SIZE - player.gfPosZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
+			if(	(abs((*it)->sCoordX*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
+				(abs((*it)->sCoordY*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
+				(abs((*it)->sCoordZ*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
 			{
-				if(iCurrTex != wWorld.MaterialLib.mMater[(*it)->mat].iTex[i])
+				if(iCurrentTexture != wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i])
 				{
-					debnum++;
-					iCurrTex = wWorld.MaterialLib.mMater[(*it)->mat].iTex[i];
+					iTextureChangingNum++;
+					iCurrentTexture = wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i];
 					glEnd();
-					glBindTexture(GL_TEXTURE_2D, tex[iCurrTex]);
+					glBindTexture(GL_TEXTURE_2D, tex[iCurrentTexture]);
 					glBegin(GL_QUADS);
 				}
-				GlTile((*it), i);
+				DrawVisibleTileSide((*it), i);
 			}
 			it++;
 		}
@@ -376,7 +378,7 @@ int GLWindow::DrawGLScene()
 	//-------------------------
 	FILE *out;
 	out = fopen("1.txt", "w");
-	fprintf(out,"changing tex num: %d", debnum);
+	fprintf(out,"changing tex num: %d", iTextureChangingNum);
 	fclose(out);
 	glEnd();
 	//-------------------------
@@ -395,9 +397,9 @@ void GLWindow::DrawInterface()
 	glColor3d(0.1, 0.1, 0.1);
 	glLineWidth (2.0);
 	glBegin(GL_QUADS);
-	if (Tile *temp = wWorld.FindTile(player.xx,player.yy,player.zz))
+	if (Tile *temp = wWorld.FindTile(player.sCenterCubeCoordX,player.sCenterCubeCoordY,player.sCenterCubeCoordZ))
 		for(int i = 0; i < 6; i++)
-			GlTile(temp,i);
+			DrawVisibleTileSide(temp,i);
 	glEnd();
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 
@@ -419,9 +421,9 @@ void GLWindow::DrawInterface()
 	glTranslated(0, 0, 0.1);
 }
 
-void GLWindow::GlTile(Tile *tTile, char N)
+void GLWindow::DrawVisibleTileSide(Tile *tTile, char N)
 {
-	GLdouble dXcoord = tTile->x*TILE_SIZE, dYcoord = tTile->y*TILE_SIZE, dZcoord = tTile->z*TILE_SIZE;
+	GLdouble dXcoord = tTile->sCoordX*TILE_SIZE, dYcoord = tTile->sCoordY*TILE_SIZE, dZcoord = tTile->sCoordZ*TILE_SIZE;
 
 	dXcoord -= TILE_SIZE/2;
 	dZcoord -= TILE_SIZE/2;
@@ -508,23 +510,23 @@ bool GLWindow::Loop()
 	// Прорисовываем сцену
 	if(active)					// Активна ли программа?
 	{
-		if(player.keys[VK_ESCAPE])			// Было ли нажата клавиша ESC?
+		if(player.bKeyboard[VK_ESCAPE])			// Было ли нажата клавиша ESC?
 		{
 			return true;			// ESC говорит об останове выполнения программы
 		}
 		else						// Не время для выхода, обновим экран.
 		{
 			DrawGLScene();
-			GetCenterCoords(&player.wx, &player.wy, &player.wz);
+			GetCenterCoords(&player.dDispCenterCoordX, &player.dDispCenterCoordY, &player.dDispCenterCoordZ);
 			
-			player.Control(g_FrameInterval, wWorld);
+			player.Control(FrameInterval, wWorld);
 			DrawInterface();
 
 			GetFrameTime();
 
-			if(player.keys[VK_F1])						// Is F1 Being Pressed?
+			if(player.bKeyboard[VK_F1])						// Is F1 Being Pressed?
 			{
-				player.keys[VK_F1] = false;					// If So Make Key FALSE
+				player.bKeyboard[VK_F1] = false;					// If So Make Key FALSE
 				KillGLWindow();						// Kill Our Current Window
 				fullscreen = !fullscreen;				// Toggle Fullscreen / Windowed Mode
 				bMousing = false;

@@ -4,12 +4,10 @@
 
 typedef struct tTile
 {
-	signed short x;
-	signed short y;
-	signed short z;
-
-	char mat;
-
+	signed short sCoordX;
+	signed short sCoordY;
+	signed short sCoordZ;
+	char cMaterial;
 } Tile;
 
 class Tiles : 

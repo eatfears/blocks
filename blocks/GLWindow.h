@@ -16,11 +16,11 @@ public:
 	~GLWindow(void);
 
 	int InitGL(void);
+	bool CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int bits);
 	void KillGLWindow(void);
 	void ReSizeGLScene( GLsizei width, GLsizei height );
-	bool CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int bits);
 	int DrawGLScene();
-	void GlTile(Tile *tTile, char N);
+	void DrawVisibleTileSide(Tile *tTile, char N);
 	void DrawInterface();
 
 	GLsizei width, height;
@@ -30,7 +30,7 @@ public:
 	HWND  hWnd;						// Здесь будет хранится дескриптор окна
 	HINSTANCE  hInstance;           // Здесь будет хранится дескриптор приложения
 
-	bool  active;					// Флаг активности окна, установленный в true по умолчанию
+	bool	active;					// Флаг активности окна, установленный в true по умолчанию
 	bool	fullscreen;
 
 	World wWorld;
@@ -41,5 +41,5 @@ public:
 
 	Character player;
 	bool bMousing;
-	GLdouble g_FrameInterval;
+	GLdouble FrameInterval;
 };

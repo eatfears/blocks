@@ -8,19 +8,19 @@
 class Character
 {
 public:
-	Character(void);
-	~Character(void);
+	Character();
+	~Character();
 
-	GLdouble gfPosX, gfPosY, gfPosZ;
-	GLdouble gfSpinY, gfSpinX;
-	GLdouble gfVelX, gfVelY, gfVelZ;
+	GLdouble dPositionX, dPositionY, dPositionZ;
+	GLdouble dSpinY, dSpinX;
+	GLdouble dVelocityX, dVelocityY, dVelocityZ;
 
-	bool falling;
+	bool bFalling;
 	void Control(GLdouble FrameInterval, World &wWorld);
-	bool  keys[256];				// Массив, используемый для операций с клавиатурой
+	bool  bKeyboard[256];				// Массив, используемый для операций с клавиатурой
 
-	GLdouble wx,wy,wz;			// возвращаемые мировые координаты центра
-	signed short xx, yy, zz;	// возвращаемые координаты куба
+	GLdouble dDispCenterCoordX, dDispCenterCoordY, dDispCenterCoordZ;	// возвращаемые мировые координаты центра
+	signed short sCenterCubeCoordX, sCenterCubeCoordY, sCenterCubeCoordZ;	// возвращаемые координаты куба
 
 private:
 	void GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr);
