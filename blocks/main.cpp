@@ -15,6 +15,7 @@ gsl_rng *randNumGen;
 using namespace std;
 
 GLWindow glwWnd;
+Game gGame;
 
 LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 	UINT  uMsg,								// Сообщение для этого окна
@@ -60,13 +61,13 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 
 	case WM_KEYDOWN:						// Была ли нажата кнопка?
 		{
-			glwWnd.player.bKeyboard[wParam] = true;			// Если так, мы присваиваем этой ячейке true
+			gGame.player.bKeyboard[wParam] = true;			// Если так, мы присваиваем этой ячейке true
 			return 0;						// Возвращаемся
 		}
 
 	case WM_KEYUP:							// Была ли отпущена клавиша?
 		{
-			glwWnd.player.bKeyboard[wParam] = false;			//  Если так, мы присваиваем этой ячейке false
+			gGame.player.bKeyboard[wParam] = false;			//  Если так, мы присваиваем этой ячейке false
 			return 0;						// Возвращаемся
 		}
 		
@@ -94,18 +95,18 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 				ptCurrentMousePosit.y = HIWORD (lParam);
 
 				{
-					glwWnd.player.dSpinY -= (ptCurrentMousePosit.x - ptLastMousePosit.x)/MOUSE_SENSIVITY;
-					glwWnd.player.dSpinX -= (ptCurrentMousePosit.y - ptLastMousePosit.y)/MOUSE_SENSIVITY;
+					gGame.player.dSpinY -= (ptCurrentMousePosit.x - ptLastMousePosit.x)/MOUSE_SENSIVITY;
+					gGame.player.dSpinX -= (ptCurrentMousePosit.y - ptLastMousePosit.y)/MOUSE_SENSIVITY;
 				}
 
-				while(glwWnd.player.dSpinY >= 360.0)
-					glwWnd.player.dSpinY -= 360.0;
+				while(gGame.player.dSpinY >= 360.0)
+					gGame.player.dSpinY -= 360.0;
 
-				while(glwWnd.player.dSpinY < 0.0)
-					glwWnd.player.dSpinY += 360.0;
+				while(gGame.player.dSpinY < 0.0)
+					gGame.player.dSpinY += 360.0;
 
-				if(glwWnd.player.dSpinX < -90.0) glwWnd.player.dSpinX = -90.0;
-				if(glwWnd.player.dSpinX > 90.0) glwWnd.player.dSpinX = 90.0;
+				if(gGame.player.dSpinX < -90.0) gGame.player.dSpinX = -90.0;
+				if(gGame.player.dSpinX > 90.0) gGame.player.dSpinX = 90.0;
 
 				ptLastMousePosit.x = ptCurrentMousePosit.x;
 				ptLastMousePosit.y = ptCurrentMousePosit.y;
@@ -129,15 +130,6 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 			return 0;						// Возвращаемся
 		}
 
-	case WM_MOUSEHOVER:
-		{
-			ShowCursor(FALSE);
-		}
-
-	case WM_MOUSELEAVE:
-		{
-			ShowCursor(TRUE);
-		}
 		break;
 	}
 
@@ -164,9 +156,10 @@ int WINAPI WinMain(  HINSTANCE  hInstance,
 	srand(time(NULL));
 	randNumGen = gsl_rng_alloc(gsl_rng_mt19937);
 
-	glwWnd.player.dPositionY = 20.0;
 
-	glwWnd.wWorld.BuildWorld();
+
+	gGame.player.dPositionY = 20.0;
+	gGame.InitGame(&glwWnd);
 
 	while( !done )							// Цикл продолжается, пока done не равно true
 	{
@@ -184,7 +177,11 @@ int WINAPI WinMain(  HINSTANCE  hInstance,
 		}
 		else								// Если нет сообщений
 		{
-			done = glwWnd.Loop();
+			// Прорисовываем сцену
+			if(glwWnd.active)					// Активна ли программа?
+			{
+				done = gGame.Loop();
+			}
 		}
 	}
 

@@ -14,8 +14,8 @@ class Tiles :
 	public std::list<Tile>
 {
 public:
-	Tiles(void);
-	~Tiles(void);
+	Tiles();
+	~Tiles();
 	
 	//int Number;
 };

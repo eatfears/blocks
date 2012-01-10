@@ -3,19 +3,18 @@
 #include "Blocks_Definitions.h"
 
 
-MaterialLibrary::MaterialLibrary(void)
+MaterialLibrary::MaterialLibrary()
 {
 	mMaterial = new stMater[MAT_NUMBER];
 }
 
-MaterialLibrary::~MaterialLibrary(void)
+MaterialLibrary::~MaterialLibrary()
 {
 	glDeleteTextures(iNumberOfTextures,texture);
 	free(texture);
 
 	delete[] mMaterial;
 }
-
 
 void MaterialLibrary::InitMaterials()
 {
@@ -71,11 +70,8 @@ void MaterialLibrary::InitMaterials()
 	}
 }
 
-
-GLvoid MaterialLibrary::LoadGLTextures()
+void MaterialLibrary::AllocGLTextures()
 {
-	HBITMAP hBMP;                   // ”казатель на изображение
-	BITMAP  BMP;                    // структура изображени€
 
 	// “ри ID дл€ изображений, которые мы хотим загрузить из файла ресурсов
 	byte  Texture[]={0, IDB_DIRT, IDB_GRASS_TOP, IDB_GRASS_SIDE, IDB_STONE, IDB_SAND};
@@ -90,6 +86,15 @@ GLvoid MaterialLibrary::LoadGLTextures()
 	}
 
 	glGenTextures(iNumberOfTextures, texture); // создаем 3 текстуры (sizeof(Texture)=3 ID's)
+
+}
+
+void MaterialLibrary::LoadGLTextures()
+{
+	HBITMAP hBMP;                   // ”казатель на изображение
+	BITMAP  BMP;                    // структура изображени€
+	byte  Texture[]={0, IDB_DIRT, IDB_GRASS_TOP, IDB_GRASS_SIDE, IDB_STONE, IDB_SAND};
+
 	for (int i = 0; i < iNumberOfTextures; i++)	// цикл по всем ID (изображений)
 	{
 		// —оздание текстуры

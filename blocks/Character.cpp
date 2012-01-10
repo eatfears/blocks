@@ -3,13 +3,13 @@
 #include "Character.h"
 #include "Blocks_Definitions.h"
 
-Character::Character(void)
+Character::Character()
 {
 	bFalling = true;
 }
 
 
-Character::~Character(void)
+Character::~Character()
 {
 }
 
@@ -120,6 +120,14 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 			dPositionY += FrameInterval;
 		}
 	}
+
+	if(bKeyboard['X'])
+	{
+		dVelocityX = 0;
+		dVelocityY = 0;
+		dVelocityZ = 0;
+	}
+
 
 	GLdouble yerr, xerr, zerr;
 	GetPlane(&xerr, &yerr, &zerr);
@@ -291,4 +299,19 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 	}*/
 	//falling = 1;
 
+}
+
+void Character::GetCenterCoords(GLsizei width, GLsizei height)
+{
+	GLint    viewport[4];		// параметры viewport-a.
+	GLdouble projection[16];	// матрица проекции.
+	GLdouble modelview[16];		// видовая матрица.
+	GLfloat vz;					// координаты курсора мыши в системе координат viewport-a.
+
+	glGetIntegerv(GL_VIEWPORT,viewport);           // узнаём параметры viewport-a.
+	glGetDoublev(GL_PROJECTION_MATRIX,projection); // узнаём матрицу проекции.
+	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);   // узнаём видовую матрицу.
+
+	glReadPixels(width/2, height/2, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &vz);
+	gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, &dDispCenterCoordX, &dDispCenterCoordY, &dDispCenterCoordZ);
 }

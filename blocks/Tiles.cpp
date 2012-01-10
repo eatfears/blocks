@@ -1,13 +1,9 @@
 #include "Tiles.h"
 
-
-Tiles::Tiles(void)
+Tiles::Tiles()
 {
-
 }
 
-
-Tiles::~Tiles(void)
+Tiles::~Tiles()
 {
-
 }

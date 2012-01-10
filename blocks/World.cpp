@@ -61,17 +61,16 @@ void World::BuildWorld()
 	AddTile(4,-1,0,MAT_DIRT);
 	/**/
 
-
 	
 	//100 500 500 1,5 GB
-	for (int j = 1; j <= 4; j++)
+	for (int j = 1; j <= 20; j++)
 	{
-		for (int i = 0; i < 40; i++)
+		for (int i = 0; i < 400; i++)
 		{
-			for (int k = 0; k < 40; k++)
+			for (int k = 0; k < 400; k++)
 			{				
 				//AddTile(i-20,-j,k-20,rand()%4+1);
-				AddTile(i-20,-j,k-20,MAT_GRASS);
+				AddTile(i-200,-j,k-200,MAT_GRASS);
 			}
 		}
 	}
@@ -125,7 +124,6 @@ int World::AddTile(signed short x, signed short y, signed short z, char mat)
 
 	if (!building)
 	{
-	
 		if(!FindTile(x, y + 1, z)) ShowTile(&(*tTiles[bin].begin()),TOP);
 		else HideTile(x, y + 1, z, DOWN);
 		if(!FindTile(x, y - 1, z)) ShowTile(&(*tTiles[bin].begin()),DOWN);
@@ -138,7 +136,6 @@ int World::AddTile(signed short x, signed short y, signed short z, char mat)
 		else HideTile(x, y, z + 1, FRONT);
 		if(!FindTile(x, y, z - 1)) ShowTile(&(*tTiles[bin].begin()),FRONT);
 		else HideTile(x, y, z - 1, BACK);
-	/**/
 	}
 
 	return 1;
@@ -175,7 +172,6 @@ int World::RemoveTile(signed short x, signed short y, signed short z)
 	temp = FindTile(x, y, z - 1); 
 	if(!temp) HideTile(x, y, z, 5);
 	else ShowTile(temp, 4);
-	/**/
 
 	tTiles[bin].erase(it);
 
@@ -187,14 +183,8 @@ void World::ShowTile(Tile *tTile, char N)
 	int iTex = MaterialLib.mMaterial[tTile->cMaterial].iTexture[N];
 	
 	auto it = MaterialLib.TexurePointerInVisible[N][iTex];
-	//Tile *t1 = (*it), *t2 = (*visible[N].end());
 
-	//if(t1 == t2)
-		MaterialLib.TexurePointerInVisible[N][iTex] = DisplayedTiles[N].insert(it, tTile);
-	
-	//else visible[N].insert(it, tTile);
-
-	//else visible[N].push_back(tTile);
+	MaterialLib.TexurePointerInVisible[N][iTex] = DisplayedTiles[N].insert(it, tTile);
 }
 
 void World::HideTile(signed short x, signed short y, signed short z, char N)
@@ -213,10 +203,9 @@ void World::HideTile(signed short x, signed short y, signed short z, char N)
 	auto it2 = MaterialLib.TexurePointerInVisible[N][iTex];
 	Tile *t1 = (*it), *t2 = (*it2);
 	
-	
 	if(t1 == t2)
 	{
-		++MaterialLib.TexurePointerInVisible[N][iTex];// = ++it2;
+		++MaterialLib.TexurePointerInVisible[N][iTex];
 		
 		if(MaterialLib.TexurePointerInVisible[N][iTex] != DisplayedTiles[N].end())
 		if((*MaterialLib.TexurePointerInVisible[N][iTex])->cMaterial != t1->cMaterial)

@@ -87,6 +87,7 @@
   <ItemGroup>
     <ClInclude Include="Blocks_Definitions.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="GLWindow.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="resource.h" />
@@ -96,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />

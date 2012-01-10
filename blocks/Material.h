@@ -50,7 +50,8 @@ public:
 	std::list<Tile*>::iterator **TexurePointerInVisible;
 
 	void InitMaterials();
-	GLvoid LoadGLTextures();
+	void AllocGLTextures();
+	void LoadGLTextures();
 
 };
 

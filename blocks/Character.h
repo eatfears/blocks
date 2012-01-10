@@ -17,6 +17,7 @@ public:
 
 	bool bFalling;
 	void Control(GLdouble FrameInterval, World &wWorld);
+	void GetCenterCoords(GLsizei width, GLsizei height);
 	bool  bKeyboard[256];				// Массив, используемый для операций с клавиатурой
 
 	GLdouble dDispCenterCoordX, dDispCenterCoordY, dDispCenterCoordZ;	// возвращаемые мировые координаты центра
@@ -24,5 +25,6 @@ public:
 
 private:
 	void GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr);
+	
 };
 
