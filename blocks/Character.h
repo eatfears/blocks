@@ -19,6 +19,7 @@ public:
 	void Control(GLdouble FrameInterval, World &wWorld);
 	void GetCenterCoords(GLsizei width, GLsizei height);
 	bool  bKeyboard[256];				// Массив, используемый для операций с клавиатурой
+	bool  bKeyboardDown[256];				// Массив, используемый для операций с клавиатурой
 
 	GLdouble dDispCenterCoordX, dDispCenterCoordY, dDispCenterCoordZ;	// возвращаемые мировые координаты центра
 	signed short sCenterCubeCoordX, sCenterCubeCoordY, sCenterCubeCoordZ;	// возвращаемые координаты куба

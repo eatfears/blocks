@@ -1,6 +1,5 @@
 #include <math.h>
 #include <process.h>
-#include <iostream>
 
 #include "Character.h"
 #include "Blocks_Definitions.h"
@@ -11,8 +10,6 @@
 void Thread( void* pParams )
 {
 	World *wWorld = (World *)pParams;
-
-	//wWorld->StartBuilding();
 
 	for (int j = 1; j <= 40; j++)
 	{
@@ -26,25 +23,14 @@ void Thread( void* pParams )
 	}
 
 	wWorld->StopBuilding();
-	/*
-	int i, num = 0;
-
-	while ( 1 )
-	{ 
-		for ( i = 0; i < 5; i++ ) a[ i ] = num;
-		num++;
-	}
-	*/
-
-	//wWorld
 }
 
 Character::Character()
 {
 	bFalling = true;
 	start_tr = true;
+	for(int i = 0; i < 256; i++) bKeyboardDown[i] = true;
 }
-
 
 Character::~Character()
 {
@@ -230,11 +216,11 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 
 	if(bKeyboard['4'])
 	{
-		//wWorld.
-		if(start_tr)
+		if(bKeyboardDown['4'])
 		{
 			_beginthread( Thread, 0, &wWorld );
-			start_tr = false;
+
+			bKeyboardDown['4'] = false;
 		}
 	}
 

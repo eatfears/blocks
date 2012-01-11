@@ -68,6 +68,7 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 	case WM_KEYUP:							// Была ли отпущена клавиша?
 		{
 			gGame.player.bKeyboard[wParam] = false;			//  Если так, мы присваиваем этой ячейке false
+			gGame.player.bKeyboardDown[wParam] = true;			//  Если так, мы присваиваем этой ячейке false
 			return 0;						// Возвращаемся
 		}
 		

@@ -97,11 +97,17 @@ void World::StopBuilding()
 			y = it->sCoordY;
 			z = it->sCoordZ;
 			if(!FindTile(x, y + 1, z)) ShowTile(&*it,TOP);
+			else HideTile(x, y + 1, z, DOWN);
 			if(!FindTile(x, y - 1, z)) ShowTile(&*it,DOWN);
+			else HideTile(x, y - 1, z, TOP);
 			if(!FindTile(x + 1, y, z)) ShowTile(&*it,RIGHT);
+			else HideTile(x + 1, y, z, LEFT);
 			if(!FindTile(x - 1, y, z)) ShowTile(&*it,LEFT);
+			else HideTile(x - 1, y, z, RIGHT);
 			if(!FindTile(x, y, z + 1)) ShowTile(&*it,BACK);
+			else HideTile(x, y, z + 1, FRONT);
 			if(!FindTile(x, y, z - 1)) ShowTile(&*it,FRONT);
+			else HideTile(x, y, z - 1, BACK);
 			it++;
 		}
 	}
@@ -193,7 +199,7 @@ void World::ShowTile(Tile *tTile, char N)
 		MaterialLib.TexurePointerInVisible[N][iTex] = DisplayedTiles[N].insert(it, tTile);
 		tTile->bVisible[N] = true;
 	}
-	else for(;;);
+	//else for(;;);
 }
 
 void World::HideTile(signed short x, signed short y, signed short z, char N)
