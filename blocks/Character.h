@@ -4,7 +4,6 @@
 #include <gl\glu.h>
 
 #include "World.h"
-#include "Mutex.h"
 
 class Character
 {

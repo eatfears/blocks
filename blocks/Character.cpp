@@ -6,33 +6,39 @@
 
 
 #include "World.h"
-
-Mutex m1;
+#include "Mutex.h"
+Mutex m1, m2;
 
 typedef struct s1
 {
-	int sm;
+	signed short x;
+	signed short z;
 	World *wWorld;
 } Param;
 
-Param par;
-int t = 0;
+Param par = {0, 0, 0};
+
 void Thread( void* pParams )
 {
-	Param * par2 = (Param*)pParams;
-	World &wWorld = *par2->wWorld;
-	
+	m2.Acquire();
+	Param par2 = *(Param*)pParams;
+	signed short x = par2.x;
+	signed short z = par2.z;
+	m2.Release();
+	World &wWorld = *par2.wWorld;
 
-	for (int j = 1; j <= 40; j++)
+	for (int j = 1; j <= 70; j++)
 	{
 		for (int i = 0; i < 16; i++)
 		{
 			for (int k = 0; k < 16; k++)
-			{				
-				wWorld.AddTile(i-8, -j, k-8 + 16*par2->sm, MAT_GRASS, false);
+			{
+				//wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
+				wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, rand()%5, false);
 			}
 		}
 	}
+
 	m1.Acquire();
 	wWorld.StopBuilding();
 	m1.Release();
@@ -138,6 +144,14 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 			dVelocityZ += FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
 		}
 	}
+	if(bKeyboard['R']) 
+	{
+		dVelocityY += FrameInterval*AIR_ACCEL*step;
+	}
+	if(bKeyboard['F']) 
+	{
+		dVelocityY -= FrameInterval*AIR_ACCEL*step;
+	}
 
 	GLdouble ko = dVelocityX*dVelocityX + dVelocityZ*dVelocityZ;
 	if(ko > WALK_SPEED*WALK_SPEED*SPRINT_KOEF*SPRINT_KOEF)
@@ -232,13 +246,21 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 		if(bKeyboardDown['4'])
 		{
 			par.wWorld = &wWorld;
-			par.sm = t;
+
 			HANDLE hThread;
 			hThread = (HANDLE) _beginthread( Thread, 0, &par );
-			t++;
-			WaitForMultipleObjects(1, &hThread, TRUE, 10);
 			
-			bKeyboardDown['4'] = false;
+			WaitForMultipleObjects(1, &hThread, TRUE, 30);
+			
+			m2.Acquire();
+			par.x++;
+			if (par.x == 10)
+			{
+				par.x = 0;
+				par.z++;
+			}
+			m2.Release();
+			//bKeyboardDown['4'] = false;
 		}
 	}
 
@@ -271,6 +293,7 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 
 	dPositionX += FrameInterval*dVelocityX;
 	dPositionZ += FrameInterval*dVelocityZ;
+	dPositionY += FrameInterval*dVelocityY;
 
 	/*{
 		signed short xx, yy, zz;

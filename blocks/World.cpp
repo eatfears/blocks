@@ -1,5 +1,8 @@
 #include "World.h"
 #include "Blocks_Definitions.h"
+#include "Mutex.h"
+
+extern Mutex m1;
 
 World::World()
 {
@@ -78,14 +81,8 @@ void World::BuildWorld()
 	//StopBuilding();
 }
 
-void World::StartBuilding()
-{
-	building = true;
-}
-
 void World::StopBuilding()
 {
-	building = false;
 	signed short x, y, z;
 	for (int i = 0; i < 0x100000; i++)
 	{
@@ -130,10 +127,12 @@ int World::AddTile(signed short x, signed short y, signed short z, char mat, boo
 	for (int i = 0; i < 6; i++)
 		t.bVisible[i] = false;
 
-	tTiles[bin].push_front(t);
 
 	if (show)
 	{
+		m1.Acquire();
+		tTiles[bin].push_front(t);
+
 		if(!FindTile(x, y + 1, z)) ShowTile(&(*tTiles[bin].begin()),TOP);
 		else HideTile(x, y + 1, z, DOWN);
 		if(!FindTile(x, y - 1, z)) ShowTile(&(*tTiles[bin].begin()),DOWN);
@@ -146,7 +145,9 @@ int World::AddTile(signed short x, signed short y, signed short z, char mat, boo
 		else HideTile(x, y, z + 1, FRONT);
 		if(!FindTile(x, y, z - 1)) ShowTile(&(*tTiles[bin].begin()),FRONT);
 		else HideTile(x, y, z - 1, BACK);
+		m1.Release();
 	}
+	else tTiles[bin].push_front(t);
 
 	return 1;
 }
@@ -164,6 +165,7 @@ int World::RemoveTile(signed short x, signed short y, signed short z)
 	if (it == tTiles[bin].end()) return 0;
 	
 	Tile *temp;
+	m1.Acquire();
 	temp = FindTile(x, y + 1, z); 
 	if(!temp) HideTile(x, y, z, 0);
 	else ShowTile(temp, 1);
@@ -184,6 +186,7 @@ int World::RemoveTile(signed short x, signed short y, signed short z)
 	else ShowTile(temp, 4);
 
 	tTiles[bin].erase(it);
+	m1.Release();
 
 	return 1;
 }

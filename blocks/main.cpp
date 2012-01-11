@@ -159,7 +159,7 @@ int WINAPI WinMain(  HINSTANCE  hInstance,
 
 
 
-	gGame.player.dPositionY = 20.0;
+	gGame.player.dPositionY = 200.0;
 	gGame.InitGame(&glwWnd);
 
 	while( !done )							// Цикл продолжается, пока done не равно true
