@@ -16,10 +16,10 @@ public:
 
 	void BuildWorld();
 	Tile* FindTile(signed short x, signed short y, signed short z);
-	int AddTile(signed short x, signed short y, signed short z, char mat);
+	int AddTile(signed short x, signed short y, signed short z, char mat, bool show);
 	int RemoveTile(signed short x, signed short y, signed short z);
 
-private:
+//private:
 	void StartBuilding();
 	void StopBuilding();
 	void ShowTile(Tile *tTile, char N);

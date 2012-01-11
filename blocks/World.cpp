@@ -21,7 +21,7 @@ void World::BuildWorld()
 			MaterialLib.TexurePointerInVisible[i][j] = DisplayedTiles[i].end();
 		}
 
-	StartBuilding();
+	//StartBuilding();
 	/*
 	AddTile(0,-1,0,MAT_STONE);
 	AddTile(3,-1,0,MAT_STONE);
@@ -39,7 +39,7 @@ void World::BuildWorld()
 	AddTile(1,0,0,MAT_STONE);
 	AddTile(-1,0,0,MAT_STONE);
 	/**/
-	
+	/*
 	for (int i = 0 ; i< 40 ; i++)
 	{
 		for (int k = 0 ; k < 1 ; k++)
@@ -61,21 +61,21 @@ void World::BuildWorld()
 	AddTile(4,-1,0,MAT_DIRT);
 	/**/
 
-	
+	/*
 	//100 500 500 1,5 GB
 	for (int j = 1; j <= 20; j++)
 	{
-		for (int i = 0; i < 400; i++)
+		for (int i = 0; i < 160; i++)
 		{
-			for (int k = 0; k < 400; k++)
+			for (int k = 0; k < 160; k++)
 			{				
 				//AddTile(i-20,-j,k-20,rand()%4+1);
-				AddTile(i-200,-j,k-200,MAT_GRASS);
+				AddTile(i-80,-j,k-80,MAT_GRASS);
 			}
 		}
 	}
 	/**/
-	StopBuilding();
+	//StopBuilding();
 }
 
 void World::StartBuilding()
@@ -107,7 +107,7 @@ void World::StopBuilding()
 	}
 }
 
-int World::AddTile(signed short x, signed short y, signed short z, char mat)
+int World::AddTile(signed short x, signed short y, signed short z, char mat, bool show)
 {
 	unsigned long bin = ComputeBin(x, y, z);
 	Tiles::iterator it = tTiles[bin].begin();
@@ -120,9 +120,13 @@ int World::AddTile(signed short x, signed short y, signed short z, char mat)
 	if (it != tTiles[bin].end()) return 0;
 
 	Tile t = {x, y, z, mat};
+
+	for (int i = 0; i < 6; i++)
+		t.bVisible[i] = false;
+
 	tTiles[bin].push_front(t);
 
-	if (!building)
+	if (show)
 	{
 		if(!FindTile(x, y + 1, z)) ShowTile(&(*tTiles[bin].begin()),TOP);
 		else HideTile(x, y + 1, z, DOWN);
@@ -180,11 +184,16 @@ int World::RemoveTile(signed short x, signed short y, signed short z)
 
 void World::ShowTile(Tile *tTile, char N)
 {
-	int iTex = MaterialLib.mMaterial[tTile->cMaterial].iTexture[N];
-	
-	auto it = MaterialLib.TexurePointerInVisible[N][iTex];
+	if(!tTile->bVisible[N])
+	{
 
-	MaterialLib.TexurePointerInVisible[N][iTex] = DisplayedTiles[N].insert(it, tTile);
+		int iTex = MaterialLib.mMaterial[tTile->cMaterial].iTexture[N];
+		auto it = MaterialLib.TexurePointerInVisible[N][iTex];
+
+		MaterialLib.TexurePointerInVisible[N][iTex] = DisplayedTiles[N].insert(it, tTile);
+		tTile->bVisible[N] = true;
+	}
+	else for(;;);
 }
 
 void World::HideTile(signed short x, signed short y, signed short z, char N)
@@ -197,6 +206,8 @@ void World::HideTile(signed short x, signed short y, signed short z, char N)
 		it++;
 	}
 	if (it == DisplayedTiles[N].end()) return;
+
+	(*it)->bVisible[N] = false;
 
 	int iTex = MaterialLib.mMaterial[(*it)->cMaterial].iTexture[N];
 

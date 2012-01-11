@@ -1,11 +1,48 @@
 #include <math.h>
+#include <process.h>
+#include <iostream>
 
 #include "Character.h"
 #include "Blocks_Definitions.h"
 
+
+#include "World.h"
+
+void Thread( void* pParams )
+{
+	World *wWorld = (World *)pParams;
+
+	//wWorld->StartBuilding();
+
+	for (int j = 1; j <= 40; j++)
+	{
+		for (int i = 0; i < 16; i++)
+		{
+			for (int k = 0; k < 16; k++)
+			{				
+				wWorld->AddTile(i-8, -j, k-8, MAT_GRASS, false);
+			}
+		}
+	}
+
+	wWorld->StopBuilding();
+	/*
+	int i, num = 0;
+
+	while ( 1 )
+	{ 
+		for ( i = 0; i < 5; i++ ) a[ i ] = num;
+		num++;
+	}
+	*/
+
+	//wWorld
+}
+
 Character::Character()
 {
 	bFalling = true;
+	start_tr = true;
 }
 
 
@@ -166,7 +203,7 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 		
 		while(i < num)
 		{
-			if(wWorld.AddTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, rand()%4+1))
+			if(wWorld.AddTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, rand()%4+1, true))
 				i++;
 		}
 	}
@@ -193,14 +230,12 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 
 	if(bKeyboard['4'])
 	{
-		sq = 42;
-		sqb2 = sq/2;
-		for (int k = -2; k <= 0; k++)
-		for (int i = -sqb2; i <= sqb2; i++)
-			for (int j = -sqb2; j <= sqb2; j++)
-				{
-					wWorld.RemoveTile(i, k, j);	
-				}
+		//wWorld.
+		if(start_tr)
+		{
+			_beginthread( Thread, 0, &wWorld );
+			start_tr = false;
+		}
 	}
 
 	if(bKeyboard['E']) 
@@ -227,7 +262,7 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 			if(dPositionY > dDispCenterCoordY) iy = sCenterCubeCoordY + 1;
 		}
 
-		wWorld.AddTile(ix,iy,iz,MAT_DIRT);
+		wWorld.AddTile(ix,iy,iz,MAT_DIRT, true);
 	}
 
 	dPositionX += FrameInterval*dVelocityX;

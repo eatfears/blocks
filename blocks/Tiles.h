@@ -8,6 +8,7 @@ typedef struct tTile
 	signed short sCoordY;
 	signed short sCoordZ;
 	char cMaterial;
+	bool bVisible[6];
 } Tile;
 
 class Tiles : 
@@ -19,4 +20,3 @@ public:
 	
 	//int Number;
 };
-
