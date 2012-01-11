@@ -90,6 +90,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GLWindow.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="Mutex.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Tiles.h" />
     <ClInclude Include="blocks.h" />

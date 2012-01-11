@@ -4,6 +4,7 @@
 #include <gl\glu.h>
 
 #include "World.h"
+#include "Mutex.h"
 
 class Character
 {
@@ -23,6 +24,8 @@ public:
 
 	GLdouble dDispCenterCoordX, dDispCenterCoordY, dDispCenterCoordZ;	// возвращаемые мировые координаты центра
 	signed short sCenterCubeCoordX, sCenterCubeCoordY, sCenterCubeCoordZ;	// возвращаемые координаты куба
+
+	World *wWorld;
 
 private:
 	void GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr);

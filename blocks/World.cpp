@@ -206,6 +206,10 @@ void World::HideTile(signed short x, signed short y, signed short z, char N)
 {
 	auto it = begin(DisplayedTiles[N]);
 
+	Tile *tTile = FindTile(x, y, z);
+	if (!tTile) return;
+	if (tTile->bVisible[N] == false) return;
+
 	while(it != DisplayedTiles[N].end())
 	{
 		if (((*it)->sCoordZ == z)&&((*it)->sCoordX == x)&&((*it)->sCoordY == y)) break;

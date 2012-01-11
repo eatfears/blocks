@@ -7,9 +7,21 @@
 
 #include "World.h"
 
+Mutex m1;
+
+typedef struct s1
+{
+	int sm;
+	World *wWorld;
+} Param;
+
+Param par;
+int t = 0;
 void Thread( void* pParams )
 {
-	World *wWorld = (World *)pParams;
+	Param * par2 = (Param*)pParams;
+	World &wWorld = *par2->wWorld;
+	
 
 	for (int j = 1; j <= 40; j++)
 	{
@@ -17,12 +29,13 @@ void Thread( void* pParams )
 		{
 			for (int k = 0; k < 16; k++)
 			{				
-				wWorld->AddTile(i-8, -j, k-8, MAT_GRASS, false);
+				wWorld.AddTile(i-8, -j, k-8 + 16*par2->sm, MAT_GRASS, false);
 			}
 		}
 	}
-
-	wWorld->StopBuilding();
+	m1.Acquire();
+	wWorld.StopBuilding();
+	m1.Release();
 }
 
 Character::Character()
@@ -218,8 +231,13 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 	{
 		if(bKeyboardDown['4'])
 		{
-			_beginthread( Thread, 0, &wWorld );
-
+			par.wWorld = &wWorld;
+			par.sm = t;
+			HANDLE hThread;
+			hThread = (HANDLE) _beginthread( Thread, 0, &par );
+			t++;
+			WaitForMultipleObjects(1, &hThread, TRUE, 10);
+			
 			bKeyboardDown['4'] = false;
 		}
 	}

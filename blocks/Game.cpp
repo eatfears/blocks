@@ -5,6 +5,7 @@ GLfloat fogColor[4]= {FOG_COLOR};
 
 Game::Game()
 {
+	player.wWorld = &wWorld;
 }
 
 Game::~Game()
