@@ -18,11 +18,13 @@ public:
 	Tile* FindTile(signed short x, signed short y, signed short z);
 	int AddTile(signed short x, signed short y, signed short z, char mat, bool show);
 	int RemoveTile(signed short x, signed short y, signed short z);
+	void DrawLoadedTiles();
 
-//private:
-	void StopBuilding();
+private:
 	void ShowTile(Tile *tTile, char N);
 	void HideTile(signed short x, signed short y, signed short z, char N);
 	unsigned long ComputeBin(signed short x, signed short y, signed short z);
+	bool building;
+	bool skipbuild;
 };
 

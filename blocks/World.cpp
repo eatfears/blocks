@@ -2,12 +2,13 @@
 #include "Blocks_Definitions.h"
 #include "Mutex.h"
 
-extern Mutex m1;
+extern Mutex VisibleListAccessMutex;
 
 World::World()
 {
 	tTiles = new Tiles[0x100000];
 	DisplayedTiles = new std::list<Tile *>[6];
+	skipbuild = false;
 }
 
 World::~World()
@@ -78,11 +79,16 @@ void World::BuildWorld()
 		}
 	}
 	/**/
-	//StopBuilding();
+	//DrawLoadedTiles();
 }
 
-void World::StopBuilding()
+void World::DrawLoadedTiles()
 {
+	if(skipbuild) {building = true; return;}
+	else building = false;
+
+	VisibleListAccessMutex.Acquire();
+	skipbuild = true;
 	signed short x, y, z;
 	for (int i = 0; i < 0x100000; i++)
 	{
@@ -93,6 +99,7 @@ void World::StopBuilding()
 			x = it->sCoordX;
 			y = it->sCoordY;
 			z = it->sCoordZ;
+
 			if(!FindTile(x, y + 1, z)) ShowTile(&*it,TOP);
 			else HideTile(x, y + 1, z, DOWN);
 			if(!FindTile(x, y - 1, z)) ShowTile(&*it,DOWN);
@@ -108,6 +115,12 @@ void World::StopBuilding()
 			it++;
 		}
 	}
+	skipbuild = false;
+
+	VisibleListAccessMutex.Release();
+
+	if (building)
+		DrawLoadedTiles();
 }
 
 int World::AddTile(signed short x, signed short y, signed short z, char mat, bool show)
@@ -130,7 +143,7 @@ int World::AddTile(signed short x, signed short y, signed short z, char mat, boo
 
 	if (show)
 	{
-		m1.Acquire();
+		VisibleListAccessMutex.Acquire();
 		tTiles[bin].push_front(t);
 
 		if(!FindTile(x, y + 1, z)) ShowTile(&(*tTiles[bin].begin()),TOP);
@@ -145,7 +158,7 @@ int World::AddTile(signed short x, signed short y, signed short z, char mat, boo
 		else HideTile(x, y, z + 1, FRONT);
 		if(!FindTile(x, y, z - 1)) ShowTile(&(*tTiles[bin].begin()),FRONT);
 		else HideTile(x, y, z - 1, BACK);
-		m1.Release();
+		VisibleListAccessMutex.Release();
 	}
 	else tTiles[bin].push_front(t);
 
@@ -165,7 +178,7 @@ int World::RemoveTile(signed short x, signed short y, signed short z)
 	if (it == tTiles[bin].end()) return 0;
 	
 	Tile *temp;
-	m1.Acquire();
+	VisibleListAccessMutex.Acquire();
 	temp = FindTile(x, y + 1, z); 
 	if(!temp) HideTile(x, y, z, 0);
 	else ShowTile(temp, 1);
@@ -186,7 +199,7 @@ int World::RemoveTile(signed short x, signed short y, signed short z)
 	else ShowTile(temp, 4);
 
 	tTiles[bin].erase(it);
-	m1.Release();
+	VisibleListAccessMutex.Release();
 
 	return 1;
 }

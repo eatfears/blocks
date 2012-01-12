@@ -1,6 +1,9 @@
 #include "Game.h"
 #include "Blocks_Definitions.h"
 
+#include "Mutex.h"
+extern Mutex VisibleListAccessMutex;
+
 GLfloat fogColor[4]= {FOG_COLOR};
 
 Game::Game()
@@ -14,6 +17,9 @@ Game::~Game()
 
 void Game::InitGame(GLWindow *glwWnd)
 {
+	HANDLE threadHandle = GetCurrentThread();
+	SetThreadPriority(threadHandle, THREAD_PRIORITY_HIGHEST);
+
 	this->glwWnd = glwWnd;
 	wWorld.MaterialLib.AllocGLTextures();
 	wWorld.MaterialLib.LoadGLTextures();
@@ -48,7 +54,6 @@ int Game::DrawGLScene()
 	glTranslated(0, -30, 0);
 	*/
 
-
 	glEnable(GL_FOG);
 	glFogi(GL_FOG_MODE,  GL_LINEAR);		//Тип тумана
 	glFogfv(GL_FOG_COLOR, fogColor);
@@ -62,6 +67,8 @@ int Game::DrawGLScene()
 
 
 	int iCurrentTexture = 0;
+	Tile tile;
+
 	glBegin(GL_QUADS);
 	//int iTextureChangingNum = 0;
 
@@ -72,24 +79,37 @@ int Game::DrawGLScene()
 
 		while(it != wWorld.DisplayedTiles[i].end())
 		{
-
-			if(	(abs((*it)->sCoordX*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
-				(abs((*it)->sCoordY*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
-				(abs((*it)->sCoordZ*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
+			_try 
 			{
-				if(iCurrentTexture != wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i])
+				tile = *(*it);
+				++it;
+			}
+			_except (EXCEPTION_EXECUTE_HANDLER)
+			{
+				glEnd();
+
+				glDisable(GL_LIGHT2);
+
+				return true;
+			}
+
+			if(	(abs(tile.sCoordX*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
+				(abs(tile.sCoordY*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
+				(abs(tile.sCoordZ*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
+			{
+				if(iCurrentTexture != wWorld.MaterialLib.mMaterial[tile.cMaterial].iTexture[i])
 				{
 					//iTextureChangingNum++;
-					iCurrentTexture = wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i];
+					iCurrentTexture = wWorld.MaterialLib.mMaterial[tile.cMaterial].iTexture[i];
 					glEnd();
 					glBindTexture(GL_TEXTURE_2D, tex[iCurrentTexture]);
 					glBegin(GL_QUADS);
 				}
-				DrawVisibleTileSide((*it), i);
+				DrawVisibleTileSide(&tile, i);
 			}
-			it++;
 		}
 	}
+
 //-------------------------
 // 	FILE *out;
 // 	out = fopen("1.txt", "w");

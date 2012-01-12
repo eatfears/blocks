@@ -7,7 +7,7 @@
 
 #include "World.h"
 #include "Mutex.h"
-Mutex m1, m2;
+Mutex VisibleListAccessMutex, m2;
 
 typedef struct s1
 {
@@ -21,27 +21,27 @@ Param par = {0, 0, 0};
 void Thread( void* pParams )
 {
 	m2.Acquire();
-	Param par2 = *(Param*)pParams;
-	signed short x = par2.x;
-	signed short z = par2.z;
+	Param pParameters = *(Param*)pParams;
+	signed short x = pParameters.x;
+	signed short z = pParameters.z;
 	m2.Release();
-	World &wWorld = *par2.wWorld;
+	World &wWorld = *pParameters.wWorld;
 
+	HANDLE threadHandle = GetCurrentThread();
+	SetThreadPriority(threadHandle, THREAD_PRIORITY_IDLE);
 	for (int j = 1; j <= 70; j++)
 	{
 		for (int i = 0; i < 16; i++)
 		{
 			for (int k = 0; k < 16; k++)
 			{
-				//wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
-				wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, rand()%5, false);
+				wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
+				//wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, rand()%5, false);
 			}
 		}
 	}
 
-	m1.Acquire();
-	wWorld.StopBuilding();
-	m1.Release();
+	wWorld.DrawLoadedTiles();
 }
 
 Character::Character()
