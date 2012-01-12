@@ -210,6 +210,7 @@ int World::RemoveTile(signed short x, signed short y, signed short z, bool show)
 		for(int N = 0; N < 6; N++)
 			if(it->bVisible[N]) HideTile(x, y, z, N);
 		tTiles[bin].erase(it);
+
 		VisibleListAccessMutex.Release();
 	}
 
@@ -232,22 +233,26 @@ void World::ShowTile(Tile *tTile, char N)
 
 void World::HideTile(signed short x, signed short y, signed short z, char N)
 {
-	auto it = begin(DisplayedTiles[N]);
 
 	Tile *tTile = FindTile(x, y, z);
 	if (!tTile) return;
 	if (tTile->bVisible[N] == false) return;
 
+	int iTex = MaterialLib.mMaterial[tTile->cMaterial].iTexture[N];
+	//auto it = begin(DisplayedTiles[N]);
+	auto it = MaterialLib.TexurePointerInVisible[N][iTex];
+
 	while(it != DisplayedTiles[N].end())
 	{
-		if (((*it)->sCoordZ == z)&&((*it)->sCoordX == x)&&((*it)->sCoordY == y)) break;
+		if(*it == tTile) break;
+		//if (((*it)->sCoordZ == z)&&((*it)->sCoordX == x)&&((*it)->sCoordY == y)) break;
 		it++;
 	}
 	if (it == DisplayedTiles[N].end()) return;
 
 	(*it)->bVisible[N] = false;
 
-	int iTex = MaterialLib.mMaterial[(*it)->cMaterial].iTexture[N];
+	//int iTex = MaterialLib.mMaterial[(*it)->cMaterial].iTexture[N];
 
 	auto it2 = MaterialLib.TexurePointerInVisible[N][iTex];
 	Tile *t1 = (*it), *t2 = (*it2);
