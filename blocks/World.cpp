@@ -203,8 +203,15 @@ int World::RemoveTile(signed short x, signed short y, signed short z, bool show)
 		tTiles[bin].erase(it);
 		//VisibleListAccessMutex.Release();
 	}
-	else tTiles[bin].erase(it);
-	
+	else 
+	{
+		VisibleListAccessMutex.Acquire();
+
+		for(int N = 0; N < 6; N++)
+			if(it->bVisible[N]) HideTile(x, y, z, N);
+		tTiles[bin].erase(it);
+		VisibleListAccessMutex.Release();
+	}
 
 	return 1;
 }

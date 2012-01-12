@@ -29,15 +29,15 @@ void Thread( void* pParams )
 	World &wWorld = *pParameters.wWorld;
 
 	HANDLE threadHandle = GetCurrentThread();
-	SetThreadPriority(threadHandle, THREAD_PRIORITY_IDLE);
-	for (int j = 1; j <= 70; j++)
+	SetThreadPriority(threadHandle, THREAD_PRIORITY_ABOVE_NORMAL);
+	for (int k = 0; k < 16; k++)
 	{
 		for (int i = 0; i < 16; i++)
 		{
-			for (int k = 0; k < 16; k++)
+			for (int j = 1; j <= 70; j++)
 			{
-				//wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
-				wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, rand()%5, false);
+				//if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
+				if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, rand()%5, false);
 			}
 		}
 	}
@@ -54,21 +54,23 @@ void Thread2( void* pParams )
 	m2.Release();
 	World &wWorld = *pParameters.wWorld;
 	
-	VisibleListAccessMutex.Acquire();
+	HANDLE threadHandle = GetCurrentThread();
+	SetThreadPriority(threadHandle, THREAD_PRIORITY_ABOVE_NORMAL);
 
-	for (int j = 1; j <= 70; j++)
+	//VisibleListAccessMutex.Acquire();
+	/*
+	for (int N = 0; N < 6; N++)
 		for (int i = 0; i < 16; i++)
 			for (int k = 0; k < 16; k++)
-				for (int N = 0; N < 6; N++)
+				for (int j = 1; j <= 70; j++)
 					wWorld.HideTile(i-8 + 16*x, -j, k-8 + 16*z, N);
-
+	/**/
 	for (int j = 1; j <= 70; j++)
 		for (int i = 0; i < 16; i++)
 			for (int k = 0; k < 16; k++)
 				wWorld.RemoveTile(i-8 + 16*x, -j, k-8 + 16*z, false);
-	
-	VisibleListAccessMutex.Release();
 
+	//VisibleListAccessMutex.Release();
 	
 	wWorld.DrawLoadedTiles();
 }
@@ -314,7 +316,30 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 			//bKeyboardDown['5'] = false;
 		}
 	}
+	if(bKeyboard['6'])
+	{
+		if(bKeyboardDown['6'])
+		{
+			par.wWorld = &wWorld;
 
+
+			HANDLE hThread;
+			for(int i = 0; i < 10; i++)
+			for(int j = 0; j < 10; j++)
+			{
+				m2.Acquire();
+				par.x = i;
+				par.z = j;
+				m2.Release();
+
+				hThread = (HANDLE) _beginthread( Thread, 0, &par );
+
+				WaitForMultipleObjects(1, &hThread, TRUE, 100);
+
+			}
+			bKeyboardDown['6'] = false;
+		}
+	}
 	if(bKeyboard['E']) 
 	{
 		wWorld.RemoveTile(sCenterCubeCoordX,sCenterCubeCoordY,sCenterCubeCoordZ, true);
