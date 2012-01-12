@@ -143,7 +143,7 @@ int World::AddTile(signed short x, signed short y, signed short z, char mat, boo
 
 	if (show)
 	{
-		VisibleListAccessMutex.Acquire();
+		//VisibleListAccessMutex.Acquire();
 		tTiles[bin].push_front(t);
 
 		if(!FindTile(x, y + 1, z)) ShowTile(&(*tTiles[bin].begin()),TOP);
@@ -158,14 +158,14 @@ int World::AddTile(signed short x, signed short y, signed short z, char mat, boo
 		else HideTile(x, y, z + 1, FRONT);
 		if(!FindTile(x, y, z - 1)) ShowTile(&(*tTiles[bin].begin()),FRONT);
 		else HideTile(x, y, z - 1, BACK);
-		VisibleListAccessMutex.Release();
+		//VisibleListAccessMutex.Release();
 	}
 	else tTiles[bin].push_front(t);
 
 	return 1;
 }
 
-int World::RemoveTile(signed short x, signed short y, signed short z)
+int World::RemoveTile(signed short x, signed short y, signed short z, bool show)
 {
 	unsigned long bin = ComputeBin(x, y, z);
 	Tiles::iterator it = tTiles[bin].begin();
@@ -177,29 +177,34 @@ int World::RemoveTile(signed short x, signed short y, signed short z)
 	}
 	if (it == tTiles[bin].end()) return 0;
 	
-	Tile *temp;
-	VisibleListAccessMutex.Acquire();
-	temp = FindTile(x, y + 1, z); 
-	if(!temp) HideTile(x, y, z, 0);
-	else ShowTile(temp, 1);
-	temp = FindTile(x, y - 1, z); 
-	if(!temp) HideTile(x, y, z, 1);
-	else ShowTile(temp, 0);
-	temp = FindTile(x + 1, y, z); 
-	if(!temp) HideTile(x, y, z, 2);
-	else ShowTile(temp, 3);
-	temp = FindTile(x - 1, y, z); 
-	if(!temp) HideTile(x, y, z, 3);
-	else ShowTile(temp, 2);
-	temp = FindTile(x, y, z + 1); 
-	if(!temp) HideTile(x, y, z, 4);
-	else ShowTile(temp, 5);
-	temp = FindTile(x, y, z - 1); 
-	if(!temp) HideTile(x, y, z, 5);
-	else ShowTile(temp, 4);
-
-	tTiles[bin].erase(it);
-	VisibleListAccessMutex.Release();
+	if (show)
+	{
+		//VisibleListAccessMutex.Acquire();
+		Tile *temp;
+		temp = FindTile(x, y + 1, z); 
+		if(!temp) HideTile(x, y, z, 0);
+		else ShowTile(temp, 1);
+		temp = FindTile(x, y - 1, z); 
+		if(!temp) HideTile(x, y, z, 1);
+		else ShowTile(temp, 0);
+		temp = FindTile(x + 1, y, z); 
+		if(!temp) HideTile(x, y, z, 2);
+		else ShowTile(temp, 3);
+		temp = FindTile(x - 1, y, z); 
+		if(!temp) HideTile(x, y, z, 3);
+		else ShowTile(temp, 2);
+		temp = FindTile(x, y, z + 1); 
+		if(!temp) HideTile(x, y, z, 4);
+		else ShowTile(temp, 5);
+		temp = FindTile(x, y, z - 1); 
+		if(!temp) HideTile(x, y, z, 5);
+		else ShowTile(temp, 4);
+		
+		tTiles[bin].erase(it);
+		//VisibleListAccessMutex.Release();
+	}
+	else tTiles[bin].erase(it);
+	
 
 	return 1;
 }

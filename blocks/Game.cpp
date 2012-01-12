@@ -66,8 +66,8 @@ int Game::DrawGLScene()
 	glColor3d(dBrightness, dBrightness, dBrightness);
 
 
-	int iCurrentTexture = 0;
-	Tile tile;
+	static int iCurrentTexture = 0;
+	static Tile tile;
 
 	glBegin(GL_QUADS);
 	//int iTextureChangingNum = 0;

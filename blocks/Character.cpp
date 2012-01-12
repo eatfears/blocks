@@ -17,6 +17,7 @@ typedef struct s1
 } Param;
 
 Param par = {0, 0, 0};
+Param par2 = {0, 0, 0};
 
 void Thread( void* pParams )
 {
@@ -35,12 +36,40 @@ void Thread( void* pParams )
 		{
 			for (int k = 0; k < 16; k++)
 			{
-				wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
-				//wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, rand()%5, false);
+				//wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
+				wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, rand()%5, false);
 			}
 		}
 	}
 
+	wWorld.DrawLoadedTiles();
+}
+
+void Thread2( void* pParams )
+{
+	m2.Acquire();
+	Param pParameters = *(Param*)pParams;
+	signed short x = pParameters.x;
+	signed short z = pParameters.z;
+	m2.Release();
+	World &wWorld = *pParameters.wWorld;
+	
+	VisibleListAccessMutex.Acquire();
+
+	for (int j = 1; j <= 70; j++)
+		for (int i = 0; i < 16; i++)
+			for (int k = 0; k < 16; k++)
+				for (int N = 0; N < 6; N++)
+					wWorld.HideTile(i-8 + 16*x, -j, k-8 + 16*z, N);
+
+	for (int j = 1; j <= 70; j++)
+		for (int i = 0; i < 16; i++)
+			for (int k = 0; k < 16; k++)
+				wWorld.RemoveTile(i-8 + 16*x, -j, k-8 + 16*z, false);
+	
+	VisibleListAccessMutex.Release();
+
+	
 	wWorld.DrawLoadedTiles();
 }
 
@@ -226,7 +255,7 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 
 		while(i < num)
 		{
-			if(wWorld.RemoveTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2))
+			if(wWorld.RemoveTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, true))
 				i++;
 		}
 	}
@@ -237,7 +266,7 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 		for (int j = -sqb2; j <= sqb2; j++)
 		for (int k = -sqb2; k <= sqb2; k++)
 		{
-			wWorld.RemoveTile(i, j, k);	
+			wWorld.RemoveTile(i, j, k, true);	
 		}
 	}
 
@@ -249,9 +278,9 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 
 			HANDLE hThread;
 			hThread = (HANDLE) _beginthread( Thread, 0, &par );
-			
+
 			WaitForMultipleObjects(1, &hThread, TRUE, 30);
-			
+
 			m2.Acquire();
 			par.x++;
 			if (par.x == 10)
@@ -263,10 +292,32 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 			//bKeyboardDown['4'] = false;
 		}
 	}
+	if(bKeyboard['5'])
+	{
+		if(bKeyboardDown['5'])
+		{
+			par2.wWorld = &wWorld;
+
+			HANDLE hThread;
+			hThread = (HANDLE) _beginthread( Thread2, 0, &par2 );
+
+			WaitForMultipleObjects(1, &hThread, TRUE, 30);
+
+			m2.Acquire();
+			par2.x++;
+			if (par2.x == 10)
+			{
+				par2.x = 0;
+				par2.z++;
+			}
+			m2.Release();
+			//bKeyboardDown['5'] = false;
+		}
+	}
 
 	if(bKeyboard['E']) 
 	{
-		wWorld.RemoveTile(sCenterCubeCoordX,sCenterCubeCoordY,sCenterCubeCoordZ);
+		wWorld.RemoveTile(sCenterCubeCoordX,sCenterCubeCoordY,sCenterCubeCoordZ, true);
 	}
 
 	if(bKeyboard['Q']) 
