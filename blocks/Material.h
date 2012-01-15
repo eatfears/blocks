@@ -4,7 +4,7 @@
 #include <gl\glu.h>
 #include <gl\glaux.h>
 
-#include "Tiles.h"
+#include "Location.h"
 
 #define MAT_NUMBER			10
 
@@ -46,8 +46,6 @@ public:
 	stMater *mMaterial;
 	GLuint *texture;
 	int iNumberOfTextures;
-
-	std::list<Tile*>::iterator **TexurePointerInVisible;
 
 	void InitMaterials();
 	void AllocGLTextures();

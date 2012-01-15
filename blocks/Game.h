@@ -13,7 +13,8 @@ public:
 	
 	void InitGame(GLWindow *glwWnd);
 
-	void DrawVisibleTileSide(Tile *tTile, char N);
+	void DrawTileSide(signed short sXcoord, signed short sYcoord, signed short sZcoord, char N);
+	//void DrawVisibleTileSide(Tile *tTile, char N);
 	int DrawGLScene();
 	void DrawInterface();
 	bool Loop();

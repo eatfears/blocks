@@ -1,6 +1,13 @@
 #pragma once
 
-#include <vector>
+#include <list>
+
+#include "Blocks_Definitions.h"
+#include "Material.h"
+
+typedef unsigned short	TileInLoc;
+typedef signed short	LocInWorld;
+typedef signed short	TileInWorld;
 
 typedef struct t
 {
@@ -11,16 +18,26 @@ typedef struct t
 class Location
 {
 public:
-	Location(void);
+	Location(LocInWorld x, LocInWorld z);
 	~Location(void);
 
-	std::vector<Tile> tTile;
+	Tile *tTile;
+	std::list<Tile *> *DisplayedTiles;
+	std::list<Tile *>::iterator **TexurePointerInVisible;
 
-	signed short x;
-	signed short z;
 
-	char GetTileMaterial(signed short x, signed short y, signed short z);
-	void SetTileMaterial(signed short x, signed short y, signed short z, char cMat);
-	void GetTilePositionByPointer(Tile *tCurrentTile, signed short *x, signed short *y, signed short *z);
+	LocInWorld x;
+	LocInWorld z;
+	bool bVisible;
+
+	int	AddTile(TileInLoc x, TileInLoc y, TileInLoc z, char mat);
+	int RemoveTile(TileInLoc x, TileInLoc y, TileInLoc z);
+	
+	void ShowTile(Tile *tTile, char N);
+	void HideTile(Tile *tTile, char N);
+
+	char GetTileMaterial(TileInLoc x, TileInLoc y, TileInLoc z);
+	TileInLoc SetTileMaterial(TileInLoc x, TileInLoc y, TileInLoc z, char cMat);
+	int GetTilePositionByPointer(Tile *tCurrentTile, TileInLoc *x, TileInLoc *y, TileInLoc *z);
 };
 

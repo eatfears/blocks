@@ -29,3 +29,6 @@
 #define LEFT			3
 #define BACK			4
 #define FRONT			5
+
+#define LOCATION_SIZE_XZ	16
+#define LOCATION_SIZE_Y		128

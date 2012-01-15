@@ -17,9 +17,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Tiles.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Character.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -35,12 +32,12 @@
     <ClCompile Include="Game.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Location.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="blocks.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Tiles.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Character.h">
@@ -65,6 +62,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mutex.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Location.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

@@ -89,10 +89,10 @@
     <ClInclude Include="Character.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GLWindow.h" />
+    <ClInclude Include="Location.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mutex.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Tiles.h" />
     <ClInclude Include="blocks.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
@@ -100,9 +100,9 @@
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GLWindow.cpp" />
+    <ClCompile Include="Location.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="Tiles.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -66,12 +66,61 @@ int Game::DrawGLScene()
 	glColor3d(dBrightness, dBrightness, dBrightness);
 
 
-	static int iCurrentTexture = 0;
-	static Tile tile;
+	int iCurrentTexture = -1;
+	static Tile *tile;
 
 	glBegin(GL_QUADS);
 	//int iTextureChangingNum = 0;
 
+	auto loc = wWorld.lLocations.begin();
+	TileInLoc x, y, z;
+	GLuint *tex = wWorld.MaterialLib.texture;
+
+	while(loc != wWorld.lLocations.end())
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			auto it = loc->DisplayedTiles[i].begin();
+
+			while(it != loc->DisplayedTiles[i].end())
+			{
+					loc->GetTilePositionByPointer(*it, &x, &y, &z);
+					
+					if(iCurrentTexture != wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i])
+					{
+						//iTextureChangingNum++;
+						iCurrentTexture = wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i];
+						glEnd();
+						glBindTexture(GL_TEXTURE_2D, tex[iCurrentTexture]);
+						glBegin(GL_QUADS);
+					}
+
+					DrawTileSide(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, i);
+					++it;
+
+					/*
+				if(	(abs(tile.sCoordX*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
+					(abs(tile.sCoordY*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
+					(abs(tile.sCoordZ*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
+				{
+					if(iCurrentTexture != wWorld.MaterialLib.mMaterial[tile.cMaterial].iTexture[i])
+					{
+						//iTextureChangingNum++;
+						iCurrentTexture = wWorld.MaterialLib.mMaterial[tile.cMaterial].iTexture[i];
+						glEnd();
+						glBindTexture(GL_TEXTURE_2D, tex[iCurrentTexture]);
+						glBegin(GL_QUADS);
+					}
+					DrawVisibleTileSide(&tile, i);
+				}*/
+			}
+		}
+		++loc;
+	}
+
+
+
+	/*
 	for( int i = 0; i < 6; i++)
 	{
 		auto it = begin(wWorld.DisplayedTiles[i]);
@@ -109,7 +158,7 @@ int Game::DrawGLScene()
 			}
 		}
 	}
-
+	*/
 //-------------------------
 // 	FILE *out;
 // 	out = fopen("1.txt", "w");
@@ -134,9 +183,9 @@ void Game::DrawInterface()
 	glColor3d(0.1, 0.1, 0.1);
 	glLineWidth (2.0);
 	glBegin(GL_QUADS);
-	if (Tile *temp = wWorld.FindTile(player.sCenterCubeCoordX,player.sCenterCubeCoordY,player.sCenterCubeCoordZ))
-		for(int i = 0; i < 6; i++)
-			DrawVisibleTileSide(temp,i);
+ 	if (wWorld.FindTile(player.sCenterCubeCoordX,player.sCenterCubeCoordY,player.sCenterCubeCoordZ))
+ 		for(int i = 0; i < 6; i++)
+ 			DrawTileSide(player.sCenterCubeCoordX, player.sCenterCubeCoordY, player.sCenterCubeCoordZ, i);
 	glEnd();
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 
@@ -158,9 +207,11 @@ void Game::DrawInterface()
 	glTranslated(0, 0, 0.1);
 }
 
-void Game::DrawVisibleTileSide(Tile *tTile, char N)
+//void Game::DrawVisibleTileSide(Tile *tTile, char N)
+void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short sZcoord, char N)
 {
-	GLdouble dXcoord = tTile->sCoordX*TILE_SIZE, dYcoord = tTile->sCoordY*TILE_SIZE, dZcoord = tTile->sCoordZ*TILE_SIZE;
+	//GLdouble dXcoord = tTile->sCoordX*TILE_SIZE, dYcoord = tTile->sCoordY*TILE_SIZE, dZcoord = tTile->sCoordZ*TILE_SIZE;
+	GLdouble dXcoord = sXcoord*TILE_SIZE, dYcoord = sYcoord*TILE_SIZE, dZcoord = sZcoord*TILE_SIZE;
 
 	dXcoord -= TILE_SIZE/2;
 	dZcoord -= TILE_SIZE/2;

@@ -6,74 +6,74 @@
 
 
 #include "World.h"
-#include "Mutex.h"
-Mutex VisibleListAccessMutex, m2;
-
-typedef struct s1
-{
-	signed short x;
-	signed short z;
-	World *wWorld;
-} Param;
-
-Param par = {0, 0, 0};
-Param par2 = {0, 0, 0};
-
-void Thread( void* pParams )
-{
-	m2.Acquire();
-	Param pParameters = *(Param*)pParams;
-	signed short x = pParameters.x;
-	signed short z = pParameters.z;
-	m2.Release();
-	World &wWorld = *pParameters.wWorld;
-
-	HANDLE threadHandle = GetCurrentThread();
-	SetThreadPriority(threadHandle, THREAD_PRIORITY_ABOVE_NORMAL);
-	for (int k = 0; k < 16; k++)
-	{
-		for (int i = 0; i < 16; i++)
-		{
-			for (int j = 1; j <= 70; j++)
-			{
-				//if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
-				if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, rand()%5, false);
-			}
-		}
-	}
-
-	wWorld.DrawLoadedTiles();
-}
-
-void Thread2( void* pParams )
-{
-	m2.Acquire();
-	Param pParameters = *(Param*)pParams;
-	signed short x = pParameters.x;
-	signed short z = pParameters.z;
-	m2.Release();
-	World &wWorld = *pParameters.wWorld;
-	
-	HANDLE threadHandle = GetCurrentThread();
-	SetThreadPriority(threadHandle, THREAD_PRIORITY_ABOVE_NORMAL);
-
-	//VisibleListAccessMutex.Acquire();
-	/*
-	for (int N = 0; N < 6; N++)
-		for (int i = 0; i < 16; i++)
-			for (int k = 0; k < 16; k++)
-				for (int j = 1; j <= 70; j++)
-					wWorld.HideTile(i-8 + 16*x, -j, k-8 + 16*z, N);
-	/**/
-	for (int j = 1; j <= 70; j++)
-		for (int i = 0; i < 16; i++)
-			for (int k = 0; k < 16; k++)
-				wWorld.RemoveTile(i-8 + 16*x, -j, k-8 + 16*z, false);
-
-	//VisibleListAccessMutex.Release();
-	
-	wWorld.DrawLoadedTiles();
-}
+// #include "Mutex.h"
+// Mutex VisibleListAccessMutex, m2;
+// 
+// typedef struct s1
+// {
+// 	signed short x;
+// 	signed short z;
+// 	World *wWorld;
+// } Param;
+// 
+// Param par = {0, 0, 0};
+// Param par2 = {0, 0, 0};
+// 
+// void Thread( void* pParams )
+// {
+// 	m2.Acquire();
+// 	Param pParameters = *(Param*)pParams;
+// 	signed short x = pParameters.x;
+// 	signed short z = pParameters.z;
+// 	m2.Release();
+// 	World &wWorld = *pParameters.wWorld;
+// 
+// 	HANDLE threadHandle = GetCurrentThread();
+// 	SetThreadPriority(threadHandle, THREAD_PRIORITY_ABOVE_NORMAL);
+// 	for (int k = 0; k < 16; k++)
+// 	{
+// 		for (int i = 0; i < 16; i++)
+// 		{
+// 			for (int j = 1; j <= 70; j++)
+// 			{
+// 				//if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
+// 				if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, rand()%5, false);
+// 			}
+// 		}
+// 	}
+// 
+// 	wWorld.DrawLoadedTiles();
+// }
+// 
+// void Thread2( void* pParams )
+// {
+// 	m2.Acquire();
+// 	Param pParameters = *(Param*)pParams;
+// 	signed short x = pParameters.x;
+// 	signed short z = pParameters.z;
+// 	m2.Release();
+// 	World &wWorld = *pParameters.wWorld;
+// 	
+// 	HANDLE threadHandle = GetCurrentThread();
+// 	SetThreadPriority(threadHandle, THREAD_PRIORITY_ABOVE_NORMAL);
+// 
+// 	//VisibleListAccessMutex.Acquire();
+// 	/*
+// 	for (int N = 0; N < 6; N++)
+// 		for (int i = 0; i < 16; i++)
+// 			for (int k = 0; k < 16; k++)
+// 				for (int j = 1; j <= 70; j++)
+// 					wWorld.HideTile(i-8 + 16*x, -j, k-8 + 16*z, N);
+// 	/**/
+// 	for (int j = 1; j <= 70; j++)
+// 		for (int i = 0; i < 16; i++)
+// 			for (int k = 0; k < 16; k++)
+// 				wWorld.RemoveTile(i-8 + 16*x, -j, k-8 + 16*z, false);
+// 
+// 	//VisibleListAccessMutex.Release();
+// 	
+// 	wWorld.DrawLoadedTiles();
+// }
 
 Character::Character()
 {
@@ -251,100 +251,100 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 				i++;
 		}
 	}
-	if(bKeyboard['2'])
-	{
-		int i = 0;
-
-		while(i < num)
-		{
-			if(wWorld.RemoveTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, true))
-				i++;
-		}
-	}
-
-	if(bKeyboard['3'])
-	{
-		for (int i = -sqb2; i <= sqb2; i++)
-		for (int j = -sqb2; j <= sqb2; j++)
-		for (int k = -sqb2; k <= sqb2; k++)
-		{
-			wWorld.RemoveTile(i, j, k, true);	
-		}
-	}
-
-	if(bKeyboard['4'])
-	{
-		if(bKeyboardDown['4'])
-		{
-			par.wWorld = &wWorld;
-
-			HANDLE hThread;
-			hThread = (HANDLE) _beginthread( Thread, 0, &par );
-
-			WaitForMultipleObjects(1, &hThread, TRUE, 30);
-
-			m2.Acquire();
-			par.x++;
-			if (par.x == 10)
-			{
-				par.x = 0;
-				par.z++;
-			}
-			m2.Release();
-			//bKeyboardDown['4'] = false;
-		}
-	}
-	if(bKeyboard['5'])
-	{
-		if(bKeyboardDown['5'])
-		{
-			par2.wWorld = &wWorld;
-
-			HANDLE hThread;
-			hThread = (HANDLE) _beginthread( Thread2, 0, &par2 );
-
-			WaitForMultipleObjects(1, &hThread, TRUE, 30);
-
-			m2.Acquire();
-			par2.x++;
-			if (par2.x == 10)
-			{
-				par2.x = 0;
-				par2.z++;
-			}
-			m2.Release();
-			//bKeyboardDown['5'] = false;
-		}
-	}
-	if(bKeyboard['6'])
-	{
-		if(bKeyboardDown['6'])
-		{
-			par.wWorld = &wWorld;
-
-
-			HANDLE hThread;
-			for(int i = 0; i < 10; i++)
-			for(int j = 0; j < 10; j++)
-			{
-				m2.Acquire();
-				par.x = i;
-				par.z = j;
-				m2.Release();
-
-				hThread = (HANDLE) _beginthread( Thread, 0, &par );
-
-				WaitForMultipleObjects(1, &hThread, TRUE, 100);
-
-			}
-			bKeyboardDown['6'] = false;
-		}
-	}
-	if(bKeyboard['E']) 
-	{
-		wWorld.RemoveTile(sCenterCubeCoordX,sCenterCubeCoordY,sCenterCubeCoordZ, true);
-	}
-
+// 	if(bKeyboard['2'])
+// 	{
+// 		int i = 0;
+// 
+// 		while(i < num)
+// 		{
+// 			if(wWorld.RemoveTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, true))
+// 				i++;
+// 		}
+// 	}
+// 
+// 	if(bKeyboard['3'])
+// 	{
+// 		for (int i = -sqb2; i <= sqb2; i++)
+// 		for (int j = -sqb2; j <= sqb2; j++)
+// 		for (int k = -sqb2; k <= sqb2; k++)
+// 		{
+// 			wWorld.RemoveTile(i, j, k, true);	
+// 		}
+// 	}
+// 
+// 	if(bKeyboard['4'])
+// 	{
+// 		if(bKeyboardDown['4'])
+// 		{
+// 			par.wWorld = &wWorld;
+// 
+// 			HANDLE hThread;
+// 			hThread = (HANDLE) _beginthread( Thread, 0, &par );
+// 
+// 			WaitForMultipleObjects(1, &hThread, TRUE, 30);
+// 
+// 			m2.Acquire();
+// 			par.x++;
+// 			if (par.x == 10)
+// 			{
+// 				par.x = 0;
+// 				par.z++;
+// 			}
+// 			m2.Release();
+// 			//bKeyboardDown['4'] = false;
+// 		}
+// 	}
+// 	if(bKeyboard['5'])
+// 	{
+// 		if(bKeyboardDown['5'])
+// 		{
+// 			par2.wWorld = &wWorld;
+// 
+// 			HANDLE hThread;
+// 			hThread = (HANDLE) _beginthread( Thread2, 0, &par2 );
+// 
+// 			WaitForMultipleObjects(1, &hThread, TRUE, 30);
+// 
+// 			m2.Acquire();
+// 			par2.x++;
+// 			if (par2.x == 10)
+// 			{
+// 				par2.x = 0;
+// 				par2.z++;
+// 			}
+// 			m2.Release();
+// 			//bKeyboardDown['5'] = false;
+// 		}
+// 	}
+// 	if(bKeyboard['6'])
+// 	{
+// 		if(bKeyboardDown['6'])
+// 		{
+// 			par.wWorld = &wWorld;
+// 
+// 
+// 			HANDLE hThread;
+// 			for(int i = 0; i < 10; i++)
+// 			for(int j = 0; j < 10; j++)
+// 			{
+// 				m2.Acquire();
+// 				par.x = i;
+// 				par.z = j;
+// 				m2.Release();
+// 
+// 				hThread = (HANDLE) _beginthread( Thread, 0, &par );
+// 
+// 				WaitForMultipleObjects(1, &hThread, TRUE, 100);
+// 
+// 			}
+// 			bKeyboardDown['6'] = false;
+// 		}
+// 	}
+// 	if(bKeyboard['E']) 
+// 	{
+// 		wWorld.RemoveTile(sCenterCubeCoordX,sCenterCubeCoordY,sCenterCubeCoordZ, true);
+// 	}
+// 
 	if(bKeyboard['Q']) 
 	{
 		signed short ix = sCenterCubeCoordX, iy = sCenterCubeCoordY, iz = sCenterCubeCoordZ;

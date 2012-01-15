@@ -79,12 +79,6 @@ void MaterialLibrary::AllocGLTextures()
 	iNumberOfTextures = sizeof(Texture);
 	texture = (GLuint *)calloc(iNumberOfTextures, sizeof(GLuint));
 	
-	TexurePointerInVisible = new std::list<Tile*>::iterator *[6];
-	for (int i = 0; i < 6; i++)
-	{
-		TexurePointerInVisible[i] = new std::list<Tile*>::iterator [iNumberOfTextures];
-	}
-
 	glGenTextures(iNumberOfTextures, texture); // создаем 3 текстуры (sizeof(Texture)=3 ID's)
 
 }
