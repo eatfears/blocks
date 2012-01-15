@@ -2,9 +2,9 @@
 #include <windows.h>
 #include <gl\gl.h>
 #include <gl\glu.h>
-#include <gl\glaux.h>
+//#include <gl\glaux.h>
 
-#include "Location.h"
+//#include "Location.h"
 
 #define MAT_NUMBER			10
 

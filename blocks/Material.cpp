@@ -10,7 +10,7 @@ MaterialLibrary::MaterialLibrary()
 
 MaterialLibrary::~MaterialLibrary()
 {
-	glDeleteTextures(iNumberOfTextures,texture);
+	glDeleteTextures(iNumberOfTextures, texture);
 	free(texture);
 
 	delete[] mMaterial;

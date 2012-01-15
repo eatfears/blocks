@@ -70,7 +70,9 @@ int Game::DrawGLScene()
 	static Tile *tile;
 
 	glBegin(GL_QUADS);
-	//int iTextureChangingNum = 0;
+#ifdef DEBUG_OUT
+	int iTextureChangingNum = 0;
+#endif
 
 	auto loc = wWorld.lLocations.begin();
 	TileInLoc x, y, z;
@@ -84,11 +86,28 @@ int Game::DrawGLScene()
 
 			while(it != loc->DisplayedTiles[i].end())
 			{
+				/*
+				_try 
+				{
+					tile = *(*it);
+					++it;
+				}
+				_except (EXCEPTION_EXECUTE_HANDLER)
+				{
+					glEnd();
+
+					glDisable(GL_LIGHT2);
+
+					return true;
+				}
+				*/
 					loc->GetTilePositionByPointer(*it, &x, &y, &z);
 					
 					if(iCurrentTexture != wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i])
 					{
-						//iTextureChangingNum++;
+#ifdef DEBUG_OUT
+						iTextureChangingNum++;
+#endif
 						iCurrentTexture = wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i];
 						glEnd();
 						glBindTexture(GL_TEXTURE_2D, tex[iCurrentTexture]);
@@ -118,53 +137,12 @@ int Game::DrawGLScene()
 		++loc;
 	}
 
-
-
-	/*
-	for( int i = 0; i < 6; i++)
-	{
-		auto it = begin(wWorld.DisplayedTiles[i]);
-		GLuint *tex = wWorld.MaterialLib.texture;
-
-		while(it != wWorld.DisplayedTiles[i].end())
-		{
-			_try 
-			{
-				tile = *(*it);
-				++it;
-			}
-			_except (EXCEPTION_EXECUTE_HANDLER)
-			{
-				glEnd();
-
-				glDisable(GL_LIGHT2);
-
-				return true;
-			}
-
-			if(	(abs(tile.sCoordX*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
-				(abs(tile.sCoordY*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
-				(abs(tile.sCoordZ*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
-			{
-				if(iCurrentTexture != wWorld.MaterialLib.mMaterial[tile.cMaterial].iTexture[i])
-				{
-					//iTextureChangingNum++;
-					iCurrentTexture = wWorld.MaterialLib.mMaterial[tile.cMaterial].iTexture[i];
-					glEnd();
-					glBindTexture(GL_TEXTURE_2D, tex[iCurrentTexture]);
-					glBegin(GL_QUADS);
-				}
-				DrawVisibleTileSide(&tile, i);
-			}
-		}
-	}
-	*/
-//-------------------------
-// 	FILE *out;
-// 	out = fopen("1.txt", "w");
-// 	fprintf(out,"changing tex num: %d", iTextureChangingNum);
-// 	fclose(out);
-//-------------------------
+#ifdef DEBUG_OUT
+	FILE *out;
+	out = fopen(DEBUG_FILE, "w");
+	fprintf(out,"changing tex num: %d\n", iTextureChangingNum);
+	fclose(out);
+#endif
 
 	glEnd();
 

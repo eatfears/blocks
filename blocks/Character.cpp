@@ -251,27 +251,27 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 				i++;
 		}
 	}
-// 	if(bKeyboard['2'])
-// 	{
-// 		int i = 0;
-// 
-// 		while(i < num)
-// 		{
-// 			if(wWorld.RemoveTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, true))
-// 				i++;
-// 		}
-// 	}
-// 
-// 	if(bKeyboard['3'])
-// 	{
-// 		for (int i = -sqb2; i <= sqb2; i++)
-// 		for (int j = -sqb2; j <= sqb2; j++)
-// 		for (int k = -sqb2; k <= sqb2; k++)
-// 		{
-// 			wWorld.RemoveTile(i, j, k, true);	
-// 		}
-// 	}
-// 
+	if(bKeyboard['2'])
+	{
+		int i = 0;
+
+		while(i < num)
+		{
+			if(wWorld.RemoveTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, true))
+				i++;
+		}
+	}
+ 
+	if(bKeyboard['3'])
+	{
+		for (int i = -sqb2; i <= sqb2; i++)
+		for (int j = -sqb2; j <= sqb2; j++)
+		for (int k = -sqb2; k <= sqb2; k++)
+		{
+			wWorld.RemoveTile(i, j, k, true);	
+		}
+	}
+
 // 	if(bKeyboard['4'])
 // 	{
 // 		if(bKeyboardDown['4'])
@@ -340,11 +340,11 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 // 			bKeyboardDown['6'] = false;
 // 		}
 // 	}
-// 	if(bKeyboard['E']) 
-// 	{
-// 		wWorld.RemoveTile(sCenterCubeCoordX,sCenterCubeCoordY,sCenterCubeCoordZ, true);
-// 	}
-// 
+	if(bKeyboard['E']) 
+	{
+		wWorld.RemoveTile(sCenterCubeCoordX,sCenterCubeCoordY,sCenterCubeCoordZ, true);
+	}
+
 	if(bKeyboard['Q']) 
 	{
 		signed short ix = sCenterCubeCoordX, iy = sCenterCubeCoordY, iz = sCenterCubeCoordZ;

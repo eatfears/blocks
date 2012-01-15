@@ -17,18 +17,15 @@ public:
 	int FindTile(TileInWorld x, TileInWorld y, TileInWorld z);
 	int FindTile(TileInWorld x, TileInWorld y, TileInWorld z, Location **loc, int *index);
 	int AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool show);
-	//int RemoveTile(signed short x, signed short y, signed short z, bool show);
+	int RemoveTile(TileInWorld x, TileInWorld y, TileInWorld z, bool show);
 	//void DrawLoadedTiles();
 
 	void GetLocByTile(TileInWorld x, TileInWorld z, LocInWorld *locx, TileInWorld *locz);
 	Location* GetLocByTile(TileInWorld x, TileInWorld z);
-	void GetPosInLocByWorld( TileInWorld x, TileInWorld z, TileInLoc *locx, TileInLoc *locz );
+	void GetPosInLocByWorld(TileInWorld x, TileInWorld y, TileInWorld z, TileInLoc *locx, TileInLoc *locy, TileInLoc *locz);
 	void AddLocation(LocInWorld x, LocInWorld z);
 //private:
 	void ShowTile(Location *loc, int index, char N);
 	void HideTile(Location *loc, int index, char N);
-	//unsigned long ComputeBin(signed short x, signed short y, signed short z);
-	//bool building;
-	//bool skipbuild;
 };
 
