@@ -24,20 +24,21 @@ void World::BuildWorld()
 {
 	MaterialLib.InitMaterials();
 
-	AddLocation(0,0);
-	AddLocation(0,-1);
-	AddLocation(0,1);
-	AddLocation(-1,0);
-	AddLocation(1,0);
-
-	for (int j = 0; j < 12; j++)
+	for(int i = -10; i < 10; i++)
+	for(int j = -10; j < 10; j++)
 	{
-		for (int i = 0; i < 160; i++)
+		AddLocation(i,j);
+	}
+	//AddLocation(0,0);
+
+	for (int j = 0; j < 20; j++)
+	{
+		for (int i = -60; i < 60; i++)
 		{
-			for (int k = 0; k < 160; k++)
+			for (int k = -60; k < 60; k++)
 			{
-				//AddTile(i, j, k, MAT_GRASS, true);
-				AddTile(i, j, k, rand()%4+1, true);
+				AddTile(i, j, k, MAT_GRASS, true);
+				//AddTile(i, j, k, rand()%4+1, true);
 			}
 		}
 	}

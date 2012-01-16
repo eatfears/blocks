@@ -23,10 +23,12 @@ Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary *MaterialLib)
 	}
 
 	for (int i = 0; i < 6; i++)
+	{
 		for (int j = 1; j < MaterialLib->iNumberOfTextures; j++)
 		{
 			TexurePointerInVisible[i][j] = DisplayedTiles[i].end();
 		}
+	}
 }
 
 Location::~Location(void)

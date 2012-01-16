@@ -2,6 +2,7 @@
 
 #define DEBUG_OUT
 #undef DEBUG_OUT
+
 #define DEBUG_FILE		"1.txt"
 
 #define TORAD(ang)		ang*0.01745329251994329576923690768489

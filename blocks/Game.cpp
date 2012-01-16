@@ -78,64 +78,92 @@ int Game::DrawGLScene()
 	TileInLoc x, y, z;
 	GLuint *tex = wWorld.MaterialLib.texture;
 
-	while(loc != wWorld.lLocations.end())
+
+	for (int i = 0; i < 6; i++)
 	{
-		for (int i = 0; i < 6; i++)
+		for (int itex = 1; itex < wWorld.MaterialLib.iNumberOfTextures; itex++)
 		{
-			auto it = loc->DisplayedTiles[i].begin();
-
-			while(it != loc->DisplayedTiles[i].end())
-			{
-				/*
-				_try 
-				{
-					tile = *(*it);
-					++it;
-				}
-				_except (EXCEPTION_EXECUTE_HANDLER)
-				{
-					glEnd();
-
-					glDisable(GL_LIGHT2);
-
-					return true;
-				}
-				*/
-					loc->GetTilePositionByPointer(*it, &x, &y, &z);
-					
-					if(iCurrentTexture != wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i])
-					{
 #ifdef DEBUG_OUT
-						iTextureChangingNum++;
+			iTextureChangingNum++;
 #endif
-						iCurrentTexture = wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i];
-						glEnd();
-						glBindTexture(GL_TEXTURE_2D, tex[iCurrentTexture]);
-						glBegin(GL_QUADS);
-					}
+			glEnd();
+			glBindTexture(GL_TEXTURE_2D, tex[itex]);
+			glBegin(GL_QUADS);
 
-					DrawTileSide(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, i);
-					++it;
+			loc = wWorld.lLocations.begin();
 
-					/*
-				if(	(abs(tile.sCoordX*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
-					(abs(tile.sCoordY*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
-					(abs(tile.sCoordZ*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
+			while(loc != wWorld.lLocations.end())
+			{
+				auto it = loc->TexurePointerInVisible[i][itex];
+
+				while(it != loc->DisplayedTiles[i].end())
 				{
-					if(iCurrentTexture != wWorld.MaterialLib.mMaterial[tile.cMaterial].iTexture[i])
-					{
-						//iTextureChangingNum++;
-						iCurrentTexture = wWorld.MaterialLib.mMaterial[tile.cMaterial].iTexture[i];
-						glEnd();
-						glBindTexture(GL_TEXTURE_2D, tex[iCurrentTexture]);
-						glBegin(GL_QUADS);
-					}
-					DrawVisibleTileSide(&tile, i);
-				}*/
+					if(itex != wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i])
+						break;
+
+					loc->GetTilePositionByPointer(*it, &x, &y, &z);
+					if(	(abs((x + loc->x*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
+						(abs(y*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
+						(abs((z + loc->z*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
+						DrawTileSide(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, i);
+					
+					++it;
+				}
+				++loc;
 			}
 		}
-		++loc;
 	}
+
+// 	while(loc != wWorld.lLocations.end())
+// 	{
+// 		for (int i = 0; i < 6; i++)
+// 		{
+// 			auto it = loc->DisplayedTiles[i].begin();
+// 
+// 			while(it != loc->DisplayedTiles[i].end())
+// 			{
+// 				/*
+// 				_try 
+// 				{
+// 					tile = *(*it);
+// 					++it;
+// 				}
+// 				_except (EXCEPTION_EXECUTE_HANDLER)
+// 				{
+// 					glEnd();
+// 
+// 					glDisable(GL_LIGHT2);
+// 
+// 					return true;
+// 				}
+// 				*/
+// 	
+// 				loc->GetTilePositionByPointer(*it, &x, &y, &z);
+// 					
+// 					if(	(abs(x + loc->x*LOCATION_SIZE_XZ*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
+// 						(abs(y*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
+// 						(abs(z + loc->z*LOCATION_SIZE_XZ*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
+// 				{
+// 					if(iCurrentTexture != wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i])
+// 					{
+// #ifdef DEBUG_OUT
+// 						iTextureChangingNum++;
+// #endif
+// 						iCurrentTexture = wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i];
+// 						glEnd();
+// 						glBindTexture(GL_TEXTURE_2D, tex[iCurrentTexture]);
+// 						glBegin(GL_QUADS);
+// 					}
+// 
+// 					DrawTileSide(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, i);
+// 				}
+// 
+// 				++it;
+// 
+// 			}
+// 		}
+// 		++loc;
+// 	}
 
 #ifdef DEBUG_OUT
 	FILE *out;
@@ -197,7 +225,7 @@ void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short
 	switch(N)
 	{
 	case TOP:
-		{	
+		{
 			//Верхняя грань
 			glTexCoord2f(1.0f, 0.0f);
 			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
