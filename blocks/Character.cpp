@@ -35,11 +35,11 @@ void Thread( void* pParams )
 
 	VisibleListAccessMutex.Acquire();
 
-	for(int k = 0; k < 16; k++)
+	for(int j = 0; j < 100; j++)
 	{
 		for(int i = 0; i < 16; i++)
 		{
-			for(int j = 0; j < 100; j++)
+			for(int k = 0; k < 16; k++)
 			{
 				//if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
 				//wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);

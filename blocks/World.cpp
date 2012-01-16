@@ -11,7 +11,7 @@ World::World()
 
 World::~World()
 {
-
+	lLocations.clear();
 }
 
 int World::AddLocation(LocInWorld x, LocInWorld z)
@@ -203,7 +203,7 @@ int World::AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool s
 	
 	if(show)
 	{
-		//VisibleListAccessMutex.Acquire();
+		//loc->Acquire();
 		index = loc->AddTile(locx, locy, locz, mat);
 
 		Location *lTempLoc = 0;
@@ -220,7 +220,7 @@ int World::AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool s
 		else HideTile(lTempLoc, iTempIndex, FRONT);
 		if(!FindTile(x, y, z - 1, &lTempLoc, &iTempIndex)) ShowTile(loc, index, FRONT);
 		else HideTile(lTempLoc, iTempIndex, BACK);
-		//VisibleListAccessMutex.Release();
+		//loc->Release();
 	}
 	else loc->AddTile(locx, locy, locz, mat);
 
@@ -246,7 +246,7 @@ int World::RemoveTile(TileInWorld x, TileInWorld y, TileInWorld z, bool show)
 
 	if(show)
 	{
-		//VisibleListAccessMutex.Acquire();
+		//loc->Acquire();
 
 		Location *lTempLoc = 0;
 		int iTempIndex;
@@ -264,7 +264,8 @@ int World::RemoveTile(TileInWorld x, TileInWorld y, TileInWorld z, bool show)
 		else ShowTile(lTempLoc, iTempIndex, BACK);
 
 		loc->RemoveTile(locx, locy, locz);
-		//VisibleListAccessMutex.Release();
+
+		//loc->Release();
 	}
 	else loc->RemoveTile(locx, locy, locz);
 

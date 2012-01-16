@@ -4,7 +4,7 @@
 
 class Mutex
 {
-	//friend class Lock;
+	friend class Lock;
 public:
 	Mutex () { InitializeCriticalSection(& _critSection); }
 	~Mutex () { DeleteCriticalSection(& _critSection); }

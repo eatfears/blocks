@@ -113,11 +113,6 @@ int Game::DrawGLScene()
 					}
 					_except (EXCEPTION_EXECUTE_HANDLER)
 					{
-						//glEnd();
-
-						//glDisable(GL_LIGHT2);
-
-						//return true;
 						break;
 					}
 				}
