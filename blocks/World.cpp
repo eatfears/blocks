@@ -6,7 +6,7 @@ extern Mutex VisibleListAccessMutex;
 
 World::World()
 {
-
+	skipbuild = false;
 }
 
 World::~World()
@@ -14,16 +14,27 @@ World::~World()
 
 }
 
-void World::AddLocation(LocInWorld x, LocInWorld z)
+int World::AddLocation(LocInWorld x, LocInWorld z)
 {
-	Location loc(x, z, &MaterialLib);
-	lLocations.push_front(loc);
+	Location lLoc(x, z, &MaterialLib);
+
+	auto locIterator = lLocations.begin();
+
+	while(locIterator != lLocations.end())
+	{
+		if((locIterator->x == x)&&(locIterator->z == z)) return 0;
+		++locIterator;
+	}
+
+	lLocations.push_front(lLoc);
+	return 1;
 }
 
 void World::BuildWorld()
 {
 	MaterialLib.InitMaterials();
 
+	/*
 	for(int i = -10; i < 10; i++)
 	for(int j = -10; j < 10; j++)
 	{
@@ -31,11 +42,11 @@ void World::BuildWorld()
 	}
 	//AddLocation(0,0);
 
-	for (int j = 0; j < 20; j++)
+	for(int j = 0; j < 20; j++)
 	{
-		for (int i = -60; i < 60; i++)
+		for(int i = -60; i < 60; i++)
 		{
-			for (int k = -60; k < 60; k++)
+			for(int k = -60; k < 60; k++)
 			{
 				AddTile(i, j, k, MAT_GRASS, true);
 				//AddTile(i, j, k, rand()%4+1, true);
@@ -44,7 +55,7 @@ void World::BuildWorld()
 	}
 	/**/
 	/*
-	for (int k = 20; k > 0; k--)
+	for(int k = 20; k > 0; k--)
 	{
 		//AddTile(i, j, k, MAT_GRASS, true);
 		//if(rand()%2)AddTile(0, k, 0, rand()%4+1, true);
@@ -64,9 +75,9 @@ void World::BuildWorld()
 	AddTile(-1,0,0,MAT_STONE);
 	/**/
 	/*
-	for (int i = 0 ; i< 40 ; i++)
+	for(int i = 0 ; i< 40 ; i++)
 	{
-		for (int k = 0 ; k < 1 ; k++)
+		for(int k = 0 ; k < 1 ; k++)
 		{
 			AddTile(rand()%100-50,k,rand()%100-50,MAT_STONE);
 			AddTile(rand()%100-50,k,rand()%100-50,MAT_SAND);
@@ -76,7 +87,7 @@ void World::BuildWorld()
 		}
 	}
 	/**/
-	//for (int i = 0; i < 10; i++) AddTile(i,-1,0,rand()%4+1);
+	//for(int i = 0; i < 10; i++) AddTile(i,-1,0,rand()%4+1);
 
 	/*
 	AddTile(1,-1,0,MAT_DIRT);
@@ -121,64 +132,76 @@ Location* World::GetLocByTile( TileInWorld x, TileInWorld z )
 	return &*loc;
 }
 
-// void World::DrawLoadedTiles()
-// {
-// 	if(skipbuild) {building = true; return;}
-// 	else building = false;
-// 
-// 	VisibleListAccessMutex.Acquire();
-// 	skipbuild = true;
-// 	signed short x, y, z;
-// 	for (int i = 0; i < 0x100000; i++)
-// 	{
-// 		Tiles::iterator it = tTiles[i].begin();
-// 
-// 		while(it != tTiles[i].end())
-// 		{
-// 			x = it->sCoordX;
-// 			y = it->sCoordY;
-// 			z = it->sCoordZ;
-// 
-// 			if(!FindTile(x, y + 1, z)) ShowTile(&*it,TOP);
-// 			else HideTile(x, y + 1, z, DOWN);
-// 			if(!FindTile(x, y - 1, z)) ShowTile(&*it,DOWN);
-// 			else HideTile(x, y - 1, z, TOP);
-// 			if(!FindTile(x + 1, y, z)) ShowTile(&*it,RIGHT);
-// 			else HideTile(x + 1, y, z, LEFT);
-// 			if(!FindTile(x - 1, y, z)) ShowTile(&*it,LEFT);
-// 			else HideTile(x - 1, y, z, RIGHT);
-// 			if(!FindTile(x, y, z + 1)) ShowTile(&*it,BACK);
-// 			else HideTile(x, y, z + 1, FRONT);
-// 			if(!FindTile(x, y, z - 1)) ShowTile(&*it,FRONT);
-// 			else HideTile(x, y, z - 1, BACK);
-// 			it++;
-// 		}
-// 	}
-// 	skipbuild = false;
-// 
-// 	VisibleListAccessMutex.Release();
-// 
-// 	if (building)
-// 		DrawLoadedTiles();
-// }
+void World::DrawLoadedTiles()
+{
+	//if(skipbuild) {building = true; return;}
+	//else building = false;
+
+	VisibleListAccessMutex.Acquire();
+	//skipbuild = true;
+
+	auto loc = lLocations.begin();
+
+	while(loc != lLocations.end())
+	{
+		int index = 0;
+
+		while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
+		{
+			TileInLoc x, y, z;
+			loc->GetTilePositionByPointer(loc->tTile + index, &x, &y, &z);
+			TileInWorld xx, yy, zz;
+
+			xx = x + LOCATION_SIZE_XZ*loc->x;
+			yy = y;
+			zz = z + LOCATION_SIZE_XZ*loc->z;
+
+			if(loc->tTile[index].cMaterial != MAT_NO)
+			{
+				Location *tempLoc;
+				int tempIndex;
+				if(!FindTile(xx, yy + 1, zz, &tempLoc, &tempIndex)) ShowTile(&*loc, index, TOP);
+				else HideTile(&*tempLoc, tempIndex, DOWN);
+				if(!FindTile(xx, yy - 1, zz, &tempLoc, &tempIndex)) ShowTile(&*loc, index, DOWN);
+				else HideTile(&*tempLoc, tempIndex, TOP);
+				if(!FindTile(xx + 1, yy, zz, &tempLoc, &tempIndex)) ShowTile(&*loc, index, RIGHT);
+				else HideTile(&*tempLoc, tempIndex, LEFT);
+				if(!FindTile(xx - 1, yy, zz, &tempLoc, &tempIndex)) ShowTile(&*loc, index, LEFT);
+				else HideTile(&*tempLoc, tempIndex, RIGHT);
+				if(!FindTile(xx, yy, zz + 1, &tempLoc, &tempIndex)) ShowTile(&*loc, index, BACK);
+				else HideTile(&*tempLoc, tempIndex, FRONT);
+				if(!FindTile(xx, yy, zz - 1, &tempLoc, &tempIndex)) ShowTile(&*loc, index, FRONT);
+				else HideTile(&*tempLoc, tempIndex, BACK);
+			}
+
+			index++;
+		}
+		++loc;
+	}
+	//skipbuild = false;
+
+	VisibleListAccessMutex.Release();
+
+	//if(building) DrawLoadedTiles();
+}
 
 int World::AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool show)
 {
-	if ((y < 0)||(y >= LOCATION_SIZE_Y)) return 0;
+	if((y < 0)||(y >= LOCATION_SIZE_Y)) return 0;
 
 	if(FindTile(x, y, z)) return 0;
 
 	Location *loc = GetLocByTile(x, z);
 	int index; 
 
-	if (loc == NULL) return 0;
+	if(loc == NULL) return 0;
 
 	TileInLoc locx, locy, locz;
 
 	GetPosInLocByWorld(x, y, z, &locx, &locy, &locz);
 
 	
-	if (show)
+	if(show)
 	{
 		//VisibleListAccessMutex.Acquire();
 		index = loc->AddTile(locx, locy, locz, mat);
@@ -206,14 +229,14 @@ int World::AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool s
 
 int World::RemoveTile(TileInWorld x, TileInWorld y, TileInWorld z, bool show)
 {
-	if ((y < 0)||(y >= LOCATION_SIZE_Y)) return 0;
+	if((y < 0)||(y >= LOCATION_SIZE_Y)) return 0;
 
 	if(!FindTile(x, y, z)) return 0;
 
 	Location *loc = GetLocByTile(x, z);
 	int index; 
 
-	if (loc == NULL) return 0;
+	if(loc == NULL) return 0;
 
 	TileInLoc locx, locy, locz;
 
@@ -221,7 +244,7 @@ int World::RemoveTile(TileInWorld x, TileInWorld y, TileInWorld z, bool show)
 
 	index = loc->GetIndexByPosition(locx, locy, locz);
 
-	if (show)
+	if(show)
 	{
 		//VisibleListAccessMutex.Acquire();
 
@@ -266,11 +289,11 @@ void World::HideTile(Location *loc, int index, char N)
  
 int World::FindTile(TileInWorld x, TileInWorld y, TileInWorld z, Location **loc, int *index)
 {
-	if ((y < 0)||(y >= LOCATION_SIZE_Y)) { loc = NULL; *index = 0; return 0;}
+	if((y < 0)||(y >= LOCATION_SIZE_Y)) { loc = NULL; *index = 0; return 0;}
 
 	(*loc) = GetLocByTile(x, z);
 
-	if ((*loc) == NULL) { *index = 0; return 0;}
+	if((*loc) == NULL) { *index = 0; return 0;}
 
 	TileInLoc locx, locy, locz;
 
@@ -278,7 +301,7 @@ int World::FindTile(TileInWorld x, TileInWorld y, TileInWorld z, Location **loc,
 
 	*index = locx*LOCATION_SIZE_XZ + locz + locy*LOCATION_SIZE_XZ*LOCATION_SIZE_XZ;
 
-	if ((*loc)->GetTileMaterial(locx, locy, locz) == MAT_NO)
+	if((*loc)->GetTileMaterial(locx, locy, locz) == MAT_NO)
 		return 0;
 
 	return 1;
@@ -286,17 +309,17 @@ int World::FindTile(TileInWorld x, TileInWorld y, TileInWorld z, Location **loc,
 
 int World::FindTile(TileInWorld x, TileInWorld y, TileInWorld z)
 {
-	if (y < 0) return 0;
+	if(y < 0) return 0;
 
 	Location *loc = GetLocByTile(x, z);
 
-	if (loc == NULL) return 0;
+	if(loc == NULL) return 0;
 
 	TileInLoc locx, locy, locz;
 
 	GetPosInLocByWorld(x, y, z, &locx, &locy, &locz);
 
-	if (loc->GetTileMaterial(locx, locy, locz) == MAT_NO)
+	if(loc->GetTileMaterial(locx, locy, locz) == MAT_NO)
 		return 0;
 
 	return 1;

@@ -18,13 +18,13 @@ MaterialLibrary::~MaterialLibrary()
 
 void MaterialLibrary::InitMaterials()
 {
-	for (int i = 0; i < MAT_NUMBER; i++)
+	for(int i = 0; i < MAT_NUMBER; i++)
 	{
 		switch(i)
 		{
 		case MAT_NO: 
 			{
-				for (int j = 0; j < 6; j++)
+				for(int j = 0; j < 6; j++)
 					mMaterial[MAT_NO].iTexture[j] = TEX_NO; 
 			}
 			break;		
@@ -32,7 +32,7 @@ void MaterialLibrary::InitMaterials()
 			{
 				mMaterial[MAT_DIRT].iTexture[TOP] = TEX_DIRT_TOP; 
 				mMaterial[MAT_DIRT].iTexture[DOWN] = TEX_DIRT_DOWN; 
-				for (int j = 2; j < 6; j++)
+				for(int j = 2; j < 6; j++)
 					mMaterial[MAT_DIRT].iTexture[j] = TEX_DIRT_SIDE; 
 			}
 			break;		
@@ -40,7 +40,7 @@ void MaterialLibrary::InitMaterials()
 			{
 				mMaterial[MAT_GRASS].iTexture[TOP] = TEX_GRASS_TOP; 
 				mMaterial[MAT_GRASS].iTexture[DOWN] = TEX_GRASS_DOWN; 
-				for (int j = 2; j < 6; j++)
+				for(int j = 2; j < 6; j++)
 					mMaterial[MAT_GRASS].iTexture[j] = TEX_GRASS_SIDE; 
 			}
 			break;		
@@ -48,7 +48,7 @@ void MaterialLibrary::InitMaterials()
 			{
 				mMaterial[MAT_STONE].iTexture[TOP] = TEX_STONE_TOP; 
 				mMaterial[MAT_STONE].iTexture[DOWN] = TEX_STONE_DOWN; 
-				for (int j = 2; j < 6; j++)
+				for(int j = 2; j < 6; j++)
 					mMaterial[MAT_STONE].iTexture[j] = TEX_STONE_SIDE; 
 			}
 			break;		
@@ -56,13 +56,13 @@ void MaterialLibrary::InitMaterials()
 			{
 				mMaterial[MAT_SAND].iTexture[TOP] = TEX_SAND_TOP; 
 				mMaterial[MAT_SAND].iTexture[DOWN] = TEX_SAND_DOWN; 
-				for (int j = 2; j < 6; j++)
+				for(int j = 2; j < 6; j++)
 					mMaterial[MAT_SAND].iTexture[j] = TEX_SAND_SIDE; 
 			}
 			break;
 		default:
 			{
-				for (int j = 0; j < 6; j++)
+				for(int j = 0; j < 6; j++)
 					mMaterial[i].iTexture[j] = TEX_NO; 
 			}
 			break;
@@ -89,12 +89,12 @@ void MaterialLibrary::LoadGLTextures()
 	BITMAP  BMP;                    // структура изображения
 	byte  Texture[]={0, IDB_DIRT, IDB_GRASS_TOP, IDB_GRASS_SIDE, IDB_STONE, IDB_SAND};
 
-	for (int i = 0; i < iNumberOfTextures; i++)	// цикл по всем ID (изображений)
+	for(int i = 0; i < iNumberOfTextures; i++)	// цикл по всем ID (изображений)
 	{
 		// Создание текстуры
 		hBMP=(HBITMAP)LoadImage(GetModuleHandle(NULL),MAKEINTRESOURCE(Texture[i]), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
 
-		if (hBMP)				// существует ли изображение?
+		if(hBMP)				// существует ли изображение?
 		{						// если да …
 
 			GetObject(hBMP,sizeof(BMP), &BMP);

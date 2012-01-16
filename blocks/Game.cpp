@@ -79,9 +79,9 @@ int Game::DrawGLScene()
 	GLuint *tex = wWorld.MaterialLib.texture;
 
 
-	for (int i = 0; i < 6; i++)
+	for(int i = 0; i < 6; i++)
 	{
-		for (int itex = 1; itex < wWorld.MaterialLib.iNumberOfTextures; itex++)
+		for(int itex = 1; itex < wWorld.MaterialLib.iNumberOfTextures; itex++)
 		{
 #ifdef DEBUG_OUT
 			iTextureChangingNum++;
@@ -98,16 +98,28 @@ int Game::DrawGLScene()
 
 				while(it != loc->DisplayedTiles[i].end())
 				{
-					if(itex != wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i])
-						break;
+					_try 
+					{
+						if(itex != wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i])
+							break;
 
-					loc->GetTilePositionByPointer(*it, &x, &y, &z);
-					if(	(abs((x + loc->x*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
-						(abs(y*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
-						(abs((z + loc->z*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
-						DrawTileSide(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, i);
-					
-					++it;
+						loc->GetTilePositionByPointer(*it, &x, &y, &z);
+						if(	(abs((x + loc->x*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
+							(abs(y*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
+							(abs((z + loc->z*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
+							DrawTileSide(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, i);
+
+						++it;
+					}
+					_except (EXCEPTION_EXECUTE_HANDLER)
+					{
+						//glEnd();
+
+						//glDisable(GL_LIGHT2);
+
+						//return true;
+						break;
+					}
 				}
 				++loc;
 			}
@@ -116,7 +128,7 @@ int Game::DrawGLScene()
 
 // 	while(loc != wWorld.lLocations.end())
 // 	{
-// 		for (int i = 0; i < 6; i++)
+// 		for(int i = 0; i < 6; i++)
 // 		{
 // 			auto it = loc->DisplayedTiles[i].begin();
 // 
@@ -189,7 +201,7 @@ void Game::DrawInterface()
 	glColor3d(0.1, 0.1, 0.1);
 	glLineWidth (2.0);
 	glBegin(GL_QUADS);
- 	if (wWorld.FindTile(player.sCenterCubeCoordX,player.sCenterCubeCoordY,player.sCenterCubeCoordZ))
+ 	if(wWorld.FindTile(player.sCenterCubeCoordX,player.sCenterCubeCoordY,player.sCenterCubeCoordZ))
  		for(int i = 0; i < 6; i++)
  			DrawTileSide(player.sCenterCubeCoordX, player.sCenterCubeCoordY, player.sCenterCubeCoordZ, i);
 	glEnd();

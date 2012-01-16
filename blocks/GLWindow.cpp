@@ -16,7 +16,7 @@ GLWindow::~GLWindow()			// Корректное разрушение окна
 
 void GLWindow::KillGLWindow()
 {
-	if (fullscreen)										// Are We In Fullscreen Mode?
+	if(fullscreen)										// Are We In Fullscreen Mode?
 	{
 		ChangeDisplaySettings(NULL,0);					// If So Switch Back To The Desktop
 		ShowCursor(TRUE);								// Show Mouse Pointer
@@ -137,7 +137,7 @@ bool GLWindow::CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int 
 		return false;									// Выход и возвращение функцией значения false
 	}
 
-	if (fullscreen)												// Attempt Fullscreen Mode?
+	if(fullscreen)												// Attempt Fullscreen Mode?
 	{
 		DEVMODE dmScreenSettings;								// Device Mode
 		memset(&dmScreenSettings,0,sizeof(dmScreenSettings));	// Makes Sure Memory's Cleared
@@ -148,10 +148,10 @@ bool GLWindow::CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int 
 		dmScreenSettings.dmFields=DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT;
 
 		// Try To Set Selected Mode And Get Results.  NOTE: CDS_FULLSCREEN Gets Rid Of Start Bar.
-		if (ChangeDisplaySettings(&dmScreenSettings,CDS_FULLSCREEN)!=DISP_CHANGE_SUCCESSFUL)
+		if(ChangeDisplaySettings(&dmScreenSettings,CDS_FULLSCREEN)!=DISP_CHANGE_SUCCESSFUL)
 		{
 			// If The Mode Fails, Offer Two Options.  Quit Or Use Windowed Mode.
-			if (MessageBox(NULL,"The Requested Fullscreen Mode Is Not Supported By\nYour Video Card. Use Windowed Mode Instead?","NeHe GL",MB_YESNO|MB_ICONEXCLAMATION)==IDYES)
+			if(MessageBox(NULL,"The Requested Fullscreen Mode Is Not Supported By\nYour Video Card. Use Windowed Mode Instead?","NeHe GL",MB_YESNO|MB_ICONEXCLAMATION)==IDYES)
 			{
 				fullscreen=FALSE;		// Windowed Mode Selected.  Fullscreen = FALSE
 			}
@@ -164,7 +164,7 @@ bool GLWindow::CreateGLWindow( LPCSTR title, GLsizei width, GLsizei height, int 
 		}
 	}
 
-	if (fullscreen)												// Are We Still In Fullscreen Mode?
+	if(fullscreen)												// Are We Still In Fullscreen Mode?
 	{
 		dwExStyle=WS_EX_APPWINDOW;								// Window Extended Style
 		dwStyle=WS_POPUP;										// Windows Style

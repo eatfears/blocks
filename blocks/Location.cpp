@@ -10,21 +10,21 @@ Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary *MaterialLib)
 	DisplayedTiles = new std::list<Tile *>[6];
 	TexurePointerInVisible = new std::list<Tile*>::iterator *[6];
 	
-	for (int i = 0; i < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y; i++)
+	for(int i = 0; i < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y; i++)
 	{	tTile[i].cMaterial = MAT_NO;
-		for (int N = 0; N < 6; N++)
+		for(int N = 0; N < 6; N++)
 			tTile[i].bVisible[N] = false;
 	}
 	bVisible = false;
 
-	for (int i = 0; i < 6; i++)
+	for(int i = 0; i < 6; i++)
 	{
 		TexurePointerInVisible[i] = new std::list<Tile*>::iterator [MaterialLib->iNumberOfTextures];
 	}
 
-	for (int i = 0; i < 6; i++)
+	for(int i = 0; i < 6; i++)
 	{
-		for (int j = 1; j < MaterialLib->iNumberOfTextures; j++)
+		for(int j = 1; j < MaterialLib->iNumberOfTextures; j++)
 		{
 			TexurePointerInVisible[i][j] = DisplayedTiles[i].end();
 		}
@@ -35,7 +35,7 @@ Location::~Location(void)
 {
 // 	delete[] tTile;
 // 
-// 	for (int i = 0; i < 6; i++)
+// 	for(int i = 0; i < 6; i++)
 // 	{
 // 		delete[] TexurePointerInVisible[i];
 // 	}
@@ -44,7 +44,7 @@ Location::~Location(void)
 
 int Location::AddTile(TileInLoc x, TileInLoc y, TileInLoc z, char mat)
 {
-	if ((GetTileMaterial(x, y, z) != MAT_NO)||(GetTileMaterial(x, y, z) == -1)) return -1;
+	if((GetTileMaterial(x, y, z) != MAT_NO)||(GetTileMaterial(x, y, z) == -1)) return -1;
 
 	TileInLoc index = SetTileMaterial(x, y, z, mat);
 	
@@ -53,7 +53,7 @@ int Location::AddTile(TileInLoc x, TileInLoc y, TileInLoc z, char mat)
 
 int Location::RemoveTile(TileInLoc x, TileInLoc y, TileInLoc z)
 {
-	if ((GetTileMaterial(x, y, z) == MAT_NO)||(GetTileMaterial(x, y, z) == -1)) return -1;
+	if((GetTileMaterial(x, y, z) == MAT_NO)||(GetTileMaterial(x, y, z) == -1)) return -1;
 
 	TileInLoc index = SetTileMaterial(x, y, z, MAT_NO);
 
@@ -62,8 +62,9 @@ int Location::RemoveTile(TileInLoc x, TileInLoc y, TileInLoc z)
 
 void Location::ShowTile(Tile *tTile, char N)
 {
-	if (!tTile) return;
-	if (tTile->bVisible[N]) return;
+	if(!tTile) return;
+	if(tTile->cMaterial == MAT_NO) return;
+	if(tTile->bVisible[N]) return;
 	
 	int iTex = MaterialLib->mMaterial[tTile->cMaterial].iTexture[N];
 	auto it = TexurePointerInVisible[N][iTex];
@@ -76,8 +77,9 @@ void Location::ShowTile(Tile *tTile, char N)
 
 void Location::HideTile(Tile *tTile, char N)
 {
-	if (!tTile) return;
-	if (!tTile->bVisible[N]) return;
+	if(!tTile) return;
+	if(tTile->cMaterial == MAT_NO) return;
+	if(!tTile->bVisible[N]) return;
 
 	int iTex = MaterialLib->mMaterial[tTile->cMaterial].iTexture[N];
 	auto it = TexurePointerInVisible[N][iTex];
@@ -88,10 +90,8 @@ void Location::HideTile(Tile *tTile, char N)
 		if(*it == tTile) break;
 		++it;
 	}
-	if (it == DisplayedTiles[N].end()) return;
+	if(it == DisplayedTiles[N].end()) return;
 
-	(*it)->bVisible[N] = false;
-	
 	Tile *t1 = (*it), *t2 = (*it2);
 	
 	if(t1 == t2)
@@ -107,13 +107,14 @@ void Location::HideTile(Tile *tTile, char N)
 		}
 	}
 
+	(*it)->bVisible[N] = false;
 	DisplayedTiles[N].erase(it);
 	return;
 }
 
 char Location::GetTileMaterial(TileInLoc x, TileInLoc y, TileInLoc z)
 {
-	if ((x >= LOCATION_SIZE_XZ)||(z >= LOCATION_SIZE_XZ)||(y >= LOCATION_SIZE_Y))
+	if((x >= LOCATION_SIZE_XZ)||(z >= LOCATION_SIZE_XZ)||(y >= LOCATION_SIZE_Y))
 	{
 		return -1;
 	}
@@ -122,7 +123,7 @@ char Location::GetTileMaterial(TileInLoc x, TileInLoc y, TileInLoc z)
 
 int Location::SetTileMaterial(TileInLoc x, TileInLoc y, TileInLoc z, char cMat)
 {
-	if ((x >= LOCATION_SIZE_XZ)||(z >= LOCATION_SIZE_XZ)||(y >= LOCATION_SIZE_Y))
+	if((x >= LOCATION_SIZE_XZ)||(z >= LOCATION_SIZE_XZ)||(y >= LOCATION_SIZE_Y))
 		return -1;
 
 	int index = GetIndexByPosition(x, y, z);
@@ -134,7 +135,7 @@ int Location::GetTilePositionByPointer(Tile *tCurrentTile, TileInLoc *x, TileInL
 {
 	int t = tCurrentTile - tTile;
 
-	if ((t < 0)||(t >= LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y))
+	if((t < 0)||(t >= LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y))
 		return -1;
 
 	*z  = t%LOCATION_SIZE_XZ;
