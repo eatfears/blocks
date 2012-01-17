@@ -12,6 +12,7 @@ public:
 	~Character();
 
 	GLdouble dPositionX, dPositionY, dPositionZ;
+//	LocInWorld lnwPositionX, lnwPositionZ;
 	GLdouble dSpinY, dSpinX;
 	GLdouble dVelocityX, dVelocityY, dVelocityZ;
 

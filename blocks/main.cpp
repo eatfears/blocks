@@ -159,6 +159,8 @@ int WINAPI WinMain(  HINSTANCE  hInstance,
 
 
 
+// 	gGame.player.lnwPositionX = 0;
+// 	gGame.player.lnwPositionZ = 0;
 	gGame.player.dPositionY = 300.0;
 	gGame.InitGame(&glwWnd);
 

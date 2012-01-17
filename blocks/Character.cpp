@@ -9,14 +9,14 @@
 #include "Mutex.h"
 Mutex VisibleListAccessMutex, m2;
 
-typedef struct s1
+typedef struct params
 {
 	signed short x;
 	signed short z;
 	World *wWorld;
+	//Mutex mParam;
 } Param;
 
-Param par = {0, 0, 0};
 Param par2 = {0, 0, 0};
 
 void Thread( void* pParams )
@@ -45,7 +45,8 @@ void Thread( void* pParams )
 				//wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
 				
 				//if(rand()%100) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_GRASS, true);
-				if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, true);
+				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, true);
+				if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_STONE, true);
 			}
 		}
 	}
@@ -197,8 +198,8 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 	if(ko > WALK_SPEED*WALK_SPEED*SPRINT_KOEF*SPRINT_KOEF)
 	{
 		ko = pow(ko, 0.5);
-		dVelocityX = dVelocityX*step/ko;
-		dVelocityZ = dVelocityZ*step/ko;
+		dVelocityX = dVelocityX*WALK_SPEED*SPRINT_KOEF/ko;
+		dVelocityZ = dVelocityZ*WALK_SPEED*SPRINT_KOEF/ko;
 	}
 
 	if(bKeyboard[VK_SPACE])
@@ -285,12 +286,14 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 	{
 		if(bKeyboardDown['4'])
 		{
+			static Param par = {0, 0, 0};
+
 			par.wWorld = &wWorld;
 
 			HANDLE hThread;
 			hThread = (HANDLE) _beginthread( Thread, 0, &par );
 
-			WaitForMultipleObjects(1, &hThread, TRUE, 30);
+			WaitForSingleObject(hThread, 100);
 
 			m2.Acquire();
 			par.x++;
@@ -446,6 +449,11 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 	}*/
 	//falling = 1;
 
+// 	if(dPositionX >= LOCATION_SIZE_XZ*TILE_SIZE) { dPositionX -= LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionX++;}
+// 	if(dPositionX < 0) { dPositionX += LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionX--;}
+// 	if(dPositionZ >= LOCATION_SIZE_XZ*TILE_SIZE) { dPositionZ -= LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionZ++;}
+// 	if(dPositionZ < 0) { dPositionZ += LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionZ--;}
+
 }
 
 void Character::GetCenterCoords(GLsizei width, GLsizei height)
@@ -461,4 +469,7 @@ void Character::GetCenterCoords(GLsizei width, GLsizei height)
 
 	glReadPixels(width/2, height/2, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &vz);
 	gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, &dDispCenterCoordX, &dDispCenterCoordY, &dDispCenterCoordZ);
+	
+// 	dDispCenterCoordX -= lnwPositionX*LOCATION_SIZE_XZ*TILE_SIZE;
+// 	dDispCenterCoordZ -= lnwPositionZ*LOCATION_SIZE_XZ*TILE_SIZE;
 }

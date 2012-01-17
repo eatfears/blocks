@@ -104,9 +104,9 @@ int Game::DrawGLScene()
 							break;
 
 						loc->GetTilePositionByPointer(*it, &x, &y, &z);
-						if(	(abs((x + loc->x*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
+						if(	(abs((x + (loc->x/*-player.lnwPositionX*/)*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
 							(abs(y*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
-							(abs((z + loc->z*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
+							(abs((z + (loc->z/*-player.lnwPositionZ*/)*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
 							DrawTileSide(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, i);
 
 						++it;
@@ -223,8 +223,13 @@ void Game::DrawInterface()
 //void Game::DrawVisibleTileSide(Tile *tTile, char N)
 void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short sZcoord, char N)
 {
-	//GLdouble dXcoord = tTile->sCoordX*TILE_SIZE, dYcoord = tTile->sCoordY*TILE_SIZE, dZcoord = tTile->sCoordZ*TILE_SIZE;
-	GLdouble dXcoord = sXcoord*TILE_SIZE, dYcoord = sYcoord*TILE_SIZE, dZcoord = sZcoord*TILE_SIZE;
+	GLdouble 
+// 		dXcoord = (sXcoord-player.lnwPositionX*LOCATION_SIZE_XZ)*TILE_SIZE, 
+// 		dYcoord = sYcoord*TILE_SIZE, 
+// 		dZcoord = (sZcoord-player.lnwPositionZ*LOCATION_SIZE_XZ)*TILE_SIZE;
+		dXcoord = sXcoord*TILE_SIZE, 
+		dYcoord = sYcoord*TILE_SIZE, 
+		dZcoord = sZcoord*TILE_SIZE;
 
 	dXcoord -= TILE_SIZE/2;
 	dZcoord -= TILE_SIZE/2;
