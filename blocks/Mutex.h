@@ -31,3 +31,22 @@ public:
 private:
 	Mutex & _mutex;
 };
+
+class CriticalSection
+{
+public:
+	CriticalSection() {
+		::InitializeCriticalSection(&Section);
+	}
+	~CriticalSection() {
+		::DeleteCriticalSection(&Section);
+	}
+	void Enter() {
+		::EnterCriticalSection(&Section);
+	}
+	void Leave() {
+		::LeaveCriticalSection(&Section);
+	}
+private:
+	CRITICAL_SECTION Section;
+};

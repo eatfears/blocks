@@ -7,6 +7,14 @@ extern Mutex VisibleListAccessMutex;
 World::World()
 {
 	skipbuild = false;
+
+
+	parget = CreateEvent(
+		NULL,
+		false,
+		false,
+		NULL
+		);
 }
 
 World::~World()
@@ -203,9 +211,10 @@ int World::AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool s
 	
 	if(show)
 	{
-		//loc->Acquire();
+		//DWORD dwWaitResult; 
+		//dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
 		index = loc->AddTile(locx, locy, locz, mat);
-
+	
 		Location *lTempLoc = 0;
 		int iTempIndex;
 		if(!FindTile(x, y + 1, z, &lTempLoc, &iTempIndex)) ShowTile(loc, index, TOP);
@@ -220,7 +229,7 @@ int World::AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool s
 		else HideTile(lTempLoc, iTempIndex, FRONT);
 		if(!FindTile(x, y, z - 1, &lTempLoc, &iTempIndex)) ShowTile(loc, index, FRONT);
 		else HideTile(lTempLoc, iTempIndex, BACK);
-		//loc->Release();
+		//ReleaseMutex(loc->mutex);
 	}
 	else loc->AddTile(locx, locy, locz, mat);
 
@@ -246,8 +255,6 @@ int World::RemoveTile(TileInWorld x, TileInWorld y, TileInWorld z, bool show)
 
 	if(show)
 	{
-		//loc->Acquire();
-
 		Location *lTempLoc = 0;
 		int iTempIndex;
 		if(!FindTile(x, y + 1, z, &lTempLoc, &iTempIndex)) HideTile(loc, index, TOP);
@@ -265,7 +272,6 @@ int World::RemoveTile(TileInWorld x, TileInWorld y, TileInWorld z, bool show)
 
 		loc->RemoveTile(locx, locy, locz);
 
-		//loc->Release();
 	}
 	else loc->RemoveTile(locx, locy, locz);
 
@@ -276,7 +282,11 @@ void World::ShowTile(Location *loc, int index, char N)
 {
 	if(!loc->tTile[index].bVisible[N])
 	{
+		DWORD dwWaitResult; 
+		//dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
+
 		loc->ShowTile(loc->tTile + index, N);
+		//ReleaseMutex(loc->mutex);
 	}
 }
 
@@ -284,7 +294,11 @@ void World::HideTile(Location *loc, int index, char N)
 {
 	if(loc->tTile[index].bVisible[N])
 	{
+		DWORD dwWaitResult; 
+		//dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
+
 		loc->HideTile(loc->tTile + index, N);
+		//ReleaseMutex(loc->mutex);
 	}
 }
  

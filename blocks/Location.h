@@ -48,5 +48,8 @@ public:
 // 
 // private:
 // 	Mutex AccessMutex;
+
+	HANDLE mutex;
+
 };
 

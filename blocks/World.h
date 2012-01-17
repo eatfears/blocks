@@ -30,5 +30,7 @@ public:
 
 	bool building;
 	bool skipbuild;
+
+	HANDLE parget;
 };
 

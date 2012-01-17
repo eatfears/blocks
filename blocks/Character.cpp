@@ -7,7 +7,7 @@
 
 #include "World.h"
 #include "Mutex.h"
-Mutex VisibleListAccessMutex, m2;
+Mutex VisibleListAccessMutex;;
 
 typedef struct params
 {
@@ -21,18 +21,25 @@ Param par2 = {0, 0, 0};
 
 void Thread( void* pParams )
 {
-	m2.Acquire();
 	Param pParameters = *(Param*)pParams;
 	signed short x = pParameters.x;
 	signed short z = pParameters.z;
-	m2.Release();
 	World &wWorld = *pParameters.wWorld;
+
+	SetEvent(wWorld.parget);
 
 	HANDLE threadHandle = GetCurrentThread();
 	SetThreadPriority(threadHandle, THREAD_PRIORITY_ABOVE_NORMAL);
 
 	if(!wWorld.AddLocation(x,z)) return;
 
+	auto loc = wWorld.lLocations.begin();
+	while (loc != wWorld.lLocations.end())
+	{
+		if(loc->x == x && loc->z == z)
+			break;
+		++loc;
+	}
 	VisibleListAccessMutex.Acquire();
 
 	for(int j = 0; j < 100; j++)
@@ -53,6 +60,8 @@ void Thread( void* pParams )
 	VisibleListAccessMutex.Release();
 
 	//wWorld.DrawLoadedTiles();
+
+	_endthread();
 }
 // 
 // void Thread2( void* pParams )
@@ -88,8 +97,9 @@ void Thread( void* pParams )
 Character::Character()
 {
 	bFalling = true;
-	start_tr = true;
 	for(int i = 0; i < 256; i++) bKeyboardDown[i] = true;
+
+
 }
 
 Character::~Character()
@@ -286,23 +296,25 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 	{
 		if(bKeyboardDown['4'])
 		{
-			static Param par = {0, 0, 0};
-
-			par.wWorld = &wWorld;
-
-			HANDLE hThread;
-			hThread = (HANDLE) _beginthread( Thread, 0, &par );
-
-			WaitForSingleObject(hThread, 100);
-
-			m2.Acquire();
+			static Param par = {-1, 0, 0};
 			par.x++;
 			if(par.x == 10)
 			{
 				par.x = 0;
 				par.z++;
 			}
-			m2.Release();
+
+			par.wWorld = &wWorld;
+
+			HANDLE hThread;
+			hThread = (HANDLE) _beginthread( Thread, 0, &par);//&Param(par) );
+
+			//WaitForSingleObject(hThread, 30);
+
+			WaitForSingleObject(wWorld.parget, INFINITE);
+			ResetEvent(wWorld.parget);
+
+			//CloseHandle(hThread);
 			//bKeyboardDown['4'] = false;
 		}
 	}
