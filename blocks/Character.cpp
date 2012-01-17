@@ -14,7 +14,6 @@ typedef struct params
 	signed short x;
 	signed short z;
 	World *wWorld;
-	//Mutex mParam;
 } Param;
 
 Param par2 = {0, 0, 0};
@@ -29,18 +28,25 @@ void Thread( void* pParams )
 	SetEvent(wWorld.parget);
 
 	HANDLE threadHandle = GetCurrentThread();
-	SetThreadPriority(threadHandle, THREAD_PRIORITY_ABOVE_NORMAL);
+	SetThreadPriority(threadHandle, THREAD_PRIORITY_BELOW_NORMAL);
 
-	if(!wWorld.AddLocation(x,z)) return;
+	DWORD dwWaitResult; 
+	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
+	auto loc = wWorld.AddLocation(x,z);
+	if(!loc) {_endthread(); return;}
+	ReleaseMutex(wWorld.mutex);
 
-	auto loc = wWorld.lLocations.begin();
-	while (loc != wWorld.lLocations.end())
-	{
-		if(loc->x == x && loc->z == z)
-			break;
-		++loc;
-	}
-	VisibleListAccessMutex.Acquire();
+// 
+// 	auto loc = wWorld.lLocations.begin();
+// 	while (loc != wWorld.lLocations.end())
+// 	{
+// 		if(loc->x == x && loc->z == z)
+// 			break;
+// 		++loc;
+// 	}
+	//VisibleListAccessMutex.Acquire();
+
+	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
 
 	for(int j = 0; j < 100; j++)
 	{
@@ -51,15 +57,16 @@ void Thread( void* pParams )
 				//if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
 				//wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
 				
-				//if(rand()%100) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_GRASS, true);
-				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, true);
-				if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_STONE, true);
+				//if(rand()%100) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_GRASS, false);
+				if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
+				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_STONE, false);
 			}
 		}
 	}
-	VisibleListAccessMutex.Release();
-
-	//wWorld.DrawLoadedTiles();
+	wWorld.DrawLoadedTiles(&*loc);
+	
+	//VisibleListAccessMutex.Release();
+	ReleaseMutex(loc->mutex);
 
 	_endthread();
 }
@@ -296,25 +303,25 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 	{
 		if(bKeyboardDown['4'])
 		{
-			static Param par = {-1, 0, 0};
-			par.x++;
-			if(par.x == 10)
-			{
-				par.x = 0;
-				par.z++;
-			}
-
-			par.wWorld = &wWorld;
+			static Param par = {0, 0, &wWorld};
 
 			HANDLE hThread;
-			hThread = (HANDLE) _beginthread( Thread, 0, &par);//&Param(par) );
+			
+			for(int i = 0; i < 1; i++)
+			{
+				hThread = (HANDLE) _beginthread( Thread, 0, &par);//&Param(par) );
 
-			//WaitForSingleObject(hThread, 30);
+				//WaitForSingleObject(hThread, 30);
+				WaitForSingleObject(wWorld.parget, INFINITE);
+				ResetEvent(wWorld.parget);
 
-			WaitForSingleObject(wWorld.parget, INFINITE);
-			ResetEvent(wWorld.parget);
-
-			//CloseHandle(hThread);
+				par.x++;
+				if(par.x == 10)
+				{
+					par.x = 0;
+					par.z++;
+				}
+			}
 			//bKeyboardDown['4'] = false;
 		}
 	}
@@ -329,14 +336,12 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 // 
 // 			WaitForMultipleObjects(1, &hThread, TRUE, 30);
 // 
-// 			m2.Acquire();
 // 			par2.x++;
 // 			if(par2.x == 10)
 // 			{
 // 				par2.x = 0;
 // 				par2.z++;
 // 			}
-// 			m2.Release();
 // 			//bKeyboardDown['5'] = false;
 // 		}
 // 	}
@@ -345,21 +350,24 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 		if(bKeyboardDown['6'])
 		{
 			LocInWorld x = 0, z = 0;
-			wWorld.AddLocation(x,z);
+			auto loc = wWorld.AddLocation(x,z);
 
-			for(int k = 0; k < 16; k++)
+			if(loc)
 			{
-				for(int i = 0; i < 16; i++)
+				for(int k = 0; k < 16; k++)
 				{
-					for(int j = 0; j < 1; j++)
+					for(int i = 0; i < 16; i++)
 					{
-						//if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
-						wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
+						for(int j = 0; j < 1; j++)
+						{
+							//if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
+							wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
+						}
 					}
 				}
-			}
-			wWorld.DrawLoadedTiles();
 
+				wWorld.DrawLoadedTiles(&*loc);
+			}
 			bKeyboardDown['6'] = false;
 		}
 	}

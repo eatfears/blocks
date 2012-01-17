@@ -29,7 +29,7 @@ Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary *MaterialLib)
 			TexurePointerInVisible[i][j] = DisplayedTiles[i].end();
 		}
 	}
-	mutex = CreateMutex(NULL, true, NULL);
+	mutex = CreateMutex(NULL, false, NULL);
 }
 
 Location::~Location(void)
