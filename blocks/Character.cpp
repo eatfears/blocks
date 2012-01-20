@@ -33,7 +33,7 @@ void Thread( void* pParams )
 	DWORD dwWaitResult; 
 	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 	auto loc = wWorld.AddLocation(x,z);
-	if(!loc) {_endthread(); return;}
+	if(!loc) {ReleaseMutex(wWorld.mutex); _endthread(); return;}
 	ReleaseMutex(wWorld.mutex);
 
 // 
@@ -63,10 +63,10 @@ void Thread( void* pParams )
 			}
 		}
 	}
+	ReleaseMutex(loc->mutex);
 	wWorld.DrawLoadedTiles(&*loc);
 	
 	//VisibleListAccessMutex.Release();
-	ReleaseMutex(loc->mutex);
 
 	_endthread();
 }
