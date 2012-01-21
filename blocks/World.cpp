@@ -1,8 +1,5 @@
 #include "World.h"
 #include "Blocks_Definitions.h"
-#include "Mutex.h"
-
-extern Mutex VisibleListAccessMutex;
 
 World::World()
 {
@@ -193,6 +190,47 @@ void World::DrawLoadedTiles(Location *loc)
 	//VisibleListAccessMutex.Release();
 
 	//if(building) DrawLoadedTiles();
+}
+
+void World::DrawUnLoadedTiles(Location *loc)
+{
+	int index = 0;
+
+ 	DWORD dwWaitResult; 
+ 	dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
+
+	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
+	{
+		TileInLoc x, y, z;
+		loc->GetTilePositionByPointer(loc->tTile + index, &x, &y, &z);
+		TileInWorld xx, yy, zz;
+
+		xx = x + LOCATION_SIZE_XZ*loc->x;
+		yy = y;
+		zz = z + LOCATION_SIZE_XZ*loc->z;
+
+		if(loc->tTile[index].cMaterial == MAT_NO)
+		{
+			Location *tempLoc;
+			int tempIndex;
+			if(FindTile(xx, yy + 1, zz, &tempLoc, &tempIndex)) //HideTile(&*loc, index, TOP);
+			ShowTile(&*tempLoc, tempIndex, DOWN);
+			if(FindTile(xx, yy - 1, zz, &tempLoc, &tempIndex)) //HideTile(&*loc, index, DOWN);
+			ShowTile(&*tempLoc, tempIndex, TOP);
+			if(FindTile(xx + 1, yy, zz, &tempLoc, &tempIndex)) //HideTile(&*loc, index, RIGHT);
+			ShowTile(&*tempLoc, tempIndex, LEFT);
+			if(FindTile(xx - 1, yy, zz, &tempLoc, &tempIndex)) //HideTile(&*loc, index, LEFT);
+			ShowTile(&*tempLoc, tempIndex, RIGHT);
+			if(FindTile(xx, yy, zz + 1, &tempLoc, &tempIndex)) //HideTile(&*loc, index, BACK);
+			ShowTile(&*tempLoc, tempIndex, FRONT);
+			if(FindTile(xx, yy, zz - 1, &tempLoc, &tempIndex)) //HideTile(&*loc, index, FRONT);
+			ShowTile(&*tempLoc, tempIndex, BACK);
+		}
+
+		index++;
+	}
+
+	ReleaseMutex(loc->mutex);
 }
 
 int World::AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool show)

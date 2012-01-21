@@ -34,13 +34,7 @@ Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary *MaterialLib)
 
 Location::~Location(void)
 {
-// 	delete[] tTile;
-// 
-// 	for(int i = 0; i < 6; i++)
-// 	{
-// 		delete[] TexurePointerInVisible[i];
-// 	}
-// 	delete[] TexurePointerInVisible;
+
 }
 
 int Location::AddTile(TileInLoc x, TileInLoc y, TileInLoc z, char mat)

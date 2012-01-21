@@ -4,10 +4,7 @@
 #include "Character.h"
 #include "Blocks_Definitions.h"
 
-
 #include "World.h"
-#include "Mutex.h"
-Mutex VisibleListAccessMutex;;
 
 typedef struct params
 {
@@ -15,8 +12,6 @@ typedef struct params
 	signed short z;
 	World *wWorld;
 } Param;
-
-Param par2 = {0, 0, 0};
 
 void Thread( void* pParams )
 {
@@ -35,16 +30,6 @@ void Thread( void* pParams )
 	auto loc = wWorld.AddLocation(x,z);
 	if(!loc) {ReleaseMutex(wWorld.mutex); _endthread(); return;}
 	ReleaseMutex(wWorld.mutex);
-
-// 
-// 	auto loc = wWorld.lLocations.begin();
-// 	while (loc != wWorld.lLocations.end())
-// 	{
-// 		if(loc->x == x && loc->z == z)
-// 			break;
-// 		++loc;
-// 	}
-	//VisibleListAccessMutex.Acquire();
 
 	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
 
@@ -66,40 +51,63 @@ void Thread( void* pParams )
 	ReleaseMutex(loc->mutex);
 	wWorld.DrawLoadedTiles(&*loc);
 	
-	//VisibleListAccessMutex.Release();
-
 	_endthread();
 }
-// 
-// void Thread2( void* pParams )
-// {
-// 	m2.Acquire();
-// 	Param pParameters = *(Param*)pParams;
-// 	signed short x = pParameters.x;
-// 	signed short z = pParameters.z;
-// 	m2.Release();
-// 	World &wWorld = *pParameters.wWorld;
-// 	
-// 	HANDLE threadHandle = GetCurrentThread();
-// 	SetThreadPriority(threadHandle, THREAD_PRIORITY_ABOVE_NORMAL);
-// 
-// 	//VisibleListAccessMutex.Acquire();
-// 	/*
-// 	for(int N = 0; N < 6; N++)
-// 		for(int i = 0; i < 16; i++)
-// 			for(int k = 0; k < 16; k++)
-// 				for(int j = 1; j <= 70; j++)
-// 					wWorld.HideTile(i-8 + 16*x, -j, k-8 + 16*z, N);
-// 	/**/
-// 	for(int j = 1; j <= 70; j++)
-// 		for(int i = 0; i < 16; i++)
-// 			for(int k = 0; k < 16; k++)
-// 				wWorld.RemoveTile(i-8 + 16*x, -j, k-8 + 16*z, false);
-// 
-// 	//VisibleListAccessMutex.Release();
-// 	
-// 	wWorld.DrawLoadedTiles();
-// }
+
+void Thread2( void* pParams )
+{
+	Param pParameters = *(Param*)pParams;
+	signed short x = pParameters.x;
+	signed short z = pParameters.z;
+	World &wWorld = *pParameters.wWorld;
+
+	SetEvent(wWorld.parget);
+
+	HANDLE threadHandle = GetCurrentThread();
+	SetThreadPriority(threadHandle, THREAD_PRIORITY_BELOW_NORMAL);
+
+ 	DWORD dwWaitResult; 
+
+	auto loc= wWorld.lLocations.begin();
+
+	while(loc != wWorld.lLocations.end())
+	{
+		if((loc->x == x)&&(loc->z == z)) break;
+		++loc;
+	}
+	if(loc == wWorld.lLocations.end()) return;
+
+	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
+
+	for(int j = 0; j < LOCATION_SIZE_Y; j++)
+	{
+		for(int i = 0; i < LOCATION_SIZE_XZ; i++)
+		{
+			for(int k = 0; k < LOCATION_SIZE_XZ; k++)
+			{
+				wWorld.RemoveTile(i + LOCATION_SIZE_XZ*x, j, k + LOCATION_SIZE_XZ*z, false);
+			}
+		}
+	}
+	ReleaseMutex(loc->mutex);
+	
+	wWorld.DrawUnLoadedTiles(&*loc);
+
+	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
+
+
+	delete[] loc->tTile;
+
+	for(int i = 0; i < 6; i++)
+	{
+		delete[] loc->TexurePointerInVisible[i];
+	}
+	delete[] loc->TexurePointerInVisible;
+	delete[] loc->DisplayedTiles;
+
+	wWorld.lLocations.erase(loc);
+	ReleaseMutex(wWorld.mutex);
+}
 
 Character::Character()
 {
@@ -325,26 +333,52 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 			//bKeyboardDown['4'] = false;
 		}
 	}
-// 	if(bKeyboard['5'])
-// 	{
-// 		if(bKeyboardDown['5'])
-// 		{
-// 			par2.wWorld = &wWorld;
-// 
-// 			HANDLE hThread;
-// 			hThread = (HANDLE) _beginthread( Thread2, 0, &par2 );
-// 
-// 			WaitForMultipleObjects(1, &hThread, TRUE, 30);
-// 
-// 			par2.x++;
-// 			if(par2.x == 10)
-// 			{
-// 				par2.x = 0;
-// 				par2.z++;
-// 			}
-// 			//bKeyboardDown['5'] = false;
-// 		}
-// 	}
+	if(bKeyboard['5'])
+	{
+		if(bKeyboardDown['5'])
+		{
+			static Param par = {0, 0, &wWorld};
+
+			HANDLE hThread;
+
+			for(int i = 0; i < 1; i++)
+			{
+				hThread = (HANDLE) _beginthread( Thread2, 0, &par);//&Param(par) );
+
+				//WaitForSingleObject(hThread, 30);
+				WaitForSingleObject(wWorld.parget, INFINITE);
+				ResetEvent(wWorld.parget);
+
+				par.x++;
+				if(par.x == 10)
+				{
+					par.x = 0;
+					par.z++;
+				}
+			}
+			//bKeyboardDown['5'] = false;
+		}
+	}
+	// 	if(bKeyboard['5'])
+	// 	{
+	// 		if(bKeyboardDown['5'])
+	// 		{
+	// 			par2.wWorld = &wWorld;
+	// 
+	// 			HANDLE hThread;
+	// 			hThread = (HANDLE) _beginthread( Thread2, 0, &par2 );
+	// 
+	// 			WaitForMultipleObjects(1, &hThread, TRUE, 30);
+	// 
+	// 			par2.x++;
+	// 			if(par2.x == 10)
+	// 			{
+	// 				par2.x = 0;
+	// 				par2.z++;
+	// 			}
+	// 			//bKeyboardDown['5'] = false;
+	// 		}
+	// 	}
 	if(bKeyboard['6'])
 	{
 		if(bKeyboardDown['6'])

@@ -19,6 +19,7 @@ public:
 	int AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool show);
 	int RemoveTile(TileInWorld x, TileInWorld y, TileInWorld z, bool show);
 	void DrawLoadedTiles(Location *loc);
+	void DrawUnLoadedTiles(Location *loc);
 
 	void GetLocByTile(TileInWorld x, TileInWorld z, LocInWorld *locx, TileInWorld *locz);
 	Location* GetLocByTile(TileInWorld x, TileInWorld z);

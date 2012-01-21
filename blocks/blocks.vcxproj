@@ -91,7 +91,6 @@
     <ClInclude Include="GLWindow.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="Material.h" />
-    <ClInclude Include="Mutex.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="blocks.h" />
     <ClInclude Include="World.h" />

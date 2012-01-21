@@ -1,9 +1,6 @@
 #include "Game.h"
 #include "Blocks_Definitions.h"
 
-#include "Mutex.h"
-extern Mutex VisibleListAccessMutex;
-
 GLfloat fogColor[4]= {FOG_COLOR};
 
 Game::Game()
@@ -91,15 +88,22 @@ int Game::DrawGLScene()
 			glBegin(GL_QUADS);
 
 			loc = wWorld.lLocations.begin();
+#ifndef _DEBUG
+			_try 
+			{
+#endif // _DEBUG
 
 			while(loc != wWorld.lLocations.end())
 			{
+
 				auto it = loc->TexurePointerInVisible[i][itex];
 
 				while(it != loc->DisplayedTiles[i].end())
 				{
+#ifndef _DEBUG
 					_try 
 					{
+#endif // _DEBUG
 						if(itex != wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i])
 							break;
 
@@ -110,14 +114,25 @@ int Game::DrawGLScene()
 							DrawTileSide(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, i);
 
 						++it;
+#ifndef _DEBUG
 					}
 					_except (EXCEPTION_EXECUTE_HANDLER)
 					{
 						break;
 					}
+#endif // _DEBUG
 				}
 				++loc;
 			}
+#ifndef _DEBUG
+			}
+			_except (EXCEPTION_EXECUTE_HANDLER)
+			{
+				glEnd();
+				glDisable(GL_LIGHT2);
+				return true;
+			}
+#endif // _DEBUG
 		}
 	}
 
@@ -180,7 +195,6 @@ int Game::DrawGLScene()
 #endif
 
 	glEnd();
-
 	glDisable(GL_LIGHT2);
 
 	return true;

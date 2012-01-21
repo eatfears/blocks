@@ -61,9 +61,6 @@
     <ClInclude Include="Game.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Mutex.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="Location.h">
       <Filter>Headers</Filter>
     </ClInclude>
