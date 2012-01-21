@@ -34,7 +34,13 @@ Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary *MaterialLib)
 
 Location::~Location(void)
 {
+	delete[] tTile;
 
+	for(int i = 0; i < 6; i++)
+		delete[] TexurePointerInVisible[i];
+	
+	delete[] TexurePointerInVisible;
+	delete[] DisplayedTiles;
 }
 
 int Location::AddTile(TileInLoc x, TileInLoc y, TileInLoc z, char mat)
@@ -68,7 +74,6 @@ void Location::ShowTile(Tile *tTile, char N)
 		
 	tTile->bVisible[N] = true;
 }
-
 
 void Location::HideTile(Tile *tTile, char N)
 {
@@ -130,14 +135,22 @@ int Location::GetTilePositionByPointer(Tile *tCurrentTile, TileInLoc *x, TileInL
 {
 	int t = tCurrentTile - tTile;
 
-	if((t < 0)||(t >= LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y))
+	if(GetTilePositionByIndex(t, x, y, z) == -1) 
 		return -1;
 
-	*z  = t%LOCATION_SIZE_XZ;
-	t/=LOCATION_SIZE_XZ;
-	*x = t%LOCATION_SIZE_XZ;
-	t/=LOCATION_SIZE_XZ;
-	*y = t;
+	return 0;
+}
+
+int Location::GetTilePositionByIndex(int index, TileInLoc *x, TileInLoc *y, TileInLoc *z)
+{
+	if((index < 0)||(index >= LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y))
+		return -1;
+
+	*z  = index%LOCATION_SIZE_XZ;
+	index/=LOCATION_SIZE_XZ;
+	*x = index%LOCATION_SIZE_XZ;
+	index/=LOCATION_SIZE_XZ;
+	*y = index;
 
 	return 0;
 }

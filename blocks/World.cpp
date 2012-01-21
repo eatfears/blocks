@@ -17,8 +17,6 @@ World::~World()
 
 Location* World::AddLocation(LocInWorld x, LocInWorld z)
 {
-	Location lLoc(x, z, &MaterialLib);
-
 	auto locIterator = lLocations.begin();
 
 	while(locIterator != lLocations.end())
@@ -27,7 +25,9 @@ Location* World::AddLocation(LocInWorld x, LocInWorld z)
 		++locIterator;
 	}
 
-	locIterator = lLocations.insert(locIterator,lLoc);
+	Location *lLoc = new Location(x, z, &MaterialLib);
+
+	locIterator = lLocations.insert(locIterator, *lLoc);
 	return &*locIterator;
 }
 
@@ -135,19 +135,6 @@ Location* World::GetLocByTile( TileInWorld x, TileInWorld z )
 
 void World::DrawLoadedTiles(Location *loc)
 {
-	//if(skipbuild) {building = true; return;}
-	//else building = false;
-
-	//VisibleListAccessMutex.Acquire();
-	//skipbuild = true;
-
-	/*auto loc = lLocations.begin();
-
-	while(loc != lLocations.end())
-	{
-		if((loc->x == x)&&(loc->z == z)) break;
-		++loc;
-	}*/
 	int index = 0;
 
  	DWORD dwWaitResult; 
@@ -185,52 +172,43 @@ void World::DrawLoadedTiles(Location *loc)
 	}
 
 	ReleaseMutex(loc->mutex);
-
-	//skipbuild = false;
-	//VisibleListAccessMutex.Release();
-
-	//if(building) DrawLoadedTiles();
 }
 
-void World::DrawUnLoadedTiles(Location *loc)
+void World::DrawUnLoadedTiles(LocInWorld Lx, LocInWorld Lz)
 {
 	int index = 0;
 
  	DWORD dwWaitResult; 
- 	dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
+	Location *temp;
 
 	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
 	{
 		TileInLoc x, y, z;
-		loc->GetTilePositionByPointer(loc->tTile + index, &x, &y, &z);
+		temp->GetTilePositionByIndex(index, &x, &y, &z);
 		TileInWorld xx, yy, zz;
 
-		xx = x + LOCATION_SIZE_XZ*loc->x;
+		xx = x + LOCATION_SIZE_XZ*Lx;
 		yy = y;
-		zz = z + LOCATION_SIZE_XZ*loc->z;
+		zz = z + LOCATION_SIZE_XZ*Lz;
 
-		if(loc->tTile[index].cMaterial == MAT_NO)
-		{
-			Location *tempLoc;
-			int tempIndex;
-			if(FindTile(xx, yy + 1, zz, &tempLoc, &tempIndex)) //HideTile(&*loc, index, TOP);
-			ShowTile(&*tempLoc, tempIndex, DOWN);
-			if(FindTile(xx, yy - 1, zz, &tempLoc, &tempIndex)) //HideTile(&*loc, index, DOWN);
-			ShowTile(&*tempLoc, tempIndex, TOP);
-			if(FindTile(xx + 1, yy, zz, &tempLoc, &tempIndex)) //HideTile(&*loc, index, RIGHT);
-			ShowTile(&*tempLoc, tempIndex, LEFT);
-			if(FindTile(xx - 1, yy, zz, &tempLoc, &tempIndex)) //HideTile(&*loc, index, LEFT);
-			ShowTile(&*tempLoc, tempIndex, RIGHT);
-			if(FindTile(xx, yy, zz + 1, &tempLoc, &tempIndex)) //HideTile(&*loc, index, BACK);
-			ShowTile(&*tempLoc, tempIndex, FRONT);
-			if(FindTile(xx, yy, zz - 1, &tempLoc, &tempIndex)) //HideTile(&*loc, index, FRONT);
-			ShowTile(&*tempLoc, tempIndex, BACK);
-		}
+		Location *tempLoc;
+		int tempIndex;
+		if(FindTile(xx, yy + 1, zz, &tempLoc, &tempIndex)) //HideTile(&*loc, index, TOP);
+		ShowTile(&*tempLoc, tempIndex, DOWN);
+		if(FindTile(xx, yy - 1, zz, &tempLoc, &tempIndex)) //HideTile(&*loc, index, DOWN);
+		ShowTile(&*tempLoc, tempIndex, TOP);
+		if(FindTile(xx + 1, yy, zz, &tempLoc, &tempIndex)) //HideTile(&*loc, index, RIGHT);
+		ShowTile(&*tempLoc, tempIndex, LEFT);
+		if(FindTile(xx - 1, yy, zz, &tempLoc, &tempIndex)) //HideTile(&*loc, index, LEFT);
+		ShowTile(&*tempLoc, tempIndex, RIGHT);
+		if(FindTile(xx, yy, zz + 1, &tempLoc, &tempIndex)) //HideTile(&*loc, index, BACK);
+		ShowTile(&*tempLoc, tempIndex, FRONT);
+		if(FindTile(xx, yy, zz - 1, &tempLoc, &tempIndex)) //HideTile(&*loc, index, FRONT);
+		ShowTile(&*tempLoc, tempIndex, BACK);
 
 		index++;
 	}
 
-	ReleaseMutex(loc->mutex);
 }
 
 int World::AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool show)

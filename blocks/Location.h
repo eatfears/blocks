@@ -40,6 +40,7 @@ public:
 	int SetTileMaterial(TileInLoc x, TileInLoc y, TileInLoc z, char cMat);
 	
 	int GetTilePositionByPointer(Tile *tCurrentTile, TileInLoc *x, TileInLoc *y, TileInLoc *z);
+	int GetTilePositionByIndex(int index, TileInLoc *x, TileInLoc *y, TileInLoc *z);
 	int GetIndexByPosition(TileInLoc x, TileInLoc y, TileInLoc z);
 
 	HANDLE mutex;

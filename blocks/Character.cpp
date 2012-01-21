@@ -68,6 +68,8 @@ void Thread2( void* pParams )
 
  	DWORD dwWaitResult; 
 
+	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
+
 	auto loc= wWorld.lLocations.begin();
 
 	while(loc != wWorld.lLocations.end())
@@ -76,44 +78,17 @@ void Thread2( void* pParams )
 		++loc;
 	}
 	if(loc == wWorld.lLocations.end()) return;
-
-	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
-
-	for(int j = 0; j < LOCATION_SIZE_Y; j++)
-	{
-		for(int i = 0; i < LOCATION_SIZE_XZ; i++)
-		{
-			for(int k = 0; k < LOCATION_SIZE_XZ; k++)
-			{
-				wWorld.RemoveTile(i + LOCATION_SIZE_XZ*x, j, k + LOCATION_SIZE_XZ*z, false);
-			}
-		}
-	}
-	ReleaseMutex(loc->mutex);
 	
-	wWorld.DrawUnLoadedTiles(&*loc);
-
-	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
-
-
-	delete[] loc->tTile;
-
-	for(int i = 0; i < 6; i++)
-	{
-		delete[] loc->TexurePointerInVisible[i];
-	}
-	delete[] loc->TexurePointerInVisible;
-	delete[] loc->DisplayedTiles;
-
 	wWorld.lLocations.erase(loc);
+	wWorld.DrawUnLoadedTiles(x, z);
 	ReleaseMutex(wWorld.mutex);
+
 }
 
 Character::Character()
 {
 	bFalling = true;
 	for(int i = 0; i < 256; i++) bKeyboardDown[i] = true;
-
 
 }
 
