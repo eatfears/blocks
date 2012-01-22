@@ -6,90 +6,11 @@
 
 #include "World.h"
 
-typedef struct params
-{
-	signed short x;
-	signed short z;
-	World *wWorld;
-} Param;
-
-void Thread( void* pParams )
-{
-	Param pParameters = *(Param*)pParams;
-	signed short x = pParameters.x;
-	signed short z = pParameters.z;
-	World &wWorld = *pParameters.wWorld;
-
-	SetEvent(wWorld.parget);
-
-	HANDLE threadHandle = GetCurrentThread();
-	SetThreadPriority(threadHandle, THREAD_PRIORITY_BELOW_NORMAL);
-
-	DWORD dwWaitResult; 
-	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
-	auto loc = wWorld.AddLocation(x,z);
-	if(!loc) {ReleaseMutex(wWorld.mutex); _endthread(); return;}
-	ReleaseMutex(wWorld.mutex);
-
-	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
-
-	for(int j = 0; j < 100; j++)
-	{
-		for(int i = 0; i < 16; i++)
-		{
-			for(int k = 0; k < 16; k++)
-			{
-				//if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
-				//wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
-				
-				//if(rand()%100) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_GRASS, false);
-				if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
-				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_STONE, false);
-			}
-		}
-	}
-	ReleaseMutex(loc->mutex);
-	wWorld.DrawLoadedTiles(&*loc);
-	
-	_endthread();
-}
-
-void Thread2( void* pParams )
-{
-	Param pParameters = *(Param*)pParams;
-	signed short x = pParameters.x;
-	signed short z = pParameters.z;
-	World &wWorld = *pParameters.wWorld;
-
-	SetEvent(wWorld.parget);
-
-	HANDLE threadHandle = GetCurrentThread();
-	SetThreadPriority(threadHandle, THREAD_PRIORITY_BELOW_NORMAL);
-
- 	DWORD dwWaitResult; 
-
-	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
-
-	auto loc= wWorld.lLocations.begin();
-
-	while(loc != wWorld.lLocations.end())
-	{
-		if((loc->x == x)&&(loc->z == z)) break;
-		++loc;
-	}
-	if(loc == wWorld.lLocations.end()) return;
-	
-	wWorld.lLocations.erase(loc);
-	wWorld.DrawUnLoadedTiles(x, z);
-	ReleaseMutex(wWorld.mutex);
-
-}
 
 Character::Character()
 {
 	bFalling = true;
 	for(int i = 0; i < 256; i++) bKeyboardDown[i] = true;
-
 }
 
 Character::~Character()
@@ -286,77 +207,37 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 	{
 		if(bKeyboardDown['4'])
 		{
-			static Param par = {0, 0, &wWorld};
-
-			HANDLE hThread;
-			
-			for(int i = 0; i < 1; i++)
-			{
-				hThread = (HANDLE) _beginthread( Thread, 0, &par);//&Param(par) );
-
-				//WaitForSingleObject(hThread, 30);
-				WaitForSingleObject(wWorld.parget, INFINITE);
-				ResetEvent(wWorld.parget);
-
-				par.x++;
-				if(par.x == 10)
-				{
-					par.x = 0;
-					par.z++;
-				}
-			}
-			//bKeyboardDown['4'] = false;
+			wWorld.LoadLocation(0, 0);			
+			bKeyboardDown['4'] = false;
 		}
 	}
 	if(bKeyboard['5'])
 	{
 		if(bKeyboardDown['5'])
 		{
-			static Param par = {0, 0, &wWorld};
-
-			HANDLE hThread;
-
-			for(int i = 0; i < 1; i++)
-			{
-				hThread = (HANDLE) _beginthread( Thread2, 0, &par);//&Param(par) );
-
-				//WaitForSingleObject(hThread, 30);
-				WaitForSingleObject(wWorld.parget, INFINITE);
-				ResetEvent(wWorld.parget);
-
-				par.x++;
-				if(par.x == 10)
-				{
-					par.x = 0;
-					par.z++;
-				}
-			}
-			//bKeyboardDown['5'] = false;
+			wWorld.UnLoadLocation(0, 0);			
+			bKeyboardDown['5'] = false;
 		}
 	}
-	// 	if(bKeyboard['5'])
-	// 	{
-	// 		if(bKeyboardDown['5'])
-	// 		{
-	// 			par2.wWorld = &wWorld;
-	// 
-	// 			HANDLE hThread;
-	// 			hThread = (HANDLE) _beginthread( Thread2, 0, &par2 );
-	// 
-	// 			WaitForMultipleObjects(1, &hThread, TRUE, 30);
-	// 
-	// 			par2.x++;
-	// 			if(par2.x == 10)
-	// 			{
-	// 				par2.x = 0;
-	// 				par2.z++;
-	// 			}
-	// 			//bKeyboardDown['5'] = false;
-	// 		}
-	// 	}
 	if(bKeyboard['6'])
 	{
 		if(bKeyboardDown['6'])
+		{
+			wWorld.LoadLocation(1, 0);			
+			bKeyboardDown['6'] = false;
+		}
+	}
+	if(bKeyboard['7'])
+	{
+		if(bKeyboardDown['7'])
+		{
+			wWorld.UnLoadLocation(1, 0);			
+			bKeyboardDown['7'] = false;
+		}
+	}
+	if(bKeyboard['8'])
+	{
+		if(bKeyboardDown['8'])
 		{
 			LocInWorld x = 0, z = 0;
 			auto loc = wWorld.AddLocation(x,z);
@@ -377,7 +258,7 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 
 				wWorld.DrawLoadedTiles(&*loc);
 			}
-			bKeyboardDown['6'] = false;
+			bKeyboardDown['8'] = false;
 		}
 	}
 

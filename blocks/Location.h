@@ -9,7 +9,13 @@ typedef unsigned short	TileInLoc;
 typedef signed short	LocInWorld;
 typedef signed short	TileInWorld;
 
-typedef struct t
+typedef struct locpos
+{
+	LocInWorld x;
+	LocInWorld z;
+}LocationPosiion;
+
+typedef struct tile
 {
 	char cMaterial;
 	bool bVisible[6];

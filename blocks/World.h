@@ -18,8 +18,12 @@ public:
 	int FindTile(TileInWorld x, TileInWorld y, TileInWorld z, Location **loc, int *index);
 	int AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool show);
 	int RemoveTile(TileInWorld x, TileInWorld y, TileInWorld z, bool show);
+
 	void DrawLoadedTiles(Location *loc);
 	void DrawUnLoadedTiles(LocInWorld x, LocInWorld z);
+	void LoadLocation(LocInWorld x, LocInWorld z);
+	void UnLoadLocation(LocInWorld x, LocInWorld z);
+	std::list<LocationPosiion> LoadedLocations;
 
 	void GetLocByTile(TileInWorld x, TileInWorld z, LocInWorld *locx, TileInWorld *locz);
 	Location* GetLocByTile(TileInWorld x, TileInWorld z);
@@ -34,5 +38,6 @@ public:
 
 	HANDLE parget;
 	HANDLE mutex;
+//	HANDLE loading_mutex;
 };
 

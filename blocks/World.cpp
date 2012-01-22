@@ -1,13 +1,22 @@
+#include <process.h>
+
 #include "World.h"
 #include "Blocks_Definitions.h"
+
+typedef struct params
+{
+	LocInWorld x;
+	LocInWorld z;
+	World *wWorld;
+} Param;
 
 World::World()
 {
 	skipbuild = false;
 
-
 	parget = CreateEvent(NULL, false, false, NULL);
 	mutex = CreateMutex(NULL, false, NULL);
+//	loading_mutex = CreateMutex(NULL, false, NULL);
 }
 
 World::~World()
@@ -179,7 +188,7 @@ void World::DrawUnLoadedTiles(LocInWorld Lx, LocInWorld Lz)
 	int index = 0;
 
  	DWORD dwWaitResult; 
-	Location *temp;
+	Location *temp = 0;
 
 	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
 	{
@@ -370,4 +379,235 @@ int World::FindTile(TileInWorld x, TileInWorld y, TileInWorld z)
 		return 0;
 
 	return 1;
+}
+
+
+void LoadLocationThread( void* pParams )
+{
+	Param pParameters = *(Param*)pParams;
+	LocInWorld x = pParameters.x;
+	LocInWorld z = pParameters.z;
+	World &wWorld = *pParameters.wWorld;
+
+	SetEvent(wWorld.parget);
+
+	HANDLE threadHandle = GetCurrentThread();
+	SetThreadPriority(threadHandle, THREAD_PRIORITY_BELOW_NORMAL);
+
+	DWORD dwWaitResult; 
+	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
+	auto loc = wWorld.AddLocation(x,z);
+	if(!loc) 
+	{	
+		ReleaseMutex(wWorld.mutex);
+
+// 		dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
+// 		LocationPosiion lp = {x, z};
+// 		auto locc = wWorld.LoadedLocations.begin();
+// 		while (locc != wWorld.LoadedLocations.end())
+// 		{
+// 			if (((*locc).x == lp.x)&&((*locc).z == lp.z)) break;
+// 			++loc;
+// 		}
+// 		if (locc == wWorld.LoadedLocations.end())
+// 		{
+// 			ReleaseMutex(wWorld.loading_mutex);
+// 			_endthread(); 
+// 			return;
+// 		}
+// 		wWorld.LoadedLocations.erase(locc);
+// 
+// 		ReleaseMutex(wWorld.loading_mutex); 
+		_endthread();
+		return;
+	}
+	ReleaseMutex(wWorld.mutex);
+
+	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
+
+	for(int j = 0; j < 100; j++)
+	{
+		for(int i = 0; i < 16; i++)
+		{
+			for(int k = 0; k < 16; k++)
+			{
+				//if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
+				//wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
+
+				//if(rand()%100) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_GRASS, false);
+				if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
+				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_STONE, false);
+			}
+		}
+	}
+	ReleaseMutex(loc->mutex);
+	wWorld.DrawLoadedTiles(&*loc);
+
+
+// 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
+// 	LocationPosiion lp = {x, z};
+// 	auto locc = wWorld.LoadedLocations.begin();
+// 	while (locc != wWorld.LoadedLocations.end())
+// 	{
+// 		if (((*locc).x == lp.x)&&((*locc).z == lp.z)) break;
+// 		++loc;
+// 	}
+// 	if (locc == wWorld.LoadedLocations.end()) 
+// 	{
+// 		ReleaseMutex(wWorld.loading_mutex);
+// 		_endthread();
+// 		return;
+// 	}
+// 	wWorld.LoadedLocations.erase(locc);
+// 	ReleaseMutex(wWorld.loading_mutex);
+
+	_endthread();
+}
+
+void UnLoadLocationThread( void* pParams )
+{
+	Param pParameters = *(Param*)pParams;
+	LocInWorld x = pParameters.x;
+	LocInWorld z = pParameters.z;
+	World &wWorld = *pParameters.wWorld;
+
+	SetEvent(wWorld.parget);
+
+	HANDLE threadHandle = GetCurrentThread();
+	SetThreadPriority(threadHandle, THREAD_PRIORITY_BELOW_NORMAL);
+
+	DWORD dwWaitResult; 
+
+	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
+
+	auto loc= wWorld.lLocations.begin();
+
+	while(loc != wWorld.lLocations.end())
+	{
+		if((loc->x == x)&&(loc->z == z)) break;
+		++loc;
+	}
+	if(loc == wWorld.lLocations.end()) 
+	{	
+		ReleaseMutex(wWorld.mutex);
+
+// 		dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
+// 		LocationPosiion lp = {x, z};
+// 		auto locc = wWorld.LoadedLocations.begin();
+// 		while (locc != wWorld.LoadedLocations.end())
+// 		{
+// 			if (((*locc).x == lp.x)&&((*locc).z == lp.z)) break;
+// 			++loc;
+// 		}
+// 		if (locc == wWorld.LoadedLocations.end())
+// 		{
+// 			ReleaseMutex(wWorld.loading_mutex);
+// 			_endthread(); 
+// 			return;
+// 		}
+// 		wWorld.LoadedLocations.erase(locc);
+// 		ReleaseMutex(wWorld.loading_mutex);
+		_endthread(); 
+		return;
+	}
+	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
+
+	wWorld.lLocations.erase(loc);
+	wWorld.DrawUnLoadedTiles(x, z);
+	ReleaseMutex(wWorld.mutex);
+
+// 
+// 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
+// 	LocationPosiion lp = {x, z};
+// 	auto locc = wWorld.LoadedLocations.begin();
+// 	while (locc != wWorld.LoadedLocations.end())
+// 	{
+// 		if (((*locc).x == lp.x)&&((*locc).z == lp.z)) break;
+// 		++loc;
+// 	}
+// 	if (locc == wWorld.LoadedLocations.end())
+// 	{
+// 		ReleaseMutex(wWorld.loading_mutex);
+// 		_endthread(); 
+// 		return;
+// 	}
+// 	wWorld.LoadedLocations.erase(locc);
+// 	ReleaseMutex(wWorld.loading_mutex);
+	_endthread();
+}
+
+void World::LoadLocation(LocInWorld x, LocInWorld z)
+{
+// 	WaitForSingleObject(loading_mutex, INFINITE);
+// 	LocationPosiion lp = {x, z};
+// 
+// 	auto loc = LoadedLocations.begin();
+// 
+// 	while (loc != LoadedLocations.end())
+// 	{
+// 		if (((*loc).x == lp.x)&&((*loc).z == lp.z)) 
+// 		{
+// 			ReleaseMutex(loading_mutex);
+// 			return;
+// 		}		
+// 		++loc;
+// 	}
+// 	LoadedLocations.push_back(lp);
+// 	ReleaseMutex(loading_mutex);
+
+
+	Param par = {x, z, this};
+
+	HANDLE hThread;
+	hThread = (HANDLE) _beginthread( LoadLocationThread, 0, &par);//&Param(par) );
+
+	//WaitForSingleObject(hThread, 30);
+	WaitForSingleObject(parget, INFINITE);
+	ResetEvent(parget);
+	/*
+	par.x++;
+	if(par.x == 10)
+	{
+		par.x = 0;
+		par.z++;
+	}
+	/**/
+}
+
+void World::UnLoadLocation(LocInWorld x, LocInWorld z)
+{
+// 	WaitForSingleObject(loading_mutex, INFINITE);
+// 	LocationPosiion lp = {x, z};
+// 
+// 	auto loc = LoadedLocations.begin();
+// 
+// 	while (loc != LoadedLocations.end())
+// 	{
+// 		if (((*loc).x == lp.x)&&((*loc).z == lp.z))
+// 		{
+// 			ReleaseMutex(loading_mutex);
+// 			return;
+// 		}
+// 		++loc;
+// 	}
+// 	LoadedLocations.push_back(lp);
+// 	ReleaseMutex(loading_mutex);
+
+	Param par = {x, z, this};
+
+	HANDLE hThread;
+
+	hThread = (HANDLE) _beginthread( UnLoadLocationThread, 0, &par);//&Param(par) );
+
+	//WaitForSingleObject(hThread, 30);
+	WaitForSingleObject(parget, INFINITE);
+	ResetEvent(parget);
+	/*
+	par.x++;
+	if(par.x == 10)
+	{
+		par.x = 0;
+		par.z++;
+	}
+	/**/
 }
