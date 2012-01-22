@@ -163,17 +163,17 @@ void World::DrawLoadedTiles(Location *loc)
 		{
 			Location *tempLoc;
 			int tempIndex;
-			if(!FindTile(xx, yy + 1, zz, &tempLoc, &tempIndex)) ShowTile(&*loc, index, TOP);
+			if(!FindTile(xx, yy + 1, zz, &tempLoc, &tempIndex)) {if(tempLoc)ShowTile(&*loc, index, TOP);}
 			else HideTile(&*tempLoc, tempIndex, DOWN);
-			if(!FindTile(xx, yy - 1, zz, &tempLoc, &tempIndex)) ShowTile(&*loc, index, DOWN);
+			if(!FindTile(xx, yy - 1, zz, &tempLoc, &tempIndex)) {if(tempLoc)ShowTile(&*loc, index, DOWN);}
 			else HideTile(&*tempLoc, tempIndex, TOP);
-			if(!FindTile(xx + 1, yy, zz, &tempLoc, &tempIndex)) ShowTile(&*loc, index, RIGHT);
+			if(!FindTile(xx + 1, yy, zz, &tempLoc, &tempIndex)) {if(tempLoc)ShowTile(&*loc, index, RIGHT);}
 			else HideTile(&*tempLoc, tempIndex, LEFT);
-			if(!FindTile(xx - 1, yy, zz, &tempLoc, &tempIndex)) ShowTile(&*loc, index, LEFT);
+			if(!FindTile(xx - 1, yy, zz, &tempLoc, &tempIndex)) {if(tempLoc)ShowTile(&*loc, index, LEFT);}
 			else HideTile(&*tempLoc, tempIndex, RIGHT);
-			if(!FindTile(xx, yy, zz + 1, &tempLoc, &tempIndex)) ShowTile(&*loc, index, BACK);
+			if(!FindTile(xx, yy, zz + 1, &tempLoc, &tempIndex)) {if(tempLoc)ShowTile(&*loc, index, BACK);}
 			else HideTile(&*tempLoc, tempIndex, FRONT);
-			if(!FindTile(xx, yy, zz - 1, &tempLoc, &tempIndex)) ShowTile(&*loc, index, FRONT);
+			if(!FindTile(xx, yy, zz - 1, &tempLoc, &tempIndex)) {if(tempLoc)ShowTile(&*loc, index, FRONT);}
 			else HideTile(&*tempLoc, tempIndex, BACK);
 		}
 
@@ -245,17 +245,17 @@ int World::AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool s
 	
 		Location *lTempLoc = 0;
 		int iTempIndex;
-		if(!FindTile(x, y + 1, z, &lTempLoc, &iTempIndex)) ShowTile(loc, index, TOP);
+		if(!FindTile(x, y + 1, z, &lTempLoc, &iTempIndex)) {if(lTempLoc)ShowTile(loc, index, TOP);}
 		else HideTile(lTempLoc, iTempIndex, DOWN);
-		if(!FindTile(x, y - 1, z, &lTempLoc, &iTempIndex)) ShowTile(loc, index, DOWN);
+		if(!FindTile(x, y - 1, z, &lTempLoc, &iTempIndex)) {if(lTempLoc)ShowTile(loc, index, DOWN);}
 		else HideTile(lTempLoc, iTempIndex, TOP);
-		if(!FindTile(x + 1, y, z, &lTempLoc, &iTempIndex)) ShowTile(loc, index, RIGHT);
+		if(!FindTile(x + 1, y, z, &lTempLoc, &iTempIndex)) {if(lTempLoc)ShowTile(loc, index, RIGHT);}
 		else HideTile(lTempLoc, iTempIndex, LEFT);
-		if(!FindTile(x - 1, y, z, &lTempLoc, &iTempIndex)) ShowTile(loc, index, LEFT);
+		if(!FindTile(x - 1, y, z, &lTempLoc, &iTempIndex)) {if(lTempLoc)ShowTile(loc, index, LEFT);}
 		else HideTile(lTempLoc, iTempIndex, RIGHT);
-		if(!FindTile(x, y, z + 1, &lTempLoc, &iTempIndex)) ShowTile(loc, index, BACK);
+		if(!FindTile(x, y, z + 1, &lTempLoc, &iTempIndex)) {if(lTempLoc)ShowTile(loc, index, BACK);}
 		else HideTile(lTempLoc, iTempIndex, FRONT);
-		if(!FindTile(x, y, z - 1, &lTempLoc, &iTempIndex)) ShowTile(loc, index, FRONT);
+		if(!FindTile(x, y, z - 1, &lTempLoc, &iTempIndex)) {if(lTempLoc)ShowTile(loc, index, FRONT);}
 		else HideTile(lTempLoc, iTempIndex, BACK);
 	}
 	else 
