@@ -327,15 +327,22 @@ void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short
 
 void Game::GetFrameTime()
 {
-	double currentTime = (double)timeGetTime() * 0.025;
+	static double koef = 0.025;
+	static int max_FPS = 30;
+	static int sleep_time;
+	
+	double currentTime = (double)timeGetTime() * koef;
 
 	static double frameTime = currentTime;  // Время последнего кадра
 
 	//Интервал времени, прошедшего с прошлого кадра
 	FrameInterval = currentTime - frameTime;
+	sleep_time = 1000/max_FPS - FrameInterval/koef;
+	if(sleep_time > 0) Sleep(sleep_time);
 
 	frameTime = currentTime;
 	//g_FrameInterval = 0.1;
+
 }
 
 bool Game::Loop()

@@ -207,23 +207,25 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 	{
 		if(bKeyboardDown['4'])
 		{
-			wWorld.LoadLocation(0, 0);			
-			bKeyboardDown['4'] = false;
+			wWorld.LoadLocation(0, 0);	
+			//bKeyboardDown['4'] = false;
 		}
 	}
 	if(bKeyboard['5'])
 	{
 		if(bKeyboardDown['5'])
 		{
-			wWorld.UnLoadLocation(0, 0);			
-			bKeyboardDown['5'] = false;
+			wWorld.UnLoadLocation(0, 0);	
+			//bKeyboardDown['5'] = false;
 		}
 	}
 	if(bKeyboard['6'])
 	{
 		if(bKeyboardDown['6'])
 		{
-			wWorld.LoadLocation(1, 0);			
+			for(int i = 0; i < 10; i++)
+				for(int j = 0; j < 10; j++)
+					wWorld.LoadLocation(i, j);
 			bKeyboardDown['6'] = false;
 		}
 	}
@@ -231,7 +233,9 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 	{
 		if(bKeyboardDown['7'])
 		{
-			wWorld.UnLoadLocation(1, 0);			
+			for(int i = 0; i < 10; i++)
+				for(int j = 0; j < 10; j++)
+					wWorld.UnLoadLocation(i, j);
 			bKeyboardDown['7'] = false;
 		}
 	}
