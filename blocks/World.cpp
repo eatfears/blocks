@@ -1,4 +1,5 @@
 #include <process.h>
+#include <fstream>
 
 #include "World.h"
 #include "Blocks_Definitions.h"
@@ -445,11 +446,34 @@ void LoadLocationThread( void* pParams )
 				//wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
 
 				//if(rand()%100) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_GRASS, false);
-				if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
+				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
+				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, 6, false);
 				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_STONE, false);
 			}
 		}
 	}
+
+	std::fstream filestr;
+
+	filestr.open ("test", std::fstream::in | std::fstream::out | std::fstream::binary );
+
+	int index = 0;
+
+
+	TileInLoc locx, locy, locz;
+	char mat;
+
+	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
+	{
+		filestr >> mat;
+		loc->GetTilePositionByIndex(index, &locx, &locy, &locz);
+		loc->AddTile(locx, locy, locz, mat);
+//		filestr << (char) (rand()%5);
+		index++;
+	}
+
+	filestr.close();
+
 	ReleaseMutex(loc->mutex);
 	wWorld.DrawLoadedTiles(&*loc);
 
