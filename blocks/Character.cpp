@@ -12,130 +12,18 @@ typedef struct params
 	World *wWorld;
 } Param;
 
-
-void Generate1(void* pParams)
+void LoadNGenerate(void* pParams)
 {
 	Param pParameters = *(Param*)pParams;
 	World &wWorld = *pParameters.wWorld;
 	SetEvent(wWorld.parget);
 
-	int size					= 16;
-	int horizon					= 64;
-	double scaleHeightMapXZ		= 128.0;
-	int HeghtMapAmp				= 64;
-	int HeghtMapOctaves			= 64;
+	int size = 16;
 
 	for(int i = 0; i < size; i++)
 		for(int j = 0; j < size; j++)
 			wWorld.LoadLocation(i, j);
 
-	int height;
-	PerlinNoise pnHeightMap(0.5, HeghtMapOctaves);
-
-	for(int k = 0; k < size*LOCATION_SIZE_XZ; k++)
-	{
-		for(int i = 0; i < size*LOCATION_SIZE_XZ; i++)
-		{
-			double x = i/scaleHeightMapXZ;
-			double z = k/scaleHeightMapXZ;
-			height = HeghtMapAmp*pnHeightMap.PerlinNoise2d(x, z) + horizon;
-
-			wWorld.AddTile(i, height, k, MAT_GRASS, true);
-		}
-	}
-
-	_endthread();
-	return;
-}
-
-void Generate2(void* pParams)
-{
-	Param pParameters = *(Param*)pParams;
-	World &wWorld = *pParameters.wWorld;
-	SetEvent(wWorld.parget);
-
-	int size					= 8;
-	int horizon					= 60;
-	double scaleBubblesXZ		= 8.0;
-	double scaleBubblesY		= 8.0;
-	int BubblesAmp				= 64;
-	int BubblesOctaves			= 4;
-
-
-	for(int i = 0; i < size; i++)
-		for(int j = 0; j < size; j++)
-			wWorld.LoadLocation(i, j);
-
-	double density;
-	PerlinNoise pnBubbles(0.5, BubblesOctaves);
-
-
-	for(int k = 0; k < size*LOCATION_SIZE_XZ; k++)
-	{
-		for(int i = 0; i < size*LOCATION_SIZE_XZ; i++)
-		{
-			for(int j = 0; j < LOCATION_SIZE_Y; j++)
-			{
-				double x = i/scaleBubblesXZ;
-				double y = j/scaleBubblesY;
-				double z = k/scaleBubblesXZ;
-
-				density = BubblesAmp*pnBubbles.PerlinNoise3d(x, y, z) + j;
-				if(density < horizon)
-					wWorld.AddTile(i, j, k, MAT_GRASS, true);
-			}
-		}
-	}
-	_endthread();
-	return;
-}
-
-void Generate3(void* pParams)
-{
-	Param pParameters = *(Param*)pParams;
-	World &wWorld = *pParameters.wWorld;
-	SetEvent(wWorld.parget);
-
-	int size					= 16;
-	int horizon					= 64;
-	double scaleHeightMapXZ		= 128.0;
-	double scaleBubblesXZ		= 16.0;
-	double scaleBubblesY		= 32.0;
-	int HeghtMapAmp				= 128;
-	int BubblesAmp				= 128;
-	int HeghtMapOctaves			= 64;
-	int BubblesOctaves			= 5;
-
-	for(int i = 0; i < size; i++)
-		for(int j = 0; j < size; j++)
-			wWorld.LoadLocation(i, j);
-
-	double height;
-	double density;
-	PerlinNoise pnBubbles	(0.5, BubblesOctaves);
-	PerlinNoise pnHeightMap	(0.5, HeghtMapOctaves);
-
-
-	for(int k = 0; k < size*LOCATION_SIZE_XZ; k++)
-	{
-		for(int i = 0; i < size*LOCATION_SIZE_XZ; i++)
-		{
-			double x = i/scaleHeightMapXZ;
-			double z = k/scaleHeightMapXZ;
-			height = HeghtMapAmp*pnHeightMap.PerlinNoise2d(x, z) + horizon;
-
-			for(int j = 0; j < LOCATION_SIZE_Y; j++)
-			{
-				double x = i/scaleBubblesXZ;
-				double y = j/scaleBubblesY;
-				double z = k/scaleBubblesXZ;
-
-				density = BubblesAmp*pnBubbles.PerlinNoise3d(x, y, z) + j;
-				if(density < height)
-					wWorld.AddTile(i, j, k, MAT_GRASS, true);
-			}
-		}
-	}
 	_endthread();
 	return;
 }
@@ -372,42 +260,13 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 			bKeyboardDown['7'] = false;
 		}
 	}
-	if(bKeyboard['8'])
-	{
-		if(bKeyboardDown['8'])
-		{
-			Param par = {&wWorld};
-
-			_beginthread(Generate1, 0, &par);
-
-			WaitForSingleObject(wWorld.parget, INFINITE);
-			ResetEvent(wWorld.parget);
-
-			bKeyboardDown['8'] = false;
-		}
-	}
-	if(bKeyboard['9'])
-	{
-		if(bKeyboardDown['9'])
-		{
-			Param par = {&wWorld};
-
-			_beginthread(Generate2, 0, &par);
-
-			WaitForSingleObject(wWorld.parget, INFINITE);
-			ResetEvent(wWorld.parget);
-
-			bKeyboardDown['9'] = false;
-		}
-	}
-
 	if(bKeyboard['0'])
 	{
 		if(bKeyboardDown['0'])
 		{
 			Param par = {&wWorld};
 
-			 _beginthread(Generate3, 0, &par);//&Param(par) );
+			 _beginthread(LoadNGenerate, 0, &par);
 
 			WaitForSingleObject(wWorld.parget, INFINITE);
 			ResetEvent(wWorld.parget);

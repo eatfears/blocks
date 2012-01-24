@@ -2,6 +2,7 @@
 #include <fstream>
 
 #include "World.h"
+#include "PerlinNoise.h"
 #include "Blocks_Definitions.h"
 
 typedef struct params
@@ -40,10 +41,22 @@ Location* World::AddLocation(LocInWorld x, LocInWorld z)
 	locIterator = lLocations.insert(locIterator, *lLoc);
 	return &*locIterator;
 }
-
+void LoadNGenerate (void*);
 void World::BuildWorld()
 {
 	MaterialLib.InitMaterials();
+
+	typedef struct params
+	{
+		World *wWorld;
+	} Param;
+
+	Param par = {this};
+
+	_beginthread(LoadNGenerate, 0, &par);
+
+	WaitForSingleObject(parget, INFINITE);
+	ResetEvent(parget);
 
 	/*
 	for(int i = -10; i < 10; i++)
@@ -428,6 +441,7 @@ void LoadLocationThread(void* pParams)
 // 		wWorld.LoadedLocations.erase(locc);
 // 
 // 		ReleaseMutex(wWorld.loading_mutex); 
+
 		_endthread();
 		return;
 	}
@@ -481,6 +495,60 @@ void LoadLocationThread(void* pParams)
 	*/
 //	ReleaseMutex(loc->mutex);
 //	wWorld.DrawLoadedTiles(&*loc);
+
+
+	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
+
+
+	int horizon					= LOCATION_SIZE_Y/2;
+	double scaleHeightMapXZ		= 128.0;
+	double scaleBubblesXZ		= 32.0;
+	double scaleBubblesY		= 16.0;
+	int HeghtMapAmp				= 64;
+	int BubblesAmp				= 164;
+	int HeghtMapOctaves			= 16;
+	int BubblesOctaves			= 6;
+
+	double height;
+	double density;
+	PerlinNoise pnBubbles	(0.5, BubblesOctaves);
+	PerlinNoise pnHeightMap	(0.5, HeghtMapOctaves);
+
+
+	for(int i = loc->x*LOCATION_SIZE_XZ; i < (loc->x + 1)*LOCATION_SIZE_XZ; i++)
+	{
+		for(int k = loc->z*LOCATION_SIZE_XZ; k < (loc->z + 1)*LOCATION_SIZE_XZ; k++)
+		{
+			double x = i/scaleHeightMapXZ;
+			double z = k/scaleHeightMapXZ;
+			height = HeghtMapAmp*pnHeightMap.PerlinNoise2d(x, z) + horizon;
+
+			for(int j = 0; j < LOCATION_SIZE_Y; j++)
+			{
+				double x = i/scaleBubblesXZ;
+				double y = j/scaleBubblesY;
+				double z = k/scaleBubblesXZ;
+
+				density = BubblesAmp*pnBubbles.PerlinNoise3d(x, y, z) + j;
+				if(density < height)
+					wWorld.AddTile(i, j, k, MAT_GRASS, false);
+			}
+		}
+	}
+
+	ReleaseMutex(loc->mutex);
+	wWorld.DrawLoadedTiles(&*loc);
+
+
+
+
+
+
+
+
+
+
+
 
 
 // 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
