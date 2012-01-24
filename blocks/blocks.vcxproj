@@ -91,6 +91,7 @@
     <ClInclude Include="GLWindow.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="blocks.h" />
     <ClInclude Include="World.h" />
@@ -102,6 +103,8 @@
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="PerlinNoise.cpp" />
+    <ClCompile Include="primes.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>

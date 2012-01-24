@@ -35,6 +35,12 @@
     <ClCompile Include="Location.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="PerlinNoise.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="primes.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="blocks.h">
@@ -62,6 +68,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Location.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="PerlinNoise.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

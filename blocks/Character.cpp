@@ -5,7 +5,140 @@
 #include "Blocks_Definitions.h"
 
 #include "World.h"
+#include "PerlinNoise.h"
 
+typedef struct params
+{
+	World *wWorld;
+} Param;
+
+
+void Generate1(void* pParams)
+{
+	Param pParameters = *(Param*)pParams;
+	World &wWorld = *pParameters.wWorld;
+	SetEvent(wWorld.parget);
+
+	int size					= 16;
+	int horizon					= 64;
+	double scaleHeightMapXZ		= 128.0;
+	int HeghtMapAmp				= 64;
+	int HeghtMapOctaves			= 64;
+
+	for(int i = 0; i < size; i++)
+		for(int j = 0; j < size; j++)
+			wWorld.LoadLocation(i, j);
+
+	int height;
+	PerlinNoise pnHeightMap(0.5, HeghtMapOctaves);
+
+	for(int k = 0; k < size*LOCATION_SIZE_XZ; k++)
+	{
+		for(int i = 0; i < size*LOCATION_SIZE_XZ; i++)
+		{
+			double x = i/scaleHeightMapXZ;
+			double z = k/scaleHeightMapXZ;
+			height = HeghtMapAmp*pnHeightMap.PerlinNoise2d(x, z) + horizon;
+
+			wWorld.AddTile(i, height, k, MAT_GRASS, true);
+		}
+	}
+
+	_endthread();
+	return;
+}
+
+void Generate2(void* pParams)
+{
+	Param pParameters = *(Param*)pParams;
+	World &wWorld = *pParameters.wWorld;
+	SetEvent(wWorld.parget);
+
+	int size					= 8;
+	int horizon					= 60;
+	double scaleBubblesXZ		= 8.0;
+	double scaleBubblesY		= 8.0;
+	int BubblesAmp				= 64;
+	int BubblesOctaves			= 4;
+
+
+	for(int i = 0; i < size; i++)
+		for(int j = 0; j < size; j++)
+			wWorld.LoadLocation(i, j);
+
+	double density;
+	PerlinNoise pnBubbles(0.5, BubblesOctaves);
+
+
+	for(int k = 0; k < size*LOCATION_SIZE_XZ; k++)
+	{
+		for(int i = 0; i < size*LOCATION_SIZE_XZ; i++)
+		{
+			for(int j = 0; j < LOCATION_SIZE_Y; j++)
+			{
+				double x = i/scaleBubblesXZ;
+				double y = j/scaleBubblesY;
+				double z = k/scaleBubblesXZ;
+
+				density = BubblesAmp*pnBubbles.PerlinNoise3d(x, y, z) + j;
+				if(density < horizon)
+					wWorld.AddTile(i, j, k, MAT_GRASS, true);
+			}
+		}
+	}
+	_endthread();
+	return;
+}
+
+void Generate3(void* pParams)
+{
+	Param pParameters = *(Param*)pParams;
+	World &wWorld = *pParameters.wWorld;
+	SetEvent(wWorld.parget);
+
+	int size					= 16;
+	int horizon					= 64;
+	double scaleHeightMapXZ		= 128.0;
+	double scaleBubblesXZ		= 16.0;
+	double scaleBubblesY		= 32.0;
+	int HeghtMapAmp				= 128;
+	int BubblesAmp				= 128;
+	int HeghtMapOctaves			= 64;
+	int BubblesOctaves			= 5;
+
+	for(int i = 0; i < size; i++)
+		for(int j = 0; j < size; j++)
+			wWorld.LoadLocation(i, j);
+
+	double height;
+	double density;
+	PerlinNoise pnBubbles	(0.5, BubblesOctaves);
+	PerlinNoise pnHeightMap	(0.5, HeghtMapOctaves);
+
+
+	for(int k = 0; k < size*LOCATION_SIZE_XZ; k++)
+	{
+		for(int i = 0; i < size*LOCATION_SIZE_XZ; i++)
+		{
+			double x = i/scaleHeightMapXZ;
+			double z = k/scaleHeightMapXZ;
+			height = HeghtMapAmp*pnHeightMap.PerlinNoise2d(x, z) + horizon;
+
+			for(int j = 0; j < LOCATION_SIZE_Y; j++)
+			{
+				double x = i/scaleBubblesXZ;
+				double y = j/scaleBubblesY;
+				double z = k/scaleBubblesXZ;
+
+				density = BubblesAmp*pnBubbles.PerlinNoise3d(x, y, z) + j;
+				if(density < height)
+					wWorld.AddTile(i, j, k, MAT_GRASS, true);
+			}
+		}
+	}
+	_endthread();
+	return;
+}
 
 Character::Character()
 {
@@ -223,8 +356,8 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 	{
 		if(bKeyboardDown['6'])
 		{
-			for(int i = 0; i < 10; i++)
-				for(int j = 0; j < 10; j++)
+			for(int i = 0; i < 8; i++)
+				for(int j = 0; j < 8; j++)
 					wWorld.LoadLocation(i, j);
 			bKeyboardDown['6'] = false;
 		}
@@ -233,8 +366,8 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 	{
 		if(bKeyboardDown['7'])
 		{
-			for(int i = 0; i < 10; i++)
-				for(int j = 0; j < 10; j++)
+			for(int i = 0; i < 8; i++)
+				for(int j = 0; j < 8; j++)
 					wWorld.UnLoadLocation(i, j);
 			bKeyboardDown['7'] = false;
 		}
@@ -243,26 +376,43 @@ void Character::Control(GLdouble FrameInterval, World &wWorld)
 	{
 		if(bKeyboardDown['8'])
 		{
-			LocInWorld x = 0, z = 0;
-			auto loc = wWorld.AddLocation(x,z);
+			Param par = {&wWorld};
 
-			if(loc)
-			{
-				for(int k = 0; k < 16; k++)
-				{
-					for(int i = 0; i < 16; i++)
-					{
-						for(int j = 0; j < 1; j++)
-						{
-							//if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
-							wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
-						}
-					}
-				}
+			_beginthread(Generate1, 0, &par);
 
-				wWorld.DrawLoadedTiles(&*loc);
-			}
+			WaitForSingleObject(wWorld.parget, INFINITE);
+			ResetEvent(wWorld.parget);
+
 			bKeyboardDown['8'] = false;
+		}
+	}
+	if(bKeyboard['9'])
+	{
+		if(bKeyboardDown['9'])
+		{
+			Param par = {&wWorld};
+
+			_beginthread(Generate2, 0, &par);
+
+			WaitForSingleObject(wWorld.parget, INFINITE);
+			ResetEvent(wWorld.parget);
+
+			bKeyboardDown['9'] = false;
+		}
+	}
+
+	if(bKeyboard['0'])
+	{
+		if(bKeyboardDown['0'])
+		{
+			Param par = {&wWorld};
+
+			 _beginthread(Generate3, 0, &par);//&Param(par) );
+
+			WaitForSingleObject(wWorld.parget, INFINITE);
+			ResetEvent(wWorld.parget);
+
+			bKeyboardDown['0'] = false;
 		}
 	}
 

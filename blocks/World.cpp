@@ -392,8 +392,7 @@ int World::FindTile(TileInWorld x, TileInWorld y, TileInWorld z)
 	return 1;
 }
 
-
-void LoadLocationThread( void* pParams )
+void LoadLocationThread(void* pParams)
 {
 	Param pParameters = *(Param*)pParams;
 	LocInWorld x = pParameters.x;
@@ -434,31 +433,31 @@ void LoadLocationThread( void* pParams )
 	}
 	ReleaseMutex(wWorld.mutex);
 
-	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
+//	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
 
-	for(int j = 0; j < 100; j++)
-	{
-		for(int i = 0; i < 16; i++)
-		{
-			for(int k = 0; k < 16; k++)
-			{
-				//if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
-				//wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
+// 	for(int j = 0; j < 100; j++)
+// 	{
+// 		for(int i = 0; i < 16; i++)
+// 		{
+// 			for(int k = 0; k < 16; k++)
+// 			{
+// 				//if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
+// 				//wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
+// 
+// 				//if(rand()%100) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_GRASS, false);
+// 				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
+// 				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, 6, false);
+// 				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_STONE, false);
+// 			}
+// 		}
+// 	}
 
-				//if(rand()%100) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_GRASS, false);
-				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
-				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, 6, false);
-				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_STONE, false);
-			}
-		}
-	}
+//	std::fstream filestr;
 
-	std::fstream filestr;
-
-	filestr.open ("test", std::fstream::in | std::fstream::binary );
+//	filestr.open ("test", std::fstream::in | std::fstream::binary );
 	//filestr.open ("test", std::fstream::in | std::fstream::out | std::fstream::binary );
 	
-
+	/*
 	if(filestr.is_open())
 	{
 		int index = 0;
@@ -479,9 +478,9 @@ void LoadLocationThread( void* pParams )
 
 		filestr.close();
 	}
-
-	ReleaseMutex(loc->mutex);
-	wWorld.DrawLoadedTiles(&*loc);
+	*/
+//	ReleaseMutex(loc->mutex);
+//	wWorld.DrawLoadedTiles(&*loc);
 
 
 // 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
@@ -504,7 +503,7 @@ void LoadLocationThread( void* pParams )
 	_endthread();
 }
 
-void UnLoadLocationThread( void* pParams )
+void UnLoadLocationThread(void* pParams)
 {
 	Param pParameters = *(Param*)pParams;
 	LocInWorld x = pParameters.x;
