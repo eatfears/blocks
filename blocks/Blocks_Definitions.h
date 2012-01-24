@@ -25,8 +25,8 @@
 
 #define FOG_COLOR		0.5f,0.5f,0.8f,1.0f
 #define FOG_DENSITY		10.0
-#define FOG_START		TILE_SIZE*10
-#define MAX_VIEV_DIST	TILE_SIZE*64
+#define FOG_START		TILE_SIZE*64
+#define MAX_VIEV_DIST	TILE_SIZE*128
 
 #define TOP				0
 #define DOWN			1

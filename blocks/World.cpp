@@ -455,24 +455,30 @@ void LoadLocationThread( void* pParams )
 
 	std::fstream filestr;
 
-	filestr.open ("test", std::fstream::in | std::fstream::out | std::fstream::binary );
+	filestr.open ("test", std::fstream::in | std::fstream::binary );
+	//filestr.open ("test", std::fstream::in | std::fstream::out | std::fstream::binary );
+	
 
-	int index = 0;
-
-
-	TileInLoc locx, locy, locz;
-	char mat;
-
-	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
+	if(filestr.is_open())
 	{
-		filestr >> mat;
-		loc->GetTilePositionByIndex(index, &locx, &locy, &locz);
-		loc->AddTile(locx, locy, locz, mat);
-//		filestr << (char) (rand()%5);
-		index++;
-	}
+		int index = 0;
+		TileInLoc locx, locy, locz;
+		char mat;
 
-	filestr.close();
+		while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
+		{
+			filestr >> mat;
+			if (filestr.eof()) break;
+
+			loc->GetTilePositionByIndex(index, &locx, &locy, &locz);
+			loc->AddTile(locx, locy, locz, mat);
+
+	//		if(rand()%500) filestr << (char) (rand()%4 + 1); else filestr << (char) 0;
+			index++;
+		}
+
+		filestr.close();
+	}
 
 	ReleaseMutex(loc->mutex);
 	wWorld.DrawLoadedTiles(&*loc);
