@@ -1,11 +1,6 @@
 #include <list>
-#include <time.h>
 
 #include "blocks.h"
-#include "gsl/gsl_randist.h"
-gsl_rng *randNumGen;
-
-#define MOUSE_SENSIVITY 1.5
 
 
 #pragma comment( lib, "opengl32.lib" ) // Искать OpenGL32.lib при линковке
@@ -13,6 +8,9 @@ gsl_rng *randNumGen;
 #pragma comment( lib, "Glaux.lib" )    // Искать Glaux.lib при линковке
 
 using namespace std;
+
+#include "gsl/gsl_randist.h"
+gsl_rng *randNumGen;
 
 GLWindow glwWnd;
 Game gGame;
@@ -154,9 +152,6 @@ int WINAPI WinMain(  HINSTANCE  hInstance,
 		return 0;
 	}
 
-	srand(time(NULL));
-	randNumGen = gsl_rng_alloc(gsl_rng_mt19937);
-
 // 	gGame.player.lnwPositionX = 0;
 // 	gGame.player.lnwPositionZ = 0;
 	gGame.player.dPositionY = 100*TILE_SIZE+00.0;
@@ -187,6 +182,7 @@ int WINAPI WinMain(  HINSTANCE  hInstance,
 		}
 	}
 
+	gsl_rng_free(randNumGen);
 	glwWnd.KillGLWindow();						// Разрушаем окно
 	return ( msg.wParam );					// Выходим из программы
 }

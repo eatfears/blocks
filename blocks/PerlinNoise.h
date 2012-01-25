@@ -27,9 +27,9 @@ private:
 	double SmoothNoise2d(int x, int y);
 	double SmoothNoise3d(int x, int y, int z);
 
-
 	double persistence;
 	int NumberOfOctaves;
 
+	int a, b, c, d, e;
 };
 

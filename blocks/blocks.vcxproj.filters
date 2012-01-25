@@ -12,6 +12,12 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Source\Landscape">
+      <UniqueIdentifier>{378c1672-cc92-4eb6-b384-5147182f82d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Landscape">
+      <UniqueIdentifier>{34dfc710-00f3-4157-84df-e039a325e687}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -35,14 +41,14 @@
     <ClCompile Include="Location.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="PerlinNoise.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="primes.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Landscape.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source\Landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="PerlinNoise.cpp">
+      <Filter>Source\Landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Primes.cpp">
+      <Filter>Source\Landscape</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -74,10 +80,13 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="PerlinNoise.h">
-      <Filter>Headers</Filter>
+      <Filter>Headers\Landscape</Filter>
     </ClInclude>
     <ClInclude Include="Landscape.h">
-      <Filter>Headers</Filter>
+      <Filter>Headers\Landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Primes.h">
+      <Filter>Headers\Landscape</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

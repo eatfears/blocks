@@ -1,10 +1,20 @@
 #include "GLWindow.h"
 #include "Blocks_Definitions.h"
+#include "gsl/gsl_randist.h"
+#include <time.h>
 
 LRESULT  CALLBACK WndProc( HWND, UINT, WPARAM, LPARAM );
 
+extern gsl_rng *randNumGen;
+
 GLWindow::GLWindow()
 {
+	srand(time(NULL));
+	int seed = rand();
+	randNumGen = gsl_rng_alloc(gsl_rng_mt19937);
+	gsl_rng_set(randNumGen, seed);
+
+
 	active = true;
 	bMousing = false;
 	fullscreen = false;

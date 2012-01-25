@@ -1,14 +1,20 @@
 #include "PerlinNoise.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
-
+#include "Primes.h"
 
 PerlinNoise::PerlinNoise(double persistence, int NumberOfOctaves)
 {
 	PerlinNoise::persistence = persistence;
 	PerlinNoise::NumberOfOctaves = NumberOfOctaves;
-}
 
+	Primes p;
+	a = p.GenPrime(14);
+	b = p.GenPrime(20);
+	c = p.GenPrime(30);
+	d = p.GenPrime(6);
+	e = p.GenPrime(7);
+}
 
 PerlinNoise::~PerlinNoise(void)
 {
@@ -17,21 +23,22 @@ PerlinNoise::~PerlinNoise(void)
 double PerlinNoise::Noise1d(int x)
 {
 	x = (x<<13) ^ x;
-	return ( 1.0 - ( (x * (x * x * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+	//return ( 1.0 - ( (x*(x*x*15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+	return ( 1.0 - ( (x*(x*x*a + b) + c) & 0x7fffffff) / 1073741824.0);
 }
 
 double PerlinNoise::Noise2d(int x, int y)
 {
-	int n = x + y * 57;
+	int n = x + y * d;
 
-	return Noise1d(n);  
+	return Noise1d(n);
 }
 
 double PerlinNoise::Noise3d(int x, int y, int z)
 {
-	int n = x + (y + z * 107) * 57;
+	int n = x + (y + z * e) * d;
 
-	return Noise1d(n);  
+	return Noise1d(n);
 }
 
 double PerlinNoise::InterpolatedNoise1d(double x)

@@ -14,6 +14,8 @@
 
 #define TILE_SIZE		10.0
 
+#define MOUSE_SENSIVITY 1.5
+
 #define STEP_DOWNSTEP	0.6
 #define MAX_DOWNSTEP	7.0
 #define PLAYER_HEIGHT	15.0

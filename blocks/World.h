@@ -40,5 +40,4 @@ public:
 
 	HANDLE parget;
 	HANDLE mutex;
-//	HANDLE loading_mutex;
 };
