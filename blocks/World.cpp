@@ -452,7 +452,7 @@ void LoadLocationThread(void* pParams)
 	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
 
 	wWorld.lLandscape.Generate(loc->x, loc->z);
-	//wWorld.lLandscape.Fill(loc->x, loc->z, 0, 0.999);
+	//wWorld.lLandscape.Fill(loc->x, loc->z, 0, 0.999, 64);
 	//wWorld.lLandscape.Load(loc->x, loc->z);
 
 	ReleaseMutex(loc->mutex);

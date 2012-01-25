@@ -12,7 +12,7 @@ public:
 
 	void Generate(LocInWorld locx, LocInWorld locz);
 	void Load(LocInWorld locx, LocInWorld locz);
-	void Fill(LocInWorld locx, LocInWorld locz, char mat, double fillness);
+	void Fill(LocInWorld locx, LocInWorld locz, char mat, double fillness, int height );
 	
 	int horizon;
 	double scaleHeightMapXZ;

@@ -18,12 +18,14 @@ void LoadNGenerate(void* pParams)
 	World &wWorld = *pParameters.wWorld;
 	SetEvent(wWorld.parget);
 
-	int size = 5;
+	int size = 8;
 
 	for(int i = 0; i < size; i++)
-		for(int j = 0; j < size; j++)
-			wWorld.LoadLocation(i, j);
-
+		for(int j = 0; j < size * 4; j++)
+	{
+		wWorld.LoadLocation(i, j);
+		Sleep(30);
+	}
 	_endthread();
 	return;
 }

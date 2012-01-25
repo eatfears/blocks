@@ -9,10 +9,10 @@ Landscape::Landscape(World& ww)
 	scaleHeightMapXZ	= 128.0;
 	scaleBubblesXZ		= 32.0;
 	scaleBubblesY		= 16.0;
-	HeghtMapAmp			= 64;
-	BubblesAmp			= 164;
+	HeghtMapAmp			= 40;
+	BubblesAmp			= 0*64;
 	HeghtMapOctaves		= 16;
-	BubblesOctaves		= 6;
+	BubblesOctaves		= 5;
 
 	pnBubbles			= PerlinNoise(0.5, BubblesOctaves);
 	pnHeightMap			= PerlinNoise(0.5, HeghtMapOctaves);
@@ -26,22 +26,26 @@ void Landscape::Generate(LocInWorld locx, LocInWorld locz)
 {
 	double height;
 	double density;
+	double hx, hz;
+	double bx, by, bz;
 
 	for(int i = locx*LOCATION_SIZE_XZ; i < (locx + 1)*LOCATION_SIZE_XZ; i++)
 	{
+		hx = i/scaleHeightMapXZ;
+		bx = i/scaleBubblesXZ;
+
 		for(int k = locz*LOCATION_SIZE_XZ; k < (locz + 1)*LOCATION_SIZE_XZ; k++)
 		{
-			double x = i/scaleHeightMapXZ;
-			double z = k/scaleHeightMapXZ;
-			height = HeghtMapAmp*pnHeightMap.PerlinNoise2d(x, z) + horizon;
+			hz = k/scaleHeightMapXZ;
+			bz = k/scaleBubblesXZ;
+
+			height = HeghtMapAmp*pnHeightMap.PerlinNoise2d(hx, hz) + horizon;
 
 			for(int j = 0; j < LOCATION_SIZE_Y; j++)
 			{
-				double x = i/scaleBubblesXZ;
-				double y = j/scaleBubblesY;
-				double z = k/scaleBubblesXZ;
+				by = j/scaleBubblesY;
 
-				density = BubblesAmp*pnBubbles.PerlinNoise3d(x, y, z) + j;
+				density = BubblesAmp*pnBubbles.PerlinNoise3d(bx, by, bz) + j;
 				if(density < height)
 					wWorld.AddTile(i, j, k, MAT_GRASS, false);
 			}
@@ -79,7 +83,7 @@ void Landscape::Load( LocInWorld locx, LocInWorld locz )
 	
 }
 
-void Landscape::Fill( LocInWorld locx, LocInWorld locz, char mat, double fillness )
+void Landscape::Fill( LocInWorld locx, LocInWorld locz, char mat, double fillness, int height )
 {
 	int material = mat;
 
@@ -87,10 +91,13 @@ void Landscape::Fill( LocInWorld locx, LocInWorld locz, char mat, double fillnes
 	{
 		for(int k = locz*LOCATION_SIZE_XZ; k < (locz + 1)*LOCATION_SIZE_XZ; k++)
 		{
-			for(int j = 0; j < LOCATION_SIZE_Y; j++)
+			for(int j = 0; j < height; j++)
 			{
-				if (mat == 0) material = rand()%4+1;
-				if((double)rand()/(double)RAND_MAX < fillness) wWorld.AddTile(i, j, k, material, false);
+				if((double)rand()/(double)RAND_MAX < fillness) 
+				{
+					if (mat == 0) material = rand()%4+1;
+					wWorld.AddTile(i, j, k, material, false);
+				}
 			}
 		}
 	}

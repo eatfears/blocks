@@ -8,6 +8,8 @@ PerlinNoise::PerlinNoise(double persistence, int NumberOfOctaves)
 	PerlinNoise::persistence = persistence;
 	PerlinNoise::NumberOfOctaves = NumberOfOctaves;
 
+	interpolation = COSINE_INTERPOLATE;
+
 	Primes p;
 	a = p.GenPrime(14);
 	b = p.GenPrime(20);
@@ -23,20 +25,22 @@ PerlinNoise::~PerlinNoise(void)
 double PerlinNoise::Noise1d(int x)
 {
 	x = (x<<13) ^ x;
-	//return ( 1.0 - ( (x*(x*x*15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
-	return ( 1.0 - ( (x*(x*x*a + b) + c) & 0x7fffffff) / 1073741824.0);
+	return ( 1.0 - ( (x*(x*x*15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+	//return ( 1.0 - ( (x*(x*x*a + b) + c) & 0x7fffffff) / 1073741824.0);
 }
 
 double PerlinNoise::Noise2d(int x, int y)
 {
-	int n = x + y * d;
+	//int n = x + y * d;
+	int n = x + y * 57;
 
 	return Noise1d(n);
 }
 
 double PerlinNoise::Noise3d(int x, int y, int z)
 {
-	int n = x + (y + z * e) * d;
+	//int n = x + (y + z * e) * d;
+	int n = x + (y + z * 107) * 57;
 
 	return Noise1d(n);
 }
@@ -47,10 +51,10 @@ double PerlinNoise::InterpolatedNoise1d(double x)
 
 	double fractionalX = x - iX;
 
-	double v1 = SmoothNoise1d(iX);
-	double v2 = SmoothNoise1d(iX + 1);
+	double v1 = UseNoise1d(iX);
+	double v2 = UseNoise1d(iX + 1);
 
-	return CosineInterpolate(v1, v2, fractionalX);
+	return Interpolate(v1, v2, fractionalX);
 }
 
 double PerlinNoise::InterpolatedNoise2d(double x, double y)
@@ -61,15 +65,15 @@ double PerlinNoise::InterpolatedNoise2d(double x, double y)
 	double fractionalX = x - iX;
 	double fractionalY = y - iY;
 
-	double v1 = SmoothNoise2d(iX, iY);
-	double v2 = SmoothNoise2d(iX + 1, iY);
-	double v3 = SmoothNoise2d(iX, iY + 1);
-	double v4 = SmoothNoise2d(iX + 1, iY + 1);
+	double v1 = UseNoise2d(iX, iY);
+	double v2 = UseNoise2d(iX + 1, iY);
+	double v3 = UseNoise2d(iX, iY + 1);
+	double v4 = UseNoise2d(iX + 1, iY + 1);
 
-	double i1 = CosineInterpolate(v1, v2, fractionalX);
-	double i2 = CosineInterpolate(v3, v4, fractionalX);
+	double i1 = Interpolate(v1, v2, fractionalX);
+	double i2 = Interpolate(v3, v4, fractionalX);
 
-	return CosineInterpolate(i1, i2, fractionalY);
+	return Interpolate(i1, i2, fractionalY);
 }
 
 double PerlinNoise::InterpolatedNoise3d(double x, double y, double z)
@@ -82,24 +86,24 @@ double PerlinNoise::InterpolatedNoise3d(double x, double y, double z)
 	double fractionalY = y - iY;
 	double fractionalZ = z - iZ;
 
-	double v1 = SmoothNoise3d(iX, iY, iZ);
-	double v2 = SmoothNoise3d(iX + 1, iY, iZ);
-	double v3 = SmoothNoise3d(iX, iY + 1, iZ);
-	double v4 = SmoothNoise3d(iX + 1, iY + 1, iZ);
-	double v5 = SmoothNoise3d(iX, iY, iZ + 1);
-	double v6 = SmoothNoise3d(iX + 1, iY, iZ + 1);
-	double v7 = SmoothNoise3d(iX, iY + 1, iZ + 1);
-	double v8 = SmoothNoise3d(iX + 1, iY + 1, iZ + 1);
+	double v1 = UseNoise3d(iX, iY, iZ);
+	double v2 = UseNoise3d(iX + 1, iY, iZ);
+	double v3 = UseNoise3d(iX, iY + 1, iZ);
+	double v4 = UseNoise3d(iX + 1, iY + 1, iZ);
+	double v5 = UseNoise3d(iX, iY, iZ + 1);
+	double v6 = UseNoise3d(iX + 1, iY, iZ + 1);
+	double v7 = UseNoise3d(iX, iY + 1, iZ + 1);
+	double v8 = UseNoise3d(iX + 1, iY + 1, iZ + 1);
 
-	double i1 = CosineInterpolate(v1, v2, fractionalX);
-	double i2 = CosineInterpolate(v3, v4, fractionalX);
-	double i3 = CosineInterpolate(v5, v6, fractionalX);
-	double i4 = CosineInterpolate(v7, v8, fractionalX);
+	double i1 = Interpolate(v1, v2, fractionalX);
+	double i2 = Interpolate(v3, v4, fractionalX);
+	double i3 = Interpolate(v5, v6, fractionalX);
+	double i4 = Interpolate(v7, v8, fractionalX);
 
-	double w1 = CosineInterpolate(i1, i2, fractionalY);
-	double w2 = CosineInterpolate(i3, i4, fractionalY);
+	double w1 = Interpolate(i1, i2, fractionalY);
+	double w2 = Interpolate(i3, i4, fractionalY);
 
-	return CosineInterpolate(w1, w2, fractionalZ);
+	return Interpolate(w1, w2, fractionalZ);
 }
 
 double PerlinNoise::LinearInterpolate(double a, double b, double x)
@@ -123,6 +127,15 @@ double PerlinNoise::CubicInterpolate(double v0, double v1, double v2, double v3,
 	double S = v1;
 
 	return P*x*x*x + Q*x*x + R*x + S;
+}
+
+double PerlinNoise::Interpolate( double a, double b, double x )
+{
+	if(interpolation == LINEAR_INTERPOLATE)
+		return LinearInterpolate(a, b, x);
+	if(interpolation == COSINE_INTERPOLATE)
+		return CosineInterpolate(a, b, x);
+	return 0;
 }
 
 double PerlinNoise::SmoothNoise1d(int x)
@@ -165,6 +178,8 @@ double PerlinNoise::SmoothNoise3d(int x, int y, int z)
 
 	return corners + sides + planes + center;
 }
+
+
 
 double PerlinNoise::PerlinNoise1d(double x)
 {
@@ -215,4 +230,21 @@ double PerlinNoise::PerlinNoise3d(double x, double y, double z)
 		amplitude *= persistence;
 	}
 	return total;
+}
+
+double PerlinNoise::UseNoise1d( int x )
+{
+	return SmoothNoise1d(x);
+}
+
+
+double PerlinNoise::UseNoise2d( int x, int y )
+{
+	return SmoothNoise2d(x, y);
+}
+
+
+double PerlinNoise::UseNoise3d( int x, int y, int z )
+{
+	return SmoothNoise3d(x, y, z);
 }
