@@ -18,7 +18,7 @@ void LoadNGenerate(void* pParams)
 	World &wWorld = *pParameters.wWorld;
 	SetEvent(wWorld.parget);
 
-	int size = 16;
+	int size = 5;
 
 	for(int i = 0; i < size; i++)
 		for(int j = 0; j < size; j++)
@@ -28,7 +28,8 @@ void LoadNGenerate(void* pParams)
 	return;
 }
 
-Character::Character()
+Character::Character(World& ww)
+	: wWorld(ww)
 {
 	bFalling = true;
 	for(int i = 0; i < 256; i++) bKeyboardDown[i] = true;
@@ -69,7 +70,7 @@ void Character::GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
 	if(*zerr > abs(*zerr - TILE_SIZE)) *zerr = abs(*zerr - TILE_SIZE); 
 }
 
-void Character::Control(GLdouble FrameInterval, World &wWorld)
+void Character::Control(GLdouble FrameInterval)
 {
 	GLdouble step = WALK_SPEED;
 	if(bKeyboard[VK_SHIFT]) step *= SPRINT_KOEF;

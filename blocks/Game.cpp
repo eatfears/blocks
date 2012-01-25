@@ -4,8 +4,8 @@
 GLfloat fogColor[4]= {FOG_COLOR};
 
 Game::Game()
+	:player(wWorld)
 {
-	player.wWorld = &wWorld;
 }
 
 Game::~Game()
@@ -354,7 +354,7 @@ bool Game::Loop()
 	DrawGLScene();
 	player.GetCenterCoords(glwWnd->width, glwWnd->height);
 
-	player.Control(FrameInterval, wWorld);
+	player.Control(FrameInterval);
 	DrawInterface();
 
 	GetFrameTime();

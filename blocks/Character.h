@@ -8,7 +8,7 @@
 class Character
 {
 public:
-	Character();
+	Character(World& ww);
 	~Character();
 
 	GLdouble dPositionX, dPositionY, dPositionZ;
@@ -17,7 +17,7 @@ public:
 	GLdouble dVelocityX, dVelocityY, dVelocityZ;
 
 	bool bFalling;
-	void Control(GLdouble FrameInterval, World &wWorld);
+	void Control(GLdouble FrameInterval);
 	void GetCenterCoords(GLsizei width, GLsizei height);
 	bool  bKeyboard[256];				// Массив, используемый для операций с клавиатурой
 	bool  bKeyboardDown[256];				// Массив, используемый для операций с клавиатурой
@@ -25,7 +25,7 @@ public:
 	GLdouble dDispCenterCoordX, dDispCenterCoordY, dDispCenterCoordZ;	// возвращаемые мировые координаты центра
 	signed short sCenterCubeCoordX, sCenterCubeCoordY, sCenterCubeCoordZ;	// возвращаемые координаты куба
 
-	World *wWorld;
+	World& wWorld;
 
 private:
 	void GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr);

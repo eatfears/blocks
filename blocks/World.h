@@ -3,6 +3,7 @@
 
 #include "Location.h"
 #include "Material.h"
+#include "Landscape.h"
 
 class World
 {
@@ -12,6 +13,7 @@ public:
 
 	MaterialLibrary MaterialLib;
 	std::list<Location> lLocations;
+	Landscape lLandscape;
 
 	void BuildWorld();
 	int FindTile(TileInWorld x, TileInWorld y, TileInWorld z);
@@ -40,4 +42,3 @@ public:
 	HANDLE mutex;
 //	HANDLE loading_mutex;
 };
-

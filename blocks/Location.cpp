@@ -1,9 +1,9 @@
 #include "Location.h"
 
-Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary *MaterialLib)
+Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib)
+	: MaterialLib(MLib)
 {
 	Location::x = x; Location::z = z;
-	Location::MaterialLib = MaterialLib;
 
 	tTile = new Tile[LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y];
 
@@ -19,12 +19,12 @@ Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary *MaterialLib)
 
 	for(int i = 0; i < 6; i++)
 	{
-		TexurePointerInVisible[i] = new std::list<Tile*>::iterator [MaterialLib->iNumberOfTextures];
+		TexurePointerInVisible[i] = new std::list<Tile*>::iterator [MaterialLib.iNumberOfTextures];
 	}
 
 	for(int i = 0; i < 6; i++)
 	{
-		for(int j = 1; j < MaterialLib->iNumberOfTextures; j++)
+		for(int j = 1; j < MaterialLib.iNumberOfTextures; j++)
 		{
 			TexurePointerInVisible[i][j] = DisplayedTiles[i].end();
 		}
@@ -67,7 +67,7 @@ void Location::ShowTile(Tile *tTile, char N)
 	if(tTile->cMaterial == MAT_NO) return;
 	if(tTile->bVisible[N]) return;
 	
-	int iTex = MaterialLib->mMaterial[tTile->cMaterial].iTexture[N];
+	int iTex = MaterialLib.mMaterial[tTile->cMaterial].iTexture[N];
 	auto it = TexurePointerInVisible[N][iTex];
 
 	TexurePointerInVisible[N][iTex] = DisplayedTiles[N].insert(it, tTile);
@@ -81,7 +81,7 @@ void Location::HideTile(Tile *tTile, char N)
 	if(tTile->cMaterial == MAT_NO) return;
 	if(!tTile->bVisible[N]) return;
 
-	int iTex = MaterialLib->mMaterial[tTile->cMaterial].iTexture[N];
+	int iTex = MaterialLib.mMaterial[tTile->cMaterial].iTexture[N];
 	auto it = TexurePointerInVisible[N][iTex];
 	auto it2 = it;
 
@@ -101,7 +101,7 @@ void Location::HideTile(Tile *tTile, char N)
 
 		if(TexurePointerInVisible[N][iTex] != DisplayedTiles[N].end())
 		{
-			int iTex2 = MaterialLib->mMaterial[(*TexurePointerInVisible[N][iTex])->cMaterial].iTexture[N];
+			int iTex2 = MaterialLib.mMaterial[(*TexurePointerInVisible[N][iTex])->cMaterial].iTexture[N];
 			if(iTex != iTex2)
 				TexurePointerInVisible[N][iTex] = DisplayedTiles[N].end();
 		}

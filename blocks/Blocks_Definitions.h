@@ -37,3 +37,7 @@
 
 #define LOCATION_SIZE_XZ	16
 #define LOCATION_SIZE_Y		128
+
+typedef unsigned short	TileInLoc;
+typedef signed short	LocInWorld;
+typedef signed short	TileInWorld;

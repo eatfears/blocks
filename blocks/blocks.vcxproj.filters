@@ -41,6 +41,9 @@
     <ClCompile Include="primes.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Landscape.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="blocks.h">
@@ -71,6 +74,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="PerlinNoise.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Landscape.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

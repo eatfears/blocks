@@ -5,9 +5,6 @@
 #include "Blocks_Definitions.h"
 #include "Material.h"
 
-typedef unsigned short	TileInLoc;
-typedef signed short	LocInWorld;
-typedef signed short	TileInWorld;
 
 typedef struct locpos
 {
@@ -24,11 +21,11 @@ typedef struct tile
 class Location
 {
 public:
-	Location(LocInWorld x, LocInWorld z, MaterialLibrary *MaterialLib);
+	Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib);
 	~Location(void);
 
 	Tile *tTile;
-	MaterialLibrary *MaterialLib;
+	MaterialLibrary& MaterialLib;
 	std::list<Tile *> *DisplayedTiles;
 	std::list<Tile *>::iterator **TexurePointerInVisible;
 

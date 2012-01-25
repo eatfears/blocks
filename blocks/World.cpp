@@ -2,8 +2,8 @@
 #include <fstream>
 
 #include "World.h"
-#include "PerlinNoise.h"
 #include "Blocks_Definitions.h"
+#include "Landscape.h"
 
 typedef struct params
 {
@@ -13,6 +13,7 @@ typedef struct params
 } Param;
 
 World::World()
+	:lLandscape(*this)
 {
 	skipbuild = false;
 
@@ -36,7 +37,7 @@ Location* World::AddLocation(LocInWorld x, LocInWorld z)
 		++locIterator;
 	}
 
-	Location *lLoc = new Location(x, z, &MaterialLib);
+	Location *lLoc = new Location(x, z, MaterialLib);
 
 	locIterator = lLocations.insert(locIterator, *lLoc);
 	return &*locIterator;
@@ -447,108 +448,15 @@ void LoadLocationThread(void* pParams)
 	}
 	ReleaseMutex(wWorld.mutex);
 
-//	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
-
-// 	for(int j = 0; j < 100; j++)
-// 	{
-// 		for(int i = 0; i < 16; i++)
-// 		{
-// 			for(int k = 0; k < 16; k++)
-// 			{
-// 				//if(rand()%100) wWorld.AddTile(i-8 + 16*x, -j, k-8 + 16*z, MAT_GRASS, false);
-// 				//wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
-// 
-// 				//if(rand()%100) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_GRASS, false);
-// 				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, rand()%4+1, false);
-// 				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, 6, false);
-// 				//if(rand()%500) wWorld.AddTile(i + 16*x, j, k + 16*z, MAT_STONE, false);
-// 			}
-// 		}
-// 	}
-
-//	std::fstream filestr;
-
-//	filestr.open ("test", std::fstream::in | std::fstream::binary );
-	//filestr.open ("test", std::fstream::in | std::fstream::out | std::fstream::binary );
-	
-	/*
-	if(filestr.is_open())
-	{
-		int index = 0;
-		TileInLoc locx, locy, locz;
-		char mat;
-
-		while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
-		{
-			filestr >> mat;
-			if (filestr.eof()) break;
-
-			loc->GetTilePositionByIndex(index, &locx, &locy, &locz);
-			loc->AddTile(locx, locy, locz, mat);
-
-	//		if(rand()%500) filestr << (char) (rand()%4 + 1); else filestr << (char) 0;
-			index++;
-		}
-
-		filestr.close();
-	}
-	*/
-//	ReleaseMutex(loc->mutex);
-//	wWorld.DrawLoadedTiles(&*loc);
-
 
 	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
 
-
-	int horizon					= LOCATION_SIZE_Y/2;
-	double scaleHeightMapXZ		= 128.0;
-	double scaleBubblesXZ		= 32.0;
-	double scaleBubblesY		= 16.0;
-	int HeghtMapAmp				= 64;
-	int BubblesAmp				= 164;
-	int HeghtMapOctaves			= 16;
-	int BubblesOctaves			= 6;
-
-	double height;
-	double density;
-	PerlinNoise pnBubbles	(0.5, BubblesOctaves);
-	PerlinNoise pnHeightMap	(0.5, HeghtMapOctaves);
-
-
-	for(int i = loc->x*LOCATION_SIZE_XZ; i < (loc->x + 1)*LOCATION_SIZE_XZ; i++)
-	{
-		for(int k = loc->z*LOCATION_SIZE_XZ; k < (loc->z + 1)*LOCATION_SIZE_XZ; k++)
-		{
-			double x = i/scaleHeightMapXZ;
-			double z = k/scaleHeightMapXZ;
-			height = HeghtMapAmp*pnHeightMap.PerlinNoise2d(x, z) + horizon;
-
-			for(int j = 0; j < LOCATION_SIZE_Y; j++)
-			{
-				double x = i/scaleBubblesXZ;
-				double y = j/scaleBubblesY;
-				double z = k/scaleBubblesXZ;
-
-				density = BubblesAmp*pnBubbles.PerlinNoise3d(x, y, z) + j;
-				if(density < height)
-					wWorld.AddTile(i, j, k, MAT_GRASS, false);
-			}
-		}
-	}
+	wWorld.lLandscape.Generate(loc->x, loc->z);
+	//wWorld.lLandscape.Fill(loc->x, loc->z, 0, 0.999);
+	//wWorld.lLandscape.Load(loc->x, loc->z);
 
 	ReleaseMutex(loc->mutex);
 	wWorld.DrawLoadedTiles(&*loc);
-
-
-
-
-
-
-
-
-
-
-
 
 
 // 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
