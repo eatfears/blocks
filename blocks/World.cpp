@@ -26,8 +26,8 @@ World::~World()
 
 Location* World::AddLocation(LocInWorld x, LocInWorld z)
 {
-	auto locIterator = lLocations.begin();
-
+// 	auto locIterator = lLocations.begin();
+// 
 // 	while(locIterator != lLocations.end())
 // 	{
 // 		if((locIterator->x == x)&&(locIterator->z == z)) return NULL;
@@ -36,8 +36,8 @@ Location* World::AddLocation(LocInWorld x, LocInWorld z)
 
 	Location *lLoc = new Location(x, z, MaterialLib);
 
-	locIterator = lLocations.insert(locIterator, *lLoc);
-	return &*locIterator;
+	lLocations.push_front(*lLoc);
+	return lLoc;
 }
 void LoadNGenerate (void*);
 void World::BuildWorld()

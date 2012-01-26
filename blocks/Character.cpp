@@ -19,7 +19,7 @@ void LoadNGenerate(void* pParams)
 
 	int size = 16;
 
-	for(int i = x*size; i < (x+1)*size; i++)
+	for(int i = x*size; i < (x+1)*size*10; i++)
 		for(int j = z*size; j < (z+1)*size; j++)
 	{
 		wWorld.LoadLocation(i, j);
@@ -231,7 +231,7 @@ void Character::Control(GLdouble FrameInterval)
 		if(bKeyboardDown['4'])
 		{
 			wWorld.LoadLocation(0, 0);	
-			//bKeyboardDown['4'] = false;
+			bKeyboardDown['4'] = false;
 		}
 	}
 	if(bKeyboard['5'])
@@ -239,7 +239,7 @@ void Character::Control(GLdouble FrameInterval)
 		if(bKeyboardDown['5'])
 		{
 			wWorld.UnLoadLocation(0, 0);	
-			//bKeyboardDown['5'] = false;
+			bKeyboardDown['5'] = false;
 		}
 	}
 	if(bKeyboard['6'])
