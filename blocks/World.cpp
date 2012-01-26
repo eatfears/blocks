@@ -31,11 +31,11 @@ Location* World::AddLocation(LocInWorld x, LocInWorld z)
 {
 	auto locIterator = lLocations.begin();
 
-	while(locIterator != lLocations.end())
-	{
-		if((locIterator->x == x)&&(locIterator->z == z)) return NULL;
-		++locIterator;
-	}
+// 	while(locIterator != lLocations.end())
+// 	{
+// 		if((locIterator->x == x)&&(locIterator->z == z)) return NULL;
+// 		++locIterator;
+// 	}
 
 	Location *lLoc = new Location(x, z, MaterialLib);
 
@@ -47,18 +47,14 @@ void World::BuildWorld()
 {
 	MaterialLib.InitMaterials();
 
-	typedef struct params
-	{
-		World *wWorld;
-	} Param;
-
-	Param par = {this};
+	
+	Param par = {0, 0, this};
 
 	_beginthread(LoadNGenerate, 0, &par);
 
 	WaitForSingleObject(parget, INFINITE);
 	ResetEvent(parget);
-
+	
 	/*
 	for(int i = -10; i < 10; i++)
 	for(int j = -10; j < 10; j++)

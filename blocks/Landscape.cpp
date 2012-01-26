@@ -45,7 +45,7 @@ void Landscape::Generate(LocInWorld locx, LocInWorld locz)
 			{
 				by = j/scaleBubblesY;
 
-				density = BubblesAmp*pnBubbles.PerlinNoise3d(bx, by, bz) + j;
+				density = /*BubblesAmp*pnBubbles.PerlinNoise3d(bx, by, bz) +*/ j;
 				if(density < height)
 					wWorld.AddTile(i, j, k, MAT_GRASS, false);
 			}
@@ -62,10 +62,10 @@ void Landscape::Load( LocInWorld locx, LocInWorld locz )
 	
 	if(filestr.is_open())
 	{
-		int index = 0;
+		/*int index = 0;
 		TileInLoc locx, locy, locz;
 		char mat;
-		/*
+		
 		while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
 		{
 			filestr >> mat;

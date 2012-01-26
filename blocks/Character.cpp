@@ -9,6 +9,8 @@
 
 typedef struct params
 {
+	LocInWorld x;
+	LocInWorld z;
 	World *wWorld;
 } Param;
 
@@ -16,12 +18,14 @@ void LoadNGenerate(void* pParams)
 {
 	Param pParameters = *(Param*)pParams;
 	World &wWorld = *pParameters.wWorld;
+	LocInWorld x = pParameters.x;
+	LocInWorld z = pParameters.z;
 	SetEvent(wWorld.parget);
 
-	int size = 8;
+	int size = 32;
 
-	for(int i = 0; i < size; i++)
-		for(int j = 0; j < size * 4; j++)
+	for(int i = x*size; i < (x+1)*size; i++)
+		for(int j = z*size; j < (z+1)*size; j++)
 	{
 		wWorld.LoadLocation(i, j);
 		Sleep(30);
@@ -267,12 +271,14 @@ void Character::Control(GLdouble FrameInterval)
 	{
 		if(bKeyboardDown['0'])
 		{
-			Param par = {&wWorld};
+			static Param par = {1, 0, &wWorld};
 
 			 _beginthread(LoadNGenerate, 0, &par);
 
 			WaitForSingleObject(wWorld.parget, INFINITE);
 			ResetEvent(wWorld.parget);
+
+			par.x++;
 
 			bKeyboardDown['0'] = false;
 		}
