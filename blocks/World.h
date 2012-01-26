@@ -40,4 +40,5 @@ public:
 
 	HANDLE parget;
 	HANDLE mutex;
+	HANDLE semaphore;
 };

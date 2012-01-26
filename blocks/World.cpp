@@ -19,6 +19,8 @@ World::World()
 
 	parget = CreateEvent(NULL, false, false, NULL);
 	mutex = CreateMutex(NULL, false, NULL);
+	semaphore = CreateSemaphore(NULL, 15, 15, NULL);
+
 //	loading_mutex = CreateMutex(NULL, false, NULL);
 }
 
@@ -404,12 +406,15 @@ int World::FindTile(TileInWorld x, TileInWorld y, TileInWorld z)
 
 void LoadLocationThread(void* pParams)
 {
+
 	Param pParameters = *(Param*)pParams;
 	LocInWorld x = pParameters.x;
 	LocInWorld z = pParameters.z;
 	World &wWorld = *pParameters.wWorld;
 
 	SetEvent(wWorld.parget);
+	WaitForSingleObject(wWorld.semaphore, INFINITE);
+
 
 	HANDLE threadHandle = GetCurrentThread();
 	SetThreadPriority(threadHandle, THREAD_PRIORITY_BELOW_NORMAL);
@@ -420,6 +425,7 @@ void LoadLocationThread(void* pParams)
 	if(!loc) 
 	{	
 		ReleaseMutex(wWorld.mutex);
+		ReleaseSemaphore(wWorld.semaphore, 1, NULL);
 
 // 		dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
 // 		LocationPosiion lp = {x, z};
@@ -472,6 +478,8 @@ void LoadLocationThread(void* pParams)
 // 	wWorld.LoadedLocations.erase(locc);
 // 	ReleaseMutex(wWorld.loading_mutex);
 
+	ReleaseSemaphore(wWorld.semaphore, 1, NULL);
+
 	_endthread();
 }
 
@@ -483,6 +491,7 @@ void UnLoadLocationThread(void* pParams)
 	World &wWorld = *pParameters.wWorld;
 
 	SetEvent(wWorld.parget);
+	WaitForSingleObject(wWorld.semaphore, INFINITE);
 
 	HANDLE threadHandle = GetCurrentThread();
 	SetThreadPriority(threadHandle, THREAD_PRIORITY_BELOW_NORMAL);
@@ -501,6 +510,7 @@ void UnLoadLocationThread(void* pParams)
 	if(loc == wWorld.lLocations.end()) 
 	{	
 		ReleaseMutex(wWorld.mutex);
+		ReleaseSemaphore(wWorld.semaphore, 1, NULL);
 
 // 		dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
 // 		LocationPosiion lp = {x, z};
@@ -545,6 +555,7 @@ void UnLoadLocationThread(void* pParams)
 // 	}
 // 	wWorld.LoadedLocations.erase(locc);
 // 	ReleaseMutex(wWorld.loading_mutex);
+	ReleaseSemaphore(wWorld.semaphore, 1, NULL);
 	_endthread();
 }
 

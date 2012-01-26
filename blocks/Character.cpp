@@ -28,7 +28,7 @@ void LoadNGenerate(void* pParams)
 		for(int j = z*size; j < (z+1)*size; j++)
 	{
 		wWorld.LoadLocation(i, j);
-		Sleep(30);
+		//Sleep(30);
 	}
 	_endthread();
 	return;
