@@ -6,16 +6,24 @@ Landscape::Landscape(World& ww)
 	 : wWorld(ww)
 {
 	horizon				= LOCATION_SIZE_Y/2;
-	scaleHeightMapXZ	= 256.0;
+	scaleHeightMapXZ	= 128.0;
+	scaleRoughness		= 32.0;
+	scaleDetails		= 128.0;
 	scaleBubblesXZ		= 32.0;
 	scaleBubblesY		= 16.0;
-	HeghtMapAmp			= 50;
-	BubblesAmp			= 0*54;
+
+	HeghtMapAmp			= 0*64;
+	RoughnessAmp		= 1.7;
+	DetailsAmp			= 64;
+	BubblesAmp			= 54;
 	HeghtMapOctaves		= 13;
 	BubblesOctaves		= 5;
 
 	pnBubbles			= PerlinNoise(0.5, BubblesOctaves);
 	pnHeightMap			= PerlinNoise(0.5, HeghtMapOctaves);
+	pnRoughness			= PerlinNoise(0.5, 9);
+	pnDetails			= PerlinNoise(0.5, BubblesOctaves);
+
 }
 
 Landscape::~Landscape(void)
@@ -27,35 +35,39 @@ void Landscape::Generate(LocInWorld locx, LocInWorld locz)
 	double height;
 	double density;
 	double hx, hz;
+	double rx, rz;
+	double dx, dz;
 	double bx, by, bz;
-	double pers;
-	double perssc = 16;
+	double details;
+
 
 	for(int i = locx*LOCATION_SIZE_XZ; i < (locx + 1)*LOCATION_SIZE_XZ; i++)
 	{
 		hx = i/scaleHeightMapXZ;
 		bx = i/scaleBubblesXZ;
+		rx = i/scaleRoughness;
+		dx = i/scaleDetails;
 
 		for(int k = locz*LOCATION_SIZE_XZ; k < (locz + 1)*LOCATION_SIZE_XZ; k++)
 		{
 			hz = k/scaleHeightMapXZ;
 			bz = k/scaleBubblesXZ;
+			rz = k/scaleRoughness;
+			dz = k/scaleDetails;
 
-			pers = 0.1*pnBubbles.PerlinNoise2d(hx/perssc, hz/perssc);
-			pnHeightMap.persistence = 0.5 + pers;
 
-			height = HeghtMapAmp*pnHeightMap.PerlinNoise2d(hx, hz) + horizon;
+			details = pnDetails.PerlinNoise2d(dx, dz);
+			height = HeghtMapAmp/2*(pnHeightMap.PerlinNoise2d(hx, hz) + RoughnessAmp*pnRoughness.PerlinNoise2d(rx, rz)*details) + horizon;
 
 			for(int j = 0; j < LOCATION_SIZE_Y; j++)
 			{
 				by = j/scaleBubblesY;
 
-				density = j;
-				//density = BubblesAmp*pnBubbles.PerlinNoise3d(bx, by, bz) + j;
-				if(density < height)
-					wWorld.AddTile(i, j, k, MAT_GRASS, false);
-				else if(j < horizon)
-					wWorld.AddTile(i, j, k, MAT_SAND, false);
+				//density = j;
+				//if(!(j%4)||!(i%8))
+				density = (BubblesAmp)*pnBubbles.PerlinNoise3d(bx, by, bz)*(4*details + 0.3) + j;
+				if(density < height) {if(j < 90) wWorld.AddTile(i, j, k, MAT_GRASS, false); else wWorld.AddTile(i, j, k, MAT_STONE, false);}
+				//else if(j < horizon) wWorld.AddTile(i, j, k, MAT_SAND, false);
 			}
 		}
 	}

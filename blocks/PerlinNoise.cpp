@@ -179,8 +179,6 @@ double PerlinNoise::SmoothNoise3d(int x, int y, int z)
 	return corners + sides + planes + center;
 }
 
-
-
 double PerlinNoise::PerlinNoise1d(double x)
 {
 	double total = 0;

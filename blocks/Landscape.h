@@ -16,15 +16,25 @@ public:
 	
 	int horizon;
 	double scaleHeightMapXZ;
+	double scaleRoughness;
+	double scaleDetails;
 	double scaleBubblesXZ;
 	double scaleBubblesY;
+
 	int HeghtMapAmp;
+	int RoughnessAmp;
+	int DetailsAmp;
 	int BubblesAmp;
 	int HeghtMapOctaves;
 	int BubblesOctaves;
 
 	World& wWorld;
+
 	PerlinNoise pnBubbles;
+
 	PerlinNoise pnHeightMap;
+	PerlinNoise pnRoughness;
+	PerlinNoise pnDetails;
+
 };
 
