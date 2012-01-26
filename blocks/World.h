@@ -5,6 +5,13 @@
 #include "Material.h"
 #include "Landscape.h"
 
+typedef struct params
+{
+	LocInWorld x;
+	LocInWorld z;
+	World *wWorld;
+} Param;
+
 class World
 {
 public:
@@ -39,6 +46,7 @@ public:
 	bool skipbuild;
 
 	HANDLE parget;
+	HANDLE parget2;
 	HANDLE mutex;
 	HANDLE semaphore;
 };

@@ -5,12 +5,6 @@
 #include "Blocks_Definitions.h"
 #include "Landscape.h"
 
-typedef struct params
-{
-	LocInWorld x;
-	LocInWorld z;
-	World *wWorld;
-} Param;
 
 World::World()
 	:lLandscape(*this)
@@ -18,6 +12,7 @@ World::World()
 	skipbuild = false;
 
 	parget = CreateEvent(NULL, false, false, NULL);
+	parget2 = CreateEvent(NULL, false, false, NULL);
 	mutex = CreateMutex(NULL, false, NULL);
 	semaphore = CreateSemaphore(NULL, 15, 15, NULL);
 
@@ -54,8 +49,8 @@ void World::BuildWorld()
 
 	_beginthread(LoadNGenerate, 0, &par);
 
-	WaitForSingleObject(parget, INFINITE);
-	ResetEvent(parget);
+	WaitForSingleObject(parget2, INFINITE);
+	ResetEvent(parget2);
 	
 	/*
 	for(int i = -10; i < 10; i++)

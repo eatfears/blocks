@@ -6,13 +6,13 @@ Landscape::Landscape(World& ww)
 	 : wWorld(ww)
 {
 	horizon				= LOCATION_SIZE_Y/2;
-	scaleHeightMapXZ	= 128.0;
+	scaleHeightMapXZ	= 256.0;
 	scaleBubblesXZ		= 32.0;
 	scaleBubblesY		= 16.0;
 	HeghtMapAmp			= 40;
-	BubblesAmp			= 0*64;
-	HeghtMapOctaves		= 16;
-	BubblesOctaves		= 5;
+	BubblesAmp			= 54;
+	HeghtMapOctaves		= 14;
+	BubblesOctaves		= 4;
 
 	pnBubbles			= PerlinNoise(0.5, BubblesOctaves);
 	pnHeightMap			= PerlinNoise(0.5, HeghtMapOctaves);
@@ -45,7 +45,7 @@ void Landscape::Generate(LocInWorld locx, LocInWorld locz)
 			{
 				by = j/scaleBubblesY;
 
-				density = /*BubblesAmp*pnBubbles.PerlinNoise3d(bx, by, bz) +*/ j;
+				density = /*BubblesAmp*pnBubbles.PerlinNoise3d(bx, by, bz)*/ + j;
 				if(density < height)
 					wWorld.AddTile(i, j, k, MAT_GRASS, false);
 			}

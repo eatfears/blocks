@@ -43,3 +43,4 @@
 typedef unsigned short	TileInLoc;
 typedef signed short	LocInWorld;
 typedef signed short	TileInWorld;
+

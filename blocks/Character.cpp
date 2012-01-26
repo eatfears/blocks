@@ -7,12 +7,7 @@
 #include "World.h"
 #include "PerlinNoise.h"
 
-typedef struct params
-{
-	LocInWorld x;
-	LocInWorld z;
-	World *wWorld;
-} Param;
+
 
 void LoadNGenerate(void* pParams)
 {
@@ -20,9 +15,9 @@ void LoadNGenerate(void* pParams)
 	World &wWorld = *pParameters.wWorld;
 	LocInWorld x = pParameters.x;
 	LocInWorld z = pParameters.z;
-	SetEvent(wWorld.parget);
+	SetEvent(wWorld.parget2);
 
-	int size = 32;
+	int size = 16;
 
 	for(int i = x*size; i < (x+1)*size; i++)
 		for(int j = z*size; j < (z+1)*size; j++)
@@ -275,8 +270,8 @@ void Character::Control(GLdouble FrameInterval)
 
 			 _beginthread(LoadNGenerate, 0, &par);
 
-			WaitForSingleObject(wWorld.parget, INFINITE);
-			ResetEvent(wWorld.parget);
+			WaitForSingleObject(wWorld.parget2, INFINITE);
+			ResetEvent(wWorld.parget2);
 
 			par.x++;
 
