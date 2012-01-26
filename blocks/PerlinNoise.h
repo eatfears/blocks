@@ -13,6 +13,9 @@ public:
 	double PerlinNoise2d(double x, double y);
 	double PerlinNoise3d(double x, double y, double z);
 
+	double persistence;
+	int NumberOfOctaves;
+
 private:
 	double Noise1d(int x);
 	double Noise2d(int x, int y);
@@ -36,8 +39,7 @@ private:
 	double Interpolate(double a, double b, double x);
 
 
-	double persistence;
-	int NumberOfOctaves;
+
 	int interpolation;
 
 	int a, b, c, d, e;

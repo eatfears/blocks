@@ -9,10 +9,10 @@ Landscape::Landscape(World& ww)
 	scaleHeightMapXZ	= 256.0;
 	scaleBubblesXZ		= 32.0;
 	scaleBubblesY		= 16.0;
-	HeghtMapAmp			= 40;
-	BubblesAmp			= 54;
-	HeghtMapOctaves		= 14;
-	BubblesOctaves		= 4;
+	HeghtMapAmp			= 50;
+	BubblesAmp			= 0*54;
+	HeghtMapOctaves		= 13;
+	BubblesOctaves		= 5;
 
 	pnBubbles			= PerlinNoise(0.5, BubblesOctaves);
 	pnHeightMap			= PerlinNoise(0.5, HeghtMapOctaves);
@@ -28,6 +28,8 @@ void Landscape::Generate(LocInWorld locx, LocInWorld locz)
 	double density;
 	double hx, hz;
 	double bx, by, bz;
+	double pers;
+	double perssc = 16;
 
 	for(int i = locx*LOCATION_SIZE_XZ; i < (locx + 1)*LOCATION_SIZE_XZ; i++)
 	{
@@ -39,15 +41,21 @@ void Landscape::Generate(LocInWorld locx, LocInWorld locz)
 			hz = k/scaleHeightMapXZ;
 			bz = k/scaleBubblesXZ;
 
+			pers = 0.1*pnBubbles.PerlinNoise2d(hx/perssc, hz/perssc);
+			pnHeightMap.persistence = 0.5 + pers;
+
 			height = HeghtMapAmp*pnHeightMap.PerlinNoise2d(hx, hz) + horizon;
 
 			for(int j = 0; j < LOCATION_SIZE_Y; j++)
 			{
 				by = j/scaleBubblesY;
 
-				density = /*BubblesAmp*pnBubbles.PerlinNoise3d(bx, by, bz)*/ + j;
+				density = j;
+				//density = BubblesAmp*pnBubbles.PerlinNoise3d(bx, by, bz) + j;
 				if(density < height)
 					wWorld.AddTile(i, j, k, MAT_GRASS, false);
+				else if(j < horizon)
+					wWorld.AddTile(i, j, k, MAT_SAND, false);
 			}
 		}
 	}
