@@ -41,12 +41,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\dev\libs\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\dev\libs\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\dev\libs\dll;C:\dev\libs\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\dev\libs\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\dev\libs\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\dev\libs\dll;C:\dev\libs\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -61,7 +61,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OpenGL32.lib;GLu32.lib;Winmm.lib;gsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;GLu32.lib;Winmm.lib;gsl.lib;libpng15.lib;zdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -81,7 +81,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OpenGL32.lib;GLu32.lib;Winmm.lib;gsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;GLu32.lib;Winmm.lib;gsl.lib;libpng15.lib;zdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -114,6 +114,7 @@
     <ResourceCompile Include="blocks.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="textures\bitmap2.bmp" />
     <None Include="textures\dirt.bmp" />
     <None Include="textures\grass_side.bmp" />
     <None Include="textures\grass_top.bmp" />

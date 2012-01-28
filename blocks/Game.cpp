@@ -50,6 +50,9 @@ int Game::DrawGLScene()
 	glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0);
 	glTranslated(0, -30, 0);
 	*/
+	glEnable(GL_ALPHA_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 
 	glEnable(GL_FOG);
 	glFogi(GL_FOG_MODE,  GL_LINEAR);		//Тип тумана
@@ -66,7 +69,6 @@ int Game::DrawGLScene()
 	int iCurrentTexture = -1;
 	static Tile *tile;
 
-	glBegin(GL_QUADS);
 #ifdef DEBUG_OUT
 	int iTextureChangingNum = 0;
 #endif
@@ -76,6 +78,9 @@ int Game::DrawGLScene()
 	GLuint *tex = wWorld.MaterialLib.texture;
 
 
+	glBindTexture(GL_TEXTURE_2D, tex[0]);
+	glBegin(GL_QUADS);
+
 	for(int i = 0; i < 6; i++)
 	{
 		for(int itex = 1; itex < wWorld.MaterialLib.iNumberOfTextures; itex++)
@@ -83,9 +88,9 @@ int Game::DrawGLScene()
 #ifdef DEBUG_OUT
 			iTextureChangingNum++;
 #endif
-			glEnd();
-			glBindTexture(GL_TEXTURE_2D, tex[itex]);
-			glBegin(GL_QUADS);
+			//glEnd();
+			//glBindTexture(GL_TEXTURE_2D, tex[itex]);
+			//glBegin(GL_QUADS);
 
 			loc = wWorld.lLocations.begin();
 #ifndef _DEBUG
@@ -111,7 +116,7 @@ int Game::DrawGLScene()
 						if(	(abs((x + (loc->x/*-player.lnwPositionX*/)*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
 							(abs(y*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
 							(abs((z + (loc->z/*-player.lnwPositionZ*/)*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
-							DrawTileSide(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, i);
+							DrawTileSide(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, (*it)->cMaterial, i);
 
 						++it;
 #ifndef _DEBUG
@@ -196,7 +201,8 @@ int Game::DrawGLScene()
 
 	glEnd();
 	glDisable(GL_LIGHT2);
-
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 	return true;
 }
 
@@ -212,7 +218,7 @@ void Game::DrawInterface()
 	glBegin(GL_QUADS);
  	if(wWorld.FindTile(player.sCenterCubeCoordX,player.sCenterCubeCoordY,player.sCenterCubeCoordZ))
  		for(int i = 0; i < 6; i++)
- 			DrawTileSide(player.sCenterCubeCoordX, player.sCenterCubeCoordY, player.sCenterCubeCoordZ, i);
+ 			DrawTileSide(player.sCenterCubeCoordX, player.sCenterCubeCoordY, player.sCenterCubeCoordZ, 0, i);
 	glEnd();
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 
@@ -235,7 +241,7 @@ void Game::DrawInterface()
 }
 
 //void Game::DrawVisibleTileSide(Tile *tTile, char N)
-void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short sZcoord, char N)
+void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short sZcoord, int material, char N)
 {
 	GLdouble 
 // 		dXcoord = (sXcoord-player.lnwPositionX*LOCATION_SIZE_XZ)*TILE_SIZE, 
@@ -248,78 +254,85 @@ void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short
 	dXcoord -= TILE_SIZE/2;
 	dZcoord -= TILE_SIZE/2;
 
+	static double space = 0.001;
+	static double offsetx;
+	static double offsety;
+
+
+	wWorld.MaterialLib.GetTextureOffsets(offsetx, offsety, material, N);
+
 	switch(N)
 	{
 	case TOP:
 		{
 			//Верхняя грань
-			glTexCoord2f(1.0f, 0.0f);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
-			glTexCoord2f(0.0f, 0.0f);
+			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
-			glTexCoord2f(0.0f, 1.0f);
+			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
-			glTexCoord2f(1.0f, 1.0f);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
 		}break;
 	case DOWN:
 		{
 			//Нижняя грань
-			glTexCoord2f(1.0f, 0.0f);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
-			glTexCoord2f(0.0f, 0.0f);
-			glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
-			glTexCoord2f(0.0f, 1.0f);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
-			glTexCoord2f(1.0f, 1.0f);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
+			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
+			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
 		}break;
 	case RIGHT:
 		{
 			//Правая грань
-			glTexCoord2f(1.0f, 0.0f);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
-			glTexCoord2f(0.0f, 0.0f);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
-			glTexCoord2f(0.0f, 1.0f);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
-			glTexCoord2f(1.0f, 1.0f);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
+			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
 		}break;
 	case LEFT:
 		{
 			//Левая грань
-			glTexCoord2f(0.0f, 0.0f);
+			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
-			glTexCoord2f(1.0f, 0.0f);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
-			glTexCoord2f(1.0f, 1.0f);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
-			glTexCoord2f(0.0f, 1.0f);
+			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
 		}break;
 	case BACK:
 		{
 			//Задняя грань
-			glTexCoord2f(0.0f, 0.0f);
+			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
-			glTexCoord2f(0.0f, 1.0f);
-			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
-			glTexCoord2f(1.0f, 1.0f);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
-			glTexCoord2f(1.0f, 0.0f);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
 		}break;
 	case FRONT:
 		{
 			//Передняя грань
-			glTexCoord2f(1.0f, 0.0f);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
-			glTexCoord2f(1.0f, 1.0f);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
-			glTexCoord2f(0.0f, 1.0f);
+			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
-			glTexCoord2f(0.0f, 0.0f);
+			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
 		}break;
 	}

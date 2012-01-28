@@ -80,11 +80,12 @@ int GLWindow::InitGL()										// Все установки касаемо OpenGL происходят здесь
 	//рассчет освещения 
 	//glEnable(GL_LIGHTING);
 
+	//glEnable(GL_CULL_FACE);
+
 	//рассчет текстур
 	glEnable(GL_TEXTURE_2D);
-	
 	//двухсторонний расчет освещения 
-	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+//	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
 	//автоматическое приведение нормалей к единичной длине
 	glEnable(GL_NORMALIZE);

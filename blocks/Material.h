@@ -51,5 +51,10 @@ public:
 	void AllocGLTextures();
 	void LoadGLTextures();
 
+	int GetTextureInfo(int ColourType);
+	GLuint loadImage(const char *filename);
+
+	void GetTextureOffsets(double& offsetx, double& offsety, int material, int N);
+
 };
 

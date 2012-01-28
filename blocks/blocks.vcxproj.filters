@@ -108,5 +108,6 @@
     <None Include="textures\sand.bmp">
       <Filter>Textures</Filter>
     </None>
+    <None Include="textures\bitmap2.bmp" />
   </ItemGroup>
 </Project>
