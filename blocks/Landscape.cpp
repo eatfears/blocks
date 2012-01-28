@@ -83,7 +83,7 @@ void Landscape::Generate(LocInWorld locx, LocInWorld locz)
 
 				density = temp*(4*details + 0.3) + j;
 				if(density < height) {if(density < height - 3) wWorld.AddTile(i, j, k, MAT_STONE, false); else wWorld.AddTile(i, j, k, MAT_GRASS, false);}
-				else if(j < horizon) wWorld.AddTile(i, j, k, MAT_SAND, false);
+				else if(j < horizon) wWorld.AddTile(i, j, k, MAT_WATER, false);
 			}
 		}
 	}

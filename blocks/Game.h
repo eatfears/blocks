@@ -17,6 +17,7 @@ public:
 	//void DrawVisibleTileSide(Tile *tTile, char N);
 	int DrawGLScene();
 	void DrawInterface();
+	void DrawSelectedItem();
 	bool Loop();
 
 	GLWindow *glwWnd;

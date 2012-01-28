@@ -14,7 +14,6 @@ GLWindow::GLWindow()
 	randNumGen = gsl_rng_alloc(gsl_rng_mt19937);
 	gsl_rng_set(randNumGen, seed);
 
-
 	active = true;
 	bMousing = false;
 	fullscreen = false;

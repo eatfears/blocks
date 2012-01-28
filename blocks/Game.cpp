@@ -52,7 +52,7 @@ int Game::DrawGLScene()
 	*/
 	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_FOG);
 	glFogi(GL_FOG_MODE,  GL_LINEAR);		//Тип тумана
@@ -83,25 +83,21 @@ int Game::DrawGLScene()
 
 	for(int i = 0; i < 6; i++)
 	{
-		for(int itex = 1; itex < wWorld.MaterialLib.iNumberOfTextures; itex++)
-		{
-#ifdef DEBUG_OUT
-			iTextureChangingNum++;
-#endif
-			//glEnd();
-			//glBindTexture(GL_TEXTURE_2D, tex[itex]);
-			//glBegin(GL_QUADS);
 
-			loc = wWorld.lLocations.begin();
+#ifdef DEBUG_OUT
+		iTextureChangingNum++;
+#endif
+
+		loc = wWorld.lLocations.begin();
 #ifndef _DEBUG
-			_try 
-			{
+		_try 
+		{
 #endif // _DEBUG
 
 			while(loc != wWorld.lLocations.end())
 			{
 
-				auto it = loc->TexurePointerInVisible[i][itex];
+				auto it = loc->DisplayedTiles[i].begin();
 
 				while(it != loc->DisplayedTiles[i].end())
 				{
@@ -109,8 +105,6 @@ int Game::DrawGLScene()
 					_try 
 					{
 #endif // _DEBUG
-						if(itex != wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i])
-							break;
 
 						loc->GetTilePositionByPointer(*it, &x, &y, &z);
 						if(	(abs((x + (loc->x/*-player.lnwPositionX*/)*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
@@ -130,15 +124,14 @@ int Game::DrawGLScene()
 				++loc;
 			}
 #ifndef _DEBUG
-			}
-			_except (EXCEPTION_EXECUTE_HANDLER)
-			{
-				glEnd();
-				glDisable(GL_LIGHT2);
-				return true;
-			}
-#endif // _DEBUG
 		}
+		_except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			glEnd();
+			glDisable(GL_LIGHT2);
+			return true;
+		}
+#endif // _DEBUG
 	}
 
 // 	while(loc != wWorld.lLocations.end())
@@ -209,23 +202,18 @@ int Game::DrawGLScene()
 
 void Game::DrawInterface()
 {
-	//Выделение куба
-	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glColor3d(0.1, 0.1, 0.1);
-	glLineWidth (2.0);
-	glBegin(GL_QUADS);
- 	if(wWorld.FindTile(player.sCenterCubeCoordX,player.sCenterCubeCoordY,player.sCenterCubeCoordZ))
- 		for(int i = 0; i < 6; i++)
- 			DrawTileSide(player.sCenterCubeCoordX, player.sCenterCubeCoordY, player.sCenterCubeCoordZ, 0, i);
-	glEnd();
-	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-
+	DrawSelectedItem();
+	
 	//Сбросить текущую матрицу
 	glLoadIdentity();
 
 	//Рисование прицела
+
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_COLOR); 
+
 	glTranslated(0, 0, -0.1);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glColor3d(1.0, 1.0, 1.0);
@@ -238,6 +226,8 @@ void Game::DrawInterface()
 	glVertex2d(0.001,0.0);
 	glEnd();
 	glTranslated(0, 0, 0.1);
+
+	glDisable(GL_BLEND);
 }
 
 //void Game::DrawVisibleTileSide(Tile *tTile, char N)
@@ -254,7 +244,7 @@ void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short
 	dXcoord -= TILE_SIZE/2;
 	dZcoord -= TILE_SIZE/2;
 
-	static double space = 0.001;
+	static double space = 0*0.001;
 	static double offsetx;
 	static double offsety;
 
@@ -338,6 +328,66 @@ void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short
 	}
 }
 
+void Game::DrawSelectedItem()
+{
+	if(!wWorld.FindTile(player.sCenterCubeCoordX,player.sCenterCubeCoordY,player.sCenterCubeCoordZ))
+		return;
+
+	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glColor3d(0.1, 0.1, 0.1);
+	glLineWidth (1.4);
+
+	GLdouble BorderSize = TILE_SIZE*(1 + 0.005);
+	GLdouble 
+		dXcoord = player.sCenterCubeCoordX*TILE_SIZE, 
+		dYcoord = player.sCenterCubeCoordY*TILE_SIZE, 
+		dZcoord = player.sCenterCubeCoordZ*TILE_SIZE;
+
+	dXcoord -= BorderSize/2;
+	dZcoord -= BorderSize/2;
+
+	glBegin(GL_QUADS);
+
+
+	//Верхняя грань
+	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord);
+	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord + BorderSize);
+	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord + BorderSize);
+	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord);
+	//Нижняя грань
+	glVertex3d (dXcoord, dYcoord, dZcoord);
+	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord);
+	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord + BorderSize);
+	glVertex3d (dXcoord, dYcoord, dZcoord + BorderSize);
+	//Правая грань
+	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord);
+	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord);
+	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord + BorderSize);
+	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord + BorderSize);
+	//Левая грань
+	glVertex3d (dXcoord, dYcoord, dZcoord);
+	glVertex3d (dXcoord, dYcoord, dZcoord + BorderSize);
+	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord + BorderSize);
+	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord);
+	//Задняя грань
+	glVertex3d (dXcoord, dYcoord, dZcoord + BorderSize);
+	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord + BorderSize);
+	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord + BorderSize);
+	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord + BorderSize);
+	//Передняя грань
+	glVertex3d (dXcoord, dYcoord, dZcoord);
+	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord);
+	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord);
+	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord);
+
+	glEnd();
+
+	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+}
+
+
 void Game::GetFrameTime()
 {
 	static double koef = 0.025;
@@ -381,8 +431,15 @@ bool Game::Loop()
 		glwWnd->fullscreen = !glwWnd->fullscreen;				// Toggle Fullscreen / Windowed Mode
 		glwWnd->bMousing = false;
 		
+		int resx = RESX;
+		int resy = RESY;
+		if (glwWnd->fullscreen)
+		{
+			resx = GetSystemMetrics(SM_CXSCREEN);
+			resy = GetSystemMetrics(SM_CYSCREEN);
+		}
 		// Recreate Our OpenGL Window
-		if(!glwWnd->CreateGLWindow("Blocks", RESX, RESY, BITS))
+		if(!glwWnd->CreateGLWindow("Blocks", resx, resy, BITS))
 		//if(!glwWnd.CreateGLWindow("Blocks", 1366, 768, BITS))
 		{
 			return true;						// Quit If Window Was Not Created

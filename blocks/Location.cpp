@@ -8,7 +8,6 @@ Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib)
 	tTile = new Tile[LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y];
 
 	DisplayedTiles = new std::list<Tile *>[6];
-	TexurePointerInVisible = new std::list<Tile*>::iterator *[6];
 	
 	for(int i = 0; i < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y; i++)
 	{	tTile[i].cMaterial = MAT_NO;
@@ -17,18 +16,6 @@ Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib)
 	}
 	bVisible = false;
 
-	for(int i = 0; i < 6; i++)
-	{
-		TexurePointerInVisible[i] = new std::list<Tile*>::iterator [MaterialLib.iNumberOfTextures];
-	}
-
-	for(int i = 0; i < 6; i++)
-	{
-		for(int j = 1; j < MaterialLib.iNumberOfTextures; j++)
-		{
-			TexurePointerInVisible[i][j] = DisplayedTiles[i].end();
-		}
-	}
 	mutex = CreateMutex(NULL, false, NULL);
 }
 
@@ -36,10 +23,6 @@ Location::~Location(void)
 {
 	delete[] tTile;
 
-	for(int i = 0; i < 6; i++)
-		delete[] TexurePointerInVisible[i];
-	
-	delete[] TexurePointerInVisible;
 	delete[] DisplayedTiles;
 }
 
@@ -67,10 +50,7 @@ void Location::ShowTile(Tile *tTile, char N)
 	if(tTile->cMaterial == MAT_NO) return;
 	if(tTile->bVisible[N]) return;
 	
-	int iTex = MaterialLib.mMaterial[tTile->cMaterial].iTexture[N];
-	auto it = TexurePointerInVisible[N][iTex];
-
-	TexurePointerInVisible[N][iTex] = DisplayedTiles[N].insert(it, tTile);
+	DisplayedTiles[N].push_back(tTile);
 		
 	tTile->bVisible[N] = true;
 }
@@ -81,9 +61,7 @@ void Location::HideTile(Tile *tTile, char N)
 	if(tTile->cMaterial == MAT_NO) return;
 	if(!tTile->bVisible[N]) return;
 
-	int iTex = MaterialLib.mMaterial[tTile->cMaterial].iTexture[N];
-	auto it = TexurePointerInVisible[N][iTex];
-	auto it2 = it;
+	auto it = DisplayedTiles[N].begin();
 
 	while(it != DisplayedTiles[N].end())
 	{
@@ -91,21 +69,6 @@ void Location::HideTile(Tile *tTile, char N)
 		++it;
 	}
 	if(it == DisplayedTiles[N].end()) return;
-
-	Tile *t1 = (*it), *t2 = (*it2);
-	
-	if(t1 == t2)
-	{
-		++TexurePointerInVisible[N][iTex];
-		
-
-		if(TexurePointerInVisible[N][iTex] != DisplayedTiles[N].end())
-		{
-			int iTex2 = MaterialLib.mMaterial[(*TexurePointerInVisible[N][iTex])->cMaterial].iTexture[N];
-			if(iTex != iTex2)
-				TexurePointerInVisible[N][iTex] = DisplayedTiles[N].end();
-		}
-	}
 
 	(*it)->bVisible[N] = false;
 	DisplayedTiles[N].erase(it);

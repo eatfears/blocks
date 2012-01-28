@@ -42,8 +42,6 @@ Location* World::AddLocation(LocInWorld x, LocInWorld z)
 void LoadNGenerate (void*);
 void World::BuildWorld()
 {
-	MaterialLib.InitMaterials();
-
 	
 	Param par = {0, 0, this};
 

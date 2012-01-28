@@ -5,7 +5,6 @@
 #include "Blocks_Definitions.h"
 #include "Material.h"
 
-
 typedef struct locpos
 {
 	LocInWorld x;
@@ -27,7 +26,6 @@ public:
 	Tile *tTile;
 	MaterialLibrary& MaterialLib;
 	std::list<Tile *> *DisplayedTiles;
-	std::list<Tile *>::iterator **TexurePointerInVisible;
 
 	LocInWorld x;
 	LocInWorld z;
