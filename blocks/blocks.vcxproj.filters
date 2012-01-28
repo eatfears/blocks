@@ -93,21 +93,8 @@
     <ResourceCompile Include="blocks.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="textures\stone.bmp">
+    <None Include="textures\texture.png">
       <Filter>Textures</Filter>
     </None>
-    <None Include="textures\dirt.bmp">
-      <Filter>Textures</Filter>
-    </None>
-    <None Include="textures\grass_side.bmp">
-      <Filter>Textures</Filter>
-    </None>
-    <None Include="textures\grass_top.bmp">
-      <Filter>Textures</Filter>
-    </None>
-    <None Include="textures\sand.bmp">
-      <Filter>Textures</Filter>
-    </None>
-    <None Include="textures\bitmap2.bmp" />
   </ItemGroup>
 </Project>

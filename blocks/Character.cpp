@@ -201,7 +201,7 @@ void Character::Control(GLdouble FrameInterval)
 		
 		while(i < num)
 		{
-			if(wWorld.AddTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, rand()%4+1, true))
+			if(wWorld.AddTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, rand()%14+1, true))
 				i++;
 		}
 	}

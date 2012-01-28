@@ -17,7 +17,7 @@ void MaterialLibrary::AllocGLTextures()
 {
 	texture = (GLuint *)calloc(1, sizeof(GLuint));
 	
-	glGenTextures(1, texture); // создаем текстуры 
+	//glGenTextures(1, texture); // создаем текстуры 
 }
 
 void MaterialLibrary::LoadGLTextures()
@@ -56,7 +56,8 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 	png_bytep *row_pointers = NULL;
 	int bitDepth, colourType;
 
-	FILE *pngFile = fopen(filename, "rb");
+	FILE *pngFile;
+	fopen_s(&pngFile, filename, "rb");
 
 	if(!pngFile)
 		return 0;
@@ -64,7 +65,7 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 	png_byte sig[8];
 
 	fread(&sig, 8, sizeof(png_byte), pngFile);
-	rewind(pngFile);			//so when we init io it won't bitch
+	rewind(pngFile);
 	if(!png_check_sig(sig, 8))
 		return 0;
 
@@ -122,7 +123,7 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 
 	row_pointers = (png_bytep *)malloc(sizeof(png_bytep) * height);
 
-	for(int i = 0; i < height; ++i)
+	for(unsigned int i = 0; i < height; ++i)
 		row_pointers[i] = (png_bytep)(pixels + (i * width * components));
 
 	png_read_image(png_ptr, row_pointers);
@@ -163,17 +164,33 @@ void MaterialLibrary::GetTextureOffsets( double& offsetx, double& offsety, int m
 
 	switch(material)
 	{
-	case MAT_GRASS: if(N == TOP) {offsetx = 0; offsety = 0;} else if(N == DOWN) {offsetx = 2; offsety = 0;} else {offsetx = 3; offsety = 0;} 
-		break;
-	case MAT_SAND: offsetx = 2; offsety = 1;
-		break;
 	case MAT_DIRT: offsetx = 2; offsety = 0;
+		break;
+	case MAT_GRASS: if(N == TOP) {offsetx = 0; offsety = 0;} else if(N == DOWN) {offsetx = 2; offsety = 0;} else {offsetx = 3; offsety = 0;} 
 		break;
 	case MAT_STONE: offsetx = 1; offsety = 0;
 		break;
-	case MAT_GLASS: offsetx = 1; offsety = 3;
+	case MAT_SAND: offsetx = 2; offsety = 1;
 		break;
 	case MAT_WATER: offsetx = 15; offsety = 13;
+		break;
+	case MAT_GLASS: offsetx = 1; offsety = 3;
+		break;
+	case MAT_WOOD: if((N == TOP)||((N == DOWN))) {offsetx = 5; offsety = 1;} else {offsetx = 4; offsety = 1;} 
+		break;
+	case MAT_SNOW: if(N == TOP) {offsetx = 2; offsety = 4;} else if(N == DOWN) {offsetx = 2; offsety = 0;} else {offsetx = 4; offsety = 4;} 
+		break;
+	case MAT_COAL: offsetx = 2; offsety = 2;
+		break;
+	case MAT_BRICKS: offsetx = 7; offsety = 0;
+		break;
+	case MAT_PUMPKIN: if((N == TOP)||((N == DOWN))) {offsetx = 6; offsety = 6;} else if(N == FRONT) {offsetx = 7; offsety = 7;} else {offsetx = 6; offsety = 7;} 
+		break;
+	case MAT_PUMPKIN_SHINE: if((N == TOP)||((N == DOWN))) {offsetx = 6; offsety = 6;} else if(N == FRONT) {offsetx = 8; offsety = 7;} else {offsetx = 6; offsety = 7;} 
+		break;
+	case MAT_TNT: if(N == TOP) {offsetx = 9; offsety = 0;} else if(N == DOWN) {offsetx = 10; offsety = 0;} else {offsetx = 8; offsety = 0;} 
+		break;
+	case MAT_PLANK: offsetx = 4; offsety = 0;
 		break;
 	}
 
