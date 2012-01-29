@@ -303,7 +303,7 @@ void Character::Control(GLdouble FrameInterval)
 			if(dPositionY > dDispCenterCoordY) iy = sCenterCubeCoordY + 1;
 		}
 
-		wWorld.AddTile(ix,iy,iz,MAT_DIRT, true);
+		wWorld.AddTile(ix,iy,iz,MAT_STONE, true);
 	}
 
 	dPositionX += FrameInterval*dVelocityX;

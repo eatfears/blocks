@@ -134,56 +134,6 @@ int Game::DrawGLScene()
 #endif // _DEBUG
 	}
 
-// 	while(loc != wWorld.lLocations.end())
-// 	{
-// 		for(int i = 0; i < 6; i++)
-// 		{
-// 			auto it = loc->DisplayedTiles[i].begin();
-// 
-// 			while(it != loc->DisplayedTiles[i].end())
-// 			{
-// 				/*
-// 				_try 
-// 				{
-// 					tile = *(*it);
-// 					++it;
-// 				}
-// 				_except (EXCEPTION_EXECUTE_HANDLER)
-// 				{
-// 					glEnd();
-// 
-// 					glDisable(GL_LIGHT2);
-// 
-// 					return true;
-// 				}
-// 				*/
-// 	
-// 				loc->GetTilePositionByPointer(*it, &x, &y, &z);
-// 					
-// 					if(	(abs(x + loc->x*LOCATION_SIZE_XZ*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
-// 						(abs(y*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
-// 						(abs(z + loc->z*LOCATION_SIZE_XZ*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
-// 				{
-// 					if(iCurrentTexture != wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i])
-// 					{
-// #ifdef DEBUG_OUT
-// 						iTextureChangingNum++;
-// #endif
-// 						iCurrentTexture = wWorld.MaterialLib.mMaterial[(*it)->cMaterial].iTexture[i];
-// 						glEnd();
-// 						glBindTexture(GL_TEXTURE_2D, tex[iCurrentTexture]);
-// 						glBegin(GL_QUADS);
-// 					}
-// 
-// 					DrawTileSide(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, i);
-// 				}
-// 
-// 				++it;
-// 
-// 			}
-// 		}
-// 		++loc;
-// 	}
 
 #ifdef DEBUG_OUT
 	FILE *out;
@@ -244,10 +194,14 @@ void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short
 	dXcoord -= TILE_SIZE/2;
 	dZcoord -= TILE_SIZE/2;
 
-	static double space = 0*0.001;
+	static double space = 0.0005;
 	static double offsetx;
 	static double offsety;
 
+	double br;
+
+	br = (rand()%100)/100.0;
+	//glColor3d(br, br, br);
 
 	wWorld.MaterialLib.GetTextureOffsets(offsetx, offsety, material, N);
 

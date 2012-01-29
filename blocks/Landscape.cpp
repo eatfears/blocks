@@ -2,8 +2,7 @@
 #include "World.h"
 #include <fstream>
 
-Landscape::Landscape(World& ww)
-	 : wWorld(ww)
+Landscape::Landscape(void)
 {
 	horizon				= LOCATION_SIZE_Y/2;
 	scaleHeightMapXZ	= 128.0;
@@ -30,8 +29,10 @@ Landscape::~Landscape(void)
 {
 }
 
-void Landscape::Generate(LocInWorld locx, LocInWorld locz)
+void Landscape::Generate(Location &loc)
 {
+	LocInWorld locx = loc.x;
+	LocInWorld locz = loc.z;
 	double height;
 	double density;
 	double hx, hz;
@@ -82,8 +83,8 @@ void Landscape::Generate(LocInWorld locx, LocInWorld locz)
 				//temp2 = dens[i%LOCATION_SIZE_XZ][(j+1)%LOCATION_SIZE_Y][k%LOCATION_SIZE_XZ];
 
 				density = temp*(4*details + 0.3) + j;
-				if(density < height) {if(density < height - 3) wWorld.AddTile(i, j, k, MAT_STONE, false); else wWorld.AddTile(i, j, k, MAT_GRASS, false);}
-				else if(j < horizon) wWorld.AddTile(i, j, k, MAT_WATER, false);
+				if(density < height) {if(density < height - 3) loc.AddTile(i, j, k, MAT_STONE); else loc.AddTile(i, j, k, MAT_GRASS);}
+				else if(j < horizon) loc.AddTile(i, j, k, MAT_WATER);
 			}
 		}
 	}
@@ -119,9 +120,11 @@ void Landscape::Load( LocInWorld locx, LocInWorld locz )
 	
 }
 
-void Landscape::Fill( LocInWorld locx, LocInWorld locz, char mat, double fillness, int height )
+void Landscape::Fill( Location& loc, char mat, double fillness, int height )
 {
 	int material = mat;
+	LocInWorld locx = loc.x;
+	LocInWorld locz = loc.z;
 
 	for(int i = locx*LOCATION_SIZE_XZ; i < (locx + 1)*LOCATION_SIZE_XZ; i++)
 	{
@@ -132,7 +135,7 @@ void Landscape::Fill( LocInWorld locx, LocInWorld locz, char mat, double fillnes
 				if((double)rand()/(double)RAND_MAX < fillness) 
 				{
 					if (mat == 0) material = rand()%4+1;
-					wWorld.AddTile(i, j, k, material, false);
+					loc.AddTile(i, j, k, material);
 				}
 			}
 		}

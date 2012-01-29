@@ -37,7 +37,6 @@ public:
 	void GetLocByTile(TileInWorld x, TileInWorld z, LocInWorld *locx, TileInWorld *locz);
 	Location* GetLocByTile(TileInWorld x, TileInWorld z);
 	void GetPosInLocByWorld(TileInWorld x, TileInWorld y, TileInWorld z, TileInLoc *locx, TileInLoc *locy, TileInLoc *locz);
-	Location* AddLocation(LocInWorld x, LocInWorld z);
 //private:
 	void ShowTile(Location *loc, int index, char N);
 	void HideTile(Location *loc, int index, char N);

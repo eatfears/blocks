@@ -1,7 +1,7 @@
 #include "Location.h"
 
-Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib)
-	: MaterialLib(MLib)
+Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib, Landscape& lLand)
+	: MaterialLib(MLib), lLandscape(lLand)
 {
 	Location::x = x; Location::z = z;
 
@@ -28,6 +28,9 @@ Location::~Location(void)
 
 int Location::AddTile(TileInLoc x, TileInLoc y, TileInLoc z, char mat)
 {
+	x = x%LOCATION_SIZE_XZ;
+	y = y%LOCATION_SIZE_Y;
+	z = z%LOCATION_SIZE_XZ;
 	if((GetTileMaterial(x, y, z) != MAT_NO)||(GetTileMaterial(x, y, z) == -1)) return -1;
 
 	TileInLoc index = SetTileMaterial(x, y, z, mat);
@@ -121,4 +124,9 @@ int Location::GetTilePositionByIndex(int index, TileInLoc *x, TileInLoc *y, Tile
 int Location::GetIndexByPosition( TileInLoc x, TileInLoc y, TileInLoc z )
 {
 	return x*LOCATION_SIZE_XZ + z + y*LOCATION_SIZE_XZ*LOCATION_SIZE_XZ;
+}
+
+void Location::Generate()
+{
+	lLandscape.Generate(*this);
 }

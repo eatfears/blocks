@@ -4,6 +4,7 @@
 
 #include "Blocks_Definitions.h"
 #include "Material.h"
+#include "Landscape.h"
 
 typedef struct locpos
 {
@@ -20,11 +21,12 @@ typedef struct tile
 class Location
 {
 public:
-	Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib);
+	Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib, Landscape& lLand);
 	~Location(void);
 
 	Tile *tTile;
 	MaterialLibrary& MaterialLib;
+	Landscape& lLandscape;
 	std::list<Tile *> *DisplayedTiles;
 
 	LocInWorld x;
@@ -43,6 +45,8 @@ public:
 	int GetTilePositionByPointer(Tile *tCurrentTile, TileInLoc *x, TileInLoc *y, TileInLoc *z);
 	int GetTilePositionByIndex(int index, TileInLoc *x, TileInLoc *y, TileInLoc *z);
 	int GetIndexByPosition(TileInLoc x, TileInLoc y, TileInLoc z);
+
+	void Generate();
 
 	HANDLE mutex;
 };

@@ -4,15 +4,17 @@ class World;
 #include "PerlinNoise.h"
 #include "Blocks_Definitions.h"
 
+class Location;
+
 class Landscape
 {
 public:
-	Landscape(World& ww);
+	Landscape(void);
 	~Landscape(void);
 
-	void Generate(LocInWorld locx, LocInWorld locz);
+	void Generate(Location &loc);
 	void Load(LocInWorld locx, LocInWorld locz);
-	void Fill(LocInWorld locx, LocInWorld locz, char mat, double fillness, int height );
+	void Fill(Location& loc, char mat, double fillness, int height );
 	
 	int horizon;
 	double scaleHeightMapXZ;
@@ -27,8 +29,6 @@ public:
 	int BubblesAmp;
 	int HeghtMapOctaves;
 	int BubblesOctaves;
-
-	World& wWorld;
 
 	PerlinNoise pnBubbles;
 
