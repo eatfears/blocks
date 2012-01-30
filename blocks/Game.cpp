@@ -291,7 +291,7 @@ void Game::DrawSelectedItem()
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glColor3d(0.1, 0.1, 0.1);
-	glLineWidth (1.4);
+	glLineWidth (1.4f);
 
 	GLdouble BorderSize = TILE_SIZE*(1 + 0.005);
 	GLdouble 
@@ -345,7 +345,7 @@ void Game::DrawSelectedItem()
 void Game::GetFrameTime()
 {
 	static double koef = 0.025;
-	static int max_FPS = 30;
+	static double max_FPS = 30;
 	static int sleep_time;
 	
 	double currentTime = (double)timeGetTime() * koef;
@@ -354,7 +354,7 @@ void Game::GetFrameTime()
 
 	//Интервал времени, прошедшего с прошлого кадра
 	FrameInterval = currentTime - frameTime;
-	sleep_time = 1000/max_FPS - FrameInterval/koef;
+	sleep_time = (int) (1000.0/max_FPS - FrameInterval/koef);
 	if(sleep_time > 0) Sleep(sleep_time);
 
 	frameTime = currentTime;

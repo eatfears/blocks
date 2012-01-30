@@ -23,12 +23,12 @@ public:
 	double scaleBubblesXZ;
 	double scaleBubblesY;
 
-	int HeghtMapAmp;
-	int RoughnessAmp;
-	int DetailsAmp;
-	int BubblesAmp;
-	int HeghtMapOctaves;
-	int BubblesOctaves;
+	double HeghtMapAmp;
+	double RoughnessAmp;
+	double DetailsAmp;
+	double BubblesAmp;
+	double HeghtMapOctaves;
+	double BubblesOctaves;
 
 	PerlinNoise pnBubbles;
 

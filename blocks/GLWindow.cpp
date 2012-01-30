@@ -9,7 +9,7 @@ extern gsl_rng *randNumGen;
 
 GLWindow::GLWindow()
 {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	int seed = rand();
 	randNumGen = gsl_rng_alloc(gsl_rng_mt19937);
 	gsl_rng_set(randNumGen, seed);

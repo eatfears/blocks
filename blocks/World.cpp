@@ -14,8 +14,6 @@ World::World()
 	parget2 = CreateEvent(NULL, false, false, NULL);
 	mutex = CreateMutex(NULL, false, NULL);
 	semaphore = CreateSemaphore(NULL, 15, 15, NULL);
-
-//	loading_mutex = CreateMutex(NULL, false, NULL);
 }
 
 World::~World()
@@ -60,7 +58,6 @@ void World::BuildWorld()
 		//AddTile(i, j, k, MAT_GRASS, true);
 		//if(rand()%2)AddTile(0, k, 0, rand()%4+1, true);
 	}
-	//StartBuilding();
 
 	//AddTile(0,3,0,MAT_GRASS, true);
 	//AddTile(0,1,0,MAT_DIRT, true);
@@ -87,16 +84,12 @@ void World::BuildWorld()
 		}
 	}
 	/**/
-	//for(int i = 0; i < 10; i++) AddTile(i,-1,0,rand()%4+1);
-
 	/*
 	AddTile(1,-1,0,MAT_DIRT);
 	AddTile(2,-1,0,MAT_STONE);
 	AddTile(3,-1,0,MAT_STONE);
 	AddTile(4,-1,0,MAT_DIRT);
 	/**/
-
-	//DrawLoadedTiles();
 }
 
 void World::GetLocByTile( TileInWorld x, TileInWorld z, LocInWorld *locx, LocInWorld *locz )
@@ -271,6 +264,7 @@ int World::AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool s
 		dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
 		index = loc->AddTile(locx, locy, locz, mat);
 		ReleaseMutex(loc->mutex);
+
 		Location *lTempLoc = 0;
 		int iTempIndex;
 
@@ -343,18 +337,19 @@ int World::RemoveTile(TileInWorld x, TileInWorld y, TileInWorld z, bool show)
 	{
 		Location *lTempLoc = 0;
 		int iTempIndex;
+
 		if(!FindTile(x, y + 1, z, &lTempLoc, &iTempIndex)) HideTile(loc, index, TOP);
-		else ShowTile(lTempLoc, iTempIndex, DOWN);
+		else {ShowTile(lTempLoc, iTempIndex, DOWN); if(lTempLoc->tTile[iTempIndex].cMaterial == MAT_WATER) HideTile(loc, index, TOP);}
 		if(!FindTile(x, y - 1, z, &lTempLoc, &iTempIndex)) HideTile(loc, index, DOWN);
-		else ShowTile(lTempLoc, iTempIndex, TOP);
+		else {ShowTile(lTempLoc, iTempIndex, TOP); if(lTempLoc->tTile[iTempIndex].cMaterial == MAT_WATER) HideTile(loc, index, DOWN);}
 		if(!FindTile(x + 1, y, z, &lTempLoc, &iTempIndex)) HideTile(loc, index, RIGHT);
-		else ShowTile(lTempLoc, iTempIndex, LEFT);
+		else {ShowTile(lTempLoc, iTempIndex, LEFT); if(lTempLoc->tTile[iTempIndex].cMaterial == MAT_WATER) HideTile(loc, index, RIGHT);}
 		if(!FindTile(x - 1, y, z, &lTempLoc, &iTempIndex)) HideTile(loc, index, LEFT);
-		else ShowTile(lTempLoc, iTempIndex, RIGHT);
+		else {ShowTile(lTempLoc, iTempIndex, RIGHT); if(lTempLoc->tTile[iTempIndex].cMaterial == MAT_WATER) HideTile(loc, index, LEFT);}
 		if(!FindTile(x, y, z + 1, &lTempLoc, &iTempIndex)) HideTile(loc, index, BACK);
-		else ShowTile(lTempLoc, iTempIndex, FRONT);
+		else {ShowTile(lTempLoc, iTempIndex, FRONT); if(lTempLoc->tTile[iTempIndex].cMaterial == MAT_WATER) HideTile(loc, index, BACK);}
 		if(!FindTile(x, y, z - 1, &lTempLoc, &iTempIndex)) HideTile(loc, index, FRONT);
-		else ShowTile(lTempLoc, iTempIndex, BACK);
+		else {ShowTile(lTempLoc, iTempIndex, BACK); if(lTempLoc->tTile[iTempIndex].cMaterial == MAT_WATER) HideTile(loc, index, FRONT);}
 
 		DWORD dwWaitResult; 
 		dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
