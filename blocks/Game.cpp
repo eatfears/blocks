@@ -53,6 +53,7 @@ int Game::DrawGLScene()
 	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_ONE, GL_ONE);
 
 	glEnable(GL_FOG);
 	glFogi(GL_FOG_MODE,  GL_LINEAR);		//Тип тумана
@@ -69,10 +70,6 @@ int Game::DrawGLScene()
 	int iCurrentTexture = -1;
 	static Tile *tile;
 
-#ifdef DEBUG_OUT
-	int iTextureChangingNum = 0;
-#endif
-
 	auto loc = wWorld.lLocations.begin();
 	TileInLoc x, y, z;
 	GLuint *tex = wWorld.MaterialLib.texture;
@@ -83,11 +80,6 @@ int Game::DrawGLScene()
 
 	for(int i = 0; i < 6; i++)
 	{
-
-#ifdef DEBUG_OUT
-		iTextureChangingNum++;
-#endif
-
 		loc = wWorld.lLocations.begin();
 #ifndef _DEBUG
 		_try 
@@ -134,18 +126,27 @@ int Game::DrawGLScene()
 #endif // _DEBUG
 	}
 
+	//transparent here
 
 #ifdef DEBUG_OUT
 	FILE *out;
 	out = fopen(DEBUG_FILE, "w");
-	fprintf(out,"changing tex num: %d\n", iTextureChangingNum);
+	fprintf(out,"Debug\n");
 	fclose(out);
 #endif
 
 	glEnd();
+
+	glDepthMask(false);
+
+	glDepthMask(true);
+
+
 	glDisable(GL_LIGHT2);
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_BLEND);
+	glDisable(GL_FOG);
+
 	return true;
 }
 
