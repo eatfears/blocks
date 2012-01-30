@@ -50,9 +50,6 @@ int Game::DrawGLScene()
 	glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0);
 	glTranslated(0, -30, 0);
 	*/
-	glEnable(GL_ALPHA_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glBlendFunc(GL_ONE, GL_ONE);
 
 	glEnable(GL_FOG);
@@ -66,17 +63,14 @@ int Game::DrawGLScene()
 	GLdouble dBrightness = 1.0;
 	glColor3d(dBrightness, dBrightness, dBrightness);
 
-
-	int iCurrentTexture = -1;
-	static Tile *tile;
-
-	auto loc = wWorld.lLocations.begin();
 	TileInLoc x, y, z;
 	GLuint *tex = wWorld.MaterialLib.texture;
 
 
 	glBindTexture(GL_TEXTURE_2D, tex[0]);
 	glBegin(GL_QUADS);
+
+	auto loc = wWorld.lLocations.begin();
 
 	for(int i = 0; i < 6; i++)
 	{
@@ -126,8 +120,6 @@ int Game::DrawGLScene()
 #endif // _DEBUG
 	}
 
-	//transparent here
-
 #ifdef DEBUG_OUT
 	FILE *out;
 	out = fopen(DEBUG_FILE, "w");
@@ -137,15 +129,20 @@ int Game::DrawGLScene()
 
 	glEnd();
 
-	glDepthMask(false);
 
-	glDepthMask(true);
+	glEnable(GL_ALPHA_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//transparent tiles here
 
 
-	glDisable(GL_LIGHT2);
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_BLEND);
+
+
 	glDisable(GL_FOG);
+	glDisable(GL_LIGHT2);
 
 	return true;
 }
@@ -161,9 +158,8 @@ void Game::DrawInterface()
 
 	//Рисование прицела
 
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_COLOR); 
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_COLOR); 
 
 	glTranslated(0, 0, -0.1);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -178,7 +174,7 @@ void Game::DrawInterface()
 	glEnd();
 	glTranslated(0, 0, 0.1);
 
-	glDisable(GL_BLEND);
+	//glDisable(GL_BLEND);
 }
 
 //void Game::DrawVisibleTileSide(Tile *tTile, char N)

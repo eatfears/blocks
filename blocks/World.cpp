@@ -150,38 +150,38 @@ void World::DrawLoadedTiles(Location *loc)
 			if(loc->tTile[index].cMaterial == MAT_WATER)
 			{
 				if(!FindTile(xx, yy + 1, zz, &tempLoc, &tempIndex)) ShowTile(loc, index, TOP);
-				else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, DOWN);
+				//else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, DOWN);
 				if(!FindTile(xx, yy - 1, zz, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(loc, index, DOWN);}
-				else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, TOP);
+				//else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, TOP);
 				if(!FindTile(xx + 1, yy, zz, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(loc, index, RIGHT);}
-				else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, LEFT);
+				//else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, LEFT);
 				if(!FindTile(xx - 1, yy, zz, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(loc, index, LEFT);}
-				else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, RIGHT);
+				//else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, RIGHT);
 				if(!FindTile(xx, yy, zz + 1, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(loc, index, BACK);}
-				else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, FRONT);
+				//else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, FRONT);
 				if(!FindTile(xx, yy, zz - 1, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(loc, index, FRONT);}
-				else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, BACK);
+				//else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, BACK);
 			}
 			else
 			{
 				if(!FindTile(xx, yy + 1, zz, &tempLoc, &tempIndex)||(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER)) 
 					ShowTile(&*loc, index, TOP);
-				else HideTile(&*tempLoc, tempIndex, DOWN);
+				//else HideTile(&*tempLoc, tempIndex, DOWN);
 				if(!FindTile(xx, yy - 1, zz, &tempLoc, &tempIndex)||(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER)) {
 					if(tempLoc) ShowTile(&*loc, index, DOWN);}
-				else HideTile(&*tempLoc, tempIndex, TOP);
+				//else HideTile(&*tempLoc, tempIndex, TOP);
 				if(!FindTile(xx + 1, yy, zz, &tempLoc, &tempIndex)||(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER)) {
 					if(tempLoc) ShowTile(&*loc, index, RIGHT);}
-				else HideTile(&*tempLoc, tempIndex, LEFT);
+				//else HideTile(&*tempLoc, tempIndex, LEFT);
 				if(!FindTile(xx - 1, yy, zz, &tempLoc, &tempIndex)||(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER)) {
 					if(tempLoc) ShowTile(&*loc, index, LEFT);}
-				else HideTile(&*tempLoc, tempIndex, RIGHT);
+				//else HideTile(&*tempLoc, tempIndex, RIGHT);
 				if(!FindTile(xx, yy, zz + 1, &tempLoc, &tempIndex)||(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER)) {
 					if(tempLoc) ShowTile(&*loc, index, BACK);}
-				else HideTile(&*tempLoc, tempIndex, FRONT);
+				//else HideTile(&*tempLoc, tempIndex, FRONT);
 				if(!FindTile(xx, yy, zz - 1, &tempLoc, &tempIndex)||(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER)) {
 					if(tempLoc) ShowTile(&*loc, index, FRONT);}
-				else HideTile(&*tempLoc, tempIndex, BACK);
+				//else HideTile(&*tempLoc, tempIndex, BACK);
 			}
 		}
 		index++;
