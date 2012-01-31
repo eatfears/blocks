@@ -195,10 +195,10 @@ void Game::DrawTile(signed short sXcoord, signed short sYcoord, signed short sZc
 	static double offsetx;
 	static double offsety;
 
-	double br;
-
-	br = (rand()%100)/100.0;
-	//glColor3d(br, br, br);
+	GLdouble br;
+	//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
+	br = wWorld.lLocations.begin()->SkyLight[wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sYcoord+1, sZcoord)];
+	glColor3d(br, br, br);
 
 	wWorld.MaterialLib.GetTextureOffsets(offsetx, offsety, material, N);
 

@@ -6,11 +6,14 @@ Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib, Landscape&
 	Location::x = x; Location::z = z;
 
 	bBlocks = new Block[LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y];
+	SkyLight = new char[LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y];
 
 	DisplayedTiles = new std::list<Block *>[6];
 	
 	for(int i = 0; i < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y; i++)
-	{	bBlocks[i].cMaterial = MAT_NO;
+	{	
+		SkyLight[i] = 0;
+		bBlocks[i].cMaterial = MAT_NO;
 		for(int N = 0; N < 6; N++)
 			bBlocks[i].bVisible[N] = false;
 	}
@@ -22,6 +25,7 @@ Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib, Landscape&
 Location::~Location(void)
 {
 	delete[] bBlocks;
+	delete[] SkyLight;
 
 	delete[] DisplayedTiles;
 }
@@ -97,7 +101,8 @@ int Location::SetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z, char cM
 	return index;
 }
 
-int Location::GetBlockPositionByPointer(Block *tCurrentTile, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z)
+int Location::GetBlockPositionByPointer(Block *tCurrentTile, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z) 
+	const
 {
 	int t = tCurrentTile - bBlocks;
 
@@ -107,7 +112,7 @@ int Location::GetBlockPositionByPointer(Block *tCurrentTile, BlockInLoc *x, Bloc
 	return 0;
 }
 
-int Location::GetBlockPositionByIndex(int index, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z)
+inline int Location::GetBlockPositionByIndex(int index, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z)
 {
 	if((index < 0)||(index >= LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y))
 		return -1;
@@ -129,4 +134,27 @@ int Location::GetIndexByPosition( BlockInLoc x, BlockInLoc y, BlockInLoc z )
 void Location::Generate()
 {
 	lLandscape.Generate(*this);
+}
+
+void Location::FillSkyLight(char bright)
+{
+	BlockInLoc y;
+	int index;
+
+	for(BlockInLoc x = 0; x < LOCATION_SIZE_XZ; x++)
+	{
+		for(BlockInLoc z = 0; z < LOCATION_SIZE_XZ; z++)
+		{
+			y = LOCATION_SIZE_Y - 1;
+			while (y >= 0)
+			{
+				index = GetIndexByPosition(x, y, z);
+				if(bBlocks[index].cMaterial != MAT_NO)
+					break;
+
+				SkyLight[index] = bright;
+				y--;
+			}
+		}
+	}
 }

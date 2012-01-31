@@ -25,6 +25,7 @@ public:
 	~Location(void);
 
 	Block *bBlocks;
+	char *SkyLight;
 	MaterialLibrary& MaterialLib;
 	Landscape& lLandscape;
 	std::list<Block *> *DisplayedTiles;
@@ -42,11 +43,12 @@ public:
 	char GetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z);
 	int SetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z, char cMat);
 	
-	int GetBlockPositionByPointer(Block *bCurrentBlock, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z);
-	int GetBlockPositionByIndex(int index, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z);
+	int GetBlockPositionByPointer(Block *bCurrentBlock, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z) const;
+	inline static int GetBlockPositionByIndex(int index, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z);
 	int GetIndexByPosition(BlockInLoc x, BlockInLoc y, BlockInLoc z);
 
 	void Generate();
+	void FillSkyLight(char bright);
 
 	HANDLE mutex;
 };

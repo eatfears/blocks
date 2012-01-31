@@ -218,14 +218,12 @@ void World::DrawUnLoadedBlocks(LocInWorld Lx, LocInWorld Lz)
 {
 	int index = 0;
 
-	Location *temp = 0;
-
 	BlockInLoc x, y, z;
 	BlockInWorld xx, yy, zz;
 	
 	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
 	{
-		temp->GetBlockPositionByIndex(index, &x, &y, &z);
+		Location::GetBlockPositionByIndex(index, &x, &y, &z);
 
 		xx = x + LOCATION_SIZE_XZ*Lx;
 		yy = y;
@@ -451,7 +449,7 @@ void LoadLocationThread(void* pParams)
 	loc->Generate();
 	//loc->lLandscape.Fill(*loc, 0, 0.999, 64);
 	//loc->lLandscape.Load(loc->x, loc->z);
-
+	loc->FillSkyLight(15);
 
 	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 	wWorld.lLocations.push_front(*loc);
