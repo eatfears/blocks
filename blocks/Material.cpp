@@ -145,8 +145,31 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 	(components==2) ? (glcolours = GL_LUMINANCE_ALPHA): (0);
 	(components==1) ? (glcolours = GL_LUMINANCE): (0);
 
+
+	GLubyte a[1000];
+	strcpy((char*)a, (char*)glGetString(GL_VERSION));
+	//OpenGL 1.1
+	//	gluBuild2DMipmaps(GL_TEXTURE_2D, components, width, height, glcolours, GL_UNSIGNED_BYTE, pixels);
+
+	//OpenGL 1.4
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
+	//	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); 
+
+	
+	//OpenGL 3.0
+	//	http://www.opengl.org/wiki/Common_Mistakes#gluBuild2DMipmaps
+	//On ATI glEnable(GL_TEXTURE_2D);
+	//Warning: It has been reported that on some ATI drivers, 
+	//glGenerateMipmap(GL_TEXTURE_2D) has no effect unless you 
+	//precede it with a call to glEnable(GL_TEXTURE_2D) in this particular case. 
+	//Once again, to be clear, bind the texture, glEnable, then glGenerateMipmap. 
+	//This is a bug and has been in the ATI drivers for a while. 
+	//Perhaps by the time you read this, it will have been corrected. 
+	//(glGenerateMipmap doesn't work on ATI as of 2011)
+	// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
+	// 	glGenerateMipmap(GL_TEXTURE_2D);  //Generate mipmaps now!!!
+
 	glTexImage2D(GL_TEXTURE_2D, 0, components, width, height, 0, glcolours, GL_UNSIGNED_BYTE, pixels);
-	//gluBuild2DMipmaps(GL_TEXTURE_2D, components, width, height, glcolours, GL_UNSIGNED_BYTE, pixels);
 
 	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
