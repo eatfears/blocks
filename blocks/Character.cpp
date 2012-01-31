@@ -17,9 +17,9 @@ void LoadNGenerate(void* pParams)
 	LocInWorld z = pParameters.z;
 	SetEvent(wWorld.parget2);
 
-	int size = 16;
+	int size = 1;
 
-	for(int i = x*size; i < (x+1)*size*10; i++)
+	for(int i = x*size; i < (x+1)*size*1; i++)
 		for(int j = z*size; j < (z+1)*size; j++)
 	{
 		wWorld.LoadLocation(i, j);
@@ -48,27 +48,27 @@ double round(double x)
 
 void Character::GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
 {
-	*xerr = dDispCenterCoordX + TILE_SIZE/2;
+	*xerr = dDispCenterCoordX + BLOCK_SIZE/2;
 	*yerr = dDispCenterCoordY;
-	*zerr = dDispCenterCoordZ + TILE_SIZE/2;
+	*zerr = dDispCenterCoordZ + BLOCK_SIZE/2;
 
-	while(*yerr < -1) *yerr += TILE_SIZE;
-	while(*yerr > TILE_SIZE + 1) *yerr -= TILE_SIZE;
+	while(*yerr < -1) *yerr += BLOCK_SIZE;
+	while(*yerr > BLOCK_SIZE + 1) *yerr -= BLOCK_SIZE;
 
 	*yerr = abs(*yerr);
-	if(*yerr > abs(*yerr - TILE_SIZE)) *yerr = abs(*yerr - TILE_SIZE); 
+	if(*yerr > abs(*yerr - BLOCK_SIZE)) *yerr = abs(*yerr - BLOCK_SIZE); 
 
-	while(*xerr < - 1) *xerr += TILE_SIZE;
-	while(*xerr > TILE_SIZE + 1) *xerr -= TILE_SIZE;
+	while(*xerr < - 1) *xerr += BLOCK_SIZE;
+	while(*xerr > BLOCK_SIZE + 1) *xerr -= BLOCK_SIZE;
 
 	*xerr = abs(*xerr);
-	if(*xerr > abs(*xerr - TILE_SIZE)) *xerr = abs(*xerr - TILE_SIZE); 
+	if(*xerr > abs(*xerr - BLOCK_SIZE)) *xerr = abs(*xerr - BLOCK_SIZE); 
 
-	while(*zerr < - 1) *zerr += TILE_SIZE;
-	while(*zerr > TILE_SIZE + 1) *zerr -= TILE_SIZE;
+	while(*zerr < - 1) *zerr += BLOCK_SIZE;
+	while(*zerr > BLOCK_SIZE + 1) *zerr -= BLOCK_SIZE;
 
 	*zerr = abs(*zerr);
-	if(*zerr > abs(*zerr - TILE_SIZE)) *zerr = abs(*zerr - TILE_SIZE); 
+	if(*zerr > abs(*zerr - BLOCK_SIZE)) *zerr = abs(*zerr - BLOCK_SIZE); 
 }
 
 void Character::Control(GLdouble FrameInterval)
@@ -169,27 +169,27 @@ void Character::Control(GLdouble FrameInterval)
 
 	if((zerr < xerr)&&(zerr < yerr))
 	{
-		sCenterCubeCoordX = floor(dDispCenterCoordX/TILE_SIZE + 0.5);
-		sCenterCubeCoordY = floor(dDispCenterCoordY/TILE_SIZE);
+		sCenterBlockCoordX = (BlockInWorld) floor(dDispCenterCoordX/BLOCK_SIZE + 0.5);
+		sCenterBlockCoordY = (BlockInWorld) floor(dDispCenterCoordY/BLOCK_SIZE);
 
-		if(dPositionZ < dDispCenterCoordZ) sCenterCubeCoordZ = round(dDispCenterCoordZ/TILE_SIZE + 0.5);
-		if(dPositionZ > dDispCenterCoordZ) sCenterCubeCoordZ = round(dDispCenterCoordZ/TILE_SIZE - 0.5);
+		if(dPositionZ < dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) round(dDispCenterCoordZ/BLOCK_SIZE + 0.5);
+		if(dPositionZ > dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) round(dDispCenterCoordZ/BLOCK_SIZE - 0.5);
 	}
 	if((xerr < zerr)&&(xerr < yerr))
 	{
-		sCenterCubeCoordZ = floor(dDispCenterCoordZ/TILE_SIZE + 0.5);
-		sCenterCubeCoordY = floor(dDispCenterCoordY/TILE_SIZE);
+		sCenterBlockCoordZ = (BlockInWorld) floor(dDispCenterCoordZ/BLOCK_SIZE + 0.5);
+		sCenterBlockCoordY = (BlockInWorld) floor(dDispCenterCoordY/BLOCK_SIZE);
 
-		if(dPositionX < dDispCenterCoordX) sCenterCubeCoordX = round(dDispCenterCoordX/TILE_SIZE + 0.5);
-		if(dPositionX > dDispCenterCoordX) sCenterCubeCoordX = round(dDispCenterCoordX/TILE_SIZE - 0.5);
+		if(dPositionX < dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) round(dDispCenterCoordX/BLOCK_SIZE + 0.5);
+		if(dPositionX > dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) round(dDispCenterCoordX/BLOCK_SIZE - 0.5);
 	}
 	if((yerr < xerr)&&(yerr < zerr))
 	{
-		sCenterCubeCoordX = floor(dDispCenterCoordX/TILE_SIZE + 0.5);
-		sCenterCubeCoordZ = floor(dDispCenterCoordZ/TILE_SIZE + 0.5);
+		sCenterBlockCoordX = (BlockInWorld) floor(dDispCenterCoordX/BLOCK_SIZE + 0.5);
+		sCenterBlockCoordZ = (BlockInWorld) floor(dDispCenterCoordZ/BLOCK_SIZE + 0.5);
 
-		if(dPositionY < dDispCenterCoordY) sCenterCubeCoordY = round(dDispCenterCoordY/TILE_SIZE);
-		if(dPositionY > dDispCenterCoordY) sCenterCubeCoordY = round(dDispCenterCoordY/TILE_SIZE - 1.0);
+		if(dPositionY < dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) round(dDispCenterCoordY/BLOCK_SIZE);
+		if(dPositionY > dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) round(dDispCenterCoordY/BLOCK_SIZE - 1.0);
 	}
 
 	int num = 100;
@@ -201,7 +201,7 @@ void Character::Control(GLdouble FrameInterval)
 		
 		while(i < num)
 		{
-			if(wWorld.AddTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, rand()%14+1, true))
+			if(wWorld.AddBlock(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, rand()%14+1, true))
 				i++;
 		}
 	}
@@ -211,7 +211,7 @@ void Character::Control(GLdouble FrameInterval)
 
 		while(i < num)
 		{
-			if(wWorld.RemoveTile(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, true))
+			if(wWorld.RemoveBlock(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, true))
 				i++;
 		}
 	}
@@ -222,7 +222,7 @@ void Character::Control(GLdouble FrameInterval)
 		for(int j = -sqb2; j <= sqb2; j++)
 		for(int k = -sqb2; k <= sqb2; k++)
 		{
-			wWorld.RemoveTile(i, j, k, true);	
+			wWorld.RemoveBlock(i, j, k, true);	
 		}
 	}
 
@@ -281,29 +281,29 @@ void Character::Control(GLdouble FrameInterval)
 
 	if(bKeyboard['E']) 
 	{
-		wWorld.RemoveTile(sCenterCubeCoordX,sCenterCubeCoordY,sCenterCubeCoordZ, true);
+		wWorld.RemoveBlock(sCenterBlockCoordX,sCenterBlockCoordY,sCenterBlockCoordZ, true);
 	}
 
 	if(bKeyboard['Q']) 
 	{
-		signed short ix = sCenterCubeCoordX, iy = sCenterCubeCoordY, iz = sCenterCubeCoordZ;
+		signed short ix = sCenterBlockCoordX, iy = sCenterBlockCoordY, iz = sCenterBlockCoordZ;
 		if((zerr < xerr)&&(zerr < yerr))
 		{
-			if(dPositionZ < dDispCenterCoordZ) iz = sCenterCubeCoordZ - 1;
-			if(dPositionZ > dDispCenterCoordZ) iz = sCenterCubeCoordZ + 1;
+			if(dPositionZ < dDispCenterCoordZ) iz = sCenterBlockCoordZ - 1;
+			if(dPositionZ > dDispCenterCoordZ) iz = sCenterBlockCoordZ + 1;
 		}
 		if((xerr < zerr)&&(xerr < yerr))
 		{
-			if(dPositionX < dDispCenterCoordX) ix = sCenterCubeCoordX - 1;
-			if(dPositionX > dDispCenterCoordX) ix = sCenterCubeCoordX + 1;
+			if(dPositionX < dDispCenterCoordX) ix = sCenterBlockCoordX - 1;
+			if(dPositionX > dDispCenterCoordX) ix = sCenterBlockCoordX + 1;
 		}
 		if((yerr < xerr)&&(yerr < zerr))
 		{
-			if(dPositionY < dDispCenterCoordY) iy = sCenterCubeCoordY - 1;
-			if(dPositionY > dDispCenterCoordY) iy = sCenterCubeCoordY + 1;
+			if(dPositionY < dDispCenterCoordY) iy = sCenterBlockCoordY - 1;
+			if(dPositionY > dDispCenterCoordY) iy = sCenterBlockCoordY + 1;
 		}
 
-		wWorld.AddTile(ix,iy,iz,MAT_STONE, true);
+		wWorld.AddBlock(ix,iy,iz,MAT_STONE, true);
 	}
 
 	dPositionX += FrameInterval*dVelocityX;

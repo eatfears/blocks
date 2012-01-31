@@ -105,7 +105,7 @@ void GLWindow::ReSizeGLScene( GLsizei width, GLsizei height )	// Изменить размер
 	glLoadIdentity();											// Сброс матрицы проекции
 
 	//Вычисление соотношения геометрических размеров для окна
-	gluPerspective( 45.0f, (GLfloat)width/(GLfloat)height, 0.1f, TILE_SIZE + MAX_VIEV_DIST);
+	gluPerspective( 45.0f, (GLfloat)width/(GLfloat)height, 0.1f, BLOCK_SIZE + MAX_VIEV_DIST);
 	glMatrixMode( GL_MODELVIEW );								// Выбор матрицы вида модели
 	glLoadIdentity();											// Сброс матрицы вида модели
 

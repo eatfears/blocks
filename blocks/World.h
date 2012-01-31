@@ -23,20 +23,20 @@ public:
 	Landscape lLandscape;
 
 	void BuildWorld();
-	int FindTile(TileInWorld x, TileInWorld y, TileInWorld z);
-	int FindTile(TileInWorld x, TileInWorld y, TileInWorld z, Location **loc, int *index);
-	int AddTile(TileInWorld x, TileInWorld y, TileInWorld z, char mat, bool show);
-	int RemoveTile(TileInWorld x, TileInWorld y, TileInWorld z, bool show);
+	int FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z);
+	int FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, Location **loc, int *index);
+	int AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bool show);
+	int RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show);
 
-	void DrawLoadedTiles(Location *loc);
-	void DrawUnLoadedTiles(LocInWorld x, LocInWorld z);
+	void DrawLoadedBlocks(Location *loc);
+	void DrawUnLoadedBlocks(LocInWorld x, LocInWorld z);
 	void LoadLocation(LocInWorld x, LocInWorld z);
 	void UnLoadLocation(LocInWorld x, LocInWorld z);
 	std::list<LocationPosiion> LoadedLocations;
 
-	void GetLocByTile(TileInWorld x, TileInWorld z, LocInWorld *locx, TileInWorld *locz);
-	Location* GetLocByTile(TileInWorld x, TileInWorld z);
-	void GetPosInLocByWorld(TileInWorld x, TileInWorld y, TileInWorld z, TileInLoc *locx, TileInLoc *locy, TileInLoc *locz);
+	void GetLocByBlock(BlockInWorld x, BlockInWorld z, LocInWorld *locx, BlockInWorld *locz);
+	Location* GetLocByBlock(BlockInWorld x, BlockInWorld z);
+	void GetPosInLocByWorld(BlockInWorld x, BlockInWorld y, BlockInWorld z, BlockInLoc *locx, BlockInLoc *locy, BlockInLoc *locz);
 //private:
 	void ShowTile(Location *loc, int index, char N);
 	void HideTile(Location *loc, int index, char N);

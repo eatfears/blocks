@@ -30,7 +30,6 @@ inline Int Primes::Sqrt(Int i)
 inline Int Primes::IsPrime(Int i)
 {
 	Int si, j;
-
 	si = Sqrt(i);
 
 	for (j=2; (j <= si); j++)
@@ -47,9 +46,7 @@ inline Int Primes::NextPrime(Int i)
 	Int si = i;
 
 	while(!IsPrime(si))
-	{
 		si++;
-	}
 
 	return si;
 }
@@ -58,7 +55,7 @@ Int Primes::GenPrime(Int size)
 {
 	Int beg = 1;
 
-	while(beg < (1 << size-1))
+	while(beg < (Int) (1 << (size-1)))
 		beg = gsl_rng_uniform_int(randNumGen, (1 << size));
 	beg = NextPrime(beg);
 	

@@ -83,8 +83,8 @@ void Landscape::Generate(Location &loc)
 				//temp2 = dens[i%LOCATION_SIZE_XZ][(j+1)%LOCATION_SIZE_Y][k%LOCATION_SIZE_XZ];
 
 				density = temp*(4*details + 0.3) + j;
-				if(density < height) {if(density < height - 3) loc.AddTile(i, j, k, MAT_STONE); else loc.AddTile(i, j, k, MAT_GRASS);}
-				else if(j < horizon) loc.AddTile(i, j, k, MAT_WATER);
+				if(density < height) {if(density < height - 3) loc.AddBlock(i, j, k, MAT_STONE); else loc.AddBlock(i, j, k, MAT_GRASS);}
+				else if(j < horizon) loc.AddBlock(i, j, k, MAT_WATER);
 			}
 		}
 	}
@@ -135,7 +135,7 @@ void Landscape::Fill( Location& loc, char mat, double fillness, int height )
 				if((double)rand()/(double)RAND_MAX < fillness) 
 				{
 					if (mat == 0) material = rand()%4+1;
-					loc.AddTile(i, j, k, material);
+					loc.AddBlock(i, j, k, material);
 				}
 			}
 		}

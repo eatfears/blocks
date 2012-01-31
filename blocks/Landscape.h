@@ -27,8 +27,8 @@ public:
 	double RoughnessAmp;
 	double DetailsAmp;
 	double BubblesAmp;
-	double HeghtMapOctaves;
-	double BubblesOctaves;
+	int HeghtMapOctaves;
+	int BubblesOctaves;
 
 	PerlinNoise pnBubbles;
 

@@ -63,7 +63,7 @@ int Game::DrawGLScene()
 	GLdouble dBrightness = 1.0;
 	glColor3d(dBrightness, dBrightness, dBrightness);
 
-	TileInLoc x, y, z;
+	BlockInLoc x, y, z;
 	GLuint *tex = wWorld.MaterialLib.texture;
 
 
@@ -92,11 +92,11 @@ int Game::DrawGLScene()
 					{
 #endif // _DEBUG
 
-						loc->GetTilePositionByPointer(*it, &x, &y, &z);
-						if(	(abs((x + (loc->x/*-player.lnwPositionX*/)*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
-							(abs(y*TILE_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*TILE_SIZE) && 
-							(abs((z + (loc->z/*-player.lnwPositionZ*/)*LOCATION_SIZE_XZ)*TILE_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*TILE_SIZE))
-							DrawTileSide(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, (*it)->cMaterial, i);
+						loc->GetBlockPositionByPointer(*it, &x, &y, &z);
+						if(	(abs((x + (loc->x/*-player.lnwPositionX*/)*LOCATION_SIZE_XZ)*BLOCK_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
+							(abs(y*BLOCK_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
+							(abs((z + (loc->z/*-player.lnwPositionZ*/)*LOCATION_SIZE_XZ)*BLOCK_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*BLOCK_SIZE))
+							DrawTile(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, (*it)->cMaterial, i);
 
 						++it;
 #ifndef _DEBUG
@@ -178,18 +178,18 @@ void Game::DrawInterface()
 }
 
 //void Game::DrawVisibleTileSide(Tile *tTile, char N)
-void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short sZcoord, int material, char N)
+void Game::DrawTile(signed short sXcoord, signed short sYcoord, signed short sZcoord, int material, char N)
 {
 	GLdouble 
 // 		dXcoord = (sXcoord-player.lnwPositionX*LOCATION_SIZE_XZ)*TILE_SIZE, 
 // 		dYcoord = sYcoord*TILE_SIZE, 
 // 		dZcoord = (sZcoord-player.lnwPositionZ*LOCATION_SIZE_XZ)*TILE_SIZE;
-		dXcoord = sXcoord*TILE_SIZE, 
-		dYcoord = sYcoord*TILE_SIZE, 
-		dZcoord = sZcoord*TILE_SIZE;
+		dXcoord = sXcoord*BLOCK_SIZE, 
+		dYcoord = sYcoord*BLOCK_SIZE, 
+		dZcoord = sZcoord*BLOCK_SIZE;
 
-	dXcoord -= TILE_SIZE/2;
-	dZcoord -= TILE_SIZE/2;
+	dXcoord -= BLOCK_SIZE/2;
+	dZcoord -= BLOCK_SIZE/2;
 
 	static double space = 0.0005;
 	static double offsetx;
@@ -208,37 +208,37 @@ void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short
 		{
 			//Верхняя грань
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
+			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord);
 		}break;
-	case DOWN:
+	case BOTTOM:
 		{
 			//Нижняя грань
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord + BLOCK_SIZE);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
+			glVertex3d (dXcoord, dYcoord, dZcoord + BLOCK_SIZE);
 		}break;
 	case RIGHT:
 		{
 			//Правая грань
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord + BLOCK_SIZE);
 		}break;
 	case LEFT:
 		{
@@ -246,23 +246,23 @@ void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
+			glVertex3d (dXcoord, dYcoord, dZcoord + BLOCK_SIZE);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
+			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord);
 		}break;
 	case BACK:
 		{
 			//Задняя грань
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord, dYcoord, dZcoord + TILE_SIZE);
+			glVertex3d (dXcoord, dYcoord, dZcoord + BLOCK_SIZE);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord + TILE_SIZE);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord + BLOCK_SIZE);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord + TILE_SIZE);
+			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
 		}break;
 	case FRONT:
 		{
@@ -270,18 +270,18 @@ void Game::DrawTileSide(signed short sXcoord, signed short sYcoord, signed short
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord + TILE_SIZE, dZcoord);
+			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord + TILE_SIZE, dZcoord);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + TILE_SIZE, dYcoord, dZcoord);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord);
 		}break;
 	}
 }
 
 void Game::DrawSelectedItem()
 {
-	if(!wWorld.FindTile(player.sCenterCubeCoordX,player.sCenterCubeCoordY,player.sCenterCubeCoordZ))
+	if(!wWorld.FindBlock(player.sCenterBlockCoordX,player.sCenterBlockCoordY,player.sCenterBlockCoordZ))
 		return;
 
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -290,11 +290,11 @@ void Game::DrawSelectedItem()
 	glColor3d(0.1, 0.1, 0.1);
 	glLineWidth (1.4f);
 
-	GLdouble BorderSize = TILE_SIZE*(1 + 0.005);
+	GLdouble BorderSize = BLOCK_SIZE*(1 + 0.005);
 	GLdouble 
-		dXcoord = player.sCenterCubeCoordX*TILE_SIZE, 
-		dYcoord = player.sCenterCubeCoordY*TILE_SIZE, 
-		dZcoord = player.sCenterCubeCoordZ*TILE_SIZE;
+		dXcoord = player.sCenterBlockCoordX*BLOCK_SIZE, 
+		dYcoord = player.sCenterBlockCoordY*BLOCK_SIZE, 
+		dZcoord = player.sCenterBlockCoordZ*BLOCK_SIZE;
 
 	dXcoord -= BorderSize/2;
 	dZcoord -= BorderSize/2;

@@ -19,11 +19,11 @@ public:
 	bool bFalling;
 	void Control(GLdouble FrameInterval);
 	void GetCenterCoords(GLsizei width, GLsizei height);
-	bool  bKeyboard[256];				// Массив, используемый для операций с клавиатурой
+	bool  bKeyboard[256];					// Массив, используемый для операций с клавиатурой
 	bool  bKeyboardDown[256];				// Массив, используемый для операций с клавиатурой
 
-	GLdouble dDispCenterCoordX, dDispCenterCoordY, dDispCenterCoordZ;	// возвращаемые мировые координаты центра
-	signed short sCenterCubeCoordX, sCenterCubeCoordY, sCenterCubeCoordZ;	// возвращаемые координаты куба
+	GLdouble dDispCenterCoordX, dDispCenterCoordY, dDispCenterCoordZ;			// возвращаемые мировые координаты центра
+	BlockInWorld sCenterBlockCoordX, sCenterBlockCoordY, sCenterBlockCoordZ;	// возвращаемые координаты куба
 
 	World& wWorld;
 

@@ -154,7 +154,7 @@ int WINAPI WinMain(  HINSTANCE  hInstance,
 
 // 	gGame.player.lnwPositionX = 0;
 // 	gGame.player.lnwPositionZ = 0;
-	gGame.player.dPositionY = 100*TILE_SIZE+00.0;
+	gGame.player.dPositionY = 100*BLOCK_SIZE+00.0;
 	gGame.player.dSpinY = -90 - 45;
 	gGame.InitGame(&glwWnd);
 

@@ -12,7 +12,7 @@
 #define RESY			480
 #define BITS			32
 
-#define TILE_SIZE		10.0
+#define BLOCK_SIZE		10.0
 
 #define MOUSE_SENSIVITY 1.5
 
@@ -27,11 +27,11 @@
 
 #define FOG_COLOR		0.5f,0.5f,0.8f,1.0f
 #define FOG_DENSITY		6.0
-#define FOG_START		TILE_SIZE*64
-#define MAX_VIEV_DIST	TILE_SIZE*128*10
+#define FOG_START		BLOCK_SIZE*64
+#define MAX_VIEV_DIST	BLOCK_SIZE*128*10
 
 #define TOP				0
-#define DOWN			1
+#define BOTTOM			1
 #define RIGHT			2
 #define LEFT			3
 #define BACK			4
@@ -40,7 +40,7 @@
 #define LOCATION_SIZE_XZ	16
 #define LOCATION_SIZE_Y		128
 
-typedef unsigned short	TileInLoc;
+typedef unsigned short	BlockInLoc;
 typedef signed short	LocInWorld;
-typedef signed short	TileInWorld;
+typedef signed short	BlockInWorld;
 

@@ -12,11 +12,11 @@ typedef struct locpos
 	LocInWorld z;
 }LocationPosiion;
 
-typedef struct tile
+typedef struct block
 {
 	char cMaterial;
 	bool bVisible[6];
-}Tile;
+}Block;
 
 class Location
 {
@@ -24,27 +24,27 @@ public:
 	Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib, Landscape& lLand);
 	~Location(void);
 
-	Tile *tTile;
+	Block *bBlocks;
 	MaterialLibrary& MaterialLib;
 	Landscape& lLandscape;
-	std::list<Tile *> *DisplayedTiles;
+	std::list<Block *> *DisplayedTiles;
 
 	LocInWorld x;
 	LocInWorld z;
 	bool bVisible;
 	
-	int	AddTile(TileInLoc x, TileInLoc y, TileInLoc z, char mat);
-	int RemoveTile(TileInLoc x, TileInLoc y, TileInLoc z);
+	int	AddBlock(BlockInLoc x, BlockInLoc y, BlockInLoc z, char mat);
+	int RemoveBlock(BlockInLoc x, BlockInLoc y, BlockInLoc z);
 	
-	void ShowTile(Tile *tTile, char N);
-	void HideTile(Tile *tTile, char N);
+	void ShowTile(Block *bBlock, char N);
+	void HideTile(Block *bBlock, char N);
 
-	char GetTileMaterial(TileInLoc x, TileInLoc y, TileInLoc z);
-	int SetTileMaterial(TileInLoc x, TileInLoc y, TileInLoc z, char cMat);
+	char GetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z);
+	int SetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z, char cMat);
 	
-	int GetTilePositionByPointer(Tile *tCurrentTile, TileInLoc *x, TileInLoc *y, TileInLoc *z);
-	int GetTilePositionByIndex(int index, TileInLoc *x, TileInLoc *y, TileInLoc *z);
-	int GetIndexByPosition(TileInLoc x, TileInLoc y, TileInLoc z);
+	int GetBlockPositionByPointer(Block *bCurrentBlock, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z);
+	int GetBlockPositionByIndex(int index, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z);
+	int GetIndexByPosition(BlockInLoc x, BlockInLoc y, BlockInLoc z);
 
 	void Generate();
 
