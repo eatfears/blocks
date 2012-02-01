@@ -28,7 +28,7 @@ public:
 	int AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bool show);
 	int RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show);
 
-	void DrawLoadedBlocks(Location &loc);
+	void DrawLoadedBlocksFinish(Location &loc);
 	void DrawUnLoadedBlocks(LocInWorld x, LocInWorld z);
 	void LoadLocation(LocInWorld x, LocInWorld z);
 	void UnLoadLocation(LocInWorld x, LocInWorld z);

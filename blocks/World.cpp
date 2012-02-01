@@ -125,7 +125,7 @@ Location* World::GetLocByBlock( BlockInWorld x, BlockInWorld z )
 	return &*loc;
 }
 
-void World::DrawLoadedBlocks(Location &loc)
+void World::DrawLoadedBlocksFinish(Location &loc)
 {
 	int index = 0;
 
@@ -134,11 +134,15 @@ void World::DrawLoadedBlocks(Location &loc)
 	BlockInLoc x, y, z;
 	BlockInWorld xx, yy, zz;
 
-	loc.DrawLoadedBlocks();
-	/*
 	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
 	{
 		loc.GetBlockPositionByPointer(loc.bBlocks + index, &x, &y, &z);
+
+		if((x > 0)&&(x < LOCATION_SIZE_XZ - 1)&&(z > 0)&&(z < LOCATION_SIZE_XZ - 1))
+		{
+			index++;
+			continue;
+		}
 
 		xx = x + LOCATION_SIZE_XZ*loc.x;
 		yy = y;
@@ -179,7 +183,6 @@ void World::DrawLoadedBlocks(Location &loc)
 	/**/
 	ReleaseMutex(loc.mutex);
 	
-
 	// draw boundary tiles
 	index = 0;
 	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
@@ -224,6 +227,12 @@ void World::DrawUnLoadedBlocks(LocInWorld Lx, LocInWorld Lz)
 	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
 	{
 		Location::GetBlockPositionByIndex(index, &x, &y, &z);
+
+		if((x > 0)&&(x < LOCATION_SIZE_XZ - 1)&&(z > 0)&&(z < LOCATION_SIZE_XZ - 1))
+		{
+			index++;
+			continue;
+		}
 
 		xx = x + LOCATION_SIZE_XZ*Lx;
 		yy = y;
@@ -450,6 +459,7 @@ void LoadLocationThread(void* pParams)
 	//loc->lLandscape.Fill(*loc, 0, 0.999, 64);
 	//loc->lLandscape.Fill(*loc, 0, 1, 64);
 	//loc->lLandscape.Load(loc->x, loc->z);
+	loc->DrawLoadedBlocks();
 	loc->FillSkyLight(15);
 
 	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
@@ -457,7 +467,7 @@ void LoadLocationThread(void* pParams)
 	ReleaseMutex(wWorld.mutex);
 
 	
-	wWorld.DrawLoadedBlocks(*loc);
+	wWorld.DrawLoadedBlocksFinish(*loc);
 
 
 
