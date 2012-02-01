@@ -154,18 +154,18 @@ void Location::DrawLoadedBlocks()
 			}
 			else
 			{
-				/*if(!FindBlock(xx, yy + 1, zz, &tempLoc, &tempIndex)) 
+				if((GetBlockMaterial(xx, yy + 1, zz) == MAT_NO)||(GetBlockMaterial(xx, yy + 1, zz) == MAT_WATER))
 					ShowTile(bBlocks + index, TOP);
-				if(!FindBlock(xx, yy - 1, zz, &tempLoc, &tempIndex))
+				if((GetBlockMaterial(xx, yy - 1, zz) == MAT_NO)||(GetBlockMaterial(xx, yy - 1, zz) == MAT_WATER))
 					ShowTile(bBlocks + index, BOTTOM);
-				if(!FindBlock(xx + 1, yy, zz, &tempLoc, &tempIndex))
+				if((GetBlockMaterial(xx + 1, yy, zz) == MAT_NO)||(GetBlockMaterial(xx + 1, yy, zz) == MAT_WATER))
 					ShowTile(bBlocks + index, RIGHT);
-				if(!FindBlock(xx - 1, yy, zz, &tempLoc, &tempIndex))
+				if((GetBlockMaterial(xx - 1, yy, zz) == MAT_NO)||(GetBlockMaterial(xx - 1, yy + 1, zz) == MAT_WATER))
 					ShowTile(bBlocks + index, LEFT);
-				if(!FindBlock(xx, yy, zz + 1, &tempLoc, &tempIndex))
+				if((GetBlockMaterial(xx, yy, zz + 1) == MAT_NO)||(GetBlockMaterial(xx, yy, zz + 1) == MAT_WATER))
 					ShowTile(bBlocks + index, BACK);
-				if(!FindBlock(xx, yy, zz - 1, &tempLoc, &tempIndex))
-					ShowTile(bBlocks + index, FRONT);*/
+				if((GetBlockMaterial(xx, yy, zz - 1) == MAT_NO)||(GetBlockMaterial(xx, yy, zz - 1) == MAT_WATER))
+					ShowTile(bBlocks + index, FRONT);
 			}
 		}
 		index++;
