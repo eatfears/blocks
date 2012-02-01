@@ -47,6 +47,8 @@ public:
 	inline static int GetBlockPositionByIndex(int index, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z);
 	int GetIndexByPosition(BlockInLoc x, BlockInLoc y, BlockInLoc z);
 
+	void DrawLoadedBlocks();
+
 	void Generate();
 	void FillSkyLight(char bright);
 

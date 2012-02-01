@@ -125,89 +125,89 @@ Location* World::GetLocByBlock( BlockInWorld x, BlockInWorld z )
 	return &*loc;
 }
 
-void World::DrawLoadedBlocks(Location *loc)
+void World::DrawLoadedBlocks(Location &loc)
 {
 	int index = 0;
 
  	DWORD dwWaitResult; 
- 	dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
+ 	dwWaitResult = WaitForSingleObject( loc.mutex, INFINITE);
 	BlockInLoc x, y, z;
 	BlockInWorld xx, yy, zz;
 
+	loc.DrawLoadedBlocks();
+	/*
 	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
 	{
-		loc->GetBlockPositionByPointer(loc->bBlocks + index, &x, &y, &z);
+		loc.GetBlockPositionByPointer(loc.bBlocks + index, &x, &y, &z);
 
-		xx = x + LOCATION_SIZE_XZ*loc->x;
+		xx = x + LOCATION_SIZE_XZ*loc.x;
 		yy = y;
-		zz = z + LOCATION_SIZE_XZ*loc->z;
+		zz = z + LOCATION_SIZE_XZ*loc.z;
 
-		if(loc->bBlocks[index].cMaterial != MAT_NO)
+		if(loc.bBlocks[index].cMaterial != MAT_NO)
 		{
 			Location *tempLoc;
 			int tempIndex;
 
-			if(loc->bBlocks[index].cMaterial == MAT_WATER)
+			if(loc.bBlocks[index].cMaterial == MAT_WATER)
 			{
-				if(!FindBlock(xx, yy + 1, zz, &tempLoc, &tempIndex)) ShowTile(loc, index, TOP);
-				//else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, DOWN);
-				if(!FindBlock(xx, yy - 1, zz, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(loc, index, BOTTOM);}
-				//else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, TOP);
-				if(!FindBlock(xx + 1, yy, zz, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(loc, index, RIGHT);}
-				//else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, LEFT);
-				if(!FindBlock(xx - 1, yy, zz, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(loc, index, LEFT);}
-				//else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, RIGHT);
-				if(!FindBlock(xx, yy, zz + 1, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(loc, index, BACK);}
-				//else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, FRONT);
-				if(!FindBlock(xx, yy, zz - 1, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(loc, index, FRONT);}
-				//else if(tempLoc->tTile[tempIndex].cMaterial == MAT_WATER) HideTile(tempLoc, tempIndex, BACK);
+				if(!FindBlock(xx, yy + 1, zz, &tempLoc, &tempIndex)) ShowTile(&loc, index, TOP);
+				if(!FindBlock(xx, yy - 1, zz, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(&loc, index, BOTTOM);}
+				if(!FindBlock(xx + 1, yy, zz, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(&loc, index, RIGHT);}
+				if(!FindBlock(xx - 1, yy, zz, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(&loc, index, LEFT);}
+				if(!FindBlock(xx, yy, zz + 1, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(&loc, index, BACK);}
+				if(!FindBlock(xx, yy, zz - 1, &tempLoc, &tempIndex)) {if(tempLoc) ShowTile(&loc, index, FRONT);}
 			}
 			else
 			{
 				if(!FindBlock(xx, yy + 1, zz, &tempLoc, &tempIndex)||(tempLoc->bBlocks[tempIndex].cMaterial == MAT_WATER)) 
-					ShowTile(&*loc, index, TOP);
-				//else HideTile(&*tempLoc, tempIndex, DOWN);
+					ShowTile(&loc, index, TOP);
 				if(!FindBlock(xx, yy - 1, zz, &tempLoc, &tempIndex)||(tempLoc->bBlocks[tempIndex].cMaterial == MAT_WATER)) {
-					if(tempLoc) ShowTile(&*loc, index, BOTTOM);}
-				//else HideTile(&*tempLoc, tempIndex, TOP);
+					if(tempLoc) ShowTile(&loc, index, BOTTOM);}
 				if(!FindBlock(xx + 1, yy, zz, &tempLoc, &tempIndex)||(tempLoc->bBlocks[tempIndex].cMaterial == MAT_WATER)) {
-					if(tempLoc) ShowTile(&*loc, index, RIGHT);}
-				//else HideTile(&*tempLoc, tempIndex, LEFT);
+					if(tempLoc) ShowTile(&loc, index, RIGHT);}
 				if(!FindBlock(xx - 1, yy, zz, &tempLoc, &tempIndex)||(tempLoc->bBlocks[tempIndex].cMaterial == MAT_WATER)) {
-					if(tempLoc) ShowTile(&*loc, index, LEFT);}
-				//else HideTile(&*tempLoc, tempIndex, RIGHT);
+					if(tempLoc) ShowTile(&loc, index, LEFT);}
 				if(!FindBlock(xx, yy, zz + 1, &tempLoc, &tempIndex)||(tempLoc->bBlocks[tempIndex].cMaterial == MAT_WATER)) {
-					if(tempLoc) ShowTile(&*loc, index, BACK);}
-				//else HideTile(&*tempLoc, tempIndex, FRONT);
+					if(tempLoc) ShowTile(&loc, index, BACK);}
 				if(!FindBlock(xx, yy, zz - 1, &tempLoc, &tempIndex)||(tempLoc->bBlocks[tempIndex].cMaterial == MAT_WATER)) {
-					if(tempLoc) ShowTile(&*loc, index, FRONT);}
-				//else HideTile(&*tempLoc, tempIndex, BACK);
+					if(tempLoc) ShowTile(&loc, index, FRONT);}
 			}
 		}
 		index++;
 	}
-
-	ReleaseMutex(loc->mutex);
+	/**/
+	ReleaseMutex(loc.mutex);
 	
+
+	// draw boundary tiles
 	index = 0;
 	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
 	{
-		loc->GetBlockPositionByPointer(loc->bBlocks + index, &x, &y, &z);
-		xx = x + LOCATION_SIZE_XZ*loc->x;
-		yy = y;
-		zz = z + LOCATION_SIZE_XZ*loc->z;
+		loc.GetBlockPositionByPointer(loc.bBlocks + index, &x, &y, &z);
+		
+		if((x > 0)&&(x < LOCATION_SIZE_XZ - 1)&&(z > 0)&&(z < LOCATION_SIZE_XZ - 1))
+		{
+			index++;
+			continue;
+		}
 
-		if((loc->bBlocks[index].cMaterial == MAT_NO)||(loc->bBlocks[index].cMaterial == MAT_WATER))
+		xx = x + LOCATION_SIZE_XZ*loc.x;
+		yy = y;
+		zz = z + LOCATION_SIZE_XZ*loc.z;
+
+		if((loc.bBlocks[index].cMaterial == MAT_NO)||(loc.bBlocks[index].cMaterial == MAT_WATER))
 		{
 			Location *tempLoc;
+			Location *tCurLoc = &loc;
 			int tempIndex;
-			if(FindBlock(xx + 1, yy, zz, &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc != loc)
+			if(FindBlock(xx + 1, yy, zz, &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc->bBlocks != tCurLoc->bBlocks)
 				ShowTile(&*tempLoc, tempIndex, LEFT);
-			if(FindBlock(xx - 1, yy, zz, &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc != loc)
+			if(FindBlock(xx - 1, yy, zz, &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc->bBlocks != tCurLoc->bBlocks)
 				ShowTile(&*tempLoc, tempIndex, RIGHT);
-			if(FindBlock(xx, yy, zz + 1, &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc != loc)
+			if(FindBlock(xx, yy, zz + 1, &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc->bBlocks != tCurLoc->bBlocks)
 				ShowTile(&*tempLoc, tempIndex, FRONT);
-			if(FindBlock(xx, yy, zz - 1, &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc != loc)
+			if(FindBlock(xx, yy, zz - 1, &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc->bBlocks != tCurLoc->bBlocks)
 				ShowTile(&*tempLoc, tempIndex, BACK);
 		}
 		index++;
@@ -457,7 +457,7 @@ void LoadLocationThread(void* pParams)
 	ReleaseMutex(wWorld.mutex);
 
 	
-	wWorld.DrawLoadedBlocks(&*loc);
+	wWorld.DrawLoadedBlocks(*loc);
 
 
 

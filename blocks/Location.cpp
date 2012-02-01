@@ -131,6 +131,48 @@ int Location::GetIndexByPosition( BlockInLoc x, BlockInLoc y, BlockInLoc z )
 	return x*LOCATION_SIZE_XZ + z + y*LOCATION_SIZE_XZ*LOCATION_SIZE_XZ;
 }
 
+void Location::DrawLoadedBlocks()
+{
+	int index = 0;
+	BlockInLoc xx, yy, zz;
+
+	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
+	{
+		GetBlockPositionByPointer(bBlocks + index, &xx, &yy, &zz);
+
+		if(bBlocks[index].cMaterial != MAT_NO)
+		{
+
+			if(bBlocks[index].cMaterial == MAT_WATER)
+			{
+				if(GetBlockMaterial(xx, yy + 1, zz) == MAT_NO) ShowTile(bBlocks + index, TOP);
+				if(GetBlockMaterial(xx, yy - 1, zz) == MAT_NO) ShowTile(bBlocks + index, BOTTOM);
+				if(GetBlockMaterial(xx + 1, yy, zz) == MAT_NO) ShowTile(bBlocks + index, RIGHT);
+				if(GetBlockMaterial(xx - 1, yy, zz) == MAT_NO) ShowTile(bBlocks + index, LEFT);
+				if(GetBlockMaterial(xx, yy, zz + 1) == MAT_NO) ShowTile(bBlocks + index, BACK);
+				if(GetBlockMaterial(xx, yy, zz - 1) == MAT_NO) ShowTile(bBlocks + index, FRONT);
+			}
+			else
+			{
+				/*if(!FindBlock(xx, yy + 1, zz, &tempLoc, &tempIndex)) 
+					ShowTile(bBlocks + index, TOP);
+				if(!FindBlock(xx, yy - 1, zz, &tempLoc, &tempIndex))
+					ShowTile(bBlocks + index, BOTTOM);
+				if(!FindBlock(xx + 1, yy, zz, &tempLoc, &tempIndex))
+					ShowTile(bBlocks + index, RIGHT);
+				if(!FindBlock(xx - 1, yy, zz, &tempLoc, &tempIndex))
+					ShowTile(bBlocks + index, LEFT);
+				if(!FindBlock(xx, yy, zz + 1, &tempLoc, &tempIndex))
+					ShowTile(bBlocks + index, BACK);
+				if(!FindBlock(xx, yy, zz - 1, &tempLoc, &tempIndex))
+					ShowTile(bBlocks + index, FRONT);*/
+			}
+		}
+		index++;
+	}
+}
+
+
 void Location::Generate()
 {
 	lLandscape.Generate(*this);
