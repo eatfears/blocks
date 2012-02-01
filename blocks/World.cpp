@@ -448,6 +448,7 @@ void LoadLocationThread(void* pParams)
 
 	loc->Generate();
 	//loc->lLandscape.Fill(*loc, 0, 0.999, 64);
+	//loc->lLandscape.Fill(*loc, 0, 1, 64);
 	//loc->lLandscape.Load(loc->x, loc->z);
 	loc->FillSkyLight(15);
 

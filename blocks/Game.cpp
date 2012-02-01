@@ -93,10 +93,48 @@ int Game::DrawGLScene()
 #endif // _DEBUG
 
 						loc->GetBlockPositionByPointer(*it, &x, &y, &z);
-						if(	(abs((x + (loc->x/*-player.lnwPositionX*/)*LOCATION_SIZE_XZ)*BLOCK_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
-							(abs(y*BLOCK_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
-							(abs((z + (loc->z/*-player.lnwPositionZ*/)*LOCATION_SIZE_XZ)*BLOCK_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*BLOCK_SIZE))
-							DrawTile(x + loc->x*LOCATION_SIZE_XZ, y, z + loc->z*LOCATION_SIZE_XZ, (*it)->cMaterial, i);
+
+
+						GLdouble br;
+						BlockInWorld	
+							xx = x + loc->x*LOCATION_SIZE_XZ,
+							yy = y,
+							zz = z + loc->z*LOCATION_SIZE_XZ;
+						BlockInWorld
+							xlight = x, ylight = y, zlight = z;
+						BlockInLoc 
+							xloclight, 
+							yloclight, 
+							zloclight;
+
+						switch(i)
+						{
+						case TOP:		ylight++; break;
+						case BOTTOM:	ylight--; break;
+						case RIGHT:		xlight++; break;
+						case LEFT:		xlight--; break;
+						case FRONT:		zlight--; break;
+						case BACK:		zlight++; break;
+						}
+						Location *temploc;
+						if((xlight >= LOCATION_SIZE_XZ)||(xlight < 0)||(zlight >= LOCATION_SIZE_XZ)||(zlight < 0))
+							temploc = wWorld.GetLocByBlock(xlight + loc->x*LOCATION_SIZE_XZ, zlight + loc->z*LOCATION_SIZE_XZ);
+						else temploc = &*loc;
+						if(temploc)
+						{
+							wWorld.GetPosInLocByWorld(xlight, ylight, zlight, &xloclight, &yloclight, &zloclight);
+							int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
+							//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
+
+							//	loc->GetIndexByPosition(sXcoord, sYcoord+1, sZcoord);
+							br = 0.2 + temploc->SkyLight[index];
+							glColor3d(br, br, br);
+						}
+
+						if(	(abs(xx*BLOCK_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
+							(abs(yy*BLOCK_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
+							(abs(zz*BLOCK_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*BLOCK_SIZE))
+							DrawTile(xx, yy, zz, (*it)->cMaterial, i);
 
 						++it;
 #ifndef _DEBUG
@@ -194,11 +232,6 @@ void Game::DrawTile(signed short sXcoord, signed short sYcoord, signed short sZc
 	static double space = 0.0005;
 	static double offsetx;
 	static double offsety;
-
-	GLdouble br;
-	//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
-	br = wWorld.lLocations.begin()->SkyLight[wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sYcoord+1, sZcoord)];
-	glColor3d(br, br, br);
 
 	wWorld.MaterialLib.GetTextureOffsets(offsetx, offsety, material, N);
 

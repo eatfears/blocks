@@ -17,7 +17,7 @@ void LoadNGenerate(void* pParams)
 
 	int size = 16;
 
-	for(int i = x*size; i < (x+1)*size*10; i++)
+	for(int i = x*size; i < (x+1)*size*1; i++)
 		for(int j = z*size; j < (z+1)*size; j++)
 	{
 		wWorld.LoadLocation(i, j);
