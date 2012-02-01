@@ -37,10 +37,10 @@
 #define BACK			4
 #define FRONT			5
 
-#define LOCATION_SIZE_XZ	16
-#define LOCATION_SIZE_Y		128
+#define CHUNK_SIZE_XZ	16
+#define CHUNK_SIZE_Y	128
 
-typedef unsigned short	BlockInLoc;
-typedef signed short	LocInWorld;
+typedef unsigned short	BlockInChunk;
+typedef signed short	ChunkInWorld;
 typedef signed short	BlockInWorld;
 

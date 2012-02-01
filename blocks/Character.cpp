@@ -11,8 +11,8 @@ void LoadNGenerate(void* pParams)
 {
 	Param pParameters = *(Param*)pParams;
 	World &wWorld = *pParameters.wWorld;
-	LocInWorld x = pParameters.x;
-	LocInWorld z = pParameters.z;
+	ChunkInWorld x = pParameters.x;
+	ChunkInWorld z = pParameters.z;
 	SetEvent(wWorld.parget2);
 
 	int size = 16;
@@ -20,7 +20,7 @@ void LoadNGenerate(void* pParams)
 	for(int i = x*size; i < (x+1)*size*1; i++)
 		for(int j = z*size; j < (z+1)*size; j++)
 	{
-		wWorld.LoadLocation(i, j);
+		wWorld.LoadChunk(i, j);
 		//Sleep(30);
 	}
 	_endthread();
@@ -228,7 +228,7 @@ void Character::Control(GLdouble FrameInterval)
 	{
 		if(bKeyboardDown['4'])
 		{
-			wWorld.LoadLocation(0, 0);	
+			wWorld.LoadChunk(0, 0);	
 			bKeyboardDown['4'] = false;
 		}
 	}
@@ -236,7 +236,7 @@ void Character::Control(GLdouble FrameInterval)
 	{
 		if(bKeyboardDown['5'])
 		{
-			wWorld.UnLoadLocation(0, 0);	
+			wWorld.UnLoadChunk(0, 0);	
 			bKeyboardDown['5'] = false;
 		}
 	}
@@ -246,7 +246,7 @@ void Character::Control(GLdouble FrameInterval)
 		{
 			for(int i = 0; i < 8; i++)
 				for(int j = 0; j < 8; j++)
-					wWorld.LoadLocation(i, j);
+					wWorld.LoadChunk(i, j);
 			bKeyboardDown['6'] = false;
 		}
 	}
@@ -256,7 +256,7 @@ void Character::Control(GLdouble FrameInterval)
 		{
 			for(int i = 0; i < 8; i++)
 				for(int j = 0; j < 8; j++)
-					wWorld.UnLoadLocation(i, j);
+					wWorld.UnLoadChunk(i, j);
 			bKeyboardDown['7'] = false;
 		}
 	}

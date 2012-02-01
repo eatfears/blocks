@@ -8,9 +8,9 @@
 
 typedef struct locpos
 {
-	LocInWorld x;
-	LocInWorld z;
-}LocationPosiion;
+	ChunkInWorld x;
+	ChunkInWorld z;
+}ChunkPosition;
 
 typedef struct block
 {
@@ -21,7 +21,7 @@ typedef struct block
 class Chunk
 {
 public:
-	Chunk(LocInWorld x, LocInWorld z, MaterialLibrary& MLib, Landscape& lLand);
+	Chunk(ChunkInWorld x, ChunkInWorld z, MaterialLibrary& MLib, Landscape& lLand);
 	~Chunk(void);
 
 	Block *bBlocks;
@@ -30,22 +30,22 @@ public:
 	Landscape& lLandscape;
 	std::list<Block *> *DisplayedTiles;
 
-	LocInWorld x;
-	LocInWorld z;
+	ChunkInWorld x;
+	ChunkInWorld z;
 	bool bVisible;
 	
-	int	AddBlock(BlockInLoc x, BlockInLoc y, BlockInLoc z, char mat);
-	int RemoveBlock(BlockInLoc x, BlockInLoc y, BlockInLoc z);
+	int	AddBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z, char mat);
+	int RemoveBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z);
 	
 	void ShowTile(Block *bBlock, char N);
 	void HideTile(Block *bBlock, char N);
 
-	char GetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z);
-	int SetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z, char cMat);
+	char GetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z);
+	int SetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z, char cMat);
 	
-	int GetBlockPositionByPointer(Block *bCurrentBlock, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z) const;
-	static inline int GetBlockPositionByIndex(int index, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z);
-	int GetIndexByPosition(BlockInLoc x, BlockInLoc y, BlockInLoc z);
+	int GetBlockPositionByPointer(Block *bCurrentBlock, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z) const;
+	static inline int GetBlockPositionByIndex(int index, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z);
+	int GetIndexByPosition(BlockInChunk x, BlockInChunk y, BlockInChunk z);
 
 	void DrawLoadedBlocks();
 

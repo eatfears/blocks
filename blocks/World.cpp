@@ -18,7 +18,7 @@ World::World()
 
 World::~World()
 {
-	lLocations.clear();
+	Chunks.clear();
 }
 
 void LoadNGenerate (void*);
@@ -92,34 +92,34 @@ void World::BuildWorld()
 	/**/
 }
 
-void World::GetLocByBlock( BlockInWorld x, BlockInWorld z, LocInWorld *locx, LocInWorld *locz )
+void World::GetChunkByBlock( BlockInWorld x, BlockInWorld z, ChunkInWorld *locx, ChunkInWorld *locz )
 {
-	*locx = (LocInWorld) floor((double)x/LOCATION_SIZE_XZ);
-	*locz = (LocInWorld) floor((double)z/LOCATION_SIZE_XZ);
+	*locx = (ChunkInWorld) floor((double)x/CHUNK_SIZE_XZ);
+	*locz = (ChunkInWorld) floor((double)z/CHUNK_SIZE_XZ);
 }
 
-void World::GetPosInLocByWorld( BlockInWorld x, BlockInWorld y, BlockInWorld z, BlockInLoc *locx, BlockInLoc *locy, BlockInLoc *locz )
+void World::GetPosInChunkByWorld( BlockInWorld x, BlockInWorld y, BlockInWorld z, BlockInChunk *locx, BlockInChunk *locy, BlockInChunk *locz )
 {
-	while(x < 0) x += LOCATION_SIZE_XZ;
-	while(z < 0) z += LOCATION_SIZE_XZ;
-	*locx = x%LOCATION_SIZE_XZ;
+	while(x < 0) x += CHUNK_SIZE_XZ;
+	while(z < 0) z += CHUNK_SIZE_XZ;
+	*locx = x%CHUNK_SIZE_XZ;
 	*locy = y;
-	*locz = z%LOCATION_SIZE_XZ;
+	*locz = z%CHUNK_SIZE_XZ;
 }
 
-Chunk* World::GetLocByBlock( BlockInWorld x, BlockInWorld z )
+Chunk* World::GetChunkByBlock( BlockInWorld x, BlockInWorld z )
 {
-	LocInWorld locx, locz;
-	GetLocByBlock(x, z, &locx, &locz );
+	ChunkInWorld locx, locz;
+	GetChunkByBlock(x, z, &locx, &locz );
 
-	auto loc = lLocations.begin();
+	auto loc = Chunks.begin();
 
-	while(loc != lLocations.end())
+	while(loc != Chunks.end())
 	{
 		if((loc->x == locx)&&(loc->z == locz)) break;
 		++loc;
 	}
-	if(loc == lLocations.end())
+	if(loc == Chunks.end())
 		return NULL;
 
 	return &*loc;
@@ -131,22 +131,22 @@ void World::DrawLoadedBlocksFinish(Chunk &loc)
 
  	DWORD dwWaitResult; 
  	dwWaitResult = WaitForSingleObject( loc.mutex, INFINITE);
-	BlockInLoc x, y, z;
+	BlockInChunk x, y, z;
 	BlockInWorld xx, yy, zz;
 
-	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
+	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
 	{
 		loc.GetBlockPositionByPointer(loc.bBlocks + index, &x, &y, &z);
 
-		if((x > 0)&&(x < LOCATION_SIZE_XZ - 1)&&(z > 0)&&(z < LOCATION_SIZE_XZ - 1))
+		if((x > 0)&&(x < CHUNK_SIZE_XZ - 1)&&(z > 0)&&(z < CHUNK_SIZE_XZ - 1))
 		{
 			index++;
 			continue;
 		}
 
-		xx = x + LOCATION_SIZE_XZ*loc.x;
+		xx = x + CHUNK_SIZE_XZ*loc.x;
 		yy = y;
-		zz = z + LOCATION_SIZE_XZ*loc.z;
+		zz = z + CHUNK_SIZE_XZ*loc.z;
 
 		if(loc.bBlocks[index].cMaterial != MAT_NO)
 		{
@@ -185,19 +185,19 @@ void World::DrawLoadedBlocksFinish(Chunk &loc)
 	
 	// draw boundary tiles
 	index = 0;
-	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
+	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
 	{
 		loc.GetBlockPositionByPointer(loc.bBlocks + index, &x, &y, &z);
 		
-		if((x > 0)&&(x < LOCATION_SIZE_XZ - 1)&&(z > 0)&&(z < LOCATION_SIZE_XZ - 1))
+		if((x > 0)&&(x < CHUNK_SIZE_XZ - 1)&&(z > 0)&&(z < CHUNK_SIZE_XZ - 1))
 		{
 			index++;
 			continue;
 		}
 
-		xx = x + LOCATION_SIZE_XZ*loc.x;
+		xx = x + CHUNK_SIZE_XZ*loc.x;
 		yy = y;
-		zz = z + LOCATION_SIZE_XZ*loc.z;
+		zz = z + CHUNK_SIZE_XZ*loc.z;
 
 		if((loc.bBlocks[index].cMaterial == MAT_NO)||(loc.bBlocks[index].cMaterial == MAT_WATER))
 		{
@@ -217,26 +217,26 @@ void World::DrawLoadedBlocksFinish(Chunk &loc)
 	}
 }
 
-void World::DrawUnLoadedBlocks(LocInWorld Lx, LocInWorld Lz)
+void World::DrawUnLoadedBlocks(ChunkInWorld Lx, ChunkInWorld Lz)
 {
 	int index = 0;
 
-	BlockInLoc x, y, z;
+	BlockInChunk x, y, z;
 	BlockInWorld xx, yy, zz;
 	
-	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
+	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
 	{
 		Chunk::GetBlockPositionByIndex(index, &x, &y, &z);
 
-		if((x > 0)&&(x < LOCATION_SIZE_XZ - 1)&&(z > 0)&&(z < LOCATION_SIZE_XZ - 1))
+		if((x > 0)&&(x < CHUNK_SIZE_XZ - 1)&&(z > 0)&&(z < CHUNK_SIZE_XZ - 1))
 		{
 			index++;
 			continue;
 		}
 
-		xx = x + LOCATION_SIZE_XZ*Lx;
+		xx = x + CHUNK_SIZE_XZ*Lx;
 		yy = y;
-		zz = z + LOCATION_SIZE_XZ*Lz;
+		zz = z + CHUNK_SIZE_XZ*Lz;
 		
 		Chunk *tempLoc;
 		int tempIndex;
@@ -250,18 +250,18 @@ void World::DrawUnLoadedBlocks(LocInWorld Lx, LocInWorld Lz)
 
 int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bool show)
 {
-	if((y < 0)||(y >= LOCATION_SIZE_Y)) return 0;
+	if((y < 0)||(y >= CHUNK_SIZE_Y)) return 0;
 
 	if(FindBlock(x, y, z)) return 0;
 
-	Chunk *loc = GetLocByBlock(x, z);
+	Chunk *loc = GetChunkByBlock(x, z);
 	int index; 
 
 	if(loc == NULL) return 0;
 
-	BlockInLoc locx, locy, locz;
+	BlockInChunk locx, locy, locz;
 
-	GetPosInLocByWorld(x, y, z, &locx, &locy, &locz);
+	GetPosInChunkByWorld(x, y, z, &locx, &locy, &locz);
 
 	
 	if(show)
@@ -324,18 +324,18 @@ int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bo
 
 int World::RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show)
 {
-	if((y < 0)||(y >= LOCATION_SIZE_Y)) return 0;
+	if((y < 0)||(y >= CHUNK_SIZE_Y)) return 0;
 
 	if(!FindBlock(x, y, z)) return 0;
 
-	Chunk *loc = GetLocByBlock(x, z);
+	Chunk *loc = GetChunkByBlock(x, z);
 	int index; 
 
 	if(loc == NULL) return 0;
 
-	BlockInLoc locx, locy, locz;
+	BlockInChunk locx, locy, locz;
 
-	GetPosInLocByWorld(x, y, z, &locx, &locy, &locz);
+	GetPosInChunkByWorld(x, y, z, &locx, &locy, &locz);
 
 	index = loc->GetIndexByPosition(locx, locy, locz);
 
@@ -399,17 +399,17 @@ void World::HideTile(Chunk *loc, int index, char N)
  
 int World::FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, Chunk **loc, int *index)
 {
-	if((y < 0)||(y >= LOCATION_SIZE_Y)) { *loc = NULL; *index = 0; return 0;}
+	if((y < 0)||(y >= CHUNK_SIZE_Y)) { *loc = NULL; *index = 0; return 0;}
 
-	(*loc) = GetLocByBlock(x, z);
+	(*loc) = GetChunkByBlock(x, z);
 
 	if((*loc) == NULL) { *index = 0; return 0;}
 
-	BlockInLoc locx, locy, locz;
+	BlockInChunk locx, locy, locz;
 
-	GetPosInLocByWorld(x, y, z, &locx, &locy, &locz);
+	GetPosInChunkByWorld(x, y, z, &locx, &locy, &locz);
 
-	*index = locx*LOCATION_SIZE_XZ + locz + locy*LOCATION_SIZE_XZ*LOCATION_SIZE_XZ;
+	*index = locx*CHUNK_SIZE_XZ + locz + locy*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
 
 	if((*loc)->GetBlockMaterial(locx, locy, locz) == MAT_NO)
 		return 0;
@@ -421,13 +421,13 @@ int World::FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z)
 {
 	if(y < 0) return 0;
 
-	Chunk *loc = GetLocByBlock(x, z);
+	Chunk *loc = GetChunkByBlock(x, z);
 
 	if(loc == NULL) return 0;
 
-	BlockInLoc locx, locy, locz;
+	BlockInChunk locx, locy, locz;
 
-	GetPosInLocByWorld(x, y, z, &locx, &locy, &locz);
+	GetPosInChunkByWorld(x, y, z, &locx, &locy, &locz);
 
 	if(loc->GetBlockMaterial(locx, locy, locz) == MAT_NO)
 		return 0;
@@ -435,12 +435,12 @@ int World::FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z)
 	return 1;
 }
 
-void LoadLocationThread(void* pParams)
+void LoadChunkThread(void* pParams)
 {
 
 	Param pParameters = *(Param*)pParams;
-	LocInWorld x = pParameters.x;
-	LocInWorld z = pParameters.z;
+	ChunkInWorld x = pParameters.x;
+	ChunkInWorld z = pParameters.z;
 	World &wWorld = *pParameters.wWorld;
 
 	SetEvent(wWorld.parget);
@@ -463,7 +463,7 @@ void LoadLocationThread(void* pParams)
 	loc->FillSkyLight(15);
 
 	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
-	wWorld.lLocations.push_front(*loc);
+	wWorld.Chunks.push_front(*loc);
 	ReleaseMutex(wWorld.mutex);
 
 	
@@ -494,11 +494,11 @@ void LoadLocationThread(void* pParams)
 	_endthread();
 }
 
-void UnLoadLocationThread(void* pParams)
+void UnLoadChunkThread(void* pParams)
 {
 	Param pParameters = *(Param*)pParams;
-	LocInWorld x = pParameters.x;
-	LocInWorld z = pParameters.z;
+	ChunkInWorld x = pParameters.x;
+	ChunkInWorld z = pParameters.z;
 	World &wWorld = *pParameters.wWorld;
 
 	SetEvent(wWorld.parget);
@@ -511,14 +511,14 @@ void UnLoadLocationThread(void* pParams)
 
 	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 
-	auto loc= wWorld.lLocations.begin();
+	auto loc= wWorld.Chunks.begin();
 
-	while(loc != wWorld.lLocations.end())
+	while(loc != wWorld.Chunks.end())
 	{
 		if((loc->x == x)&&(loc->z == z)) break;
 		++loc;
 	}
-	if(loc == wWorld.lLocations.end()) 
+	if(loc == wWorld.Chunks.end()) 
 	{	
 		ReleaseMutex(wWorld.mutex);
 		ReleaseSemaphore(wWorld.semaphore, 1, NULL);
@@ -544,7 +544,7 @@ void UnLoadLocationThread(void* pParams)
 	}
 
 	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
-	wWorld.lLocations.erase(loc);
+	wWorld.Chunks.erase(loc);
 
 	wWorld.DrawUnLoadedBlocks(x, z);
 	ReleaseMutex(wWorld.mutex);
@@ -570,7 +570,7 @@ void UnLoadLocationThread(void* pParams)
 	_endthread();
 }
 
-void World::LoadLocation(LocInWorld x, LocInWorld z)
+void World::LoadChunk(ChunkInWorld x, ChunkInWorld z)
 {
 // 	WaitForSingleObject(loading_mutex, INFINITE);
 // 	LocationPosiion lp = {x, z};
@@ -593,7 +593,7 @@ void World::LoadLocation(LocInWorld x, LocInWorld z)
 	Param par = {x, z, this};
 
 	HANDLE hThread;
-	hThread = (HANDLE) _beginthread( LoadLocationThread, 0, &par);//&Param(par) );
+	hThread = (HANDLE) _beginthread( LoadChunkThread, 0, &par);//&Param(par) );
 
 	//WaitForSingleObject(hThread, 30);
 	WaitForSingleObject(parget, INFINITE);
@@ -608,7 +608,7 @@ void World::LoadLocation(LocInWorld x, LocInWorld z)
 	/**/
 }
 
-void World::UnLoadLocation(LocInWorld x, LocInWorld z)
+void World::UnLoadChunk(ChunkInWorld x, ChunkInWorld z)
 {
 // 	WaitForSingleObject(loading_mutex, INFINITE);
 // 	LocationPosiion lp = {x, z};
@@ -631,7 +631,7 @@ void World::UnLoadLocation(LocInWorld x, LocInWorld z)
 
 	HANDLE hThread;
 
-	hThread = (HANDLE) _beginthread( UnLoadLocationThread, 0, &par);//&Param(par) );
+	hThread = (HANDLE) _beginthread( UnLoadChunkThread, 0, &par);//&Param(par) );
 
 	//WaitForSingleObject(hThread, 30);
 	WaitForSingleObject(parget, INFINITE);

@@ -4,7 +4,7 @@
 
 Landscape::Landscape(void)
 {
-	horizon				= LOCATION_SIZE_Y/2;
+	horizon				= CHUNK_SIZE_Y/2;
 	scaleHeightMapXZ	= 128.0;
 	scaleRoughness		= 32.0;
 	scaleDetails		= 128.0;
@@ -31,8 +31,8 @@ Landscape::~Landscape(void)
 
 void Landscape::Generate(Chunk &loc)
 {
-	LocInWorld locx = loc.x;
-	LocInWorld locz = loc.z;
+	ChunkInWorld locx = loc.x;
+	ChunkInWorld locz = loc.z;
 	double height;
 	double density;
 	double hx, hz;
@@ -44,28 +44,28 @@ void Landscape::Generate(Chunk &loc)
 	double temp2 = 0;
 	double temp3;
 
-	double dens[LOCATION_SIZE_XZ][LOCATION_SIZE_Y][LOCATION_SIZE_XZ];
-	for(int i = locx*LOCATION_SIZE_XZ; i < (locx + 1)*LOCATION_SIZE_XZ; i++)
+	double dens[CHUNK_SIZE_XZ][CHUNK_SIZE_Y][CHUNK_SIZE_XZ];
+	for(int i = locx*CHUNK_SIZE_XZ; i < (locx + 1)*CHUNK_SIZE_XZ; i++)
 	{
 		bx = i/scaleBubblesXZ;
-		for(int k = locz*LOCATION_SIZE_XZ; k < (locz + 1)*LOCATION_SIZE_XZ; k++)
+		for(int k = locz*CHUNK_SIZE_XZ; k < (locz + 1)*CHUNK_SIZE_XZ; k++)
 		{
 			bz = k/scaleBubblesXZ;
-			for(int j = 0; j < LOCATION_SIZE_Y; j++)
+			for(int j = 0; j < CHUNK_SIZE_Y; j++)
 			{
 				by = j/scaleBubblesY;
-				dens[i%LOCATION_SIZE_XZ][j%LOCATION_SIZE_Y][k%LOCATION_SIZE_XZ] = (BubblesAmp)*pnBubbles.PerlinNoise3d(bx, by, bz);
+				dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ] = (BubblesAmp)*pnBubbles.PerlinNoise3d(bx, by, bz);
 			}
 		}
 	}
 
-	for(int i = locx*LOCATION_SIZE_XZ; i < (locx + 1)*LOCATION_SIZE_XZ; i++)
+	for(int i = locx*CHUNK_SIZE_XZ; i < (locx + 1)*CHUNK_SIZE_XZ; i++)
 	{
 		hx = i/scaleHeightMapXZ;
 		rx = i/scaleRoughness;
 		dx = i/scaleDetails;
 
-		for(int k = locz*LOCATION_SIZE_XZ; k < (locz + 1)*LOCATION_SIZE_XZ; k++)
+		for(int k = locz*CHUNK_SIZE_XZ; k < (locz + 1)*CHUNK_SIZE_XZ; k++)
 		{
 			hz = k/scaleHeightMapXZ;
 			rz = k/scaleRoughness;
@@ -75,11 +75,11 @@ void Landscape::Generate(Chunk &loc)
 			details = pnDetails.PerlinNoise2d(dx, dz);
 			height = HeghtMapAmp/1.5*(pnHeightMap.PerlinNoise2d(hx, hz) + RoughnessAmp*pnRoughness.PerlinNoise2d(rx, rz)*details) + horizon;
 
-			for(int j = 0; j < LOCATION_SIZE_Y; j++)
+			for(int j = 0; j < CHUNK_SIZE_Y; j++)
 			{
 
 				//density = j;
-				temp = dens[i%LOCATION_SIZE_XZ][j%LOCATION_SIZE_Y][k%LOCATION_SIZE_XZ];
+				temp = dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ];
 				//temp2 = dens[i%LOCATION_SIZE_XZ][(j+1)%LOCATION_SIZE_Y][k%LOCATION_SIZE_XZ];
 
 				density = temp*(4*details + 0.3) + j;
@@ -90,7 +90,7 @@ void Landscape::Generate(Chunk &loc)
 	}
 }
 
-void Landscape::Load( LocInWorld locx, LocInWorld locz )
+void Landscape::Load( ChunkInWorld locx, ChunkInWorld locz )
 {
 	std::fstream filestr;
 
@@ -123,12 +123,12 @@ void Landscape::Load( LocInWorld locx, LocInWorld locz )
 void Landscape::Fill( Chunk& loc, char mat, double fillness, int height )
 {
 	int material = mat;
-	LocInWorld locx = loc.x;
-	LocInWorld locz = loc.z;
+	ChunkInWorld locx = loc.x;
+	ChunkInWorld locz = loc.z;
 
-	for(int i = locx*LOCATION_SIZE_XZ; i < (locx + 1)*LOCATION_SIZE_XZ; i++)
+	for(int i = locx*CHUNK_SIZE_XZ; i < (locx + 1)*CHUNK_SIZE_XZ; i++)
 	{
-		for(int k = locz*LOCATION_SIZE_XZ; k < (locz + 1)*LOCATION_SIZE_XZ; k++)
+		for(int k = locz*CHUNK_SIZE_XZ; k < (locz + 1)*CHUNK_SIZE_XZ; k++)
 		{
 			for(int j = 0; j < height; j++)
 			{

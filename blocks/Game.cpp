@@ -63,24 +63,24 @@ int Game::DrawGLScene()
 	GLdouble dBrightness = 1.0;
 	glColor3d(dBrightness, dBrightness, dBrightness);
 
-	BlockInLoc x, y, z;
+	BlockInChunk x, y, z;
 	GLuint *tex = wWorld.MaterialLib.texture;
 
 
 	glBindTexture(GL_TEXTURE_2D, tex[0]);
 	glBegin(GL_QUADS);
 
-	auto loc = wWorld.lLocations.begin();
+	auto loc = wWorld.Chunks.begin();
 
 	for(int i = 0; i < 6; i++)
 	{
-		loc = wWorld.lLocations.begin();
+		loc = wWorld.Chunks.begin();
 #ifndef _DEBUG
 		_try 
 		{
 #endif // _DEBUG
 
-			while(loc != wWorld.lLocations.end())
+			while(loc != wWorld.Chunks.end())
 			{
 
 				auto it = loc->DisplayedTiles[i].begin();
@@ -97,12 +97,12 @@ int Game::DrawGLScene()
 
 						GLdouble br;
 						BlockInWorld	
-							xx = x + loc->x*LOCATION_SIZE_XZ,
+							xx = x + loc->x*CHUNK_SIZE_XZ,
 							yy = y,
-							zz = z + loc->z*LOCATION_SIZE_XZ;
+							zz = z + loc->z*CHUNK_SIZE_XZ;
 						BlockInWorld
 							xlight = x, ylight = y, zlight = z;
-						BlockInLoc 
+						BlockInChunk 
 							xloclight, 
 							yloclight, 
 							zloclight;
@@ -117,12 +117,12 @@ int Game::DrawGLScene()
 						case BACK:		zlight++; break;
 						}
 						Chunk *temploc;
-						if((xlight >= LOCATION_SIZE_XZ)||(xlight < 0)||(zlight >= LOCATION_SIZE_XZ)||(zlight < 0))
-							temploc = wWorld.GetLocByBlock(xlight + loc->x*LOCATION_SIZE_XZ, zlight + loc->z*LOCATION_SIZE_XZ);
+						if((xlight >= CHUNK_SIZE_XZ)||(xlight < 0)||(zlight >= CHUNK_SIZE_XZ)||(zlight < 0))
+							temploc = wWorld.GetChunkByBlock(xlight + loc->x*CHUNK_SIZE_XZ, zlight + loc->z*CHUNK_SIZE_XZ);
 						else temploc = &*loc;
 						if(temploc)
 						{
-							wWorld.GetPosInLocByWorld(xlight, ylight, zlight, &xloclight, &yloclight, &zloclight);
+							wWorld.GetPosInChunkByWorld(xlight, ylight, zlight, &xloclight, &yloclight, &zloclight);
 							int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
 							//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
 

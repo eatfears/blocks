@@ -4,8 +4,6 @@
 #include <gl\glu.h>
 //#include <gl\glaux.h>
 
-//#include "Location.h"
-
 #define MAT_NO				0
 #define MAT_DIRT			1
 #define MAT_GRASS			2

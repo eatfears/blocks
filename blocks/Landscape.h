@@ -13,7 +13,7 @@ public:
 	~Landscape(void);
 
 	void Generate(Chunk &loc);
-	void Load(LocInWorld locx, LocInWorld locz);
+	void Load(ChunkInWorld locx, ChunkInWorld locz);
 	void Fill(Chunk& loc, char mat, double fillness, int height );
 	
 	int horizon;

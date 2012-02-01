@@ -7,8 +7,8 @@
 
 typedef struct params
 {
-	LocInWorld x;
-	LocInWorld z;
+	ChunkInWorld x;
+	ChunkInWorld z;
 	World *wWorld;
 } Param;
 
@@ -19,7 +19,7 @@ public:
 	~World();
 
 	MaterialLibrary MaterialLib;
-	std::list<Chunk> lLocations;
+	std::list<Chunk> Chunks;
 	Landscape lLandscape;
 
 	void BuildWorld();
@@ -29,14 +29,14 @@ public:
 	int RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show);
 
 	void DrawLoadedBlocksFinish(Chunk &loc);
-	void DrawUnLoadedBlocks(LocInWorld x, LocInWorld z);
-	void LoadLocation(LocInWorld x, LocInWorld z);
-	void UnLoadLocation(LocInWorld x, LocInWorld z);
-	std::list<LocationPosiion> LoadedLocations;
+	void DrawUnLoadedBlocks(ChunkInWorld x, ChunkInWorld z);
+	void LoadChunk(ChunkInWorld x, ChunkInWorld z);
+	void UnLoadChunk(ChunkInWorld x, ChunkInWorld z);
+	std::list<ChunkPosition> LoadedChunks;
 
-	void GetLocByBlock(BlockInWorld x, BlockInWorld z, LocInWorld *locx, BlockInWorld *locz);
-	Chunk* GetLocByBlock(BlockInWorld x, BlockInWorld z);
-	void GetPosInLocByWorld(BlockInWorld x, BlockInWorld y, BlockInWorld z, BlockInLoc *locx, BlockInLoc *locy, BlockInLoc *locz);
+	void GetChunkByBlock(BlockInWorld x, BlockInWorld z, ChunkInWorld *locx, BlockInWorld *locz);
+	Chunk* GetChunkByBlock(BlockInWorld x, BlockInWorld z);
+	void GetPosInChunkByWorld(BlockInWorld x, BlockInWorld y, BlockInWorld z, BlockInChunk *locx, BlockInChunk *locy, BlockInChunk *locz);
 //private:
 	void ShowTile(Chunk *loc, int index, char N);
 	void HideTile(Chunk *loc, int index, char N);
