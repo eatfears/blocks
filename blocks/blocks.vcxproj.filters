@@ -38,9 +38,6 @@
     <ClCompile Include="Game.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Location.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Landscape.cpp">
       <Filter>Source\Landscape</Filter>
     </ClCompile>
@@ -49,6 +46,9 @@
     </ClCompile>
     <ClCompile Include="Primes.cpp">
       <Filter>Source\Landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Chunk.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -76,9 +76,6 @@
     <ClInclude Include="Game.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Location.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="PerlinNoise.h">
       <Filter>Headers\Landscape</Filter>
     </ClInclude>
@@ -87,6 +84,9 @@
     </ClInclude>
     <ClInclude Include="Primes.h">
       <Filter>Headers\Landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Chunk.h">
+      <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

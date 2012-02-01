@@ -29,7 +29,7 @@ Landscape::~Landscape(void)
 {
 }
 
-void Landscape::Generate(Location &loc)
+void Landscape::Generate(Chunk &loc)
 {
 	LocInWorld locx = loc.x;
 	LocInWorld locz = loc.z;
@@ -120,7 +120,7 @@ void Landscape::Load( LocInWorld locx, LocInWorld locz )
 	
 }
 
-void Landscape::Fill( Location& loc, char mat, double fillness, int height )
+void Landscape::Fill( Chunk& loc, char mat, double fillness, int height )
 {
 	int material = mat;
 	LocInWorld locx = loc.x;

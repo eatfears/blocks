@@ -1,7 +1,7 @@
 #pragma once
 #include <list>
 
-#include "Location.h"
+#include "Chunk.h"
 #include "Material.h"
 #include "Landscape.h"
 
@@ -19,27 +19,27 @@ public:
 	~World();
 
 	MaterialLibrary MaterialLib;
-	std::list<Location> lLocations;
+	std::list<Chunk> lLocations;
 	Landscape lLandscape;
 
 	void BuildWorld();
 	int FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z);
-	int FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, Location **loc, int *index);
+	int FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, Chunk **loc, int *index);
 	int AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bool show);
 	int RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show);
 
-	void DrawLoadedBlocksFinish(Location &loc);
+	void DrawLoadedBlocksFinish(Chunk &loc);
 	void DrawUnLoadedBlocks(LocInWorld x, LocInWorld z);
 	void LoadLocation(LocInWorld x, LocInWorld z);
 	void UnLoadLocation(LocInWorld x, LocInWorld z);
 	std::list<LocationPosiion> LoadedLocations;
 
 	void GetLocByBlock(BlockInWorld x, BlockInWorld z, LocInWorld *locx, BlockInWorld *locz);
-	Location* GetLocByBlock(BlockInWorld x, BlockInWorld z);
+	Chunk* GetLocByBlock(BlockInWorld x, BlockInWorld z);
 	void GetPosInLocByWorld(BlockInWorld x, BlockInWorld y, BlockInWorld z, BlockInLoc *locx, BlockInLoc *locy, BlockInLoc *locz);
 //private:
-	void ShowTile(Location *loc, int index, char N);
-	void HideTile(Location *loc, int index, char N);
+	void ShowTile(Chunk *loc, int index, char N);
+	void HideTile(Chunk *loc, int index, char N);
 
 	bool building;
 	bool skipbuild;

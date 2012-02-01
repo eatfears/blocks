@@ -101,7 +101,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GLWindow.h" />
     <ClInclude Include="Landscape.h" />
-    <ClInclude Include="Location.h" />
+    <ClInclude Include="Chunk.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="Primes.h" />
@@ -114,7 +114,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="Landscape.cpp" />
-    <ClCompile Include="Location.cpp" />
+    <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="PerlinNoise.cpp" />

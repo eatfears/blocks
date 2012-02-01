@@ -1,9 +1,9 @@
-#include "Location.h"
+#include "Chunk.h"
 
-Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib, Landscape& lLand)
+Chunk::Chunk(LocInWorld x, LocInWorld z, MaterialLibrary& MLib, Landscape& lLand)
 	: MaterialLib(MLib), lLandscape(lLand)
 {
-	Location::x = x; Location::z = z;
+	Chunk::x = x; Chunk::z = z;
 
 	bBlocks = new Block[LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y];
 	SkyLight = new char[LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y];
@@ -22,7 +22,7 @@ Location::Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib, Landscape&
 	mutex = CreateMutex(NULL, false, NULL);
 }
 
-Location::~Location(void)
+Chunk::~Chunk(void)
 {
 	delete[] bBlocks;
 	delete[] SkyLight;
@@ -30,7 +30,7 @@ Location::~Location(void)
 	delete[] DisplayedTiles;
 }
 
-int Location::AddBlock(BlockInLoc x, BlockInLoc y, BlockInLoc z, char mat)
+int Chunk::AddBlock(BlockInLoc x, BlockInLoc y, BlockInLoc z, char mat)
 {
 	x = x%LOCATION_SIZE_XZ;
 	y = y%LOCATION_SIZE_Y;
@@ -42,7 +42,7 @@ int Location::AddBlock(BlockInLoc x, BlockInLoc y, BlockInLoc z, char mat)
 	return index;
 }
 
-int Location::RemoveBlock(BlockInLoc x, BlockInLoc y, BlockInLoc z)
+int Chunk::RemoveBlock(BlockInLoc x, BlockInLoc y, BlockInLoc z)
 {
 	if((GetBlockMaterial(x, y, z) == MAT_NO)||(GetBlockMaterial(x, y, z) == -1)) return -1;
 
@@ -51,28 +51,28 @@ int Location::RemoveBlock(BlockInLoc x, BlockInLoc y, BlockInLoc z)
 	return index;
 }
 
-void Location::ShowTile(Block *tTile, char N)
+void Chunk::ShowTile(Block *bBlock, char N)
 {
-	if(!tTile) return;
-	if(tTile->cMaterial == MAT_NO) return;
-	if(tTile->bVisible[N]) return;
+	if(!bBlock) return;
+	if(bBlock->cMaterial == MAT_NO) return;
+	if(bBlock->bVisible[N]) return;
 	
-	DisplayedTiles[N].push_back(tTile);
+	DisplayedTiles[N].push_back(bBlock);
 		
-	tTile->bVisible[N] = true;
+	bBlock->bVisible[N] = true;
 }
 
-void Location::HideTile(Block *tTile, char N)
+void Chunk::HideTile(Block *bBlock, char N)
 {
-	if(!tTile) return;
-	if(tTile->cMaterial == MAT_NO) return;
-	if(!tTile->bVisible[N]) return;
+	if(!bBlock) return;
+	if(bBlock->cMaterial == MAT_NO) return;
+	if(!bBlock->bVisible[N]) return;
 
 	auto it = DisplayedTiles[N].begin();
 
 	while(it != DisplayedTiles[N].end())
 	{
-		if(*it == tTile) break;
+		if(*it == bBlock) break;
 		++it;
 	}
 	if(it == DisplayedTiles[N].end()) return;
@@ -82,7 +82,7 @@ void Location::HideTile(Block *tTile, char N)
 	return;
 }
 
-char Location::GetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z)
+char Chunk::GetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z)
 {
 	if((x >= LOCATION_SIZE_XZ)||(z >= LOCATION_SIZE_XZ)||(y >= LOCATION_SIZE_Y))
 	{
@@ -91,7 +91,7 @@ char Location::GetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z)
 	return bBlocks[x*LOCATION_SIZE_XZ + z + y*LOCATION_SIZE_XZ*LOCATION_SIZE_XZ].cMaterial;
 }
 
-int Location::SetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z, char cMat)
+int Chunk::SetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z, char cMat)
 {
 	if((x >= LOCATION_SIZE_XZ)||(z >= LOCATION_SIZE_XZ)||(y >= LOCATION_SIZE_Y))
 		return -1;
@@ -101,10 +101,10 @@ int Location::SetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z, char cM
 	return index;
 }
 
-int Location::GetBlockPositionByPointer(Block *tCurrentTile, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z) 
+int Chunk::GetBlockPositionByPointer(Block *tCurrentBlock, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z) 
 	const
 {
-	int t = tCurrentTile - bBlocks;
+	int t = tCurrentBlock - bBlocks;
 
 	if(GetBlockPositionByIndex(t, x, y, z) == -1) 
 		return -1;
@@ -112,7 +112,7 @@ int Location::GetBlockPositionByPointer(Block *tCurrentTile, BlockInLoc *x, Bloc
 	return 0;
 }
 
-inline int Location::GetBlockPositionByIndex(int index, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z)
+inline int Chunk::GetBlockPositionByIndex(int index, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z)
 {
 	if((index < 0)||(index >= LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y))
 		return -1;
@@ -126,12 +126,12 @@ inline int Location::GetBlockPositionByIndex(int index, BlockInLoc *x, BlockInLo
 	return 0;
 }
 
-int Location::GetIndexByPosition( BlockInLoc x, BlockInLoc y, BlockInLoc z )
+int Chunk::GetIndexByPosition( BlockInLoc x, BlockInLoc y, BlockInLoc z )
 {
 	return x*LOCATION_SIZE_XZ + z + y*LOCATION_SIZE_XZ*LOCATION_SIZE_XZ;
 }
 
-void Location::DrawLoadedBlocks()
+void Chunk::DrawLoadedBlocks()
 {
 	int index = 0;
 	BlockInLoc xx, yy, zz;
@@ -173,12 +173,12 @@ void Location::DrawLoadedBlocks()
 }
 
 
-void Location::Generate()
+void Chunk::Generate()
 {
 	lLandscape.Generate(*this);
 }
 
-void Location::FillSkyLight(char bright)
+void Chunk::FillSkyLight(char bright)
 {
 	BlockInLoc y;
 	int index;

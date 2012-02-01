@@ -18,11 +18,11 @@ typedef struct block
 	bool bVisible[6];
 }Block;
 
-class Location
+class Chunk
 {
 public:
-	Location(LocInWorld x, LocInWorld z, MaterialLibrary& MLib, Landscape& lLand);
-	~Location(void);
+	Chunk(LocInWorld x, LocInWorld z, MaterialLibrary& MLib, Landscape& lLand);
+	~Chunk(void);
 
 	Block *bBlocks;
 	char *SkyLight;
@@ -44,7 +44,7 @@ public:
 	int SetBlockMaterial(BlockInLoc x, BlockInLoc y, BlockInLoc z, char cMat);
 	
 	int GetBlockPositionByPointer(Block *bCurrentBlock, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z) const;
-	inline static int GetBlockPositionByIndex(int index, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z);
+	static inline int GetBlockPositionByIndex(int index, BlockInLoc *x, BlockInLoc *y, BlockInLoc *z);
 	int GetIndexByPosition(BlockInLoc x, BlockInLoc y, BlockInLoc z);
 
 	void DrawLoadedBlocks();

@@ -14,7 +14,6 @@ public:
 	void InitGame(GLWindow *glwWnd);
 
 	void DrawTile(signed short sXcoord, signed short sYcoord, signed short sZcoord, int material, char N);
-	//void DrawVisibleTileSide(Tile *tTile, char N);
 	int DrawGLScene();
 	void DrawInterface();
 	void DrawSelectedItem();

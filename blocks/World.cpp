@@ -107,7 +107,7 @@ void World::GetPosInLocByWorld( BlockInWorld x, BlockInWorld y, BlockInWorld z, 
 	*locz = z%LOCATION_SIZE_XZ;
 }
 
-Location* World::GetLocByBlock( BlockInWorld x, BlockInWorld z )
+Chunk* World::GetLocByBlock( BlockInWorld x, BlockInWorld z )
 {
 	LocInWorld locx, locz;
 	GetLocByBlock(x, z, &locx, &locz );
@@ -125,7 +125,7 @@ Location* World::GetLocByBlock( BlockInWorld x, BlockInWorld z )
 	return &*loc;
 }
 
-void World::DrawLoadedBlocksFinish(Location &loc)
+void World::DrawLoadedBlocksFinish(Chunk &loc)
 {
 	int index = 0;
 
@@ -150,7 +150,7 @@ void World::DrawLoadedBlocksFinish(Location &loc)
 
 		if(loc.bBlocks[index].cMaterial != MAT_NO)
 		{
-			Location *tempLoc;
+			Chunk *tempLoc;
 			int tempIndex;
 
 			if(loc.bBlocks[index].cMaterial == MAT_WATER)
@@ -201,8 +201,8 @@ void World::DrawLoadedBlocksFinish(Location &loc)
 
 		if((loc.bBlocks[index].cMaterial == MAT_NO)||(loc.bBlocks[index].cMaterial == MAT_WATER))
 		{
-			Location *tempLoc;
-			Location *tCurLoc = &loc;
+			Chunk *tempLoc;
+			Chunk *tCurLoc = &loc;
 			int tempIndex;
 			if(FindBlock(xx + 1, yy, zz, &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc->bBlocks != tCurLoc->bBlocks)
 				ShowTile(&*tempLoc, tempIndex, LEFT);
@@ -226,7 +226,7 @@ void World::DrawUnLoadedBlocks(LocInWorld Lx, LocInWorld Lz)
 	
 	while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
 	{
-		Location::GetBlockPositionByIndex(index, &x, &y, &z);
+		Chunk::GetBlockPositionByIndex(index, &x, &y, &z);
 
 		if((x > 0)&&(x < LOCATION_SIZE_XZ - 1)&&(z > 0)&&(z < LOCATION_SIZE_XZ - 1))
 		{
@@ -238,7 +238,7 @@ void World::DrawUnLoadedBlocks(LocInWorld Lx, LocInWorld Lz)
 		yy = y;
 		zz = z + LOCATION_SIZE_XZ*Lz;
 		
-		Location *tempLoc;
+		Chunk *tempLoc;
 		int tempIndex;
 		if(FindBlock(xx + 1, yy, zz, &tempLoc, &tempIndex)) HideTile(&*tempLoc, tempIndex, LEFT);
 		if(FindBlock(xx - 1, yy, zz, &tempLoc, &tempIndex)) HideTile(&*tempLoc, tempIndex, RIGHT);
@@ -254,7 +254,7 @@ int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bo
 
 	if(FindBlock(x, y, z)) return 0;
 
-	Location *loc = GetLocByBlock(x, z);
+	Chunk *loc = GetLocByBlock(x, z);
 	int index; 
 
 	if(loc == NULL) return 0;
@@ -271,7 +271,7 @@ int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bo
 		index = loc->AddBlock(locx, locy, locz, mat);
 		ReleaseMutex(loc->mutex);
 
-		Location *lTempLoc = 0;
+		Chunk *lTempLoc = 0;
 		int iTempIndex;
 
 		if(loc->bBlocks[index].cMaterial == MAT_WATER)
@@ -328,7 +328,7 @@ int World::RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show
 
 	if(!FindBlock(x, y, z)) return 0;
 
-	Location *loc = GetLocByBlock(x, z);
+	Chunk *loc = GetLocByBlock(x, z);
 	int index; 
 
 	if(loc == NULL) return 0;
@@ -341,7 +341,7 @@ int World::RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show
 
 	if(show)
 	{
-		Location *lTempLoc = 0;
+		Chunk *lTempLoc = 0;
 		int iTempIndex;
 
 		if(!FindBlock(x, y + 1, z, &lTempLoc, &iTempIndex)) HideTile(loc, index, TOP);
@@ -373,7 +373,7 @@ int World::RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show
 	return 1;
 }
 
-void World::ShowTile(Location *loc, int index, char N)
+void World::ShowTile(Chunk *loc, int index, char N)
 {
 	if(!loc->bBlocks[index].bVisible[N])
 	{
@@ -385,7 +385,7 @@ void World::ShowTile(Location *loc, int index, char N)
 	}
 }
 
-void World::HideTile(Location *loc, int index, char N)
+void World::HideTile(Chunk *loc, int index, char N)
 {
 	if(loc->bBlocks[index].bVisible[N])
 	{
@@ -397,7 +397,7 @@ void World::HideTile(Location *loc, int index, char N)
 	}
 }
  
-int World::FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, Location **loc, int *index)
+int World::FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, Chunk **loc, int *index)
 {
 	if((y < 0)||(y >= LOCATION_SIZE_Y)) { *loc = NULL; *index = 0; return 0;}
 
@@ -421,7 +421,7 @@ int World::FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z)
 {
 	if(y < 0) return 0;
 
-	Location *loc = GetLocByBlock(x, z);
+	Chunk *loc = GetLocByBlock(x, z);
 
 	if(loc == NULL) return 0;
 
@@ -453,7 +453,7 @@ void LoadLocationThread(void* pParams)
 	DWORD dwWaitResult; 
 	//auto loc = wWorld.AddLocation(x,z);
 
-	Location *loc = new Location(x, z, wWorld.MaterialLib, wWorld.lLandscape);
+	Chunk *loc = new Chunk(x, z, wWorld.MaterialLib, wWorld.lLandscape);
 
 	loc->Generate();
 	//loc->lLandscape.Fill(*loc, 0, 0.999, 64);

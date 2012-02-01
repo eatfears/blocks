@@ -4,7 +4,7 @@ class World;
 #include "PerlinNoise.h"
 #include "Blocks_Definitions.h"
 
-class Location;
+class Chunk;
 
 class Landscape
 {
@@ -12,9 +12,9 @@ public:
 	Landscape(void);
 	~Landscape(void);
 
-	void Generate(Location &loc);
+	void Generate(Chunk &loc);
 	void Load(LocInWorld locx, LocInWorld locz);
-	void Fill(Location& loc, char mat, double fillness, int height );
+	void Fill(Chunk& loc, char mat, double fillness, int height );
 	
 	int horizon;
 	double scaleHeightMapXZ;

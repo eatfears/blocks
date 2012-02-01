@@ -116,7 +116,7 @@ int Game::DrawGLScene()
 						case FRONT:		zlight--; break;
 						case BACK:		zlight++; break;
 						}
-						Location *temploc;
+						Chunk *temploc;
 						if((xlight >= LOCATION_SIZE_XZ)||(xlight < 0)||(zlight >= LOCATION_SIZE_XZ)||(zlight < 0))
 							temploc = wWorld.GetLocByBlock(xlight + loc->x*LOCATION_SIZE_XZ, zlight + loc->z*LOCATION_SIZE_XZ);
 						else temploc = &*loc;
