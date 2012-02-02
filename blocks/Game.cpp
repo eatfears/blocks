@@ -216,7 +216,7 @@ void Game::DrawInterface()
 }
 
 //void Game::DrawVisibleTileSide(Tile *tTile, char N)
-void Game::DrawTile(signed short sXcoord, signed short sYcoord, signed short sZcoord, int material, char N)
+void Game::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char N)
 {
 	GLdouble 
 // 		dXcoord = (sXcoord-player.lnwPositionX*LOCATION_SIZE_XZ)*TILE_SIZE, 

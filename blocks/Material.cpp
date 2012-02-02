@@ -22,7 +22,7 @@ void MaterialLibrary::AllocGLTextures()
 
 void MaterialLibrary::LoadGLTextures()
 {
-	texture[0] = loadImage("textures\\texture.png");
+	texture[0] = loadImage("textures\\terrain.png");
 }
 
 int MaterialLibrary::GetTextureInfo(int ColourType)

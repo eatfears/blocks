@@ -29,10 +29,10 @@ Landscape::~Landscape(void)
 {
 }
 
-void Landscape::Generate(Chunk &loc)
+void Landscape::Generate(Chunk &chunk)
 {
-	ChunkInWorld locx = loc.x;
-	ChunkInWorld locz = loc.z;
+	ChunkInWorld chunkx = chunk.x;
+	ChunkInWorld chunkz = chunk.z;
 	double height;
 	double density;
 	double hx, hz;
@@ -45,10 +45,10 @@ void Landscape::Generate(Chunk &loc)
 	double temp3;
 
 	double dens[CHUNK_SIZE_XZ][CHUNK_SIZE_Y][CHUNK_SIZE_XZ];
-	for(int i = locx*CHUNK_SIZE_XZ; i < (locx + 1)*CHUNK_SIZE_XZ; i++)
+	for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++)
 	{
 		bx = i/scaleBubblesXZ;
-		for(int k = locz*CHUNK_SIZE_XZ; k < (locz + 1)*CHUNK_SIZE_XZ; k++)
+		for(int k = chunkz*CHUNK_SIZE_XZ; k < (chunkz + 1)*CHUNK_SIZE_XZ; k++)
 		{
 			bz = k/scaleBubblesXZ;
 			for(int j = 0; j < CHUNK_SIZE_Y; j++)
@@ -59,13 +59,13 @@ void Landscape::Generate(Chunk &loc)
 		}
 	}
 
-	for(int i = locx*CHUNK_SIZE_XZ; i < (locx + 1)*CHUNK_SIZE_XZ; i++)
+	for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++)
 	{
 		hx = i/scaleHeightMapXZ;
 		rx = i/scaleRoughness;
 		dx = i/scaleDetails;
 
-		for(int k = locz*CHUNK_SIZE_XZ; k < (locz + 1)*CHUNK_SIZE_XZ; k++)
+		for(int k = chunkz*CHUNK_SIZE_XZ; k < (chunkz + 1)*CHUNK_SIZE_XZ; k++)
 		{
 			hz = k/scaleHeightMapXZ;
 			rz = k/scaleRoughness;
@@ -83,14 +83,14 @@ void Landscape::Generate(Chunk &loc)
 				//temp2 = dens[i%LOCATION_SIZE_XZ][(j+1)%LOCATION_SIZE_Y][k%LOCATION_SIZE_XZ];
 
 				density = temp*(4*details + 0.3) + j;
-				if(density < height) {if(density < height - 3) loc.AddBlock(i, j, k, MAT_STONE); else loc.AddBlock(i, j, k, MAT_GRASS);}
-				else if(j < horizon) loc.AddBlock(i, j, k, MAT_WATER);
+				if(density < height) {if(density < height - 3) chunk.AddBlock(i, j, k, MAT_STONE); else chunk.AddBlock(i, j, k, MAT_GRASS);}
+				else if(j < horizon) chunk.AddBlock(i, j, k, MAT_WATER);
 			}
 		}
 	}
 }
 
-void Landscape::Load( ChunkInWorld locx, ChunkInWorld locz )
+void Landscape::Load(ChunkPosition chpos)
 {
 	std::fstream filestr;
 
@@ -100,7 +100,7 @@ void Landscape::Load( ChunkInWorld locx, ChunkInWorld locz )
 	if(filestr.is_open())
 	{
 		/*int index = 0;
-		TileInLoc locx, locy, locz;
+		TileInLoc chunkx, locy, chunkz;
 		char mat;
 		
 		while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
@@ -108,8 +108,8 @@ void Landscape::Load( ChunkInWorld locx, ChunkInWorld locz )
 			filestr >> mat;
 			if (filestr.eof()) break;
 
-			loc->GetTilePositionByIndex(index, &locx, &locy, &locz);
-			loc->AddTile(locx, locy, locz, mat);
+			chunk->GetTilePositionByIndex(index, &chunkx, &locy, &chunkz);
+			chunk->AddTile(chunkx, locy, chunkz, mat);
 
 	//		if(rand()%500) filestr << (char) (rand()%4 + 1); else filestr << (char) 0;
 			index++;
@@ -120,22 +120,22 @@ void Landscape::Load( ChunkInWorld locx, ChunkInWorld locz )
 	
 }
 
-void Landscape::Fill( Chunk& loc, char mat, double fillness, int height )
+void Landscape::Fill( Chunk& chunk, char mat, double fillness, int height )
 {
 	int material = mat;
-	ChunkInWorld locx = loc.x;
-	ChunkInWorld locz = loc.z;
+	ChunkInWorld chunkx = chunk.x;
+	ChunkInWorld chunkz = chunk.z;
 
-	for(int i = locx*CHUNK_SIZE_XZ; i < (locx + 1)*CHUNK_SIZE_XZ; i++)
+	for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++)
 	{
-		for(int k = locz*CHUNK_SIZE_XZ; k < (locz + 1)*CHUNK_SIZE_XZ; k++)
+		for(int k = chunkz*CHUNK_SIZE_XZ; k < (chunkz + 1)*CHUNK_SIZE_XZ; k++)
 		{
 			for(int j = 0; j < height; j++)
 			{
 				if((double)rand()/(double)RAND_MAX < fillness) 
 				{
 					if (mat == 0) material = rand()%4+1;
-					loc.AddBlock(i, j, k, material);
+					chunk.AddBlock(i, j, k, material);
 				}
 			}
 		}

@@ -6,7 +6,7 @@
 #include "Material.h"
 #include "Landscape.h"
 
-typedef struct locpos
+typedef struct chnkpos
 {
 	ChunkInWorld x;
 	ChunkInWorld z;

@@ -5,6 +5,7 @@ class World;
 #include "Blocks_Definitions.h"
 
 class Chunk;
+typedef struct chnkpos ChunkPosition;
 
 class Landscape
 {
@@ -12,9 +13,9 @@ public:
 	Landscape(void);
 	~Landscape(void);
 
-	void Generate(Chunk &loc);
-	void Load(ChunkInWorld locx, ChunkInWorld locz);
-	void Fill(Chunk& loc, char mat, double fillness, int height );
+	void Generate(Chunk &chunk);
+	void Load(ChunkPosition chpos);
+	void Fill(Chunk& chunk, char mat, double fillness, int height );
 	
 	int horizon;
 	double scaleHeightMapXZ;
