@@ -1,6 +1,7 @@
 #pragma once
 #include "Blocks_Definitions.h"
-#include <gl\freeglut.h>
+#include <GLblocks\blocksglut.h>
+//#include <gl\freeglut.h>
 #include <gl\glaux.h>
 
 #include "Character.h"
