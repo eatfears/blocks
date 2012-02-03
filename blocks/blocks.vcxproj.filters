@@ -41,10 +41,10 @@
     <ClCompile Include="Chunk.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="glut.cpp">
+    <ClCompile Include="Engine.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
+    <ClCompile Include="Blocks.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

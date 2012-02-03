@@ -1,5 +1,7 @@
 #pragma once
 
+#define FREEGLUT_STATIC
+
 #define DEBUG_OUT
 #undef DEBUG_OUT
 

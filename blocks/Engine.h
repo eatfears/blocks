@@ -1,5 +1,5 @@
 #pragma once
-#define FREEGLUT_STATIC
+#include "Blocks_Definitions.h"
 #include <gl\glut.h>
 #include <gl\glaux.h>
 #include "gsl/gsl_randist.h"
@@ -19,7 +19,7 @@ public:
 	//void KillGLWindow();
 	void Reshape(GLsizei width, GLsizei height);
 	void Display();
-	void Keyboard(unsigned char button, int x, int y, bool KeyUp);
+	void Keyboard(unsigned char button, int x, int y, bool KeyDown);
 	void MouseMotion(int x, int y);
 	void MouseButton( int button, int state, int x, int y );
 	
@@ -40,8 +40,8 @@ public:
 	void InitGame();//GLWindow *glwWnd);
 
 	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char N);
-	//void DrawInterface();
-	//void DrawSelectedItem();
+	void DrawInterface();
+	void DrawSelectedItem();
 	void Loop();
 
 	//GLWindow *glwWnd;

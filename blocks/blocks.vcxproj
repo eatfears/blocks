@@ -113,7 +113,7 @@
   <ItemGroup>
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Engine.cpp" />
-    <ClCompile Include="glut.cpp" />
+    <ClCompile Include="Blocks.cpp" />
     <ClCompile Include="Landscape.cpp" />
     <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="Material.cpp" />

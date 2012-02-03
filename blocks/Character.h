@@ -1,7 +1,6 @@
 #pragma once
-#include <windows.h>
-#include <gl\gl.h>
-#include <gl\glu.h>
+#include "Blocks_Definitions.h"
+#include <gl\glut.h>
 
 #include "World.h"
 
@@ -19,8 +18,8 @@ public:
 	bool bFalling;
 	void Control(GLdouble FrameInterval);
 	void GetCenterCoords(GLsizei width, GLsizei height);
-	bool  bKeyboard[256];					// Массив, используемый для операций с клавиатурой
-	bool  bKeyboardDown[256];				// Массив, используемый для операций с клавиатурой
+	bool  bKeyboardPress[256];					// Массив, используемый для операций с клавиатурой
+	bool  bKeyboardHit[256];				// Массив, используемый для операций с клавиатурой
 
 	GLdouble dDispCenterCoordX, dDispCenterCoordY, dDispCenterCoordZ;			// возвращаемые мировые координаты центра
 	BlockInWorld sCenterBlockCoordX, sCenterBlockCoordY, sCenterBlockCoordZ;	// возвращаемые координаты куба

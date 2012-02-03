@@ -1,5 +1,4 @@
 #include "Engine.h"
-#include "Blocks_Definitions.h"
 #include <time.h>
 #include <Mmsystem.h>
 
@@ -250,14 +249,17 @@ void Engine::Display()
 	// 	glutSwapBuffers();
 }
 
-void Engine::Keyboard( unsigned char button, int x, int y, bool KeyUp)
+void Engine::Keyboard( unsigned char button, int x, int y, bool KeyDown)
 {
 	switch(button)
 	{
-	case '1': 
-
-		break;
 	case VK_ESCAPE: exit(0);
+		break;
+	default:
+		{
+			player.bKeyboardPress[button] = KeyDown;
+			if(!KeyDown) player.bKeyboardHit[button] = true;
+		}
 		break;
 	}
 }
@@ -416,6 +418,87 @@ void Engine::DrawTile( BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld 
 	}
 }
 
+void Engine::DrawSelectedItem()
+{
+	if(!wWorld.FindBlock(player.sCenterBlockCoordX,player.sCenterBlockCoordY,player.sCenterBlockCoordZ))
+		return;
+
+	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glColor3d(0.1, 0.1, 0.1);
+	glLineWidth (1.4f);
+
+	GLdouble BorderSize = BLOCK_SIZE*(1 + 0.005);
+	GLdouble 
+		dXcoord = player.sCenterBlockCoordX*BLOCK_SIZE, 
+		dYcoord = player.sCenterBlockCoordY*BLOCK_SIZE, 
+		dZcoord = player.sCenterBlockCoordZ*BLOCK_SIZE;
+
+	dXcoord -= BorderSize/2;
+	dZcoord -= BorderSize/2;
+
+	glBegin(GL_QUADS);
+
+
+	//Верхняя грань
+	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord);
+	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord + BorderSize);
+	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord + BorderSize);
+	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord);
+	//Нижняя грань
+	glVertex3d (dXcoord, dYcoord, dZcoord);
+	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord);
+	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord + BorderSize);
+	glVertex3d (dXcoord, dYcoord, dZcoord + BorderSize);
+	//Правая грань
+	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord);
+	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord);
+	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord + BorderSize);
+	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord + BorderSize);
+	//Левая грань
+	glVertex3d (dXcoord, dYcoord, dZcoord);
+	glVertex3d (dXcoord, dYcoord, dZcoord + BorderSize);
+	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord + BorderSize);
+	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord);
+	//Задняя грань
+	glVertex3d (dXcoord, dYcoord, dZcoord + BorderSize);
+	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord + BorderSize);
+	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord + BorderSize);
+	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord + BorderSize);
+	//Передняя грань
+	glVertex3d (dXcoord, dYcoord, dZcoord);
+	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord);
+	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord);
+	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord);
+
+	glEnd();
+
+	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void Engine::DrawInterface()
+{
+	DrawSelectedItem();
+
+	//Сбросить текущую матрицу
+	glLoadIdentity();
+
+	//Рисование прицела
+	glTranslated(0, 0, -0.1);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3d(1.0, 1.0, 1.0);
+	glLineWidth (2.0);
+	glBegin(GL_LINES);
+	glVertex2d(0.0,-0.001);
+	glVertex2d(0.0,0.001);
+
+	glVertex2d(-0.001,0.0);
+	glVertex2d(0.001,0.0);
+	glEnd();
+	glTranslated(0, 0, 0.1);
+}
+
 void Engine::Loop()
 {
 
@@ -423,16 +506,16 @@ void Engine::Loop()
 	player.GetCenterCoords(width, height);
 
 	player.Control(FrameInterval);
-	//DrawInterface();
+	DrawInterface();
 
 	GetFrameTime();
 
 	glutSwapBuffers();
 
 /*
-	if(player.bKeyboard[VK_F1])						// Is F1 Being Pressed?
+	if(player.bKeyboardPress[VK_F1])						// Is F1 Being Pressed?
 	{
-		player.bKeyboard[VK_F1] = false;					// If So Make Key FALSE
+		player.bKeyboardPress[VK_F1] = false;					// If So Make Key FALSE
 		glwWnd->KillGLWindow();						// Kill Our Current Window
 		glwWnd->fullscreen = !glwWnd->fullscreen;				// Toggle Fullscreen / Windowed Mode
 		glwWnd->bMousing = false;
