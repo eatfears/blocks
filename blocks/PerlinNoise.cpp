@@ -238,12 +238,10 @@ double PerlinNoise::UseNoise1d(int x)
 	return SmoothNoise1d(x);
 }
 
-
 double PerlinNoise::UseNoise2d(int x, int y)
 {
 	return SmoothNoise2d(x, y);
 }
-
 
 double PerlinNoise::UseNoise3d(int x, int y, int z)
 {

@@ -308,12 +308,12 @@ void Engine::MouseButton(int button, int state, int x, int y)
 // 	}
 }
 
-void Engine::InitGame()// GLWindow *glwWnd)
+void Engine::InitGame()
 {
-	//HANDLE threadHandle = GetCurrentThread();
-	//SetThreadPriority(threadHandle, THREAD_PRIORITY_HIGHEST);
+#ifdef _WIN32
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
+#endif // _WIN32
 
-	//this->glwWnd = glwWnd;
 	srand((unsigned int)time(NULL));
 	int seed = rand();
 

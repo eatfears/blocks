@@ -13,7 +13,7 @@ World::World()
 	parget = CreateEvent(NULL, false, false, NULL);
 	parget2 = CreateEvent(NULL, false, false, NULL);
 	mutex = CreateMutex(NULL, false, NULL);
-	semaphore = CreateSemaphore(NULL, 15, 15, NULL);
+	semaphore = CreateSemaphore(NULL, 10, 10, NULL);
 }
 
 World::~World()
@@ -446,9 +446,9 @@ void LoadChunkThread(void* pParams)
 	SetEvent(wWorld.parget);
 	WaitForSingleObject(wWorld.semaphore, INFINITE);
 
-
-	HANDLE threadHandle = GetCurrentThread();
-	SetThreadPriority(threadHandle, THREAD_PRIORITY_BELOW_NORMAL);
+#ifdef _WIN32
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+#endif // _WIN32
 
 	DWORD dwWaitResult; 
 	//auto loc = wWorld.AddLocation(x,z);
@@ -504,8 +504,9 @@ void UnLoadChunkThread(void* pParams)
 	SetEvent(wWorld.parget);
 	WaitForSingleObject(wWorld.semaphore, INFINITE);
 
-	HANDLE threadHandle = GetCurrentThread();
-	SetThreadPriority(threadHandle, THREAD_PRIORITY_BELOW_NORMAL);
+#ifdef _WIN32
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+#endif // _WIN32
 
 	DWORD dwWaitResult; 
 

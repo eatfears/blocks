@@ -12,7 +12,7 @@ void LoadNGenerate(void* pParams)
 	ChunkInWorld z = pParameters.z;
 	SetEvent(wWorld.parget2);
 
-	int size = 1;
+	int size = 16;
 
 	for(int i = x*size; i < (x+1)*size*1; i++)
 		for(int j = z*size; j < (z+1)*size; j++)

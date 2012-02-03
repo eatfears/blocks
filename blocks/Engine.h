@@ -14,15 +14,12 @@ public:
 	~Engine();
 
 	int InitGL();
-	//bool CreateGLWindow(LPCSTR title, GLsizei width, GLsizei height, int bits);
-	//void KillGLWindow();
 	void Reshape(GLsizei width, GLsizei height);
 	void Display();
 	void Keyboard(unsigned char button, int x, int y, bool KeyDown);
 	void MouseMotion(int x, int y);
 	void MouseButton(int button, int state, int x, int y);
 	void Special(int button, int x, int y, bool KeyDown);
-	
 
 	int width, height;
 
@@ -34,14 +31,13 @@ public:
 	bool	fullscreen;
 	bool	bMousing;
 
-	void InitGame();//GLWindow *glwWnd);
+	void InitGame();
 
 	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char N);
 	void DrawInterface();
 	void DrawSelectedItem();
 	void Loop();
 
-	//GLWindow *glwWnd;
 	World wWorld;
 	Character player;
 

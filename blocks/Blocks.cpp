@@ -2,6 +2,14 @@
 #include <GL/freeglut.h>
 #include "Engine.h"
 
+//OpenGL32.lib;GLu32.lib;Winmm.lib;gsl.lib;libpng15.lib;zlib.lib;
+#pragma comment (lib, "OpenGL32.lib")
+#pragma comment (lib, "GLu32.lib")
+#pragma comment (lib, "Winmm.lib")
+#pragma comment (lib, "gsl.lib")
+#pragma comment (lib, "libpng15.lib")
+#pragma comment (lib, "zlib.lib")
+
 Engine *engine;
 
 void Display() { engine->Loop(); }
