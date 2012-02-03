@@ -1,55 +1,71 @@
 #include "Blocks_Definitions.h"
-
 #include <GL/glut.h>
-
 #include "Engine.h"
 
 Engine *engine;
 
 void Display() { engine->Loop(); }
 void Reshape(int width, int height) { engine->Reshape(width, height); }
+void SpecialDown(int button, int x, int y) { engine->Special(button, x, y, true); }
+void SpecialUp(int button, int x, int y) { engine->Special(button, x, y, false); }
 void MouseMotion(int x, int y) { engine->MouseMotion(x, y); }
-void MouseButton(int button,int state,int x,int y) { engine->MouseButton(button, state, x, y); }
+void MouseButton(int button, int state, int x, int y) { engine->MouseButton(button, state, x, y); }
 void KeyboardDown(unsigned char button, int x, int y) { engine->Keyboard(button, x, y, true); }
 void KeyboardUp(unsigned char button, int x, int y) { engine->Keyboard(button, x, y, false); }
 void MouseEntry (int state) { if (state == GLUT_ENTERED){} }
 
-void idle() { glutPostRedisplay(); }
-void visible(int vis) { glutIdleFunc(idle); }
+// void idle() { glutPostRedisplay(); }
+// void visible(int vis) { glutIdleFunc(idle); }
+
+void GlutInit()
+{
+	glutIgnoreKeyRepeat(1);						// disable key repeat mode
+
+	glutKeyboardFunc(KeyboardDown);
+	glutKeyboardUpFunc(KeyboardUp);
+	glutSpecialFunc(SpecialDown);
+	glutSpecialUpFunc(SpecialUp);
+	glutMouseFunc(MouseButton);
+	glutMotionFunc(MouseMotion);
+	glutPassiveMotionFunc(MouseMotion);
+	glutDisplayFunc(Display);
+	glutIdleFunc(Display);
+	glutReshapeFunc(Reshape);
+	glutEntryFunc(MouseEntry);
+	//glutVisibilityFunc(visible);
+}
 
 int main(int argc, char **argv)
 {
 
-#ifdef WIN32 
+#ifdef _WIN32 
 	HWND console = GetConsoleWindow();
 	ShowWindow(console, SW_HIDE);
 #endif
 
+	engine = new Engine();
+
+
 	glutInit(&argc,argv);
-	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB);
+	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
 	glutInitWindowSize(RESX, RESY);
 	glutInitWindowPosition(0, 0);
 	glutCreateWindow("Blocks");
+	
+	/*
+	glutGameModeString("1280x1024:32");
+	//glutGameModeString("1280x1024:16@60"); //Переход в полноэкранный режим
 
-	engine = new Engine();
-	engine->Init();
+	if(glutGameModeGet(GLUT_GAME_MODE_POSSIBLE))
+		glutEnterGameMode();
+	else
+		exit(1);
+	*/
+
 	engine->InitGame();
+	engine->InitGL();
 
-// 	glutGameModeString("1280x1024:16@60"); //Переход в полноэкранный режим
-// 	glutEnterGameMode(); //Собственно сам переход
-
-	glutKeyboardFunc(KeyboardDown);
-	glutKeyboardUpFunc(KeyboardUp);
-
-	//glutSpecialFunc(void (* callback)(int, int, int));
-	glutReshapeFunc(Reshape);
-	glutVisibilityFunc(visible);
-	glutDisplayFunc(Display);
-	glutMouseFunc(MouseButton);
-	glutMotionFunc(MouseMotion);
-	glutPassiveMotionFunc(MouseMotion);
-	glutEntryFunc(MouseEntry);
-
+	GlutInit();
 	glutMainLoop();
 
 	return 0;

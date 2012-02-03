@@ -7,7 +7,6 @@ GLfloat fogColor[4]= {FOG_COLOR};
 Engine::Engine()
 	:player(wWorld)
 {
-	active = true;
 	bMousing = false;
 	fullscreen = false;
 }
@@ -16,8 +15,11 @@ Engine::~Engine()
 {
 }
 
-int Engine::Init()
+int Engine::InitGL()
 {
+	wWorld.MaterialLib.AllocGLTextures();
+	wWorld.MaterialLib.LoadGLTextures();
+
 	player.dPositionY = 100*BLOCK_SIZE+00.0;
 	player.dSpinY = -90 - 45;
 	glutSetCursor(GLUT_CURSOR_NONE);							//¬˚ÒÚ‡‚ÎˇÂÏ Ì‡ Õ≈“  ”–—Œ–
@@ -315,9 +317,6 @@ void Engine::InitGame()// GLWindow *glwWnd)
 	srand((unsigned int)time(NULL));
 	int seed = rand();
 
-
-	wWorld.MaterialLib.AllocGLTextures();
-	wWorld.MaterialLib.LoadGLTextures();
 	wWorld.lLandscape.Init(seed);
 	wWorld.BuildWorld();
 }
@@ -556,4 +555,18 @@ void Engine::GetFrameTime()
 
 	frameTime = currentTime;
 	//g_FrameInterval = 0.1;
+}
+
+void Engine::Special(int button, int x, int y, bool KeyDown)
+{
+	if(KeyDown)
+	switch(button)
+	{
+	case GLUT_KEY_F1: 	if(!fullscreen) glutFullScreen(); 
+						else glutReshapeWindow(RESX, RESY);
+						fullscreen = !fullscreen;
+		break;
+//	case GLUT_KEY_F2: 	glutLeaveGameMode();
+//		break;
+	}
 }

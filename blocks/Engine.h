@@ -13,7 +13,7 @@ public:
 	Engine();
 	~Engine();
 
-	int Init();
+	int InitGL();
 	//bool CreateGLWindow(LPCSTR title, GLsizei width, GLsizei height, int bits);
 	//void KillGLWindow();
 	void Reshape(GLsizei width, GLsizei height);
@@ -21,6 +21,7 @@ public:
 	void Keyboard(unsigned char button, int x, int y, bool KeyDown);
 	void MouseMotion(int x, int y);
 	void MouseButton(int button, int state, int x, int y);
+	void Special(int button, int x, int y, bool KeyDown);
 	
 
 	int width, height;
@@ -30,7 +31,6 @@ public:
 	HWND  hWnd;						// Здесь будет хранится дескриптор окна
 	HINSTANCE  hInstance;           // Здесь будет хранится дескриптор приложения
 
-	bool	active;					// Флаг активности окна, установленный в true по умолчанию
 	bool	fullscreen;
 	bool	bMousing;
 
