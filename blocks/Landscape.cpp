@@ -2,8 +2,10 @@
 #include "World.h"
 #include <fstream>
 
-Landscape::Landscape(void)
+Landscape::Landscape()
 {
+	LandGen = gsl_rng_alloc(gsl_rng_mt19937);
+
 	horizon				= CHUNK_SIZE_Y/2;
 	scaleHeightMapXZ	= 128.0;
 	scaleRoughness		= 32.0;
@@ -22,11 +24,21 @@ Landscape::Landscape(void)
 	pnHeightMap			= PerlinNoise(0.5, HeghtMapOctaves);
 	pnRoughness			= PerlinNoise(0.5, 9);
 	pnDetails			= PerlinNoise(0.5, BubblesOctaves);
-
 }
 
-Landscape::~Landscape(void)
+Landscape::~Landscape()
 {
+	gsl_rng_free(LandGen);
+}
+
+void Landscape::Init(int seed)
+{
+	gsl_rng_set(LandGen, seed);
+
+	pnBubbles.InitNoise(LandGen);
+	pnHeightMap.InitNoise(LandGen);
+	pnRoughness.InitNoise(LandGen);
+	pnDetails.InitNoise(LandGen);
 }
 
 void Landscape::Generate(Chunk &chunk)
@@ -94,7 +106,7 @@ void Landscape::Load(ChunkPosition chpos)
 {
 	std::fstream filestr;
 
-	filestr.open ("test", std::fstream::in | std::fstream::binary );
+	filestr.open ("test", std::fstream::in | std::fstream::binary);
 	
 	
 	if(filestr.is_open())
@@ -120,7 +132,7 @@ void Landscape::Load(ChunkPosition chpos)
 	
 }
 
-void Landscape::Fill( Chunk& chunk, char mat, double fillness, int height )
+void Landscape::Fill(Chunk& chunk, char mat, double fillness, int height)
 {
 	int material = mat;
 	ChunkInWorld chunkx = chunk.x;

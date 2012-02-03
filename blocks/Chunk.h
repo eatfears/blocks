@@ -22,7 +22,7 @@ class Chunk
 {
 public:
 	Chunk(ChunkInWorld x, ChunkInWorld z, MaterialLibrary& MLib, Landscape& lLand);
-	~Chunk(void);
+	~Chunk();
 
 	Block *bBlocks;
 	char *SkyLight;

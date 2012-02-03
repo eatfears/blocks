@@ -4,20 +4,15 @@
 
 GLfloat fogColor[4]= {FOG_COLOR};
 
-Engine::Engine(void)
+Engine::Engine()
 	:player(wWorld)
 {
-	srand((unsigned int)time(NULL));
-	int seed = rand();
-	randNumGen = gsl_rng_alloc(gsl_rng_mt19937);
-	gsl_rng_set(randNumGen, seed);
-
 	active = true;
 	bMousing = false;
 	fullscreen = false;
 }
 
-Engine::~Engine(void)
+Engine::~Engine()
 {
 }
 
@@ -54,18 +49,18 @@ int Engine::Init()
 	return true;	
 }
 
-void Engine::Reshape( int width, int height )
+void Engine::Reshape(int width, int height)
 {
-	if( height == 0 )											// Предотвращение деления на ноль 
+	if(height == 0)											// Предотвращение деления на ноль 
 		height = 1;
 
-	glViewport( 0, 0, width, height );							// Сброс текущей области вывода
-	glMatrixMode( GL_PROJECTION );								// Выбор матрицы проекций
+	glViewport(0, 0, width, height);							// Сброс текущей области вывода
+	glMatrixMode(GL_PROJECTION);								// Выбор матрицы проекций
 	glLoadIdentity();											// Сброс матрицы проекции
 
 	//Вычисление соотношения геометрических размеров для окна
-	gluPerspective( 45.0f, (GLfloat)width/(GLfloat)height, 0.1f, BLOCK_SIZE + MAX_VIEV_DIST);
-	glMatrixMode( GL_MODELVIEW );								// Выбор матрицы вида модели
+	gluPerspective(45.0f, (GLfloat)width/(GLfloat)height, 0.1f, BLOCK_SIZE + MAX_VIEV_DIST);
+	glMatrixMode(GL_MODELVIEW);								// Выбор матрицы вида модели
 	glLoadIdentity();											// Сброс матрицы вида модели
 
 	this->width = width;
@@ -82,11 +77,11 @@ void Engine::Reshape( int width, int height )
 void Engine::Display()
 {
 	glEnable(GL_DEPTH_TEST);
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );		// Очистить экран и буфер глубины
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Очистить экран и буфер глубины
 	glLoadIdentity();											// Сбросить текущую матрицу
 
-	glRotated( -player.dSpinX, 1.0, 0.0, 0.0 );
-	glRotated( -player.dSpinY, 0.0, 1.0, 0.0 );
+	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
+	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
 	glTranslated(-player.dPositionX, -player.dPositionY, -player.dPositionZ);
 	
 
@@ -249,7 +244,7 @@ void Engine::Display()
 	// 	glutSwapBuffers();
 }
 
-void Engine::Keyboard( unsigned char button, int x, int y, bool KeyDown)
+void Engine::Keyboard(unsigned char button, int x, int y, bool KeyDown)
 {
 	switch(button)
 	{
@@ -264,7 +259,7 @@ void Engine::Keyboard( unsigned char button, int x, int y, bool KeyDown)
 	}
 }
 
-void Engine::MouseMotion( int x, int y )
+void Engine::MouseMotion(int x, int y)
 {
 	static int Lastx, Lasty;
 
@@ -299,7 +294,7 @@ void Engine::MouseMotion( int x, int y )
 	}
 }
 
-void Engine::MouseButton( int button, int state, int x, int y )
+void Engine::MouseButton(int button, int state, int x, int y)
 {
 // 	switch(button)
 // 	{
@@ -311,18 +306,23 @@ void Engine::MouseButton( int button, int state, int x, int y )
 // 	}
 }
 
-void Engine::InitGame()// GLWindow *glwWnd )
+void Engine::InitGame()// GLWindow *glwWnd)
 {
 	//HANDLE threadHandle = GetCurrentThread();
 	//SetThreadPriority(threadHandle, THREAD_PRIORITY_HIGHEST);
 
 	//this->glwWnd = glwWnd;
+	srand((unsigned int)time(NULL));
+	int seed = rand();
+
+
 	wWorld.MaterialLib.AllocGLTextures();
 	wWorld.MaterialLib.LoadGLTextures();
+	wWorld.lLandscape.Init(seed);
 	wWorld.BuildWorld();
 }
 
-void Engine::DrawTile( BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char N )
+void Engine::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char N)
 {
 	GLdouble 
 		// 		dXcoord = (sXcoord-player.lnwPositionX*LOCATION_SIZE_XZ)*TILE_SIZE, 

@@ -36,4 +36,3 @@ public:
 
 	void GetTextureOffsets(double& offsetx, double& offsety, int material, int N);
 };
-

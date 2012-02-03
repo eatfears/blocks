@@ -28,6 +28,5 @@ public:
 
 private:
 	void GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr);
-
 };
 

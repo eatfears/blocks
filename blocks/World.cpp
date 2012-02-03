@@ -92,13 +92,13 @@ void World::BuildWorld()
 	/**/
 }
 
-void World::GetChunkByBlock( BlockInWorld x, BlockInWorld z, ChunkInWorld *locx, ChunkInWorld *locz )
+void World::GetChunkByBlock(BlockInWorld x, BlockInWorld z, ChunkInWorld *locx, ChunkInWorld *locz)
 {
 	*locx = (ChunkInWorld) floor((double)x/CHUNK_SIZE_XZ);
 	*locz = (ChunkInWorld) floor((double)z/CHUNK_SIZE_XZ);
 }
 
-void World::GetPosInChunkByWorld( BlockInWorld x, BlockInWorld y, BlockInWorld z, BlockInChunk *locx, BlockInChunk *locy, BlockInChunk *locz )
+void World::GetPosInChunkByWorld(BlockInWorld x, BlockInWorld y, BlockInWorld z, BlockInChunk *locx, BlockInChunk *locy, BlockInChunk *locz)
 {
 	while(x < 0) x += CHUNK_SIZE_XZ;
 	while(z < 0) z += CHUNK_SIZE_XZ;
@@ -107,10 +107,10 @@ void World::GetPosInChunkByWorld( BlockInWorld x, BlockInWorld y, BlockInWorld z
 	*locz = z%CHUNK_SIZE_XZ;
 }
 
-Chunk* World::GetChunkByBlock( BlockInWorld x, BlockInWorld z )
+Chunk* World::GetChunkByBlock(BlockInWorld x, BlockInWorld z)
 {
 	ChunkInWorld locx, locz;
-	GetChunkByBlock(x, z, &locx, &locz );
+	GetChunkByBlock(x, z, &locx, &locz);
 
 	auto loc = Chunks.begin();
 
@@ -130,7 +130,7 @@ void World::DrawLoadedBlocksFinish(Chunk &loc)
 	int index = 0;
 
  	DWORD dwWaitResult; 
- 	dwWaitResult = WaitForSingleObject( loc.mutex, INFINITE);
+ 	dwWaitResult = WaitForSingleObject(loc.mutex, INFINITE);
 	BlockInChunk x, y, z;
 	BlockInWorld xx, yy, zz;
 
@@ -267,7 +267,7 @@ int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bo
 	if(show)
 	{
 		DWORD dwWaitResult; 
-		dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
+		dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
 		index = loc->AddBlock(locx, locy, locz, mat);
 		ReleaseMutex(loc->mutex);
 
@@ -314,7 +314,7 @@ int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bo
 	else 
 	{
 		DWORD dwWaitResult; 
-		dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
+		dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
 		loc->AddBlock(locx, locy, locz, mat);
 		ReleaseMutex(loc->mutex);
 	}
@@ -358,14 +358,14 @@ int World::RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show
 		else {ShowTile(lTempLoc, iTempIndex, BACK); if(lTempLoc->bBlocks[iTempIndex].cMaterial == MAT_WATER) HideTile(loc, index, FRONT);}
 
 		DWORD dwWaitResult; 
-		dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
+		dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
 		loc->RemoveBlock(locx, locy, locz);
 		ReleaseMutex(loc->mutex);
 	}
 	else
 	{
 		DWORD dwWaitResult; 
-		dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
+		dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
 		loc->RemoveBlock(locx, locy, locz);
 		ReleaseMutex(loc->mutex);
 	}
@@ -378,7 +378,7 @@ void World::ShowTile(Chunk *loc, int index, char N)
 	if(!loc->bBlocks[index].bVisible[N])
 	{
 		DWORD dwWaitResult; 
-		dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
+		dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
 
 		loc->ShowTile(loc->bBlocks + index, N);
 		ReleaseMutex(loc->mutex);
@@ -390,7 +390,7 @@ void World::HideTile(Chunk *loc, int index, char N)
 	if(loc->bBlocks[index].bVisible[N])
 	{
 		DWORD dwWaitResult; 
-		dwWaitResult = WaitForSingleObject( loc->mutex, INFINITE);
+		dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
 
 		loc->HideTile(loc->bBlocks + index, N);
 		ReleaseMutex(loc->mutex);
@@ -593,7 +593,7 @@ void World::LoadChunk(ChunkInWorld x, ChunkInWorld z)
 	Param par = {x, z, this};
 
 	HANDLE hThread;
-	hThread = (HANDLE) _beginthread( LoadChunkThread, 0, &par);//&Param(par) );
+	hThread = (HANDLE) _beginthread(LoadChunkThread, 0, &par);//&Param(par));
 
 	//WaitForSingleObject(hThread, 30);
 	WaitForSingleObject(parget, INFINITE);
@@ -631,7 +631,7 @@ void World::UnLoadChunk(ChunkInWorld x, ChunkInWorld z)
 
 	HANDLE hThread;
 
-	hThread = (HANDLE) _beginthread( UnLoadChunkThread, 0, &par);//&Param(par) );
+	hThread = (HANDLE) _beginthread(UnLoadChunkThread, 0, &par);//&Param(par));
 
 	//WaitForSingleObject(hThread, 30);
 	WaitForSingleObject(parget, INFINITE);

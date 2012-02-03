@@ -6,7 +6,7 @@
 
 Engine *engine;
 
-void Display(void) { engine->Loop(); }
+void Display() { engine->Loop(); }
 void Reshape(int width, int height) { engine->Reshape(width, height); }
 void MouseMotion(int x, int y) { engine->MouseMotion(x, y); }
 void MouseButton(int button,int state,int x,int y) { engine->MouseButton(button, state, x, y); }
@@ -14,7 +14,7 @@ void KeyboardDown(unsigned char button, int x, int y) { engine->Keyboard(button,
 void KeyboardUp(unsigned char button, int x, int y) { engine->Keyboard(button, x, y, false); }
 void MouseEntry (int state) { if (state == GLUT_ENTERED){} }
 
-void idle(void) { glutPostRedisplay(); }
+void idle() { glutPostRedisplay(); }
 void visible(int vis) { glutIdleFunc(idle); }
 
 int main(int argc, char **argv)
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 	glutKeyboardFunc(KeyboardDown);
 	glutKeyboardUpFunc(KeyboardUp);
 
-	//glutSpecialFunc( void (* callback)( int, int, int ) );
+	//glutSpecialFunc(void (* callback)(int, int, int));
 	glutReshapeFunc(Reshape);
 	glutVisibilityFunc(visible);
 	glutDisplayFunc(Display);

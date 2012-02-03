@@ -9,24 +9,27 @@ PerlinNoise::PerlinNoise(double persistence, int NumberOfOctaves)
 	PerlinNoise::NumberOfOctaves = NumberOfOctaves;
 
 	interpolation = COSINE_INTERPOLATE;
-
-	Primes p;
-	a = p.GenPrime(14);
-	b = p.GenPrime(20);
-	c = p.GenPrime(30);
-	d = p.GenPrime(6);
-	e = p.GenPrime(7);
 }
 
-PerlinNoise::~PerlinNoise(void)
+void PerlinNoise::InitNoise(gsl_rng *randNumGen)
+{
+	Primes p;
+	a = p.GenPrime(14, randNumGen);
+	b = p.GenPrime(20, randNumGen);
+	c = p.GenPrime(30, randNumGen);
+	d = p.GenPrime(6, randNumGen);
+	e = p.GenPrime(7, randNumGen);
+}
+
+PerlinNoise::~PerlinNoise()
 {
 }
 
 double PerlinNoise::Noise1d(int x)
 {
 	x = (x<<13) ^ x;
-	//return ( 1.0 - ( (x*(x*x*15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
-	return ( 1.0 - ( (x*(x*x*a + b) + c) & 0x7fffffff) / 1073741824.0);
+	//return (1.0 - ((x*(x*x*15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+	return (1.0 - ((x*(x*x*a + b) + c) & 0x7fffffff) / 1073741824.0);
 }
 
 double PerlinNoise::Noise2d(int x, int y)
@@ -129,7 +132,7 @@ double PerlinNoise::CubicInterpolate(double v0, double v1, double v2, double v3,
 	return P*x*x*x + Q*x*x + R*x + S;
 }
 
-double PerlinNoise::Interpolate( double a, double b, double x )
+double PerlinNoise::Interpolate(double a, double b, double x)
 {
 	if(interpolation == LINEAR_INTERPOLATE)
 		return LinearInterpolate(a, b, x);
@@ -146,10 +149,10 @@ double PerlinNoise::SmoothNoise1d(int x)
 double PerlinNoise::SmoothNoise2d(int x, int y)
 {
 	double corners	= (	Noise2d(x-1, y-1) + Noise2d(x+1, y-1) +
-						Noise2d(x-1, y+1) + Noise2d(x+1, y+1) ) / 16.0;
+						Noise2d(x-1, y+1) + Noise2d(x+1, y+1)) / 16.0;
 
 	double sides	= (	Noise2d(x-1, y) + Noise2d(x+1, y) +
-						Noise2d(x, y-1) + Noise2d(x, y+1) ) / 8.0;
+						Noise2d(x, y-1) + Noise2d(x, y+1)) / 8.0;
 
 	double center	=	Noise2d(x, y) / 4.0;
 
@@ -161,18 +164,18 @@ double PerlinNoise::SmoothNoise3d(int x, int y, int z)
 	double corners	= (	Noise3d(x-1, y-1, z-1) + Noise3d(x+1, y-1, z-1) +
 						Noise3d(x-1, y-1, z+1) + Noise3d(x+1, y-1, z+1) +
 						Noise3d(x-1, y+1, z-1) + Noise3d(x+1, y+1, z-1) +
-						Noise3d(x-1, y+1, z+1) + Noise3d(x+1, y+1, z+1) ) / 64.0;
+						Noise3d(x-1, y+1, z+1) + Noise3d(x+1, y+1, z+1)) / 64.0;
 	
 	double sides	= (	Noise3d(x-1, y-1, z) + Noise3d(x-1, y+1, z) +
 						Noise3d(x+1, y-1, z) + Noise3d(x+1, y+1, z) +
 						Noise3d(x-1, y, z-1) + Noise3d(x-1, y, z+1) +
 						Noise3d(x+1, y, z-1) + Noise3d(x+1, y, z+1) +
 						Noise3d(x, y-1, z-1) + Noise3d(x, y-1, z+1) +
-						Noise3d(x, y+1, z-1) + Noise3d(x, y+1, z+1) ) / 32.0;
+						Noise3d(x, y+1, z-1) + Noise3d(x, y+1, z+1)) / 32.0;
 
 	double planes	= (	Noise3d(x-1, y, z) + Noise3d(x+1, y, z) +
 						Noise3d(x, y-1, z) + Noise3d(x, y+1, z) +
-						Noise3d(x, y, z-1) + Noise3d(x, y, z+1) ) / 16.0;
+						Noise3d(x, y, z-1) + Noise3d(x, y, z+1)) / 16.0;
 
 	double center	=	Noise3d(x, y, z) / 8.0;
 
@@ -230,19 +233,20 @@ double PerlinNoise::PerlinNoise3d(double x, double y, double z)
 	return total;
 }
 
-double PerlinNoise::UseNoise1d( int x )
+double PerlinNoise::UseNoise1d(int x)
 {
 	return SmoothNoise1d(x);
 }
 
 
-double PerlinNoise::UseNoise2d( int x, int y )
+double PerlinNoise::UseNoise2d(int x, int y)
 {
 	return SmoothNoise2d(x, y);
 }
 
 
-double PerlinNoise::UseNoise3d( int x, int y, int z )
+double PerlinNoise::UseNoise3d(int x, int y, int z)
 {
 	return SmoothNoise3d(x, y, z);
 }
+

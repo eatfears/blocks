@@ -10,12 +10,14 @@ typedef struct chnkpos ChunkPosition;
 class Landscape
 {
 public:
-	Landscape(void);
-	~Landscape(void);
+	Landscape();
+	~Landscape();
+
+	void Init(int seed);
 
 	void Generate(Chunk &chunk);
 	void Load(ChunkPosition chpos);
-	void Fill(Chunk& chunk, char mat, double fillness, int height );
+	void Fill(Chunk& chunk, char mat, double fillness, int height);
 	
 	int horizon;
 	double scaleHeightMapXZ;
@@ -37,5 +39,6 @@ public:
 	PerlinNoise pnRoughness;
 	PerlinNoise pnDetails;
 
+	gsl_rng *LandGen;
 };
 

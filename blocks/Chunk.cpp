@@ -22,7 +22,7 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, MaterialLibrary& MLib, Landscape& l
 	mutex = CreateMutex(NULL, false, NULL);
 }
 
-Chunk::~Chunk(void)
+Chunk::~Chunk()
 {
 	delete[] bBlocks;
 	delete[] SkyLight;
@@ -126,7 +126,7 @@ inline int Chunk::GetBlockPositionByIndex(int index, BlockInChunk *x, BlockInChu
 	return 0;
 }
 
-int Chunk::GetIndexByPosition( BlockInChunk x, BlockInChunk y, BlockInChunk z )
+int Chunk::GetIndexByPosition(BlockInChunk x, BlockInChunk y, BlockInChunk z)
 {
 	return x*CHUNK_SIZE_XZ + z + y*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
 }

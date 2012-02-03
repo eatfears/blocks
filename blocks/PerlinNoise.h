@@ -1,4 +1,5 @@
 #pragma once
+#include "gsl/gsl_randist.h"
 
 #define LINEAR_INTERPOLATE		1
 #define COSINE_INTERPOLATE		2
@@ -7,7 +8,9 @@ class PerlinNoise
 {
 public:
 	PerlinNoise(double persistence = 0.5, int NumberOfOctaves = 4);
-	~PerlinNoise(void);
+	~PerlinNoise();
+
+	void InitNoise(gsl_rng *randNumGen);
 
 	double PerlinNoise1d(double x);
 	double PerlinNoise2d(double x, double y);
@@ -37,8 +40,6 @@ private:
 	double CosineInterpolate(double a, double b, double x);
 	double CubicInterpolate(double v0, double v1, double v2, double v3, double x);
 	double Interpolate(double a, double b, double x);
-
-
 
 	int interpolation;
 

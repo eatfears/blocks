@@ -148,8 +148,8 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 
 
 	// stretch it
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	//OpenGL 1.1
 	//	gluBuild2DMipmaps(GL_TEXTURE_2D, components, width, height, glcolours, GL_UNSIGNED_BYTE, pixels);
@@ -183,7 +183,7 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 	return texture;
 }
 
-void MaterialLibrary::GetTextureOffsets( double& offsetx, double& offsety, int material, int N )
+void MaterialLibrary::GetTextureOffsets(double& offsetx, double& offsety, int material, int N)
 {
 	offsetx = 14; 
 	offsety = 0;

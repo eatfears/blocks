@@ -107,7 +107,6 @@
     <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="Primes.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="blocks.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>

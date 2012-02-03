@@ -41,7 +41,7 @@ Character::~Character()
 
 double round(double x)
 {
-	if( x - floor(x) >= 0.5) return ceil(x);
+	if(x - floor(x) >= 0.5) return ceil(x);
 	return floor(x);
 }
 
