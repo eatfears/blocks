@@ -137,7 +137,7 @@ LRESULT CALLBACK WndProc(  HWND  hWnd,      // Дескриптор нужного окна
 }
 
 
-int WINAPI WinMain(  HINSTANCE  hInstance,
+int WINAPI WinMain1(  HINSTANCE  hInstance,
 	HINSTANCE  hPrevInstance,
 	LPSTR    lpCmdLine,						// Параметры командной строки
 	int    nCmdShow )						// Состояние отображения окна

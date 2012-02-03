@@ -31,7 +31,11 @@ Character::Character(World& ww)
 	: wWorld(ww)
 {
 	bFalling = true;
-	for(int i = 0; i < 256; i++) bKeyboardDown[i] = true;
+	for(int i = 0; i < 256; i++) 
+	{
+		bKeyboard[i] = false;
+		bKeyboardDown[i] = true;
+	}
 }
 
 Character::~Character()

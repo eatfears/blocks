@@ -8,7 +8,7 @@ Engine *engine;
 
 void Display(void)
 {
-	engine->Display();
+	engine->Loop();
 }
 
 void Reshape(int width, int height)

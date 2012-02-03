@@ -1,7 +1,7 @@
 #include "Primes.h"
 #include <math.h>
 
-extern gsl_rng *randNumGen;
+//extern gsl_rng *randNumGen;
 
 
 Primes::Primes(void)
@@ -55,8 +55,8 @@ Int Primes::GenPrime(Int size)
 {
 	Int beg = 1;
 
-	while(beg < (Int) (1 << (size-1)))
-		beg = gsl_rng_uniform_int(randNumGen, (1 << size));
+	//while(beg < (Int) (1 << (size-1)))
+	//	beg = gsl_rng_uniform_int(randNumGen, (1 << size));
 	beg = NextPrime(beg);
 	
 	return beg;

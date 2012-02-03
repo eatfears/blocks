@@ -76,6 +76,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glut.cpp" />
+    <ClCompile Include="Engine.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Blocks_Definitions.h" />
+    <ClInclude Include="Engine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

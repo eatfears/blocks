@@ -24,7 +24,7 @@ World::~World()
 void LoadNGenerate (void*);
 void World::BuildWorld()
 {
-	
+	/*
 	Param par = {0, 0, this};
 
 	_beginthread(LoadNGenerate, 0, &par);

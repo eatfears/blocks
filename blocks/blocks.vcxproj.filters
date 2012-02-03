@@ -20,9 +20,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Character.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -30,12 +27,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="World.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="GLWindow.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Game.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Landscape.cpp">
@@ -48,6 +39,12 @@
       <Filter>Source\Landscape</Filter>
     </ClCompile>
     <ClCompile Include="Chunk.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="glut.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -70,12 +67,6 @@
     <ClInclude Include="World.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="GLWindow.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="PerlinNoise.h">
       <Filter>Headers\Landscape</Filter>
     </ClInclude>
@@ -86,6 +77,9 @@
       <Filter>Headers\Landscape</Filter>
     </ClInclude>
     <ClInclude Include="Chunk.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
