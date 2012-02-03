@@ -30,9 +30,19 @@ Character::Character(World& ww)
 	bFalling = true;
 	for(int i = 0; i < 256; i++) 
 	{
-		bKeyboardPress[i] = false;
-		bKeyboardHit[i] = true;
+		bKeyboard[i] = false;
+		bSpecial[i] = false;
 	}
+	dPositionX = 0;
+	dPositionY = 0;
+	dPositionZ = 0;
+
+	dVelocityX = 0;
+	dVelocityY = 0;
+	dVelocityZ = 0;
+
+	dSpinX = 0;
+	dSpinY = 0;
 }
 
 Character::~Character()
@@ -73,10 +83,10 @@ void Character::GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
 void Character::Control(GLdouble FrameInterval)
 {
 	GLdouble step = WALK_SPEED;
-	if(bKeyboardPress[VK_SHIFT]) step *= SPRINT_KOEF;
+	if(bSpecial[GLUT_KEY_SHIFT_L]) 
+		step *= SPRINT_KOEF;
 
-
-	if(bKeyboardPress['W']) 
+	if(bKeyboard['W']) 
 	{
 		if(!bFalling)
 		{
@@ -89,7 +99,7 @@ void Character::Control(GLdouble FrameInterval)
 			dVelocityZ -= FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
 		}
 	}
-	if(bKeyboardPress['S']) 
+	if(bKeyboard['S']) 
 	{
 		if(!bFalling)
 		{
@@ -102,7 +112,7 @@ void Character::Control(GLdouble FrameInterval)
 			dVelocityZ += FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
 		}
 	}
-	if(bKeyboardPress['D']) 
+	if(bKeyboard['D']) 
 	{
 		if(!bFalling)
 		{
@@ -115,7 +125,7 @@ void Character::Control(GLdouble FrameInterval)
 			dVelocityZ -= FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
 		}
 	}
-	if(bKeyboardPress['A']) 
+	if(bKeyboard['A']) 
 	{
 		if(!bFalling)
 		{
@@ -128,11 +138,11 @@ void Character::Control(GLdouble FrameInterval)
 			dVelocityZ += FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
 		}
 	}
-	if(bKeyboardPress['R']) 
+	if(bKeyboard['R']) 
 	{
 		dVelocityY += FrameInterval*AIR_ACCEL*step;
 	}
-	if(bKeyboardPress['F']) 
+	if(bKeyboard['F']) 
 	{
 		dVelocityY -= FrameInterval*AIR_ACCEL*step;
 	}
@@ -145,7 +155,7 @@ void Character::Control(GLdouble FrameInterval)
 		dVelocityZ = dVelocityZ*WALK_SPEED*SPRINT_KOEF/ko;
 	}
 
-	if(bKeyboardPress[VK_SPACE])
+	if(bKeyboard[VK_SPACE])
 	{
 		if(!bFalling)
 		{
@@ -155,13 +165,12 @@ void Character::Control(GLdouble FrameInterval)
 		}
 	}
 
-	if(bKeyboardPress['X'])
+	if(bKeyboard['X'])
 	{
 		dVelocityX = 0;
 		dVelocityY = 0;
 		dVelocityZ = 0;
 	}
-
 
 	GLdouble yerr, xerr, zerr;
 	GetPlane(&xerr, &yerr, &zerr);
@@ -194,7 +203,8 @@ void Character::Control(GLdouble FrameInterval)
 	int num = 100;
 	int sq = 100;
 	int sqb2 = sq/2;
-	if(bKeyboardPress['1'])
+
+	if(bKeyboard['1'])
 	{
 		int i = 0;
 		
@@ -204,7 +214,7 @@ void Character::Control(GLdouble FrameInterval)
 				i++;
 		}
 	}
-	if(bKeyboardPress['2'])
+	if(bKeyboard['2'])
 	{
 		int i = 0;
 
@@ -215,7 +225,7 @@ void Character::Control(GLdouble FrameInterval)
 		}
 	}
  
-	if(bKeyboardPress['3'])
+	if(bKeyboard['3'])
 	{
 		for(int i = -sqb2; i <= sqb2; i++)
 		for(int j = -sqb2; j <= sqb2; j++)
@@ -225,65 +235,51 @@ void Character::Control(GLdouble FrameInterval)
 		}
 	}
 
-	if(bKeyboardPress['4'])
+	if(bKeyboard['4'])
 	{
-		if(bKeyboardHit['4'])
-		{
-			wWorld.LoadChunk(0, 0);	
-			bKeyboardHit['4'] = false;
-		}
+		wWorld.LoadChunk(0, 0);	
+		bKeyboard['4'] = false;
 	}
-	if(bKeyboardPress['5'])
+	if(bKeyboard['5'])
 	{
-		if(bKeyboardHit['5'])
-		{
-			wWorld.UnLoadChunk(0, 0);	
-			bKeyboardHit['5'] = false;
-		}
+		wWorld.UnLoadChunk(0, 0);	
+		bKeyboard['5'] = false;
 	}
-	if(bKeyboardPress['6'])
+	if(bKeyboard['6'])
 	{
-		if(bKeyboardHit['6'])
-		{
-			for(int i = 0; i < 8; i++)
-				for(int j = 0; j < 8; j++)
-					wWorld.LoadChunk(i, j);
-			bKeyboardHit['6'] = false;
-		}
+		for(int i = 0; i < 8; i++)
+			for(int j = 0; j < 8; j++)
+				wWorld.LoadChunk(i, j);
+		bKeyboard['6'] = false;
 	}
-	if(bKeyboardPress['7'])
+	if(bKeyboard['7'])
 	{
-		if(bKeyboardHit['7'])
-		{
-			for(int i = 0; i < 8; i++)
-				for(int j = 0; j < 8; j++)
-					wWorld.UnLoadChunk(i, j);
-			bKeyboardHit['7'] = false;
-		}
+		for(int i = 0; i < 8; i++)
+			for(int j = 0; j < 8; j++)
+				wWorld.UnLoadChunk(i, j);
+		bKeyboard['7'] = false;
 	}
-	if(bKeyboardPress['0'])
+	if(bKeyboard['0'])
 	{
-		if(bKeyboardHit['0'])
-		{
-			static Param par = {1, 0, &wWorld};
+		static Param par = {1, 0, &wWorld};
 
-			 _beginthread(LoadNGenerate, 0, &par);
+			_beginthread(LoadNGenerate, 0, &par);
 
-			WaitForSingleObject(wWorld.parget2, INFINITE);
-			ResetEvent(wWorld.parget2);
+		WaitForSingleObject(wWorld.parget2, INFINITE);
+		ResetEvent(wWorld.parget2);
 
-			par.x++;
+		par.x++;
 
-			bKeyboardHit['0'] = false;
-		}
+		bKeyboard['0'] = false;
+		
 	}
 
-	if(bKeyboardPress['E']) 
+	if(bKeyboard['E']) 
 	{
 		wWorld.RemoveBlock(sCenterBlockCoordX,sCenterBlockCoordY,sCenterBlockCoordZ, true);
 	}
 
-	if(bKeyboardPress['Q']) 
+	if(bKeyboard['Q']) 
 	{
 		signed short ix = sCenterBlockCoordX, iy = sCenterBlockCoordY, iz = sCenterBlockCoordZ;
 		if((zerr < xerr)&&(zerr < yerr))

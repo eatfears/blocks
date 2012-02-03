@@ -253,10 +253,7 @@ void Engine::Keyboard(unsigned char button, int x, int y, bool KeyDown)
 	case VK_ESCAPE: glutExit();
 		break;
 	default:
-		{
-			player.bKeyboardPress[button] = KeyDown;
-			if(!KeyDown) player.bKeyboardHit[button] = true;
-		}
+		player.bKeyboard[button] = KeyDown;
 		break;
 	}
 }
@@ -559,14 +556,19 @@ void Engine::GetFrameTime()
 
 void Engine::Special(int button, int x, int y, bool KeyDown)
 {
-	if(KeyDown)
 	switch(button)
 	{
-	case GLUT_KEY_F1: 	if(!fullscreen) glutFullScreenToggle(); 
-						else glutLeaveFullScreen();
-						fullscreen = !fullscreen;
+	case GLUT_KEY_F1: 	
+		if(KeyDown)
+		{
+			if(!fullscreen) glutFullScreenToggle(); 
+			else glutLeaveFullScreen();
+			fullscreen = !fullscreen;
+		}
 		break;
 //	case GLUT_KEY_F2: 	glutLeaveGameMode();
 //		break;
+	default: 
+		player.bSpecial[button] = KeyDown;
 	}
 }
