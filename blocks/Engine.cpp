@@ -250,7 +250,7 @@ void Engine::Keyboard(unsigned char button, int x, int y, bool KeyDown)
 {
 	switch(button)
 	{
-	case VK_ESCAPE: exit(0);
+	case VK_ESCAPE: glutExit();
 		break;
 	default:
 		{
@@ -562,8 +562,8 @@ void Engine::Special(int button, int x, int y, bool KeyDown)
 	if(KeyDown)
 	switch(button)
 	{
-	case GLUT_KEY_F1: 	if(!fullscreen) glutFullScreen(); 
-						else glutReshapeWindow(RESX, RESY);
+	case GLUT_KEY_F1: 	if(!fullscreen) glutFullScreenToggle(); 
+						else glutLeaveFullScreen();
 						fullscreen = !fullscreen;
 		break;
 //	case GLUT_KEY_F2: 	glutLeaveGameMode();

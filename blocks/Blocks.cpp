@@ -1,5 +1,5 @@
 #include "Blocks_Definitions.h"
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 #include "Engine.h"
 
 Engine *engine;
@@ -19,7 +19,7 @@ void MouseEntry (int state) { if (state == GLUT_ENTERED){} }
 
 void GlutInit()
 {
-	glutIgnoreKeyRepeat(1);						// disable key repeat mode
+	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF) ;
 
 	glutKeyboardFunc(KeyboardDown);
 	glutKeyboardUpFunc(KeyboardUp);
