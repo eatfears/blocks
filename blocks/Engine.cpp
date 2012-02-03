@@ -3,6 +3,8 @@
 #include <time.h>
 #include <Mmsystem.h>
 
+GLfloat fogColor[4]= {FOG_COLOR};
+
 Engine::Engine(void)
 	:player(wWorld)
 {
@@ -22,7 +24,7 @@ Engine::~Engine(void)
 
 int Engine::Init()
 {
-	player.dPositionY = 10;//100*BLOCK_SIZE+00.0;
+	player.dPositionY = 100*BLOCK_SIZE+00.0;
 	player.dSpinY = -90 - 45;
 	glutSetCursor(GLUT_CURSOR_NONE);							//Выставляем на НЕТ КУРСОР
 
@@ -56,9 +58,7 @@ int Engine::Init()
 void Engine::Reshape( int width, int height )
 {
 	if( height == 0 )											// Предотвращение деления на ноль 
-	{
 		height = 1;
-	}
 
 	glViewport( 0, 0, width, height );							// Сброс текущей области вывода
 	glMatrixMode( GL_PROJECTION );								// Выбор матрицы проекций
@@ -89,16 +89,138 @@ void Engine::Display()
 	glRotated( -player.dSpinX, 1.0, 0.0, 0.0 );
 	glRotated( -player.dSpinY, 0.0, 1.0, 0.0 );
 	glTranslated(-player.dPositionX, -player.dPositionY, -player.dPositionZ);
+	
 
+	/*
+	GLfloat material_diffuse[] = {1.0, 1.0, 1.0, 1.0};
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, material_diffuse);
+	
+	glTranslated(0, 30, 0);
+	GLfloat light2_diffuse[] = {0.9f, 0.9f, 0.9f};
+	GLfloat light2_position[] = {0.0f, 0.0f, 0.0f, 1.0f};
+	glEnable(GL_LIGHT2);
+	glLightfv(GL_LIGHT2, GL_DIFFUSE, light2_diffuse);
+	glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
+	glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.0);
+	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.0);
+	glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0);
+	glTranslated(0, -30, 0);
+	*/
+	//glBlendFunc(GL_ONE, GL_ONE);
+
+	glEnable(GL_FOG);
+	glFogi(GL_FOG_MODE,  GL_LINEAR);		//Тип тумана
+	glFogfv(GL_FOG_COLOR, fogColor);
+	glFogf(GL_FOG_DENSITY, FOG_DENSITY);	//Насколько густым будет туман
+	glHint(GL_FOG_HINT, GL_DONT_CARE);		//Вспомогательная установка тумана
+	glFogf(GL_FOG_START, FOG_START);		//Глубина, с которой начинается туман
+	glFogf(GL_FOG_END, MAX_VIEV_DIST);		//Глубина, где туман заканчивается
 
 	GLdouble dBrightness = 1.0;
 	glColor3d(dBrightness, dBrightness, dBrightness);
 
+	BlockInChunk x, y, z;
+	GLuint *tex = wWorld.MaterialLib.texture;
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindTexture(GL_TEXTURE_2D, tex[0]);
 	glBegin(GL_QUADS);
 
-	glutSolidCube(5);
+	auto loc = wWorld.Chunks.begin();
+
+	for(int i = 0; i < 6; i++)
+	{
+		loc = wWorld.Chunks.begin();
+#ifndef _DEBUG
+		_try 
+		{
+#endif // _DEBUG
+
+			while(loc != wWorld.Chunks.end())
+			{
+
+				auto it = loc->DisplayedTiles[i].begin();
+
+				while(it != loc->DisplayedTiles[i].end())
+				{
+#ifndef _DEBUG
+					_try 
+					{
+#endif // _DEBUG
+
+						loc->GetBlockPositionByPointer(*it, &x, &y, &z);
+
+
+						GLdouble br;
+						BlockInWorld	
+							xx = x + loc->x*CHUNK_SIZE_XZ,
+							yy = y,
+							zz = z + loc->z*CHUNK_SIZE_XZ;
+						BlockInWorld
+							xlight = x, ylight = y, zlight = z;
+						BlockInChunk 
+							xloclight, 
+							yloclight, 
+							zloclight;
+
+						switch(i)
+						{
+						case TOP:		ylight++; break;
+						case BOTTOM:	ylight--; break;
+						case RIGHT:		xlight++; break;
+						case LEFT:		xlight--; break;
+						case FRONT:		zlight--; break;
+						case BACK:		zlight++; break;
+						}
+						Chunk *temploc;
+						if((xlight >= CHUNK_SIZE_XZ)||(xlight < 0)||(zlight >= CHUNK_SIZE_XZ)||(zlight < 0))
+							temploc = wWorld.GetChunkByBlock(xlight + loc->x*CHUNK_SIZE_XZ, zlight + loc->z*CHUNK_SIZE_XZ);
+						else temploc = &*loc;
+						if(temploc)
+						{
+							wWorld.GetPosInChunkByWorld(xlight, ylight, zlight, &xloclight, &yloclight, &zloclight);
+							int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
+							//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
+
+							//	loc->GetIndexByPosition(sXcoord, sYcoord+1, sZcoord);
+							br = 0.2 + temploc->SkyLight[index];
+							glColor3d(br, br, br);
+						}
+
+						if(	(abs(xx*BLOCK_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
+							(abs(yy*BLOCK_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
+							(abs(zz*BLOCK_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*BLOCK_SIZE))
+							DrawTile(xx, yy, zz, (*it)->cMaterial, i);
+
+						++it;
+#ifndef _DEBUG
+					}
+					_except (EXCEPTION_EXECUTE_HANDLER)
+					{
+						break;
+					}
+#endif // _DEBUG
+				}
+				++loc;
+			}
+#ifndef _DEBUG
+		}
+		_except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			glEnd();
+			glDisable(GL_FOG);
+			glDisable(GL_LIGHT2);
+			return;
+		}
+#endif // _DEBUG
+	}
+
+#ifdef DEBUG_OUT
+	FILE *out;
+	out = fopen(DEBUG_FILE, "w");
+	fprintf(out,"Debug\n");
+	fclose(out);
+#endif
 
 	glEnd();
 
@@ -173,6 +295,18 @@ void Engine::MouseMotion( int x, int y )
 		Lastx = x;
 		Lasty = y;
 	}
+}
+
+void Engine::MouseButton( int button, int state, int x, int y )
+{
+// 	switch(button)
+// 	{
+// 	case GLUT_LEFT_BUTTON:
+// 		if (state==GLUT_DOWN) glutIdleFunc(spinDisplay); break;
+// 
+// 	case GLUT_RIGHT_BUTTON: 
+// 		if (state==GLUT_DOWN) glutIdleFunc(NULL); break;
+// 	}
 }
 
 void Engine::InitGame()// GLWindow *glwWnd )

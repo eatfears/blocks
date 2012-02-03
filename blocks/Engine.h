@@ -21,7 +21,8 @@ public:
 	void Display();
 	void Keyboard(unsigned char button, int x, int y, bool KeyUp);
 	void MouseMotion(int x, int y);
-
+	void MouseButton( int button, int state, int x, int y );
+	
 
 	int width, height;
 

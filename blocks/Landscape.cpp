@@ -54,7 +54,7 @@ void Landscape::Generate(Chunk &chunk)
 			for(int j = 0; j < CHUNK_SIZE_Y; j++)
 			{
 				by = j/scaleBubblesY;
-				dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ] = (BubblesAmp)*pnBubbles.PerlinNoise3d(bx, by, bz);
+				dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ] = 0;// (BubblesAmp)*pnBubbles.PerlinNoise3d(bx, by, bz);
 			}
 		}
 	}

@@ -5,60 +5,16 @@
 
 Engine *engine;
 
+void Display(void) { engine->Loop(); }
+void Reshape(int width, int height) { engine->Reshape(width, height); }
+void MouseMotion(int x, int y) { engine->MouseMotion(x, y); }
+void MouseButton(int button,int state,int x,int y) { engine->MouseButton(button, state, x, y); }
+void Keyboard(unsigned char button, int x, int y) { engine->Keyboard(button, x, y, false); }
+void KeyboardUp(unsigned char button, int x, int y) { engine->Keyboard(button, x, y, true); }
+void MouseEntry (int state) { if (state == GLUT_ENTERED){} }
 
-void Display(void)
-{
-	engine->Loop();
-}
-
-void Reshape(int width, int height)
-{
-	engine->Reshape(width, height);
-}
-
-void MouseButton(int button,int state,int x,int y)
-{
-//	switch(button)
-//	{
-// 	case GLUT_LEFT_BUTTON:
-// 		if (state==GLUT_DOWN) glutIdleFunc(spinDisplay); break;
-// 
-// 	case GLUT_RIGHT_BUTTON: 
-// 		if (state==GLUT_DOWN) glutIdleFunc(NULL); break;
-//	}
-}
-
-void Keyboard(unsigned char button, int x, int y)
-{
-	engine->Keyboard(button, x, y, false);
-}
-
-void KeyboardUp(unsigned char button, int x, int y)
-{
-	engine->Keyboard(button, x, y, true);
-}
-
-void MouseEntry ( int state )
-{
-	if (state == GLUT_ENTERED){}
-}
-
-void idle(void)
-{
-	//glutPostWindowRedisplay(currentWindow);
-	glutPostRedisplay();
-}
-
-void visible(int vis)
-{
-	glutIdleFunc(idle);
-}
-
-
-void MouseMotion(int x, int y)
-{
-	engine->MouseMotion(x, y);
-}
+void idle(void) { glutPostRedisplay(); }
+void visible(int vis) { glutIdleFunc(idle); }
 
 int main(int argc, char **argv)
 {
@@ -70,12 +26,13 @@ int main(int argc, char **argv)
 
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB);
-	glutInitWindowSize(250,250);
-	glutInitWindowPosition(100,100);
-	glutCreateWindow("Glut");
+	glutInitWindowSize(RESX, RESY);
+	glutInitWindowPosition(0, 0);
+	glutCreateWindow("Blocks");
 
 	engine = new Engine();
 	engine->Init();
+	engine->InitGame();
 
 // 	glutGameModeString("1280x1024:16@60"); //Переход в полноэкранный режим
 // 	glutEnterGameMode(); //Собственно сам переход
