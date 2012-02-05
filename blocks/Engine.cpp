@@ -4,11 +4,16 @@
 
 GLfloat fogColor[4]= {FOG_COLOR};
 
+GLuint list;
+
 Engine::Engine()
 	:player(wWorld)
 {
+
 	bMousing = false;
 	fullscreen = false;
+
+
 }
 
 Engine::~Engine()
@@ -48,6 +53,8 @@ int Engine::InitGL()
 	//автоматическое приведение нормалей к единичной длине
 	glEnable(GL_NORMALIZE);
 
+	list = glGenLists(1);
+	GLenum i = glGetError();
 	return true;	
 }
 
@@ -118,6 +125,12 @@ void Engine::Display()
 	static GLuint *tex = wWorld.MaterialLib.texture;
 
 	glBindTexture(GL_TEXTURE_2D, tex[0]);
+
+if(player.bKeyboard['Z'])
+{
+	player.bKeyboard['Z'] = 0;
+	glNewList(list, GL_COMPILE);
+
 	glBegin(GL_QUADS);
 
 	auto loc = wWorld.Chunks.begin();
@@ -242,7 +255,12 @@ void Engine::Display()
 #endif
 
 	glEnd();
+	glEndList();
+	//if(!glIsList(list)) //exit(1);
+	//int error = glGetError();
 
+}
+	glCallList(list);
 
 	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
