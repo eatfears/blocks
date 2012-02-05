@@ -112,17 +112,25 @@ void Engine::Display()
 	glFogf(GL_FOG_START, FOG_START);		//Глубина, с которой начинается туман
 	glFogf(GL_FOG_END, MAX_VIEV_DIST);		//Глубина, где туман заканчивается
 
-	GLdouble dBrightness = 1.0;
-	glColor3d(dBrightness, dBrightness, dBrightness);
+	glColor3d(1.0, 1.0, 1.0);
 
-	BlockInChunk x, y, z;
-	GLuint *tex = wWorld.MaterialLib.texture;
-
+	static BlockInChunk x, y, z;
+	static GLuint *tex = wWorld.MaterialLib.texture;
 
 	glBindTexture(GL_TEXTURE_2D, tex[0]);
 	glBegin(GL_QUADS);
 
 	auto loc = wWorld.Chunks.begin();
+
+	static GLfloat br;
+	static BlockInWorld xx, yy, zz;
+	static BlockInWorld xlight, ylight, zlight;
+	static BlockInChunk 
+		xloclight, 
+		yloclight, 
+		zloclight;
+	static Chunk *temploc;
+	static BlockInWorld locx, locz;
 
 	for(int i = 0; i < 6; i++)
 	{
@@ -134,6 +142,8 @@ void Engine::Display()
 
 			while(loc != wWorld.Chunks.end())
 			{
+				locx = loc->x*CHUNK_SIZE_XZ;
+				locz = loc->z*CHUNK_SIZE_XZ;
 
 				auto it = loc->DisplayedTiles[i].begin();
 
@@ -143,34 +153,47 @@ void Engine::Display()
 					_try 
 					{
 #endif // _DEBUG
-
 						loc->GetBlockPositionByPointer(*it, &x, &y, &z);
 
-
-						GLdouble br;
-						BlockInWorld	
-							xx = x + loc->x*CHUNK_SIZE_XZ,
-							yy = y,
-							zz = z + loc->z*CHUNK_SIZE_XZ;
-						BlockInWorld
-							xlight = x, ylight = y, zlight = z;
-						BlockInChunk 
-							xloclight, 
-							yloclight, 
-							zloclight;
-
+						xx = x + locx;
+						yy = y;
+						zz = z + locz;
+						
 						switch(i)
 						{
-						case TOP:		ylight++; break;
-						case BOTTOM:	ylight--; break;
-						case RIGHT:		xlight++; break;
-						case LEFT:		xlight--; break;
-						case FRONT:		zlight--; break;
-						case BACK:		zlight++; break;
+						case TOP:
+							xlight = x;
+							ylight = y + 1;
+							zlight = z;
+							break;
+						case BOTTOM:
+							xlight = x;
+							ylight = y - 1;
+							zlight = z;
+							break;
+						case RIGHT:
+							xlight = x + 1;
+							ylight = y;
+							zlight = z;
+							break;
+						case LEFT:
+							xlight = x - 1;
+							ylight = y;
+							zlight = z;
+							break;
+						case FRONT:
+							xlight = x;
+							ylight = y;
+							zlight = z - 1;
+							break;
+						case BACK:
+							xlight = x;
+							ylight = y;
+							zlight = z + 1;
+							break;
 						}
-						Chunk *temploc;
 						if((xlight >= CHUNK_SIZE_XZ)||(xlight < 0)||(zlight >= CHUNK_SIZE_XZ)||(zlight < 0))
-							temploc = wWorld.GetChunkByBlock(xlight + loc->x*CHUNK_SIZE_XZ, zlight + loc->z*CHUNK_SIZE_XZ);
+							temploc = wWorld.GetChunkByBlock(xlight + locx, zlight + locz);
 						else temploc = &*loc;
 						if(temploc)
 						{
@@ -179,9 +202,9 @@ void Engine::Display()
 							//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
 
 							//	loc->GetIndexByPosition(sXcoord, sYcoord+1, sZcoord);
-							br = 0.2 + temploc->SkyLight[index];
-							glColor3d(br, br, br);
-						}
+							br = 0.2f + temploc->SkyLight[index];
+							glColor3f(br, br, br);
+						}else glColor3f(0.0f, 0.0f, 0.0f);
 
 						if(	(abs(xx*BLOCK_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
 							(abs(yy*BLOCK_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
@@ -334,7 +357,7 @@ void Engine::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld s
 	static double space = 0.0005;
 	static double offsetx;
 	static double offsety;
-
+	
 	wWorld.MaterialLib.GetTextureOffsets(offsetx, offsety, material, N);
 
 	switch(N)
@@ -481,7 +504,7 @@ void Engine::DrawInterface()
 	glLoadIdentity();
 
 	//Рисование прицела
-	glTranslated(0, 0, -0.1);
+	glTranslated(0, 0, -0.11);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glColor3d(1.0, 1.0, 1.0);
 	glLineWidth (2.0);
@@ -492,7 +515,7 @@ void Engine::DrawInterface()
 	glVertex2d(-0.001,0.0);
 	glVertex2d(0.001,0.0);
 	glEnd();
-	glTranslated(0, 0, 0.1);
+	glTranslated(0, 0, 0.11);
 }
 
 void Engine::Loop()
