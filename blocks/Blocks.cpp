@@ -71,8 +71,8 @@ int main(int argc, char **argv)
 		exit(1);
 	*/
 
-	engine->InitGame();
 	engine->InitGL();
+	engine->InitGame();
 
 	GlutInit();
 	glutMainLoop();

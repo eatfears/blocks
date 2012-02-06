@@ -46,3 +46,5 @@ typedef unsigned short	BlockInChunk;
 typedef signed short	ChunkInWorld;
 typedef signed short	BlockInWorld;
 
+#define GL_EXECUTE		0x1302
+

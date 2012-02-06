@@ -453,7 +453,7 @@ void LoadChunkThread(void* pParams)
 	DWORD dwWaitResult; 
 	//auto loc = wWorld.AddLocation(x,z);
 
-	Chunk *loc = new Chunk(x, z, wWorld.MaterialLib, wWorld.lLandscape);
+	Chunk *loc = new Chunk(x, z, wWorld);
 
 	loc->Generate();
 	//loc->lLandscape.Fill(*loc, 0, 0.999, 64);

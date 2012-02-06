@@ -1,7 +1,8 @@
 #include "Chunk.h"
+#include "World.h"
 
-Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, MaterialLibrary& MLib, Landscape& lLand)
-	: MaterialLib(MLib), lLandscape(lLand)
+Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
+	: wWorld(wrld)
 {
 	Chunk::x = x; Chunk::z = z;
 
@@ -9,6 +10,7 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, MaterialLibrary& MLib, Landscape& l
 	SkyLight = new char[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
 
 	DisplayedTiles = new std::list<Block *>[6];
+	DisplayedWaterTiles = new std::list<Block *>[6];
 	
 	for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
 	{	
@@ -18,6 +20,7 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, MaterialLibrary& MLib, Landscape& l
 			bBlocks[i].bVisible[N] = false;
 	}
 	bVisible = false;
+	listgen = false;
 
 	mutex = CreateMutex(NULL, false, NULL);
 }
@@ -28,6 +31,9 @@ Chunk::~Chunk()
 	delete[] SkyLight;
 
 	delete[] DisplayedTiles;
+	delete[] DisplayedWaterTiles;
+
+	glDeleteLists(RenderList, 2);
 }
 
 int Chunk::AddBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z, char mat)
@@ -57,7 +63,14 @@ void Chunk::ShowTile(Block *bBlock, char N)
 	if(bBlock->cMaterial == MAT_NO) return;
 	if(bBlock->bVisible[N]) return;
 	
-	DisplayedTiles[N].push_back(bBlock);
+
+	std::list<Block *> *Tiles;
+	if(bBlock->cMaterial == MAT_WATER)
+		Tiles = &DisplayedWaterTiles[N];
+	else
+		Tiles = &DisplayedTiles[N];
+
+	Tiles->push_back(bBlock);
 		
 	bBlock->bVisible[N] = true;
 }
@@ -68,17 +81,23 @@ void Chunk::HideTile(Block *bBlock, char N)
 	if(bBlock->cMaterial == MAT_NO) return;
 	if(!bBlock->bVisible[N]) return;
 
-	auto it = DisplayedTiles[N].begin();
+	std::list<Block *> *Tiles;
+	if(bBlock->cMaterial == MAT_WATER)
+		Tiles = &DisplayedWaterTiles[N];
+	else
+		Tiles = &DisplayedTiles[N];
 
-	while(it != DisplayedTiles[N].end())
+	auto it = Tiles->begin();
+
+	while(it != Tiles->end())
 	{
 		if(*it == bBlock) break;
 		++it;
 	}
-	if(it == DisplayedTiles[N].end()) return;
+	if(it == Tiles->end()) return;
 
 	(*it)->bVisible[N] = false;
-	DisplayedTiles[N].erase(it);
+	Tiles->erase(it);
 	return;
 }
 
@@ -175,7 +194,7 @@ void Chunk::DrawLoadedBlocks()
 
 void Chunk::Generate()
 {
-	lLandscape.Generate(*this);
+	wWorld.lLandscape.Generate(*this);
 }
 
 void Chunk::FillSkyLight(char bright)
@@ -198,5 +217,222 @@ void Chunk::FillSkyLight(char bright)
 				y--;
 			}
 		}
+	}
+}
+
+void Chunk::Render(GLenum mode, char mat)
+{
+	if(!listgen)
+	{
+		// 1 - solid tiles
+		// 2 - water tiles
+		RenderList = glGenLists(2);
+		listgen = true;
+	}
+
+	if((mode == GL_COMPILE)||(mode == GL_COMPILE_AND_EXECUTE))
+	{
+		if(mat == MAT_WATER)
+			glNewList(RenderList + 1, mode);
+		else
+			glNewList(RenderList, mode);
+
+		std::list<Block *> *Tiles;
+		static GLfloat br;
+		static BlockInChunk cx, cy, cz;
+		static BlockInWorld xx, yy, zz;
+		static BlockInWorld locx, locz;
+		static BlockInWorld xlight, ylight, zlight;
+		static BlockInChunk 
+			xloclight, 
+			yloclight, 
+			zloclight;
+		static Chunk *temploc;
+
+		glBegin(GL_QUADS);
+
+		for(int i = 0; i < 6; i++)
+		{
+			locx = x*CHUNK_SIZE_XZ;
+			locz = z*CHUNK_SIZE_XZ;
+
+
+			if(mat == MAT_WATER)
+				Tiles = &DisplayedWaterTiles[i];
+			else
+				Tiles = &DisplayedTiles[i];
+
+			auto it = Tiles->begin();
+
+			while(it != Tiles->end())
+			{
+				GetBlockPositionByPointer(*it, &cx, &cy, &cz);
+
+				xx = cx + locx;
+				yy = cy;
+				zz = cz + locz;
+
+				switch(i)
+				{
+				case TOP:
+					xlight = cx;
+					ylight = cy + 1;
+					zlight = cz;
+					break;
+				case BOTTOM:
+					xlight = cx;
+					ylight = cy - 1;
+					zlight = cz;
+					break;
+				case RIGHT:
+					xlight = cx + 1;
+					ylight = cy;
+					zlight = cz;
+					break;
+				case LEFT:
+					xlight = cx - 1;
+					ylight = cy;
+					zlight = cz;
+					break;
+				case FRONT:
+					xlight = cx;
+					ylight = cy;
+					zlight = cz - 1;
+					break;
+				case BACK:
+					xlight = cx;
+					ylight = cy;
+					zlight = cz + 1;
+					break;
+				}
+			
+				if((xlight >= CHUNK_SIZE_XZ)||(xlight < 0)||(zlight >= CHUNK_SIZE_XZ)||(zlight < 0))
+					temploc = wWorld.GetChunkByBlock(xlight + locx, zlight + locz);
+				else temploc = this;
+				if(temploc)
+				{
+					wWorld.GetPosInChunkByWorld(xlight, ylight, zlight, &xloclight, &yloclight, &zloclight);
+					int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
+					//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
+
+					br = 0.2f + temploc->SkyLight[index];
+					glColor3f(br, br, br);
+				}else glColor3f(0.0f, 0.0f, 0.0f);
+			
+	// 			if(	(abs(xx*BLOCK_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
+	// 				(abs(yy*BLOCK_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
+	// 				(abs(zz*BLOCK_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*BLOCK_SIZE))
+					DrawTile(xx, yy, zz, (*it)->cMaterial, i);
+
+				++it;
+			}
+		}
+		glEnd();
+
+		glEndList();
+	}
+
+	if(mode != GL_COMPILE_AND_EXECUTE)
+	{
+		if(mat == MAT_WATER)
+			glCallList(RenderList + 1);
+		else
+			glCallList(RenderList);
+	}
+}
+
+void Chunk::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char N)
+{
+	GLdouble 
+		// 		dXcoord = (sXcoord-player.lnwPositionX*LOCATION_SIZE_XZ)*TILE_SIZE, 
+		// 		dYcoord = sYcoord*TILE_SIZE, 
+		// 		dZcoord = (sZcoord-player.lnwPositionZ*LOCATION_SIZE_XZ)*TILE_SIZE;
+		dXcoord = sXcoord*BLOCK_SIZE, 
+		dYcoord = sYcoord*BLOCK_SIZE, 
+		dZcoord = sZcoord*BLOCK_SIZE;
+
+	dXcoord -= BLOCK_SIZE/2;
+	dZcoord -= BLOCK_SIZE/2;
+
+	static double space = 0.0005;
+	static double offsetx = 0;
+	static double offsety = 0;
+
+	wWorld.MaterialLib.GetTextureOffsets(offsetx, offsety, material, N);
+
+	switch(N)
+	{
+	case TOP:
+		{
+			//Верхняя грань
+			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord);
+			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
+			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord);
+		}break;
+	case BOTTOM:
+		{
+			//Нижняя грань
+			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord, dYcoord, dZcoord);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord);
+			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord + BLOCK_SIZE);
+			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord, dYcoord, dZcoord + BLOCK_SIZE);
+		}break;
+	case RIGHT:
+		{
+			//Правая грань
+			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord);
+			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
+			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord + BLOCK_SIZE);
+		}break;
+	case LEFT:
+		{
+			//Левая грань
+			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord, dYcoord, dZcoord);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord, dYcoord, dZcoord + BLOCK_SIZE);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
+			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord);
+		}break;
+	case BACK:
+		{
+			//Задняя грань
+			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord, dYcoord, dZcoord + BLOCK_SIZE);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord + BLOCK_SIZE);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
+			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
+		}break;
+	case FRONT:
+		{
+			//Передняя грань
+			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord, dYcoord, dZcoord);
+			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord);
+			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord);
+			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
+			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord);
+		}break;
 	}
 }
