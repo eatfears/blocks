@@ -1,6 +1,12 @@
 #include "Chunk.h"
 #include "World.h"
 
+float LightTable[16] = {
+	0.000f, 0.044f, 0.055f, 0.069, 
+	0.086f, 0.107f, 0.134f, 0.168f, 
+	0.210f, 0.262f, 0.328f, 0.410f, 
+	0.512f, 0.640f, 0.800f, 1.000f};
+
 Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
 	: wWorld(wrld)
 {
@@ -333,8 +339,8 @@ void Chunk::Render(GLenum mode, char mat)
 					int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
 					//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
 
-					br = 0.2f + temploc->SkyLight[index];
-				}else br = 0.2f;
+					br = LightTable[temploc->SkyLight[index]];
+				}else br = 0.0f;
 				glColor3f(br, br, br);
 			
 	// 			if(	(abs(xx*BLOCK_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
