@@ -47,7 +47,7 @@ void GlutInit()
 int main(int argc, char **argv)
 {
 
-#ifdef _WIN32 
+#ifdef _WIN32
 	HWND console = GetConsoleWindow();
 	ShowWindow(console, SW_HIDE);
 #endif

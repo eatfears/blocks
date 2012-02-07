@@ -130,15 +130,21 @@ void Engine::Display()
 	auto loc = wWorld.Chunks.begin();
 	while(loc != wWorld.Chunks.end())
 	{
+#ifndef _DEBUG
 		_try 
 		{
+#endif // _DEBUG
+
 			loc->Render(mod, MAT_NO);
 			loc++;
+
+#ifndef _DEBUG
 		}
 		_except (EXCEPTION_EXECUTE_HANDLER)
 		{
 			break;
 		}
+#endif // _DEBUG
 	}
 
 
@@ -151,15 +157,21 @@ void Engine::Display()
 	loc = wWorld.Chunks.begin();
 	while(loc != wWorld.Chunks.end())
 	{
+#ifndef _DEBUG
 		_try 
 		{
+#endif // _DEBUG
+
 			loc->Render(mod, MAT_WATER);
 			loc++;
+
+#ifndef _DEBUG
 		}
 		_except (EXCEPTION_EXECUTE_HANDLER)
 		{
 			break;
 		}
+#endif // _DEBUG
 	}
 
 	glDisable(GL_ALPHA_TEST);
