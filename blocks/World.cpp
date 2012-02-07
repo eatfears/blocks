@@ -113,13 +113,13 @@ Chunk* World::GetChunkByBlock(BlockInWorld x, BlockInWorld z)
 
 	while(loc != Chunks.end())
 	{
-		if((loc->x == locx)&&(loc->z == locz)) break;
+		if(((*loc)->x == locx)&&((*loc)->z == locz)) break;
 		++loc;
 	}
 	if(loc == Chunks.end())
 		return NULL;
 
-	return &*loc;
+	return *loc;
 }
 
 void World::DrawLoadedBlocksFinish(Chunk &loc)

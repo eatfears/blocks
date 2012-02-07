@@ -19,7 +19,7 @@ public:
 	~World();
 
 	MaterialLibrary MaterialLib;
-	std::list<Chunk> Chunks;
+	std::list<Chunk *> Chunks;
 	Landscape lLandscape;
 
 	void BuildWorld();

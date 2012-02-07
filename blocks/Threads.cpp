@@ -31,13 +31,10 @@ void LoadChunkThread(void* pParams)
 	loc->FillSkyLight(15);
 
 	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
-	wWorld.Chunks.push_front(*loc);
+	wWorld.Chunks.push_front(loc);
 	ReleaseMutex(wWorld.mutex);
 
-
 	wWorld.DrawLoadedBlocksFinish(*loc);
-
-	loc->NeedToRender = true;
 
 	// 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
 	// 	LocationPosiion lp = {x, z};
@@ -79,11 +76,11 @@ void UnLoadChunkThread(void* pParams)
 
 	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 
-	auto loc= wWorld.Chunks.begin();
+	auto loc = wWorld.Chunks.begin();
 
 	while(loc != wWorld.Chunks.end())
 	{
-		if((loc->x == x)&&(loc->z == z)) break;
+		if(((*loc)->x == x)&&((*loc)->z == z)) break;
 		++loc;
 	}
 	if(loc == wWorld.Chunks.end()) 
@@ -111,7 +108,9 @@ void UnLoadChunkThread(void* pParams)
 		return;
 	}
 
-	dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
+	dwWaitResult = WaitForSingleObject((*loc)->mutex, INFINITE);
+
+	delete *loc;
 	wWorld.Chunks.erase(loc);
 
 	wWorld.DrawUnLoadedBlocks(x, z);

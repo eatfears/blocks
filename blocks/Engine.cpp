@@ -134,8 +134,8 @@ void Engine::Display()
 		{
 #endif // _DEBUG
 
-			loc->Render(mod, MAT_NO);
-			loc++;
+			(*loc)->Render(mod, MAT_NO);
+			++loc;
 
 #ifndef _DEBUG
 		}
@@ -161,8 +161,8 @@ void Engine::Display()
 		{
 #endif // _DEBUG
 
-			loc->Render(mod, MAT_WATER);
-			loc++;
+			(*loc)->Render(mod, MAT_WATER);
+			++loc;
 
 #ifndef _DEBUG
 		}

@@ -73,6 +73,8 @@ void Chunk::ShowTile(Block *bBlock, char N)
 	Tiles->push_back(bBlock);
 		
 	bBlock->bVisible[N] = true;
+	
+	NeedToRender = true;
 }
 
 void Chunk::HideTile(Block *bBlock, char N)
@@ -98,6 +100,8 @@ void Chunk::HideTile(Block *bBlock, char N)
 
 	(*it)->bVisible[N] = false;
 	Tiles->erase(it);
+
+	NeedToRender = true;
 	return;
 }
 
@@ -233,7 +237,9 @@ void Chunk::Render(GLenum mode, char mat)
 	if(NeedToRender)
 	{
 		mode = GL_COMPILE;
-		NeedToRender = false;
+
+		if(mat == MAT_WATER)
+			NeedToRender = false;
 	}
 
 	if((mode == GL_COMPILE)||(mode == GL_COMPILE_AND_EXECUTE))
