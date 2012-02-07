@@ -19,7 +19,7 @@ public:
 	~World();
 
 	MaterialLibrary MaterialLib;
-	std::list<Chunk *> Chunks;
+	std::list<Chunk *> *Chunks;
 	Landscape lLandscape;
 
 	void BuildWorld();
@@ -48,4 +48,6 @@ public:
 	HANDLE parget2;
 	HANDLE mutex;
 	HANDLE semaphore;
+
+	unsigned long Hash(ChunkInWorld x, ChunkInWorld z);
 };

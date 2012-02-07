@@ -9,6 +9,8 @@ World::World()
 {
 	skipbuild = false;
 
+	Chunks = new std::list<Chunk *>[HASH_SIZE];
+
 	parget = CreateEvent(NULL, false, false, NULL);
 	parget2 = CreateEvent(NULL, false, false, NULL);
 	mutex = CreateMutex(NULL, false, NULL);
@@ -17,7 +19,10 @@ World::World()
 
 World::~World()
 {
-	Chunks.clear();
+	for(int i = 0; i < HASH_SIZE; i++)
+		Chunks[i].clear();
+
+	delete[] Chunks;
 }
 
 void World::BuildWorld()
@@ -109,14 +114,15 @@ Chunk* World::GetChunkByBlock(BlockInWorld x, BlockInWorld z)
 	ChunkInWorld locx, locz;
 	GetChunkByBlock(x, z, &locx, &locz);
 
-	auto loc = Chunks.begin();
+	unsigned long bin = Hash(locx, locz);
+	auto loc = Chunks[bin].begin();
 
-	while(loc != Chunks.end())
+	while(loc != Chunks[bin].end())
 	{
 		if(((*loc)->x == locx)&&((*loc)->z == locz)) break;
 		++loc;
 	}
-	if(loc == Chunks.end())
+	if(loc == Chunks[bin].end())
 		return NULL;
 
 	return *loc;
@@ -506,4 +512,9 @@ void World::UnLoadChunk(ChunkInWorld x, ChunkInWorld z)
 		par.z++;
 	}
 	/**/
+}
+
+unsigned long World::Hash(ChunkInWorld x, ChunkInWorld z)
+{
+	return (x + z*HASH_SIZE)&(HASH_SIZE-1);
 }

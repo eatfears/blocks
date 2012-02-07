@@ -18,6 +18,12 @@ void LoadChunkThread(void* pParams)
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 #endif // _WIN32
 
+	if(wWorld.GetChunkByBlock(x*CHUNK_SIZE_XZ, z*CHUNK_SIZE_XZ))
+	{
+		ReleaseSemaphore(wWorld.semaphore, 1, NULL);
+		_endthread();
+	}
+
 	DWORD dwWaitResult; 
 	//auto loc = wWorld.AddLocation(x,z);
 
@@ -31,7 +37,9 @@ void LoadChunkThread(void* pParams)
 	loc->FillSkyLight(15);
 
 	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
-	wWorld.Chunks.push_front(loc);
+	
+	unsigned long bin = wWorld.Hash(x, z);
+	wWorld.Chunks[bin].push_front(loc);
 	ReleaseMutex(wWorld.mutex);
 
 	wWorld.DrawLoadedBlocksFinish(*loc);
@@ -78,14 +86,15 @@ void UnLoadChunkThread(void* pParams)
 
 	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 
-	auto loc = wWorld.Chunks.begin();
+	unsigned long bin = wWorld.Hash(x, z);
+	auto loc = wWorld.Chunks[bin].begin();
 
-	while(loc != wWorld.Chunks.end())
+	while(loc != wWorld.Chunks[bin].end())
 	{
 		if(((*loc)->x == x)&&((*loc)->z == z)) break;
 		++loc;
 	}
-	if(loc == wWorld.Chunks.end()) 
+	if(loc == wWorld.Chunks[bin].end()) 
 	{	
 		ReleaseMutex(wWorld.mutex);
 		ReleaseSemaphore(wWorld.semaphore, 1, NULL);
@@ -113,7 +122,7 @@ void UnLoadChunkThread(void* pParams)
 	dwWaitResult = WaitForSingleObject((*loc)->mutex, INFINITE);
 
 	delete *loc;
-	wWorld.Chunks.erase(loc);
+	wWorld.Chunks[bin].erase(loc);
 
 	wWorld.DrawUnLoadedBlocks(x, z);
 	ReleaseMutex(wWorld.mutex);

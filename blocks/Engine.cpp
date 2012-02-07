@@ -126,25 +126,29 @@ void Engine::Display()
 		mod = GL_COMPILE;
 	}
 	
-	auto loc = wWorld.Chunks.begin();
-	while(loc != wWorld.Chunks.end())
+	for (int bin = 0; bin < HASH_SIZE; bin++)
 	{
-#ifndef _DEBUG
-		_try 
+		auto loc = wWorld.Chunks[bin].begin();
+		while(loc != wWorld.Chunks[bin].end())
 		{
+#ifndef _DEBUG
+			_try 
+			{
 #endif // _DEBUG
 
-			(*loc)->Render(mod, MAT_NO);
-			++loc;
+				(*loc)->Render(mod, MAT_NO);
+				++loc;
 
 #ifndef _DEBUG
-		}
-		_except (EXCEPTION_EXECUTE_HANDLER)
-		{
-			break;
-		}
+			}
+			_except (EXCEPTION_EXECUTE_HANDLER)
+			{
+				break;
+			}
 #endif // _DEBUG
+		}
 	}
+
 
 
 	glEnable(GL_ALPHA_TEST);
@@ -153,24 +157,27 @@ void Engine::Display()
 
 	//transparent tiles here
 
-	loc = wWorld.Chunks.begin();
-	while(loc != wWorld.Chunks.end())
+	for (int bin = 0; bin < HASH_SIZE; bin++)
 	{
-#ifndef _DEBUG
-		_try 
+		auto loc = wWorld.Chunks[bin].begin();
+		while(loc != wWorld.Chunks[bin].end())
 		{
+#ifndef _DEBUG
+			_try 
+			{
 #endif // _DEBUG
 
-			(*loc)->Render(mod, MAT_WATER);
-			++loc;
+				(*loc)->Render(mod, MAT_WATER);
+				++loc;
 
 #ifndef _DEBUG
-		}
-		_except (EXCEPTION_EXECUTE_HANDLER)
-		{
-			break;
-		}
+			}
+			_except (EXCEPTION_EXECUTE_HANDLER)
+			{
+				break;
+			}
 #endif // _DEBUG
+		}
 	}
 
 	glDisable(GL_ALPHA_TEST);
