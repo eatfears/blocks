@@ -47,6 +47,9 @@
     <ClCompile Include="Blocks.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Threads.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Character.h">
@@ -77,6 +80,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Engine.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Threads.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

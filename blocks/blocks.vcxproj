@@ -105,6 +105,7 @@
     <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="Primes.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Threads.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +117,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="PerlinNoise.cpp" />
     <ClCompile Include="Primes.cpp" />
+    <ClCompile Include="Threads.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>

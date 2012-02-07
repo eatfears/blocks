@@ -47,7 +47,7 @@ void GlutInit()
 int main(int argc, char **argv)
 {
 
-#ifdef _WIN32 
+#ifdef _WIN32
 	HWND console = GetConsoleWindow();
 	ShowWindow(console, SW_HIDE);
 #endif
@@ -71,8 +71,8 @@ int main(int argc, char **argv)
 		exit(1);
 	*/
 
-	engine->InitGame();
 	engine->InitGL();
+	engine->InitGame();
 
 	GlutInit();
 	glutMainLoop();

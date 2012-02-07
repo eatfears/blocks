@@ -4,7 +4,8 @@
 
 #include "Blocks_Definitions.h"
 #include "Material.h"
-#include "Landscape.h"
+
+class World;
 
 typedef struct chnkpos
 {
@@ -21,18 +22,17 @@ typedef struct block
 class Chunk
 {
 public:
-	Chunk(ChunkInWorld x, ChunkInWorld z, MaterialLibrary& MLib, Landscape& lLand);
+	Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld);
 	~Chunk();
 
 	Block *bBlocks;
 	char *SkyLight;
-	MaterialLibrary& MaterialLib;
-	Landscape& lLandscape;
+	World& wWorld;
 	std::list<Block *> *DisplayedTiles;
-
+	std::list<Block *> *DisplayedWaterTiles;
 	ChunkInWorld x;
 	ChunkInWorld z;
-	bool bVisible;
+	bool NeedToRender;
 	
 	int	AddBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z, char mat);
 	int RemoveBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z);
@@ -52,5 +52,11 @@ public:
 	void Generate();
 	void FillSkyLight(char bright);
 
+	void Render(GLenum mode, char mat);
+	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char N);
+
 	HANDLE mutex;
+
+	GLuint RenderList;
+	bool listgen;
 };

@@ -48,7 +48,7 @@ int Engine::InitGL()
 	//автоматическое приведение нормалей к единичной длине
 	glEnable(GL_NORMALIZE);
 
-	return true;	
+	return true;
 }
 
 void Engine::Reshape(int width, int height)
@@ -85,7 +85,6 @@ void Engine::Display()
 	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
 	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
 	glTranslated(-player.dPositionX, -player.dPositionY, -player.dPositionZ);
-	
 
 	/*
 	GLfloat material_diffuse[] = {1.0, 1.0, 1.0, 1.0};
@@ -118,130 +117,34 @@ void Engine::Display()
 	static GLuint *tex = wWorld.MaterialLib.texture;
 
 	glBindTexture(GL_TEXTURE_2D, tex[0]);
-	glBegin(GL_QUADS);
 
-	auto loc = wWorld.Chunks.begin();
 
-	static GLfloat br;
-	static BlockInWorld xx, yy, zz;
-	static BlockInWorld xlight, ylight, zlight;
-	static BlockInChunk 
-		xloclight, 
-		yloclight, 
-		zloclight;
-	static Chunk *temploc;
-	static BlockInWorld locx, locz;
-
-	for(int i = 0; i < 6; i++)
+	GLenum mod = GL_EXECUTE;
+	if(player.bKeyboard['Z'])
 	{
-		loc = wWorld.Chunks.begin();
+		player.bKeyboard['Z'] = 0;
+		mod = GL_COMPILE;
+	}
+	
+	auto loc = wWorld.Chunks.begin();
+	while(loc != wWorld.Chunks.end())
+	{
 #ifndef _DEBUG
 		_try 
 		{
 #endif // _DEBUG
 
-			while(loc != wWorld.Chunks.end())
-			{
-				locx = loc->x*CHUNK_SIZE_XZ;
-				locz = loc->z*CHUNK_SIZE_XZ;
+			(*loc)->Render(mod, MAT_NO);
+			++loc;
 
-				auto it = loc->DisplayedTiles[i].begin();
-
-				while(it != loc->DisplayedTiles[i].end())
-				{
-#ifndef _DEBUG
-					_try 
-					{
-#endif // _DEBUG
-						loc->GetBlockPositionByPointer(*it, &x, &y, &z);
-
-						xx = x + locx;
-						yy = y;
-						zz = z + locz;
-						
-						switch(i)
-						{
-						case TOP:
-							xlight = x;
-							ylight = y + 1;
-							zlight = z;
-							break;
-						case BOTTOM:
-							xlight = x;
-							ylight = y - 1;
-							zlight = z;
-							break;
-						case RIGHT:
-							xlight = x + 1;
-							ylight = y;
-							zlight = z;
-							break;
-						case LEFT:
-							xlight = x - 1;
-							ylight = y;
-							zlight = z;
-							break;
-						case FRONT:
-							xlight = x;
-							ylight = y;
-							zlight = z - 1;
-							break;
-						case BACK:
-							xlight = x;
-							ylight = y;
-							zlight = z + 1;
-							break;
-						}
-						if((xlight >= CHUNK_SIZE_XZ)||(xlight < 0)||(zlight >= CHUNK_SIZE_XZ)||(zlight < 0))
-							temploc = wWorld.GetChunkByBlock(xlight + locx, zlight + locz);
-						else temploc = &*loc;
-						if(temploc)
-						{
-							wWorld.GetPosInChunkByWorld(xlight, ylight, zlight, &xloclight, &yloclight, &zloclight);
-							int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
-							//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
-
-							//	loc->GetIndexByPosition(sXcoord, sYcoord+1, sZcoord);
-							br = 0.2f + temploc->SkyLight[index];
-							glColor3f(br, br, br);
-						}else glColor3f(0.0f, 0.0f, 0.0f);
-
-						if(	(abs(xx*BLOCK_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
-							(abs(yy*BLOCK_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
-							(abs(zz*BLOCK_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*BLOCK_SIZE))
-							DrawTile(xx, yy, zz, (*it)->cMaterial, i);
-
-						++it;
-#ifndef _DEBUG
-					}
-					_except (EXCEPTION_EXECUTE_HANDLER)
-					{
-						break;
-					}
-#endif // _DEBUG
-				}
-				++loc;
-			}
 #ifndef _DEBUG
 		}
 		_except (EXCEPTION_EXECUTE_HANDLER)
 		{
-			glEnd();
-			glDisable(GL_FOG);
-			glDisable(GL_LIGHT2);
-			return;
+			break;
 		}
 #endif // _DEBUG
 	}
-
-#ifdef DEBUG_OUT
-	FILE *out;
-	out = fopen(DEBUG_FILE, "w");
-	fprintf(out,"Debug\n");
-	fclose(out);
-#endif
-
-	glEnd();
 
 
 	glEnable(GL_ALPHA_TEST);
@@ -250,6 +153,25 @@ void Engine::Display()
 
 	//transparent tiles here
 
+	loc = wWorld.Chunks.begin();
+	while(loc != wWorld.Chunks.end())
+	{
+#ifndef _DEBUG
+		_try 
+		{
+#endif // _DEBUG
+
+			(*loc)->Render(mod, MAT_WATER);
+			++loc;
+
+#ifndef _DEBUG
+		}
+		_except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			break;
+		}
+#endif // _DEBUG
+	}
 
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_BLEND);
@@ -257,6 +179,14 @@ void Engine::Display()
 
 	glDisable(GL_FOG);
 	glDisable(GL_LIGHT2);
+
+
+#ifdef DEBUG_OUT
+	FILE *out;
+	out = fopen(DEBUG_FILE, "w");
+	fprintf(out,"Debug\n");
+	fclose(out);
+#endif
 
 	// 
 	// 	glClear(GL_COLOR_BUFFER_BIT);
@@ -341,102 +271,6 @@ void Engine::InitGame()
 
 	wWorld.lLandscape.Init(seed);
 	wWorld.BuildWorld();
-}
-
-void Engine::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char N)
-{
-	GLdouble 
-		// 		dXcoord = (sXcoord-player.lnwPositionX*LOCATION_SIZE_XZ)*TILE_SIZE, 
-		// 		dYcoord = sYcoord*TILE_SIZE, 
-		// 		dZcoord = (sZcoord-player.lnwPositionZ*LOCATION_SIZE_XZ)*TILE_SIZE;
-		dXcoord = sXcoord*BLOCK_SIZE, 
-		dYcoord = sYcoord*BLOCK_SIZE, 
-		dZcoord = sZcoord*BLOCK_SIZE;
-
-	dXcoord -= BLOCK_SIZE/2;
-	dZcoord -= BLOCK_SIZE/2;
-
-	static double space = 0.0005;
-	static double offsetx;
-	static double offsety;
-	
-	wWorld.MaterialLib.GetTextureOffsets(offsetx, offsety, material, N);
-
-	switch(N)
-	{
-	case TOP:
-		{
-			//Верхняя грань
-			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord);
-			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
-			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
-			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord);
-		}break;
-	case BOTTOM:
-		{
-			//Нижняя грань
-			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord, dZcoord);
-			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord);
-			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord + BLOCK_SIZE);
-			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord, dZcoord + BLOCK_SIZE);
-		}break;
-	case RIGHT:
-		{
-			//Правая грань
-			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord);
-			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord);
-			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
-			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord + BLOCK_SIZE);
-		}break;
-	case LEFT:
-		{
-			//Левая грань
-			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord, dYcoord, dZcoord);
-			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord, dYcoord, dZcoord + BLOCK_SIZE);
-			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
-			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord);
-		}break;
-	case BACK:
-		{
-			//Задняя грань
-			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord, dYcoord, dZcoord + BLOCK_SIZE);
-			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord + BLOCK_SIZE);
-			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
-			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
-		}break;
-	case FRONT:
-		{
-			//Передняя грань
-			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord, dYcoord, dZcoord);
-			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord);
-			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
-			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord);
-			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
-			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord);
-		}break;
-	}
 }
 
 void Engine::DrawSelectedItem()
