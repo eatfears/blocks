@@ -258,7 +258,6 @@ void Engine::Display()
 	glDisable(GL_FOG);
 	glDisable(GL_LIGHT2);
 
-
 	// 
 	// 	glClear(GL_COLOR_BUFFER_BIT);
 	// 	glPushMatrix();
@@ -276,6 +275,9 @@ void Engine::Keyboard(unsigned char button, int x, int y, bool KeyDown)
 	case VK_ESCAPE: glutExit();
 		break;
 	default:
+#ifdef _WIN32
+		button = VkKeyScan(button);
+#endif
 		player.bKeyboard[button] = KeyDown;
 		break;
 	}
