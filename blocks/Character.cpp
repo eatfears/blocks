@@ -1,28 +1,7 @@
 #include "Character.h"
 #include <math.h>
 #include <process.h>
-
-#include "PerlinNoise.h"
-
-void LoadNGenerate(void* pParams)
-{
-	Param pParameters = *(Param*)pParams;
-	World &wWorld = *pParameters.wWorld;
-	ChunkInWorld x = pParameters.x;
-	ChunkInWorld z = pParameters.z;
-	SetEvent(wWorld.parget2);
-
-	int size = 16;
-
-	for(int i = x*size; i < (x+1)*size*1; i++)
-		for(int j = z*size; j < (z+1)*size; j++)
-	{
-		wWorld.LoadChunk(i, j);
-		//Sleep(30);
-	}
-	_endthread();
-	return;
-}
+#include "Threads.h"
 
 Character::Character(World& ww)
 	: wWorld(ww)
@@ -361,7 +340,6 @@ void Character::Control(GLdouble FrameInterval)
 				gfPosY = (yy + 1)*TILE_SIZE + PLAYER_HEIGHT - 0.001;
 			}
 		}
-
 	}
 
 	if(!falling)

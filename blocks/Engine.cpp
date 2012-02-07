@@ -85,7 +85,6 @@ void Engine::Display()
 	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
 	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
 	glTranslated(-player.dPositionX, -player.dPositionY, -player.dPositionZ);
-	
 
 	/*
 	GLfloat material_diffuse[] = {1.0, 1.0, 1.0, 1.0};

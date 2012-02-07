@@ -32,7 +32,7 @@ public:
 	std::list<Block *> *DisplayedWaterTiles;
 	ChunkInWorld x;
 	ChunkInWorld z;
-	bool bVisible;
+	bool NeedToRender;
 	
 	int	AddBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z, char mat);
 	int RemoveBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z);

@@ -19,7 +19,7 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
 		for(int N = 0; N < 6; N++)
 			bBlocks[i].bVisible[N] = false;
 	}
-	bVisible = false;
+	NeedToRender = false;
 	listgen = false;
 
 	mutex = CreateMutex(NULL, false, NULL);
@@ -228,6 +228,12 @@ void Chunk::Render(GLenum mode, char mat)
 		// 2 - water tiles
 		RenderList = glGenLists(2);
 		listgen = true;
+	}
+
+	if(NeedToRender)
+	{
+		mode = GL_COMPILE;
+		NeedToRender = false;
 	}
 
 	if((mode == GL_COMPILE)||(mode == GL_COMPILE_AND_EXECUTE))
