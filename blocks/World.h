@@ -49,5 +49,5 @@ public:
 	HANDLE mutex;
 	HANDLE semaphore;
 
-	unsigned long Hash(ChunkInWorld x, ChunkInWorld z);
+	unsigned long Hash(ChunkInWorld x, ChunkInWorld z) {return (x + z*HASH_SIZE)&(HASH_SIZE-1);}
 };

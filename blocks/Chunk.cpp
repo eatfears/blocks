@@ -171,7 +171,7 @@ void Chunk::DrawLoadedBlocks()
 
 			if(bBlocks[index].cMaterial == MAT_WATER)
 			{
-				if(GetBlockMaterial(xx, yy + 1, zz) == MAT_NO) ShowTile(bBlocks + index, TOP);
+				if((GetBlockMaterial(xx, yy + 1, zz) == MAT_NO)||(yy == CHUNK_SIZE_Y - 1)) ShowTile(bBlocks + index, TOP);
 				if(GetBlockMaterial(xx, yy - 1, zz) == MAT_NO) ShowTile(bBlocks + index, BOTTOM);
 				if(GetBlockMaterial(xx + 1, yy, zz) == MAT_NO) ShowTile(bBlocks + index, RIGHT);
 				if(GetBlockMaterial(xx - 1, yy, zz) == MAT_NO) ShowTile(bBlocks + index, LEFT);
@@ -180,7 +180,7 @@ void Chunk::DrawLoadedBlocks()
 			}
 			else
 			{
-				if((GetBlockMaterial(xx, yy + 1, zz) == MAT_NO)||(GetBlockMaterial(xx, yy + 1, zz) == MAT_WATER))
+				if((GetBlockMaterial(xx, yy + 1, zz) == MAT_NO)||(GetBlockMaterial(xx, yy + 1, zz) == MAT_WATER)||(yy == CHUNK_SIZE_Y - 1))
 					ShowTile(bBlocks + index, TOP);
 				if((GetBlockMaterial(xx, yy - 1, zz) == MAT_NO)||(GetBlockMaterial(xx, yy - 1, zz) == MAT_WATER))
 					ShowTile(bBlocks + index, BOTTOM);
@@ -201,6 +201,10 @@ void Chunk::DrawLoadedBlocks()
 void Chunk::Generate()
 {
 	wWorld.lLandscape.Generate(*this);
+	//wWorld.lLandscape.Fill(*this, 0, 0.999, 64);
+	//wWorld.lLandscape.Fill(*this, 0, 1, 10);
+	//ChunkPosition pos = {x, z};
+	//wWorld.lLandscape.Load(pos);
 }
 
 void Chunk::FillSkyLight(char bright)
@@ -213,7 +217,7 @@ void Chunk::FillSkyLight(char bright)
 		for(BlockInChunk z = 0; z < CHUNK_SIZE_XZ; z++)
 		{
 			y = CHUNK_SIZE_Y - 1;
-			while (y >= 0)
+			while (y > 0)
 			{
 				index = GetIndexByPosition(x, y, z);
 				if(bBlocks[index].cMaterial != MAT_NO)
@@ -322,15 +326,16 @@ void Chunk::Render(GLenum mode, char mat)
 				if((xlight >= CHUNK_SIZE_XZ)||(xlight < 0)||(zlight >= CHUNK_SIZE_XZ)||(zlight < 0))
 					temploc = wWorld.GetChunkByBlock(xlight + locx, zlight + locz);
 				else temploc = this;
-				if(temploc)
+				if((ylight >= CHUNK_SIZE_Y)||(ylight < 0)) temploc = NULL;
+				if (temploc)
 				{
 					wWorld.GetPosInChunkByWorld(xlight, ylight, zlight, &xloclight, &yloclight, &zloclight);
 					int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
 					//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
 
 					br = 0.2f + temploc->SkyLight[index];
-					glColor3f(br, br, br);
-				}else glColor3f(0.0f, 0.0f, 0.0f);
+				}else br = 0.2f;
+				glColor3f(br, br, br);
 			
 	// 			if(	(abs(xx*BLOCK_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
 	// 				(abs(yy*BLOCK_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 

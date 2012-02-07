@@ -30,9 +30,7 @@ void LoadChunkThread(void* pParams)
 	Chunk *loc = new Chunk(x, z, wWorld);
 
 	loc->Generate();
-	//loc->lLandscape.Fill(*loc, 0, 0.999, 64);
-	//loc->lLandscape.Fill(*loc, 0, 1, 64);
-	//loc->lLandscape.Load(loc->x, loc->z);
+
 	loc->DrawLoadedBlocks();
 	loc->FillSkyLight(15);
 

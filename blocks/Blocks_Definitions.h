@@ -48,4 +48,4 @@ typedef signed short	BlockInWorld;
 
 #define GL_EXECUTE		0x1302
 
-#define HASH_SIZE		0x100
+#define HASH_SIZE		0x1000
