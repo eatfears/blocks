@@ -35,7 +35,8 @@ void LoadChunkThread(void* pParams)
 	ReleaseMutex(wWorld.mutex);
 
 	wWorld.DrawLoadedBlocksFinish(*loc);
-	loc->NeedToRender = true;
+	loc->NeedToRender[0] = 1;
+	loc->NeedToRender[1] = 1;
 
 	// 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
 	// 	LocationPosiion lp = {x, z};

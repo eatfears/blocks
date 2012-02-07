@@ -19,7 +19,8 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
 		for(int N = 0; N < 6; N++)
 			bBlocks[i].bVisible[N] = false;
 	}
-	NeedToRender = true;
+	NeedToRender[0] = 1;
+	NeedToRender[1] = 1;
 	listgen = false;
 
 	mutex = CreateMutex(NULL, false, NULL);
@@ -74,7 +75,8 @@ void Chunk::ShowTile(Block *bBlock, char N)
 		
 	bBlock->bVisible[N] = true;
 	
-	NeedToRender = true;
+	NeedToRender[0] = 1;
+	NeedToRender[1] = 1;
 }
 
 void Chunk::HideTile(Block *bBlock, char N)
@@ -101,7 +103,8 @@ void Chunk::HideTile(Block *bBlock, char N)
 	(*it)->bVisible[N] = false;
 	Tiles->erase(it);
 
-	NeedToRender = true;
+	NeedToRender[0] = 1;
+	NeedToRender[1] = 1;
 	return;
 }
 
@@ -233,15 +236,19 @@ void Chunk::Render(GLenum mode, char mat)
 		listgen = true;
 	}
 
-	if(NeedToRender)
+	int pointertorender = 0;
+	if(mat == MAT_WATER)
+		pointertorender = 1;
+
+	if(NeedToRender[pointertorender] == 1)
+	{
 		mode = GL_COMPILE;
+		NeedToRender[pointertorender] = 2;
+	}
 
 	if((mode == GL_COMPILE)||(mode == GL_COMPILE_AND_EXECUTE))
 	{
-		if(mat == MAT_WATER)
-			glNewList(RenderList + 1, mode);
-		else
-			glNewList(RenderList, mode);
+		glNewList(RenderList + pointertorender, mode);
 
 		std::list<Block *> *Tiles;
 		static GLfloat br;
@@ -336,15 +343,14 @@ void Chunk::Render(GLenum mode, char mat)
 		glEnd();
 		glEndList();
 
-		if((NeedToRender)&&(mat == MAT_WATER)) NeedToRender = false;
+
+		if(NeedToRender[pointertorender] == 2)
+			NeedToRender[pointertorender] = 0;
 	}
 
 	if(mode != GL_COMPILE_AND_EXECUTE)
 	{
-		if(mat == MAT_WATER)
-			glCallList(RenderList + 1);
-		else
-			glCallList(RenderList);
+		glCallList(RenderList + pointertorender);
 	}
 }
 
