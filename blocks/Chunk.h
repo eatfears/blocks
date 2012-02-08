@@ -1,9 +1,8 @@
 #pragma once
-
 #include <list>
 
 #include "Blocks_Definitions.h"
-#include "Material.h"
+#include <GLblocks\blocksglut.h>
 
 class World;
 

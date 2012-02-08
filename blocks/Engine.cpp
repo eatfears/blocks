@@ -9,6 +9,10 @@ Engine::Engine()
 {
 	bMousing = false;
 	fullscreen = false;
+
+	width = 0;
+	height = 0;
+	FrameInterval = 0;
 }
 
 Engine::~Engine()
@@ -113,9 +117,7 @@ void Engine::Display()
 
 	glColor3d(1.0, 1.0, 1.0);
 
-	static BlockInChunk x, y, z;
 	static GLuint *tex = wWorld.MaterialLib.texture;
-
 	glBindTexture(GL_TEXTURE_2D, tex[0]);
 
 

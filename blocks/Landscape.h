@@ -1,8 +1,8 @@
 #pragma once
-
-class World;
 #include "PerlinNoise.h"
 #include "Blocks_Definitions.h"
+
+class World;
 
 class Chunk;
 typedef struct chnkpos ChunkPosition;

@@ -47,5 +47,9 @@ typedef signed short	ChunkInWorld;
 typedef signed short	BlockInWorld;
 
 #define GL_EXECUTE		0x1302
+#define RENDER_NO_NEED	0
+#define RENDER_NEED		1
+#define RENDER_TRY		2
 
 #define HASH_SIZE		0x1000
+

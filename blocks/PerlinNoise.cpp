@@ -9,6 +9,12 @@ PerlinNoise::PerlinNoise(double persistence, int NumberOfOctaves)
 	PerlinNoise::NumberOfOctaves = NumberOfOctaves;
 
 	interpolation = COSINE_INTERPOLATE;
+
+	a = 15731;
+	b = 789221;
+	c = 1376312589;
+	d = 57;
+	e = 107;
 }
 
 void PerlinNoise::InitNoise(gsl_rng *randNumGen)
@@ -28,22 +34,19 @@ PerlinNoise::~PerlinNoise()
 double PerlinNoise::Noise1d(int x)
 {
 	x = (x<<13) ^ x;
-	//return (1.0 - ((x*(x*x*15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
 	return (1.0 - ((x*(x*x*a + b) + c) & 0x7fffffff) / 1073741824.0);
 }
 
 double PerlinNoise::Noise2d(int x, int y)
 {
-	int n = x + y * d;
-	//int n = x + y * 57;
+	int n = x + y*d;
 
 	return Noise1d(n);
 }
 
 double PerlinNoise::Noise3d(int x, int y, int z)
 {
-	int n = x + (y + z * e) * d;
-	//int n = x + (y + z * 107) * 57;
+	int n = x + (y + z*e)*d;
 
 	return Noise1d(n);
 }

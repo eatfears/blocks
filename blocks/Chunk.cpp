@@ -25,8 +25,8 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
 		for(int N = 0; N < 6; N++)
 			bBlocks[i].bVisible[N] = false;
 	}
-	NeedToRender[0] = 1;
-	NeedToRender[1] = 1;
+	NeedToRender[0] = RENDER_NEED;
+	NeedToRender[1] = RENDER_NEED;
 	listgen = false;
 
 	mutex = CreateMutex(NULL, false, NULL);
@@ -80,9 +80,11 @@ void Chunk::ShowTile(Block *bBlock, char N)
 	Tiles->push_back(bBlock);
 		
 	bBlock->bVisible[N] = true;
-	
-	NeedToRender[0] = 1;
-	NeedToRender[1] = 1;
+
+	if(bBlock->cMaterial == MAT_WATER)
+		NeedToRender[1] = RENDER_NEED;
+	else
+		NeedToRender[0] = RENDER_NEED;
 }
 
 void Chunk::HideTile(Block *bBlock, char N)
@@ -109,9 +111,10 @@ void Chunk::HideTile(Block *bBlock, char N)
 	(*it)->bVisible[N] = false;
 	Tiles->erase(it);
 
-	NeedToRender[0] = 1;
-	NeedToRender[1] = 1;
-	return;
+	if(bBlock->cMaterial == MAT_WATER)
+		NeedToRender[1] = RENDER_NEED;
+	else
+		NeedToRender[0] = RENDER_NEED;
 }
 
 char Chunk::GetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z)
@@ -174,7 +177,6 @@ void Chunk::DrawLoadedBlocks()
 
 		if(bBlocks[index].cMaterial != MAT_NO)
 		{
-
 			if(bBlocks[index].cMaterial == MAT_WATER)
 			{
 				if((GetBlockMaterial(xx, yy + 1, zz) == MAT_NO)||(yy == CHUNK_SIZE_Y - 1)) ShowTile(bBlocks + index, TOP);
@@ -250,10 +252,10 @@ void Chunk::Render(GLenum mode, char mat)
 	if(mat == MAT_WATER)
 		pointertorender = 1;
 
-	if(NeedToRender[pointertorender] == 1)
+	if(NeedToRender[pointertorender] == RENDER_NEED)
 	{
 		mode = GL_COMPILE;
-		NeedToRender[pointertorender] = 2;
+		NeedToRender[pointertorender] = RENDER_TRY;
 	}
 
 	if((mode == GL_COMPILE)||(mode == GL_COMPILE_AND_EXECUTE))
@@ -355,8 +357,8 @@ void Chunk::Render(GLenum mode, char mat)
 		glEndList();
 
 
-		if(NeedToRender[pointertorender] == 2)
-			NeedToRender[pointertorender] = 0;
+		if(NeedToRender[pointertorender] == RENDER_TRY)
+			NeedToRender[pointertorender] = RENDER_NO_NEED;
 	}
 
 	if(mode != GL_COMPILE_AND_EXECUTE)

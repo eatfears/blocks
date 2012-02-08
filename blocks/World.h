@@ -41,9 +41,6 @@ public:
 	void ShowTile(Chunk *loc, int index, char N);
 	void HideTile(Chunk *loc, int index, char N);
 
-	bool building;
-	bool skipbuild;
-
 	HANDLE parget;
 	HANDLE parget2;
 	HANDLE mutex;

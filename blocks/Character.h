@@ -1,9 +1,8 @@
 #pragma once
 #include "Blocks_Definitions.h"
 #include <GLblocks\blocksglut.h>
-//#include <gl\freeglut.h>
 
-#include "World.h"
+class World;
 
 class Character
 {

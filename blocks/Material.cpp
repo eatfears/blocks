@@ -1,10 +1,10 @@
 #include "Material.h"
-#include "resource.h"
-#include "Blocks_Definitions.h"
 #include <libpng\png.h>
+#include "Blocks_Definitions.h"
 
 MaterialLibrary::MaterialLibrary()
 {
+	texture = 0;
 }
 
 MaterialLibrary::~MaterialLibrary()

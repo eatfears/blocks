@@ -1,8 +1,6 @@
 #pragma once
-#include <windows.h>
-#include <gl\gl.h>
-#include <gl\glu.h>
-//#include <gl\glaux.h>
+#include "Blocks_Definitions.h"
+#include <GLblocks\blocksglut.h>
 
 #define MAT_NO				0
 #define MAT_DIRT			1

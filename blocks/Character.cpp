@@ -2,6 +2,7 @@
 #include <math.h>
 #include <process.h>
 #include "Threads.h"
+#include "World.h"
 
 Character::Character(World& ww)
 	: wWorld(ww)
@@ -22,6 +23,10 @@ Character::Character(World& ww)
 
 	dSpinX = 0;
 	dSpinY = 0;
+
+	sCenterBlockCoordX = 0;
+	sCenterBlockCoordY = 0;
+	sCenterBlockCoordZ = 0;
 }
 
 Character::~Character()

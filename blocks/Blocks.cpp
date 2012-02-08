@@ -1,6 +1,5 @@
 #include "Blocks_Definitions.h"
 #include <GLblocks\blocksglut.h>
-//#include <GL\freeglut.h>
 #include "Engine.h"
 
 //OpenGL32.lib;GLu32.lib;Winmm.lib;gsl.lib;libpng15.lib;zlib.lib;

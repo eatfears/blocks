@@ -1,14 +1,11 @@
 #include <process.h>
 
-#include "World.h"
 #include "Blocks_Definitions.h"
-#include "Landscape.h"
+#include "World.h"
 #include "Threads.h"
 
 World::World()
 {
-	skipbuild = false;
-
 	Chunks = new std::list<Chunk *>[HASH_SIZE];
 
 	parget = CreateEvent(NULL, false, false, NULL);
@@ -258,7 +255,6 @@ int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bo
 	if(FindBlock(x, y, z)) return 0;
 
 	Chunk *loc = GetChunkByBlock(x, z);
-	int index; 
 
 	if(loc == NULL) return 0;
 
@@ -266,12 +262,11 @@ int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bo
 
 	GetPosInChunkByWorld(x, y, z, &locx, &locy, &locz);
 
-	
 	if(show)
 	{
-		DWORD dwWaitResult; 
+		DWORD dwWaitResult;
 		dwWaitResult = WaitForSingleObject(loc->mutex, INFINITE);
-		index = loc->AddBlock(locx, locy, locz, mat);
+		int index = loc->AddBlock(locx, locy, locz, mat);
 		ReleaseMutex(loc->mutex);
 
 		Chunk *lTempLoc = 0;

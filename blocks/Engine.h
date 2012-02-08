@@ -1,12 +1,9 @@
 #pragma once
 #include "Blocks_Definitions.h"
 #include <GLblocks\blocksglut.h>
-//#include <gl\freeglut.h>
-#include <gl\glaux.h>
 
-#include "Character.h"
-#include "Material.h"
 #include "World.h"
+#include "Character.h"
 
 class Engine
 {
@@ -24,16 +21,10 @@ public:
 
 	int width, height;
 
-	HGLRC  hRC;						// Постоянный контекст рендеринга
-	HDC  hDC;						// Приватный контекст устройства GDI
-	HWND  hWnd;						// Здесь будет хранится дескриптор окна
-	HINSTANCE  hInstance;           // Здесь будет хранится дескриптор приложения
-
 	bool	fullscreen;
 	bool	bMousing;
 
 	void InitGame();
-
 	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char N);
 	void DrawInterface();
 	void DrawSelectedItem();

@@ -1,7 +1,7 @@
 #include <process.h>
 
-#include "World.h"
 #include "Blocks_Definitions.h"
+#include "World.h"
 #include "Landscape.h"
 
 void LoadChunkThread(void* pParams)
@@ -41,8 +41,8 @@ void LoadChunkThread(void* pParams)
 	ReleaseMutex(wWorld.mutex);
 
 	wWorld.DrawLoadedBlocksFinish(*loc);
-	loc->NeedToRender[0] = 1;
-	loc->NeedToRender[1] = 1;
+	loc->NeedToRender[0] = RENDER_NEED;
+	loc->NeedToRender[1] = RENDER_NEED;
 
 	// 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
 	// 	LocationPosiion lp = {x, z};

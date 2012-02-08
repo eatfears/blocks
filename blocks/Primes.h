@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Blocks_Definitions.h"
 #include "gsl\gsl_randist.h"
 
