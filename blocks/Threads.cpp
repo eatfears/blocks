@@ -32,7 +32,6 @@ void LoadChunkThread(void* pParams)
 	loc->Generate();
 
 	loc->DrawLoadedBlocks();
-	loc->FillSkyLight(15);
 
 	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 	

@@ -133,6 +133,13 @@ void Engine::Display()
 		auto loc = wWorld.Chunks[bin].begin();
 		while(loc != wWorld.Chunks[bin].end())
 		{
+			if((*loc)->LightToUpdate)
+			{
+				wWorld.UpdateLight(**loc);
+				(*loc)->LightToUpdate = false;
+			}
+
+
 #ifndef _DEBUG
 			_try 
 			{
@@ -205,6 +212,7 @@ void Engine::Display()
 	// 	glRectf(-25.0,-25.0,25.0,25.0);
 	// 	glPopMatrix();
 	// 	glutSwapBuffers();
+
 }
 
 void Engine::Keyboard(unsigned char button, int x, int y, bool KeyDown)

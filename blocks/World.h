@@ -36,6 +36,7 @@ public:
 
 	void GetChunkByBlock(BlockInWorld x, BlockInWorld z, ChunkInWorld *locx, BlockInWorld *locz);
 	Chunk* GetChunkByBlock(BlockInWorld x, BlockInWorld z);
+	Chunk* GetChunkByPosition(ChunkInWorld locx, ChunkInWorld locz);
 	void GetPosInChunkByWorld(BlockInWorld x, BlockInWorld y, BlockInWorld z, BlockInChunk *locx, BlockInChunk *locy, BlockInChunk *locz);
 //private:
 	void ShowTile(Chunk *loc, int index, char N);
@@ -47,4 +48,7 @@ public:
 	HANDLE semaphore;
 
 	unsigned long Hash(ChunkInWorld x, ChunkInWorld z) {return (x + z*HASH_SIZE)&(HASH_SIZE-1);}
+
+	void UpdateLight(Chunk& loc);
+	void DiffuseLight( Chunk *ChunkArray[3][3], int i, int j, BlockInWorld tempWx, BlockInWorld tempWy, BlockInWorld tempWz, int templight );
 };

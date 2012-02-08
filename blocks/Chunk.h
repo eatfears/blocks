@@ -58,4 +58,5 @@ public:
 
 	GLuint RenderList;
 	bool listgen;
+	bool LightToUpdate;
 };

@@ -27,8 +27,10 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
 	}
 	NeedToRender[0] = RENDER_NEED;
 	NeedToRender[1] = RENDER_NEED;
-	listgen = false;
 
+	listgen = false;
+	LightToUpdate = true;
+	
 	mutex = CreateMutex(NULL, false, NULL);
 }
 
@@ -51,7 +53,8 @@ int Chunk::AddBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z, char mat)
 	if((GetBlockMaterial(x, y, z) != MAT_NO)||(GetBlockMaterial(x, y, z) == -1)) return -1;
 
 	BlockInChunk index = SetBlockMaterial(x, y, z, mat);
-	
+	LightToUpdate = true;
+
 	return index;
 }
 
@@ -60,6 +63,7 @@ int Chunk::RemoveBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z)
 	if((GetBlockMaterial(x, y, z) == MAT_NO)||(GetBlockMaterial(x, y, z) == -1)) return -1;
 
 	BlockInChunk index = SetBlockMaterial(x, y, z, MAT_NO);
+	LightToUpdate = true;
 
 	return index;
 }
@@ -81,10 +85,8 @@ void Chunk::ShowTile(Block *bBlock, char N)
 		
 	bBlock->bVisible[N] = true;
 
-	if(bBlock->cMaterial == MAT_WATER)
-		NeedToRender[1] = RENDER_NEED;
-	else
-		NeedToRender[0] = RENDER_NEED;
+	NeedToRender[1] = RENDER_NEED;
+	NeedToRender[0] = RENDER_NEED;
 }
 
 void Chunk::HideTile(Block *bBlock, char N)
@@ -111,10 +113,8 @@ void Chunk::HideTile(Block *bBlock, char N)
 	(*it)->bVisible[N] = false;
 	Tiles->erase(it);
 
-	if(bBlock->cMaterial == MAT_WATER)
-		NeedToRender[1] = RENDER_NEED;
-	else
-		NeedToRender[0] = RENDER_NEED;
+	NeedToRender[1] = RENDER_NEED;
+	NeedToRender[0] = RENDER_NEED;
 }
 
 char Chunk::GetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z)
@@ -210,7 +210,7 @@ void Chunk::Generate()
 {
 	wWorld.lLandscape.Generate(*this);
 	//wWorld.lLandscape.Fill(*this, 0, 0.999, 64);
-	//wWorld.lLandscape.Fill(*this, 0, 1, 10);
+	//wWorld.lLandscape.Fill(*this, MAT_GRASS, 1, 64);
 	//ChunkPosition pos = {x, z};
 	//wWorld.lLandscape.Load(pos);
 }
@@ -220,6 +220,11 @@ void Chunk::FillSkyLight(char bright)
 	BlockInChunk y;
 	int index;
 
+	for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
+	{
+		SkyLight[i] = 0;
+	}
+
 	for(BlockInChunk x = 0; x < CHUNK_SIZE_XZ; x++)
 	{
 		for(BlockInChunk z = 0; z < CHUNK_SIZE_XZ; z++)
@@ -228,7 +233,7 @@ void Chunk::FillSkyLight(char bright)
 			while (y > 0)
 			{
 				index = GetIndexByPosition(x, y, z);
-				if(bBlocks[index].cMaterial != MAT_NO)
+				if((bBlocks[index].cMaterial != MAT_NO)&&(bBlocks[index].cMaterial != MAT_WATER))
 					break;
 
 				SkyLight[index] = bright;
@@ -344,7 +349,7 @@ void Chunk::Render(GLenum mode, char mat)
 					br = LightTable[temploc->SkyLight[index]];
 				}else br = 0.0f;
 				glColor3f(br, br, br);
-			
+
 	// 			if(	(abs(xx*BLOCK_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
 	// 				(abs(yy*BLOCK_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
 	// 				(abs(zz*BLOCK_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*BLOCK_SIZE))
