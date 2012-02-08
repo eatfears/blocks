@@ -40,6 +40,13 @@ void LoadChunkThread(void* pParams)
 	ReleaseMutex(wWorld.mutex);
 
 	wWorld.DrawLoadedBlocksFinish(*loc);
+
+	if(loc->LightToUpdate)
+	{
+		wWorld.UpdateLight(*loc);
+		loc->LightToUpdate = false;
+	}
+
 	loc->NeedToRender[0] = RENDER_NEED;
 	loc->NeedToRender[1] = RENDER_NEED;
 

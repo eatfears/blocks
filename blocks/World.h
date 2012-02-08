@@ -50,5 +50,5 @@ public:
 	unsigned long Hash(ChunkInWorld x, ChunkInWorld z) {return (x + z*HASH_SIZE)&(HASH_SIZE-1);}
 
 	void UpdateLight(Chunk& loc);
-	void DiffuseLight( Chunk *ChunkArray[3][3], int i, int j, BlockInWorld tempWx, BlockInWorld tempWy, BlockInWorld tempWz, int templight );
+	void DiffuseLight( Chunk *ChunkArray[5][5], int i, int j, BlockInWorld tempWx, BlockInWorld tempWy, BlockInWorld tempWz, int templight );
 };

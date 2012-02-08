@@ -516,21 +516,30 @@ void World::UnLoadChunk(ChunkInWorld x, ChunkInWorld z)
 
 void World::UpdateLight(Chunk& loc)
 {
-	Chunk *ChunkArray[3][3];
+	Chunk *ChunkArray[5][5];
 
-	ChunkArray[1][1] = &loc;
+	ChunkArray[2][2] = &loc;
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 5; i++)
 	{
-		for (int j = 0; j < 3; j++)
+		for (int j = 0; j < 5; j++)
 		{
-			if((i!=1)||(j!=1)) ChunkArray[i][j] = GetChunkByPosition((loc.x + i - 1), (loc.z + j - 1));
-			
+			if((i!=2)||(j!=2))
+			{
+				if((i == 0)&&(j == 0) || (i == 4)&&(j == 0) || (i == 0)&&(j == 4) || (i == 4)&&(j == 4))
+					ChunkArray[i][j] = NULL;
+				else
+					ChunkArray[i][j] = GetChunkByPosition((loc.x + i - 2), (loc.z + j - 2));
+			}
+
 			if(ChunkArray[i][j]) 
 			{
-				ChunkArray[i][j]->FillSkyLight(15);
-				ChunkArray[i][j]->NeedToRender[0] = true;
-				ChunkArray[i][j]->NeedToRender[1] = true;
+				if((i > 0)&&(i < 4)&&(j > 0)&&(j < 4))
+				{
+					ChunkArray[i][j]->FillSkyLight(15);
+					ChunkArray[i][j]->NeedToRender[0] = true;
+					ChunkArray[i][j]->NeedToRender[1] = true;
+				}
 			}
 		}
 	}
@@ -539,24 +548,25 @@ void World::UpdateLight(Chunk& loc)
 
 	for(int templight = 15; templight > 0; templight--)
 	{
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 5; i++)
 		{
-			for (int j = 0; j < 3; j++)
+			for (int j = 0; j < 5; j++)
 			{
 
 				if(ChunkArray[i][j])
 				{
-
 					for (int index = 0; index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; index++)
 					{
+
 						if(ChunkArray[i][j]->SkyLight[index] == templight)
 						{
-
-
 							ChunkArray[i][j]->GetBlockPositionByIndex(index, &tempx, &tempy, &tempz);
+							if((i == 0)&&(tempx < CHUNK_SIZE_XZ - 1)) continue;
+							if((i == 5)&&(tempx > 0)) continue;
+							if((j == 0)&&(tempz < CHUNK_SIZE_XZ - 1)) continue;
+							if((j == 5)&&(tempz > 0)) continue;
 
 							BlockInWorld tempWx, tempWy, tempWz;
-
 
 							tempWx = tempx + 1;
 							tempWy = tempy;
@@ -597,7 +607,7 @@ void World::UpdateLight(Chunk& loc)
 	}
 }
 
-void World::DiffuseLight( Chunk *ChunkArray[3][3], int i, int j, BlockInWorld tempWx, BlockInWorld tempWy, BlockInWorld tempWz, int templight )
+void World::DiffuseLight( Chunk *ChunkArray[5][5], int i, int j, BlockInWorld tempWx, BlockInWorld tempWy, BlockInWorld tempWz, int templight )
 {
 	int tempindex;
 	Chunk *TempChunk;
@@ -609,7 +619,7 @@ void World::DiffuseLight( Chunk *ChunkArray[3][3], int i, int j, BlockInWorld te
 	if(tempWz >= CHUNK_SIZE_XZ) {tempJ++; tempWz -= CHUNK_SIZE_XZ;}
 	if(tempWz < 0) {tempJ--; tempWz += CHUNK_SIZE_XZ;}
 
-	if((tempI >= 0)&&(tempI < 3)&&(tempJ >= 0)&&(tempJ < 3))
+	if((tempI >= 0)&&(tempI < 5)&&(tempJ >= 0)&&(tempJ < 5))
 		TempChunk = ChunkArray[tempI][tempJ];
 	else TempChunk = NULL;
 
