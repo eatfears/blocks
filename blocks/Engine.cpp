@@ -125,6 +125,8 @@ void Engine::Display()
 	if(player.bKeyboard['Z'])
 	{
 		player.bKeyboard['Z'] = 0;
+		wWorld.SoftLight = !wWorld.SoftLight;
+
 		mod = GL_COMPILE;
 	}
 	

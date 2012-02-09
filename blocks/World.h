@@ -50,4 +50,5 @@ public:
 	unsigned long Hash(ChunkInWorld x, ChunkInWorld z) {return (x + z*HASH_SIZE)&(HASH_SIZE-1);}
 
 	void UpdateLight(Chunk& chunk);
+	bool SoftLight;
 };

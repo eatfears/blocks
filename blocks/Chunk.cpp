@@ -305,54 +305,58 @@ void Chunk::Render(GLenum mode, char mat)
 				xx = cx + blckwx;
 				yy = cy;
 				zz = cz + blckwz;
-// 
-// 				switch(i)
-// 				{
-// 				case TOP:
-// 					xlight = cx;
-// 					ylight = cy + 1;
-// 					zlight = cz;
-// 					break;
-// 				case BOTTOM:
-// 					xlight = cx;
-// 					ylight = cy - 1;
-// 					zlight = cz;
-// 					break;
-// 				case RIGHT:
-// 					xlight = cx + 1;
-// 					ylight = cy;
-// 					zlight = cz;
-// 					break;
-// 				case LEFT:
-// 					xlight = cx - 1;
-// 					ylight = cy;
-// 					zlight = cz;
-// 					break;
-// 				case FRONT:
-// 					xlight = cx;
-// 					ylight = cy;
-// 					zlight = cz - 1;
-// 					break;
-// 				case BACK:
-// 					xlight = cx;
-// 					ylight = cy;
-// 					zlight = cz + 1;
-// 					break;
-// 				}
-// 			
-// 				if((xlight >= CHUNK_SIZE_XZ)||(xlight < 0)||(zlight >= CHUNK_SIZE_XZ)||(zlight < 0))
-// 					temploc = wWorld.GetChunkByBlock(xlight + blckwx, zlight + blckwz);
-// 				else temploc = this;
-// 				if((ylight >= CHUNK_SIZE_Y)||(ylight < 0)) temploc = NULL;
-// 				if (temploc)
-// 				{
-// 					wWorld.GetPosInChunkByWorld(xlight, ylight, zlight, &xloclight, &yloclight, &zloclight);
-// 					int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
-// 					//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
-// 
-// 					br = LightTable[temploc->SkyLight[index]];
-// 				}else br = 0.0f;
-// 				glColor3f(br, br, br);
+
+				if(!wWorld.SoftLight)
+				{
+					switch(i)
+					{
+					case TOP:
+						xlight = cx;
+						ylight = cy + 1;
+						zlight = cz;
+						break;
+					case BOTTOM:
+						xlight = cx;
+						ylight = cy - 1;
+						zlight = cz;
+						break;
+					case RIGHT:
+						xlight = cx + 1;
+						ylight = cy;
+						zlight = cz;
+						break;
+					case LEFT:
+						xlight = cx - 1;
+						ylight = cy;
+						zlight = cz;
+						break;
+					case FRONT:
+						xlight = cx;
+						ylight = cy;
+						zlight = cz - 1;
+						break;
+					case BACK:
+						xlight = cx;
+						ylight = cy;
+						zlight = cz + 1;
+						break;
+					}
+			
+					if((xlight >= CHUNK_SIZE_XZ)||(xlight < 0)||(zlight >= CHUNK_SIZE_XZ)||(zlight < 0))
+						temploc = wWorld.GetChunkByBlock(xlight + blckwx, zlight + blckwz);
+					else temploc = this;
+					if((ylight >= CHUNK_SIZE_Y)||(ylight < 0)) temploc = NULL;
+					if (temploc)
+					{
+						wWorld.GetPosInChunkByWorld(xlight, ylight, zlight, &xloclight, &yloclight, &zloclight);
+						int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
+						//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
+
+						br = LightTable[temploc->SkyLight[index]];
+					}else br = 0.0f;
+					glColor3f(br, br, br);
+
+				}
 
 	// 			if(	(abs(xx*BLOCK_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
 	// 				(abs(yy*BLOCK_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
@@ -519,66 +523,69 @@ void Chunk::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZ
 
 void Chunk::GetBrightVertex( BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int vertex)
 {
-	float res = 0;
+	if(wWorld.SoftLight)
+	{
+		float res = 0;
 
-	if (vertex == 0)
-	{
-		int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-		int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-		int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-		res = GetBrightAverage(X, Y, Z, xx, yy, zz);
-	}
-	else if (vertex == 1)
-	{
-		int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-		int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-		int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-		res = GetBrightAverage(X, Y, Z, xx, yy, zz);
-	}
-	else if (vertex == 2)
-	{
-		int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-		int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-		int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-		res = GetBrightAverage(X, Y, Z, xx, yy, zz);
-	}
-	else if (vertex == 3)
-	{
-		int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-		int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-		int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-		res = GetBrightAverage(X, Y, Z, xx, yy, zz);
-	}
-	else if (vertex == 4)
-	{
-		int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-		int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-		int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-		res = GetBrightAverage(X, Y, Z, xx, yy, zz);
-	}
-	else if (vertex == 5)
-	{
-		int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-		int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-		int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-		res = GetBrightAverage(X, Y, Z, xx, yy, zz);
-	}
-	else if (vertex == 6)
-	{
-		int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-		int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-		int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-		res = GetBrightAverage(X, Y, Z, xx, yy, zz);
-	}
-	else if (vertex == 7)
-	{
-		int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-		int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-		int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-		res = GetBrightAverage(X, Y, Z, xx, yy, zz);
-	}
+		if (vertex == 0)
+		{
+			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+		}
+		else if (vertex == 1)
+		{
+			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+		}
+		else if (vertex == 2)
+		{
+			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+		}
+		else if (vertex == 3)
+		{
+			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+		}
+		else if (vertex == 4)
+		{
+			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+		}
+		else if (vertex == 5)
+		{
+			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+		}
+		else if (vertex == 6)
+		{
+			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+		}
+		else if (vertex == 7)
+		{
+			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+		}
 
-	glColor3f(res, res, res);
+		glColor3f(res, res, res);
+	}
 }
 
 float Chunk::GetBrightAverage(BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int xx[8], int yy[8], int zz[8])
