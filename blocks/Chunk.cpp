@@ -208,9 +208,9 @@ void Chunk::DrawLoadedBlocks()
 
 void Chunk::Generate()
 {
-	wWorld.lLandscape.Generate(*this);
+	//wWorld.lLandscape.Generate(*this);
 	//wWorld.lLandscape.Fill(*this, 0, 0.999, 64);
-	//wWorld.lLandscape.Fill(*this, MAT_GRASS, 1, 64);
+	wWorld.lLandscape.Fill(*this, MAT_GRASS, 1, 64);
 	//ChunkPosition pos = {x, z};
 	//wWorld.lLandscape.Load(pos);
 }

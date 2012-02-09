@@ -187,10 +187,17 @@ void MaterialLibrary::GetTextureOffsets(double& offsetx, double& offsety, int ma
 {
 	offsetx = 14; 
 	offsety = 0;
+	bool SnowCovered = 1;
 
 	switch(material)
 	{
 	case MAT_DIRT: offsetx = 2; offsety = 0;
+		if (SnowCovered)
+		{
+			if(N == TOP) {offsetx = 2; offsety = 4;}
+			else if(N == BOTTOM) {offsetx = 2; offsety = 0;}
+			else {offsetx = 4; offsety = 4;} 
+		}
 		break;
 	case MAT_GRASS: if(N == TOP) {offsetx = 0; offsety = 0;} else if(N == BOTTOM) {offsetx = 2; offsety = 0;} else {offsetx = 3; offsety = 0;} 
 		break;
@@ -203,8 +210,6 @@ void MaterialLibrary::GetTextureOffsets(double& offsetx, double& offsety, int ma
 	case MAT_GLASS: offsetx = 1; offsety = 3;
 		break;
 	case MAT_WOOD: if((N == TOP)||((N == BOTTOM))) {offsetx = 5; offsety = 1;} else {offsetx = 4; offsety = 1;} 
-		break;
-	case MAT_SNOW: if(N == TOP) {offsetx = 2; offsety = 4;} else if(N == BOTTOM) {offsetx = 2; offsety = 0;} else {offsetx = 4; offsety = 4;} 
 		break;
 	case MAT_COAL: offsetx = 2; offsety = 2;
 		break;
