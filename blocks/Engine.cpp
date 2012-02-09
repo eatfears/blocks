@@ -38,14 +38,14 @@ int Engine::InitGL()
 	glDepthFunc(GL_LEQUAL);										// Тип теста глубины
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);			// Улучшение в вычислении перспективы
 
-	//рассчет освещения 
-	//glEnable(GL_LIGHTING);
-
 	//2-sided tiles
 	//glEnable(GL_CULL_FACE);
 
 	//рассчет текстур
 	glEnable(GL_TEXTURE_2D);
+	
+	//рассчет освещения 
+	//glEnable(GL_LIGHTING);
 	//двухсторонний расчет освещения 
 	//	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
@@ -77,7 +77,8 @@ void Engine::Reshape(int width, int height)
 	glLoadIdentity();
 	glOrtho(-50.0,50.0,-50.0,50.0,-1.0,1.0);
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();*/
+	glLoadIdentity();
+	*/
 }
 
 void Engine::Display()
@@ -105,7 +106,6 @@ void Engine::Display()
 	glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0);
 	glTranslated(0, -30, 0);
 	*/
-	//glBlendFunc(GL_ONE, GL_ONE);
 
 	glEnable(GL_FOG);
 	glFogi(GL_FOG_MODE,  GL_LINEAR);		//Тип тумана
@@ -130,23 +130,22 @@ void Engine::Display()
 	
 	for (int bin = 0; bin < HASH_SIZE; bin++)
 	{
-		auto loc = wWorld.Chunks[bin].begin();
-		while(loc != wWorld.Chunks[bin].end())
+		auto chunk = wWorld.Chunks[bin].begin();
+		while(chunk != wWorld.Chunks[bin].end())
 		{
-			if((*loc)->LightToUpdate)
+			if((*chunk)->LightToUpdate)
 			{
-				wWorld.UpdateLight(**loc);
-				(*loc)->LightToUpdate = false;
+				wWorld.UpdateLight(**chunk);
+				(*chunk)->LightToUpdate = false;
 			}
-
 
 #ifndef _DEBUG
 			_try 
 			{
 #endif // _DEBUG
 
-				(*loc)->Render(mod, MAT_NO);
-				++loc;
+				(*chunk)->Render(mod, MAT_NO);
+				++chunk;
 
 #ifndef _DEBUG
 			}
@@ -159,7 +158,6 @@ void Engine::Display()
 	}
 
 
-
 	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -168,16 +166,16 @@ void Engine::Display()
 
 	for (int bin = 0; bin < HASH_SIZE; bin++)
 	{
-		auto loc = wWorld.Chunks[bin].begin();
-		while(loc != wWorld.Chunks[bin].end())
+		auto chunk = wWorld.Chunks[bin].begin();
+		while(chunk != wWorld.Chunks[bin].end())
 		{
 #ifndef _DEBUG
 			_try 
 			{
 #endif // _DEBUG
 
-				(*loc)->Render(mod, MAT_WATER);
-				++loc;
+				(*chunk)->Render(mod, MAT_WATER);
+				++chunk;
 
 #ifndef _DEBUG
 			}
@@ -194,7 +192,7 @@ void Engine::Display()
 
 
 	glDisable(GL_FOG);
-	glDisable(GL_LIGHT2);
+	//glDisable(GL_LIGHT2);
 
 
 #ifdef DEBUG_OUT
