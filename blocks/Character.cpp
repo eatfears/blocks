@@ -255,9 +255,29 @@ void Character::Control(GLdouble FrameInterval)
 		par.x++;
 
 		bKeyboard['0'] = false;
-		
 	}
-
+	if(bKeyboard['C']) 
+	{
+		Chunk *chunk;
+		int index;
+		wWorld.FindBlock(sCenterBlockCoordX, sCenterBlockCoordY, sCenterBlockCoordZ, &chunk, &index);
+		if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT))
+		{
+			chunk->NeedToRender[0] = true;
+			chunk->bBlocks[index].bVisible ^= (1 << SNOWCOVERED);
+		}
+	}
+	if(bKeyboard['V']) 
+	{
+		Chunk *chunk;
+		int index;
+		wWorld.FindBlock(sCenterBlockCoordX, sCenterBlockCoordY, sCenterBlockCoordZ, &chunk, &index);
+		if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT))
+		{
+			chunk->NeedToRender[0] = true;
+			chunk->bBlocks[index].bVisible ^= (1 << GRASSCOVERED);
+		}
+	}
 	if(bKeyboard['E']) 
 	{
 		wWorld.RemoveBlock(sCenterBlockCoordX,sCenterBlockCoordY,sCenterBlockCoordZ, true);

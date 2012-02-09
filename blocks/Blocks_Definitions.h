@@ -38,6 +38,9 @@
 #define LEFT			3
 #define BACK			4
 #define FRONT			5
+#define SNOWCOVERED		6
+#define GRASSCOVERED	7
+
 
 #define CHUNK_SIZE_XZ	16
 #define CHUNK_SIZE_Y	128

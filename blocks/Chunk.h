@@ -12,7 +12,7 @@ typedef struct chnkpos
 	ChunkInWorld z;
 }ChunkPosition;
 
-typedef struct block
+typedef struct blockstruct
 {
 	char cMaterial;
 	char bVisible;
@@ -52,7 +52,7 @@ public:
 	void FillSkyLight(char bright);
 
 	void Render(GLenum mode, char mat);
-	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char N);
+	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, Block* block, char N);
 
 	HANDLE mutex;
 

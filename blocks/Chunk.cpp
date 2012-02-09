@@ -53,6 +53,8 @@ int Chunk::AddBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z, char mat)
 	if((GetBlockMaterial(x, y, z) != MAT_NO)||(GetBlockMaterial(x, y, z) == -1)) return -1;
 
 	BlockInChunk index = SetBlockMaterial(x, y, z, mat);
+	bBlocks[index].bVisible = 0;
+
 	LightToUpdate = true;
 
 	return index;
@@ -63,6 +65,8 @@ int Chunk::RemoveBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z)
 	if((GetBlockMaterial(x, y, z) == MAT_NO)||(GetBlockMaterial(x, y, z) == -1)) return -1;
 
 	BlockInChunk index = SetBlockMaterial(x, y, z, MAT_NO);
+	bBlocks[index].bVisible = 0;
+
 	LightToUpdate = true;
 
 	return index;
@@ -353,7 +357,7 @@ void Chunk::Render(GLenum mode, char mat)
 	// 			if(	(abs(xx*BLOCK_SIZE - player.dPositionX) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
 	// 				(abs(yy*BLOCK_SIZE - player.dPositionY) < MAX_VIEV_DIST + 10*BLOCK_SIZE) && 
 	// 				(abs(zz*BLOCK_SIZE - player.dPositionZ) < MAX_VIEV_DIST + 10*BLOCK_SIZE))
-					DrawTile(xx, yy, zz, (*it)->cMaterial, i);
+					DrawTile(xx, yy, zz, *it, i);
 
 				++it;
 			}
@@ -372,7 +376,7 @@ void Chunk::Render(GLenum mode, char mat)
 	}
 }
 
-void Chunk::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char N)
+void Chunk::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, Block* block, char N)
 {
 	GLdouble 
 		// 		dXcoord = (sXcoord-player.lnwPositionX*LOCATION_SIZE_XZ)*TILE_SIZE, 
@@ -389,7 +393,10 @@ void Chunk::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZ
 	static double offsetx = 0;
 	static double offsety = 0;
 
-	wWorld.MaterialLib.GetTextureOffsets(offsetx, offsety, material, N);
+	char covered = block->bVisible;
+	char material = block->cMaterial;
+
+	wWorld.MaterialLib.GetTextureOffsets(offsetx, offsety, material, covered, N);
 
 	switch(N)
 	{

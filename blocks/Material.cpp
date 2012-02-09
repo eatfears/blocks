@@ -183,23 +183,26 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 	return texture;
 }
 
-void MaterialLibrary::GetTextureOffsets(double& offsetx, double& offsety, int material, int N)
+void MaterialLibrary::GetTextureOffsets(double& offsetx, double& offsety, int material, char covered, int N)
 {
 	offsetx = 14; 
 	offsety = 0;
-	bool SnowCovered = 1;
 
 	switch(material)
 	{
 	case MAT_DIRT: offsetx = 2; offsety = 0;
-		if (SnowCovered)
+		if (covered & (1 << SNOWCOVERED))
 		{
 			if(N == TOP) {offsetx = 2; offsety = 4;}
 			else if(N == BOTTOM) {offsetx = 2; offsety = 0;}
-			else {offsetx = 4; offsety = 4;} 
+			else {offsetx = 4; offsety = 4;}
 		}
-		break;
-	case MAT_GRASS: if(N == TOP) {offsetx = 0; offsety = 0;} else if(N == BOTTOM) {offsetx = 2; offsety = 0;} else {offsetx = 3; offsety = 0;} 
+		else if (covered & (1 << GRASSCOVERED))
+		{
+			if(N == TOP) {offsetx = 0; offsety = 0;}
+			else if(N == BOTTOM) {offsetx = 2; offsety = 0;}
+			else {offsetx = 3; offsety = 0;}
+		}
 		break;
 	case MAT_STONE: offsetx = 1; offsety = 0;
 		break;

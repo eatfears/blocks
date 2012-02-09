@@ -95,7 +95,7 @@ void Landscape::Generate(Chunk &chunk)
 				//temp2 = dens[i%LOCATION_SIZE_XZ][(j+1)%LOCATION_SIZE_Y][k%LOCATION_SIZE_XZ];
 
 				density = temp*(4*details + 0.3) + j;
-				if(density < height) {if(density < height - 3) chunk.AddBlock(i, j, k, MAT_STONE); else chunk.AddBlock(i, j, k, MAT_GRASS);}
+				if(density < height) {if(density < height - 3) chunk.AddBlock(i, j, k, MAT_STONE); else chunk.AddBlock(i, j, k, MAT_DIRT);}
 				else if(j < horizon) chunk.AddBlock(i, j, k, MAT_WATER);
 			}
 		}
