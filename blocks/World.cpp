@@ -13,7 +13,7 @@ World::World()
 	parget2 = CreateEvent(NULL, false, false, NULL);
 	mutex = CreateMutex(NULL, false, NULL);
 	semaphore = CreateSemaphore(NULL, 10, 10, NULL);
-	SoftLight = false;
+	SoftLight = true;
 }
 
 World::~World()

@@ -108,9 +108,10 @@ void Landscape::Generate(Chunk &chunk)
 			for(int j = CHUNK_SIZE_Y - 1; j >= 0; j--)
 			{
 				int index = chunk.GetIndexByPosition(i, j, k);
-				if(chunk.bBlocks[index].cMaterial == MAT_DIRT)
+				if(chunk.bBlocks[index].cMaterial != MAT_NO)
 				{
-					chunk.bBlocks[index].bVisible |= (1 << SNOWCOVERED);
+					if(chunk.bBlocks[index].cMaterial == MAT_DIRT)
+						chunk.bBlocks[index].bVisible |= (1 << SNOWCOVERED);
 					break;
 				}
 			}

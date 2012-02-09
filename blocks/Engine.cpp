@@ -65,7 +65,7 @@ void Engine::Reshape(int width, int height)
 	glLoadIdentity();											// Сброс матрицы проекции
 
 	//Вычисление соотношения геометрических размеров для окна
-	gluPerspective(45.0f, (GLfloat)width/(GLfloat)height, 0.1f, BLOCK_SIZE + MAX_VIEV_DIST);
+	gluPerspective(70.0f, (GLfloat)width/(GLfloat)height, 0.1f, BLOCK_SIZE + MAX_VIEV_DIST);
 	glMatrixMode(GL_MODELVIEW);								// Выбор матрицы вида модели
 	glLoadIdentity();											// Сброс матрицы вида модели
 
@@ -362,11 +362,11 @@ void Engine::DrawInterface()
 	glColor3d(1.0, 1.0, 1.0);
 	glLineWidth (2.0);
 	glBegin(GL_LINES);
-	glVertex2d(0.0,-0.001);
-	glVertex2d(0.0,0.001);
+	glVertex2d(0.0,-0.003);
+	glVertex2d(0.0,0.003);
 
-	glVertex2d(-0.001,0.0);
-	glVertex2d(0.001,0.0);
+	glVertex2d(-0.003,0.0);
+	glVertex2d(0.003,0.0);
 	glEnd();
 	glTranslated(0, 0, 0.11);
 }
