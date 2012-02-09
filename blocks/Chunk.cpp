@@ -407,121 +407,121 @@ void Chunk::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZ
 	case TOP:
 		{
 			//Верхняя грань
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 0);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 0);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 1);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 1);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 2);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 2);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 3);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 3);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord);
 		}break;
 	case BOTTOM:
 		{
 			//Нижняя грань
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 4);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 4);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 7);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 7);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 6);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 6);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord + BLOCK_SIZE);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 5);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 5);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord + BLOCK_SIZE);
 		}break;
 	case RIGHT:
 		{
 			//Правая грань
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 7);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 7);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 3);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 3);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 2);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 2);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 6);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 6);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord + BLOCK_SIZE);
 		}break;
 	case LEFT:
 		{
 			//Левая грань
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 4);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 4);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 5);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 5);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord + BLOCK_SIZE);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 1);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 1);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 0);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 0);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord);
 		}break;
 	case BACK:
 		{
 			//Задняя грань
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 5);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 5);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord + BLOCK_SIZE);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 6);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 6);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord + BLOCK_SIZE);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 2);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 2);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 1);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 1);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
 		}break;
 	case FRONT:
 		{
 			//Передняя грань
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 4);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 4);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 0);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 0);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 3);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 3);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord);
 
-			GetBrightVertex(sXcoord, sYcoord, sZcoord, 7);
+			GetBrightVertex(sXcoord, sYcoord, sZcoord, N, 7);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord, dZcoord);
 		}break;
 	}
 }
 
-void Chunk::GetBrightVertex( BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int vertex)
+void Chunk::GetBrightVertex( BlockInWorld X, BlockInWorld Y, BlockInWorld Z, char side, int vertex)
 {
 	if(wWorld.SoftLight)
 	{
@@ -532,63 +532,63 @@ void Chunk::GetBrightVertex( BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int
 			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
 			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz, side);
 		}
 		else if (vertex == 1)
 		{
 			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
 			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz, side);
 		}
 		else if (vertex == 2)
 		{
 			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
 			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz, side);
 		}
 		else if (vertex == 3)
 		{
 			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
 			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz, side);
 		}
 		else if (vertex == 4)
 		{
 			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
 			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
 			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz, side);
 		}
 		else if (vertex == 5)
 		{
 			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
 			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
 			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz, side);
 		}
 		else if (vertex == 6)
 		{
 			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
 			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
 			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz, side);
 		}
 		else if (vertex == 7)
 		{
 			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
 			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
 			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-			res = GetBrightAverage(X, Y, Z, xx, yy, zz);
+			res = GetBrightAverage(X, Y, Z, xx, yy, zz, side);
 		}
 
 		glColor3f(res, res, res);
 	}
 }
 
-float Chunk::GetBrightAverage(BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int xx[8], int yy[8], int zz[8])
+float Chunk::GetBrightAverage(BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int xx[8], int yy[8], int zz[8], char side)
 {
 	float mat[8];
 	Chunk *temploc;
@@ -613,8 +613,23 @@ float Chunk::GetBrightAverage(BlockInWorld X, BlockInWorld Y, BlockInWorld Z, in
 		}else mat[i] = 0.0f;
 	}
 
-	for(int i = 0; i < 8; i++)
-		res += mat[i];
+	switch(side)
+	{
+	case TOP:
+	case BOTTOM:
+		res = mat[4] + mat[5] + mat[6] + mat[7];
+		break;
+	case LEFT:
+	case RIGHT:
+		res = mat[2] + mat[3] + mat[6] + mat[7];
+		break;
+	case BACK:
+	case FRONT:
+		res = mat[1] + mat[3] + mat[5] + mat[7];
+		break;
+	}
+	//for(int i = 0; i < 8; i++)
+	//	res += mat[i];
 
 	return res /= 4;
 }

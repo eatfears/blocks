@@ -60,7 +60,7 @@ public:
 	bool listgen;
 	bool LightToUpdate;
 
-	void GetBrightVertex(BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int vertex);
-	float GetBrightAverage(BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int xx[8], int yy[8], int zz[8]);
+	void GetBrightVertex(BlockInWorld X, BlockInWorld Y, BlockInWorld Z, char side, int vertex);
+	float GetBrightAverage(BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int xx[8], int yy[8], int zz[8], char side);
 
 };
