@@ -23,7 +23,7 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
 		SkyLight[i] = 0;
 		bBlocks[i].cMaterial = MAT_NO;
 		for(int N = 0; N < 6; N++)
-			bBlocks[i].bVisible[N] = false;
+			bBlocks[i].bVisible &= ~(1 << N);
 	}
 	NeedToRender[0] = RENDER_NEED;
 	NeedToRender[1] = RENDER_NEED;
@@ -72,7 +72,7 @@ void Chunk::ShowTile(Block *bBlock, char N)
 {
 	if(!bBlock) return;
 	if(bBlock->cMaterial == MAT_NO) return;
-	if(bBlock->bVisible[N]) return;
+	if(bBlock->bVisible & (1 << N)) return;
 	
 
 	std::list<Block *> *Tiles;
@@ -83,7 +83,7 @@ void Chunk::ShowTile(Block *bBlock, char N)
 
 	Tiles->push_back(bBlock);
 		
-	bBlock->bVisible[N] = true;
+	bBlock->bVisible |= (1 << N);
 
 	NeedToRender[1] = RENDER_NEED;
 	NeedToRender[0] = RENDER_NEED;
@@ -93,7 +93,7 @@ void Chunk::HideTile(Block *bBlock, char N)
 {
 	if(!bBlock) return;
 	if(bBlock->cMaterial == MAT_NO) return;
-	if(!bBlock->bVisible[N]) return;
+	if(!(bBlock->bVisible & (1 << N))) return;
 
 	std::list<Block *> *Tiles;
 	if(bBlock->cMaterial == MAT_WATER)
@@ -110,7 +110,7 @@ void Chunk::HideTile(Block *bBlock, char N)
 	}
 	if(it == Tiles->end()) return;
 
-	(*it)->bVisible[N] = false;
+	(*it)->bVisible &= ~(1 << N);
 	Tiles->erase(it);
 
 	NeedToRender[1] = RENDER_NEED;
@@ -208,9 +208,9 @@ void Chunk::DrawLoadedBlocks()
 
 void Chunk::Generate()
 {
-	//wWorld.lLandscape.Generate(*this);
+	wWorld.lLandscape.Generate(*this);
 	//wWorld.lLandscape.Fill(*this, 0, 0.999, 64);
-	wWorld.lLandscape.Fill(*this, MAT_GRASS, 1, 64);
+	//wWorld.lLandscape.Fill(*this, MAT_GRASS, 1, 64);
 	//ChunkPosition pos = {x, z};
 	//wWorld.lLandscape.Load(pos);
 }

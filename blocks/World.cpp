@@ -379,7 +379,7 @@ int World::RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show
 
 void World::ShowTile(Chunk *chunk, int index, char N)
 {
-	if(!chunk->bBlocks[index].bVisible[N])
+	if(!(chunk->bBlocks[index].bVisible & (1 << N)))
 	{
 		DWORD dwWaitResult; 
 		dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
@@ -391,7 +391,7 @@ void World::ShowTile(Chunk *chunk, int index, char N)
 
 void World::HideTile(Chunk *chunk, int index, char N)
 {
-	if(chunk->bBlocks[index].bVisible[N])
+	if(chunk->bBlocks[index].bVisible & (1 << N))
 	{
 		DWORD dwWaitResult; 
 		dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);

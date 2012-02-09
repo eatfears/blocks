@@ -15,9 +15,7 @@ typedef struct chnkpos
 typedef struct block
 {
 	char cMaterial;
-	bool bVisible[6];
-	//bool GrassCovered;
-	//bool SnowCovered;
+	char bVisible;
 }Block;
 
 class Chunk
