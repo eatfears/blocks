@@ -237,7 +237,7 @@ void Chunk::FillSkyLight(char bright)
 			while (y > 0)
 			{
 				index = GetIndexByPosition(x, y, z);
-				if((bBlocks[index].cMaterial != MAT_NO)&&(bBlocks[index].cMaterial != MAT_WATER))
+				if(bBlocks[index].cMaterial != MAT_NO)
 					break;
 
 				SkyLight[index] = bright;

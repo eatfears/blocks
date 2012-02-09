@@ -115,8 +115,12 @@ void Light::FindFillChunk(int i, int j, BlockInWorld tempWx, BlockInWorld tempWy
 	if(TempChunk)
 	{
 		tempindex = TempChunk->GetIndexByPosition(tempWx, tempWy, tempWz);
-		if((TempChunk->bBlocks[tempindex].cMaterial == MAT_NO)||(TempChunk->bBlocks[tempindex].cMaterial == MAT_WATER))
+		if(TempChunk->bBlocks[tempindex].cMaterial == MAT_NO)
 			if(TempChunk->SkyLight[tempindex] < templight - 1)
 				TempChunk->SkyLight[tempindex] = templight - 1;
+
+		if(TempChunk->bBlocks[tempindex].cMaterial == MAT_WATER)
+			if(TempChunk->SkyLight[tempindex] < templight - 3)
+				TempChunk->SkyLight[tempindex] = templight - 3;
 	}
 }
