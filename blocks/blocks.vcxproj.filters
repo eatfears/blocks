@@ -50,6 +50,9 @@
     <ClCompile Include="Threads.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Character.h">
@@ -83,6 +86,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Threads.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

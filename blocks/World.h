@@ -28,19 +28,19 @@ public:
 	int AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bool show);
 	int RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show);
 
-	void DrawLoadedBlocksFinish(Chunk &loc);
-	void DrawUnLoadedBlocks(ChunkInWorld x, ChunkInWorld z);
+	void DrawLoadedBlocksFinish(Chunk &chunk);
+	void DrawUnLoadedBlocks(ChunkInWorld Cx, ChunkInWorld Cz);
 	void LoadChunk(ChunkInWorld x, ChunkInWorld z);
 	void UnLoadChunk(ChunkInWorld x, ChunkInWorld z);
 	std::list<ChunkPosition> LoadedChunks;
 
 	void GetChunkByBlock(BlockInWorld x, BlockInWorld z, ChunkInWorld *locx, BlockInWorld *locz);
 	Chunk* GetChunkByBlock(BlockInWorld x, BlockInWorld z);
-	Chunk* GetChunkByPosition(ChunkInWorld locx, ChunkInWorld locz);
+	Chunk* GetChunkByPosition(ChunkInWorld Cx, ChunkInWorld Cz);
 	void GetPosInChunkByWorld(BlockInWorld x, BlockInWorld y, BlockInWorld z, BlockInChunk *locx, BlockInChunk *locy, BlockInChunk *locz);
 //private:
-	void ShowTile(Chunk *loc, int index, char N);
-	void HideTile(Chunk *loc, int index, char N);
+	void ShowTile(Chunk *chunk, int index, char N);
+	void HideTile(Chunk *chunk, int index, char N);
 
 	HANDLE parget;
 	HANDLE parget2;
@@ -50,5 +50,4 @@ public:
 	unsigned long Hash(ChunkInWorld x, ChunkInWorld z) {return (x + z*HASH_SIZE)&(HASH_SIZE-1);}
 
 	void UpdateLight(Chunk& loc);
-	void DiffuseLight( Chunk *ChunkArray[5][5], int i, int j, BlockInWorld tempWx, BlockInWorld tempWy, BlockInWorld tempWz, int templight );
 };
