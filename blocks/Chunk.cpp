@@ -397,18 +397,31 @@ void Chunk::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZ
 	char material = block->cMaterial;
 
 	wWorld.MaterialLib.GetTextureOffsets(offsetx, offsety, material, covered, N);
-
+	float br;
+	
 	switch(N)
 	{
 	case TOP:
 		{
 			//Верхняя грань
+			br = rand()%100;
+			br = br/100;
+			glColor3f(br, br, br);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord);
+			br = rand()%100;
+			br = br/100;
+			glColor3f(br, br, br);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
+			br = rand()%100;
+			br = br/100;
+			glColor3f(br, br, br);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord + BLOCK_SIZE);
+			br = rand()%100;
+			br = br/100;
+			glColor3f(br, br, br);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + BLOCK_SIZE, dYcoord + BLOCK_SIZE, dZcoord);
 		}break;
