@@ -275,7 +275,7 @@ void Chunk::Render(GLenum mode, char mat)
 		static GLfloat br;
 		static BlockInChunk cx, cy, cz;
 		static BlockInWorld xx, yy, zz;
-		static BlockInWorld locx, locz;
+		static BlockInWorld blckwx, blckwz;
 		static BlockInWorld xlight, ylight, zlight;
 		static BlockInChunk 
 			xloclight, 
@@ -287,8 +287,8 @@ void Chunk::Render(GLenum mode, char mat)
 
 		for(int i = 0; i < 6; i++)
 		{
-			locx = x*CHUNK_SIZE_XZ;
-			locz = z*CHUNK_SIZE_XZ;
+			blckwx = x*CHUNK_SIZE_XZ;
+			blckwz = z*CHUNK_SIZE_XZ;
 
 
 			if(mat == MAT_WATER)
@@ -302,9 +302,9 @@ void Chunk::Render(GLenum mode, char mat)
 			{
 				GetBlockPositionByPointer(*it, &cx, &cy, &cz);
 
-				xx = cx + locx;
+				xx = cx + blckwx;
 				yy = cy;
-				zz = cz + locz;
+				zz = cz + blckwz;
 
 				switch(i)
 				{
@@ -341,7 +341,7 @@ void Chunk::Render(GLenum mode, char mat)
 				}
 			
 				if((xlight >= CHUNK_SIZE_XZ)||(xlight < 0)||(zlight >= CHUNK_SIZE_XZ)||(zlight < 0))
-					temploc = wWorld.GetChunkByBlock(xlight + locx, zlight + locz);
+					temploc = wWorld.GetChunkByBlock(xlight + blckwx, zlight + blckwz);
 				else temploc = this;
 				if((ylight >= CHUNK_SIZE_Y)||(ylight < 0)) temploc = NULL;
 				if (temploc)

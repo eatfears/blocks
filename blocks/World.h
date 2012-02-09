@@ -24,7 +24,7 @@ public:
 
 	void BuildWorld();
 	int FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z);
-	int FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, Chunk **loc, int *index);
+	int FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, Chunk **chunk, int *index);
 	int AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bool show);
 	int RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show);
 
@@ -34,10 +34,10 @@ public:
 	void UnLoadChunk(ChunkInWorld x, ChunkInWorld z);
 	std::list<ChunkPosition> LoadedChunks;
 
-	void GetChunkByBlock(BlockInWorld x, BlockInWorld z, ChunkInWorld *locx, BlockInWorld *locz);
+	void GetChunkByBlock(BlockInWorld x, BlockInWorld z, ChunkInWorld *Cx, ChunkInWorld *Cz);
 	Chunk* GetChunkByBlock(BlockInWorld x, BlockInWorld z);
 	Chunk* GetChunkByPosition(ChunkInWorld Cx, ChunkInWorld Cz);
-	void GetPosInChunkByWorld(BlockInWorld x, BlockInWorld y, BlockInWorld z, BlockInChunk *locx, BlockInChunk *locy, BlockInChunk *locz);
+	void GetPosInChunkByWorld(BlockInWorld x, BlockInWorld y, BlockInWorld z, BlockInChunk *chnkx, BlockInChunk *chnky, BlockInChunk *chnkz);
 //private:
 	void ShowTile(Chunk *chunk, int index, char N);
 	void HideTile(Chunk *chunk, int index, char N);
@@ -49,5 +49,5 @@ public:
 
 	unsigned long Hash(ChunkInWorld x, ChunkInWorld z) {return (x + z*HASH_SIZE)&(HASH_SIZE-1);}
 
-	void UpdateLight(Chunk& loc);
+	void UpdateLight(Chunk& chunk);
 };

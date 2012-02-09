@@ -401,13 +401,13 @@ void World::HideTile(Chunk *chunk, int index, char N)
 	}
 }
  
-int World::FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, Chunk **loc, int *index)
+int World::FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, Chunk **chunk, int *index)
 {
-	if((y < 0)||(y >= CHUNK_SIZE_Y)) { *loc = NULL; *index = 0; return 0;}
+	if((y < 0)||(y >= CHUNK_SIZE_Y)) { *chunk = NULL; *index = 0; return 0;}
 
-	(*loc) = GetChunkByBlock(x, z);
+	(*chunk) = GetChunkByBlock(x, z);
 
-	if((*loc) == NULL) { *index = 0; return 0;}
+	if((*chunk) == NULL) { *index = 0; return 0;}
 
 	BlockInChunk chnkx, chnky, chnkz;
 
@@ -415,7 +415,7 @@ int World::FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, Chunk **loc
 
 	*index = chnkx*CHUNK_SIZE_XZ + chnkz + chnky*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
 
-	if((*loc)->GetBlockMaterial(chnkx, chnky, chnkz) == MAT_NO)
+	if((*chunk)->GetBlockMaterial(chnkx, chnky, chnkz) == MAT_NO)
 		return 0;
 
 	return 1;
@@ -425,15 +425,15 @@ int World::FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z)
 {
 	if(y < 0) return 0;
 
-	Chunk *loc = GetChunkByBlock(x, z);
+	Chunk *chunk = GetChunkByBlock(x, z);
 
-	if(loc == NULL) return 0;
+	if(chunk == NULL) return 0;
 
 	BlockInChunk chnkx, chnky, chnkz;
 
 	GetPosInChunkByWorld(x, y, z, &chnkx, &chnky, &chnkz);
 
-	if(loc->GetBlockMaterial(chnkx, chnky, chnkz) == MAT_NO)
+	if(chunk->GetBlockMaterial(chnkx, chnky, chnkz) == MAT_NO)
 		return 0;
 
 	return 1;
