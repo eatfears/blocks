@@ -30,6 +30,7 @@ public:
 	void UpdateLight(void);
 
 	static char InfluencingLight[6][4];
+	static float LightTable[16];
 
 private:
 	Chunk *ChunkArray[5][5];

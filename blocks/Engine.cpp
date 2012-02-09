@@ -298,7 +298,7 @@ void Engine::DrawSelectedItem()
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glColor3d(0.1, 0.1, 0.1);
+	glColor3f(0.0f, 0.0f, 0.0f);
 	glLineWidth (1.4f);
 
 	GLdouble BorderSize = BLOCK_SIZE*(1 + 0.005);
@@ -311,7 +311,6 @@ void Engine::DrawSelectedItem()
 	dZcoord -= BorderSize/2;
 
 	glBegin(GL_QUADS);
-
 
 	//Верхняя грань
 	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord);
@@ -373,7 +372,6 @@ void Engine::DrawInterface()
 
 void Engine::Loop()
 {
-
 	Display();
 	player.GetCenterCoords(width, height);
 
