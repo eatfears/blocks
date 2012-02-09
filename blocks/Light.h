@@ -24,9 +24,12 @@ class Light
 {
 public:
 	Light(Chunk *ChnkArr[5][5]);
+	Light() {};
 	~Light(void);
 
 	void UpdateLight(void);
+
+	static char InfluencingLight[6][4];
 
 private:
 	Chunk *ChunkArray[5][5];
@@ -34,4 +37,3 @@ private:
 	void DiffuseLight(int i, int j, BlockInChunk tempx, BlockInChunk tempy, BlockInChunk tempz, int templight);
 	void FindFillChunk(int i, int j, BlockInWorld tempWx, BlockInWorld tempWy, BlockInWorld tempWz, int templight);
 };
-

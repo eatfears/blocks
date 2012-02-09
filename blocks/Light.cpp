@@ -2,6 +2,11 @@
 
 #include "Material.h"
 
+char Light::InfluencingLight[6][4] = {
+	4, 5, 6, 7, 4, 5, 6, 7,
+	2, 3, 6, 7, 2, 3, 6, 7,
+	1, 3, 5, 7, 1, 3, 5, 7};
+
 Light::	Light(Chunk *ChnkArr[5][5])
 {
 	for (int i = 0; i < 5; i++)

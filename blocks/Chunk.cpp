@@ -1,5 +1,6 @@
 #include "Chunk.h"
 #include "World.h"
+#include "Light.h"
 
 float LightTable[16] = {
 	0.000f, 0.044f, 0.055f, 0.069f, 
@@ -590,46 +591,48 @@ void Chunk::GetBrightVertex( BlockInWorld X, BlockInWorld Y, BlockInWorld Z, cha
 
 float Chunk::GetBrightAverage(BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int xx[8], int yy[8], int zz[8], char side)
 {
-	float mat[8];
+	float mat[4] = {0, 0, 0, 0};
 	Chunk *temploc;
 	float res = 0;
+	int InflLight;
 
 	static BlockInChunk 
 		xloclight, 
 		yloclight, 
 		zloclight;
 
-	for(int i = 0; i < 8; i++)
+	bool DiagonalblockInfluate = true;
+
+	for(int i = 0; i < 4; i++)
 	{
-		temploc = wWorld.GetChunkByBlock(X + xx[i], Z + zz[i]);
+		InflLight = Light::InfluencingLight[side][i];
+		temploc = wWorld.GetChunkByBlock(X + xx[InflLight], Z + zz[InflLight]);
 
 		//if((ylight >= CHUNK_SIZE_Y)||(ylight < 0)) temploc = NULL;
 		if (temploc)
 		{
-			wWorld.GetPosInChunkByWorld(X + xx[i], Y + yy[i], Z + zz[i], &xloclight, &yloclight, &zloclight);
+			wWorld.GetPosInChunkByWorld(X + xx[InflLight], Y + yy[InflLight], Z + zz[InflLight], &xloclight, &yloclight, &zloclight);
 			int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
 
+			if((i == 1)&&(temploc->bBlocks[index].cMaterial != MAT_NO))
+				DiagonalblockInfluate = false;
+			if(i == 2)
+			{
+				if(temploc->bBlocks[index].cMaterial == MAT_NO)
+					DiagonalblockInfluate = true;
+			}
+
+
 			mat[i] = LightTable[temploc->SkyLight[index]];
+
+			if((i == 3)&&(!DiagonalblockInfluate))
+				mat[i] = 0.0f;
+
 		}else mat[i] = 0.0f;
 	}
 
-	switch(side)
-	{
-	case TOP:
-	case BOTTOM:
-		res = mat[4] + mat[5] + mat[6] + mat[7];
-		break;
-	case LEFT:
-	case RIGHT:
-		res = mat[2] + mat[3] + mat[6] + mat[7];
-		break;
-	case BACK:
-	case FRONT:
-		res = mat[1] + mat[3] + mat[5] + mat[7];
-		break;
-	}
-	//for(int i = 0; i < 8; i++)
-	//	res += mat[i];
+	for(int i = 0; i < 4; i++)
+		res += mat[i];
 
 	return res /= 4;
 }
