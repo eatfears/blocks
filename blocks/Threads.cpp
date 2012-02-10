@@ -40,11 +40,13 @@ void LoadChunkThread(void* pParams)
 
 	wWorld.DrawLoadedBlocksFinish(*chunk);
 
+	/*
 	if(chunk->LightToUpdate)
 	{
 		wWorld.UpdateLight(*chunk);
 		chunk->LightToUpdate = false;
 	}
+	*/
 
 	chunk->NeedToRender[0] = RENDER_NEED;
 	chunk->NeedToRender[1] = RENDER_NEED;

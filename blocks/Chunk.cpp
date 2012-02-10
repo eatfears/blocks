@@ -349,6 +349,7 @@ void Chunk::Render(GLenum mode, char mat)
 
 						br = Light::LightTable[temploc->SkyLight[index]];
 					}else br = 0.0f;
+					if ((i == FRONT)||(i == BACK)) br -= 0.05f;
 					glColor3f(br, br, br);
 
 				}
@@ -578,7 +579,7 @@ void Chunk::GetBrightVertex( BlockInWorld X, BlockInWorld Y, BlockInWorld Z, cha
 			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
 			res = GetBrightAverage(X, Y, Z, xx, yy, zz, side);
 		}
-
+		if ((side == FRONT)||(side == BACK)) res -= 0.05f;
 		glColor3f(res, res, res);
 	}
 }
