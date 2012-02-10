@@ -1,3 +1,4 @@
+
 #include "Material.h"
 #include <libpng\png.h>
 #include "Blocks_Definitions.h"
@@ -9,13 +10,13 @@ MaterialLibrary::MaterialLibrary()
 
 MaterialLibrary::~MaterialLibrary()
 {
-	glDeleteTextures(3, texture);
+	glDeleteTextures(5, texture);
 	free(texture);
 }
 
 void MaterialLibrary::AllocGLTextures()
 {
-	texture = (GLuint *)calloc(3, sizeof(GLuint));
+	texture = (GLuint *)calloc(5, sizeof(GLuint));
 	
 	//glGenTextures(1, texture); // создаем текстуры 
 }
@@ -25,6 +26,8 @@ void MaterialLibrary::LoadGLTextures()
 	texture[TERRAIN] = loadImage("textures\\terrain.png");
 	texture[UNDERWATER] = loadImage("textures\\misc\\water.png");
 	texture[VIGNETTE] = loadImage("textures\\misc\\vignette.png");
+	texture[SUN] = loadImage("textures\\terrain\\sun.png");
+	texture[MOON] = loadImage("textures\\terrain\\moon.png");
 }
 
 int MaterialLibrary::GetTextureInfo(int ColourType)

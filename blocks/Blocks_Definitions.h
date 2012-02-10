@@ -27,11 +27,13 @@
 
 #define SPRINT_KOEF		2.0
 
-#define FOG_COLOR		0.5f,0.5f,0.8f,1.0f
+//#define FOG_COLOR		0.0f,0.0f,0.0f,1.0f
+#define FOG_COLOR		0.50f,0.67f,1.00f,1.0f
 #define WATER_FOG_COLOR	0.0f,0.0f,0.0f,1.0f
 #define FOG_DENSITY		6.0
 #define FOG_START		BLOCK_SIZE*64
 #define MAX_VIEV_DIST	BLOCK_SIZE*128*2
+#define FARCUT			32*CHUNK_SIZE_XZ*BLOCK_SIZE
 
 #define TOP				0
 #define BOTTOM			1

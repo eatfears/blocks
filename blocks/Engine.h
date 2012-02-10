@@ -30,6 +30,8 @@ public:
 	void DrawSelectedItem();
 	void Loop();
 
+	void DrawEnviroment();
+
 	void OpenGL2d();
 	void OpenGL3d();
 

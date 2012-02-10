@@ -19,6 +19,8 @@
 #define TERRAIN				0
 #define UNDERWATER			1
 #define VIGNETTE			2
+#define SUN					3
+#define MOON				4
 
 class MaterialLibrary
 {

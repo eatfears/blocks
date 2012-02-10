@@ -43,11 +43,6 @@ int Engine::InitGL()
 
 	//рассчет текстур
 	glEnable(GL_TEXTURE_2D);
-	
-	//рассчет освещени€ 
-	//glEnable(GL_LIGHTING);
-	//двухсторонний расчет освещени€ 
-	//	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
 	//автоматическое приведение нормалей к единичной длине
 	glEnable(GL_NORMALIZE);
@@ -73,25 +68,16 @@ void Engine::Display()
 	glLoadIdentity();											// —бросить текущую матрицу
 	OpenGL3d();
 
+
+	//Set position
 	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
 	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
 	glTranslated(-player.dPositionX, -player.dPositionY, -player.dPositionZ);
 
-	/*
-	GLfloat material_diffuse[] = {1.0, 1.0, 1.0, 1.0};
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, material_diffuse);
-	
-	glTranslated(0, 30, 0);
-	GLfloat light2_diffuse[] = {0.9f, 0.9f, 0.9f};
-	GLfloat light2_position[] = {0.0f, 0.0f, 0.0f, 1.0f};
-	glEnable(GL_LIGHT2);
-	glLightfv(GL_LIGHT2, GL_DIFFUSE, light2_diffuse);
-	glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
-	glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.0);
-	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.0);
-	glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0);
-	glTranslated(0, -30, 0);
-	*/
+
+	DrawEnviroment();
+
+
 
 	glEnable(GL_FOG);
 	glFogi(GL_FOG_MODE,  GL_LINEAR);
@@ -193,7 +179,6 @@ void Engine::Display()
 
 
 	glDisable(GL_FOG);
-	//glDisable(GL_LIGHT2);
 
 
 #ifdef DEBUG_OUT
@@ -423,32 +408,6 @@ void Engine::Loop()
 	GetFrameTime();
 
 	glutSwapBuffers();
-
-/*
-	if(player.bKeyboardPress[VK_F1])						// Is F1 Being Pressed?
-	{
-		player.bKeyboardPress[VK_F1] = false;					// If So Make Key FALSE
-		glwWnd->KillGLWindow();						// Kill Our Current Window
-		glwWnd->fullscreen = !glwWnd->fullscreen;				// Toggle Fullscreen / Windowed Mode
-		glwWnd->bMousing = false;
-
-		int resx = RESX;
-		int resy = RESY;
-		if (glwWnd->fullscreen)
-		{
-			resx = GetSystemMetrics(SM_CXSCREEN);
-			resy = GetSystemMetrics(SM_CYSCREEN);
-		}
-		// Recreate Our OpenGL Window
-		if(!glwWnd->CreateGLWindow("Blocks", resx, resy, BITS))
-			//if(!glwWnd.CreateGLWindow("Blocks", 1366, 768, BITS))
-		{
-			return true;						// Quit If Window Was Not Created
-		}
-		wWorld.MaterialLib.LoadGLTextures();
-	}
-
-	*/
 }
 
 void Engine::GetFrameTime()
@@ -511,8 +470,95 @@ void Engine::OpenGL3d()
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(fovy, (GLfloat)width/(GLfloat)height, 0.1f, BLOCK_SIZE + MAX_VIEV_DIST);
+	gluPerspective(fovy, (GLfloat)width/(GLfloat)height, 0.1f, FARCUT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glEnable(GL_DEPTH_TEST);
+}
+
+void Engine::DrawEnviroment()
+{
+	glPushMatrix();
+
+	glLoadIdentity();
+	/*
+	glEnable(GL_LIGHTING);
+	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	
+	GLfloat material_diffuse[] = {10.0, 1.0, 1.0, 1.0};
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, material_diffuse);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, material_diffuse);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, material_diffuse);
+	
+	glTranslated(0, 0, 0);
+	GLfloat light2_diffuse[] = {100.0f, 100.0f, 10.0f};
+	GLfloat light2_position[] = {0.0f, 0.0f, 0.0f, 1.0f};
+	glEnable(GL_LIGHT2);
+	glLightfv(GL_LIGHT2, GL_AMBIENT, light2_diffuse);
+	glLightfv(GL_LIGHT2, GL_DIFFUSE, light2_diffuse);
+	glLightfv(GL_LIGHT2, GL_SPECULAR, light2_diffuse);
+	glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
+	glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.0);
+	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.0);
+	glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0);
+	glTranslated(0, 0, 0);
+	*/
+
+	//Sun
+	GLdouble SunSize = 100*BLOCK_SIZE, sundist = FARCUT*0.8;
+	static GLdouble time = 0.0;
+	time += 0.01;
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+	glDisable(GL_CULL_FACE);
+
+	glColor3f(1.0f, 1.0f, 1.0f);
+											// —бросить текущую матрицу
+	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
+	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
+	glRotated(-time, 1.0, 0.0, 0.0);
+
+	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[SUN]);
+	
+// 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE); 
+// 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_ADD); 
+// 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE); 
+// 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
+//	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
+	
+	glTranslated(-0, -0, sundist);
+
+	glBegin(GL_QUADS);
+	glNormal3f(0, 0, -1);
+	glTexCoord2d(0.0, 0.0);
+	glVertex2d(-SunSize, -SunSize);
+	glTexCoord2d(0.0, 1.0);
+	glVertex2d(-SunSize, SunSize);
+	glTexCoord2d(1.0, 1.0);
+	glVertex2d(SunSize, SunSize);
+	glTexCoord2d(1.0, 0.0);
+	glVertex2d(SunSize, -SunSize);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[MOON]);
+	glTranslated(-0, -0, -2*sundist);
+
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0, 0.0);
+	glVertex2d(-SunSize, -SunSize);
+	glTexCoord2d(0.0, 1.0);
+	glVertex2d(-SunSize, SunSize);
+	glTexCoord2d(1.0, 1.0);
+	glVertex2d(SunSize, SunSize);
+	glTexCoord2d(1.0, 0.0);
+	glVertex2d(SunSize, -SunSize);
+	glEnd();
+
+	glDisable(GL_BLEND);
+
+	glPopMatrix();
+
+	//glDisable(GL_LIGHT2);
+	//glDisable(GL_LIGHTING);
 }
