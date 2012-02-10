@@ -209,7 +209,7 @@ void Chunk::Generate()
 {
 	wWorld.lLandscape.Generate(*this);
 	//wWorld.lLandscape.Fill(*this, 0, 0.999, 64);
-	//wWorld.lLandscape.Fill(*this, MAT_GRASS, 1, 64);
+	//wWorld.lLandscape.Fill(*this, MAT_DIRT, 1, 64);
 	//ChunkPosition pos = {x, z};
 	//wWorld.lLandscape.Load(pos);
 }
@@ -607,6 +607,13 @@ float Chunk::GetBrightAverage(BlockInWorld X, BlockInWorld Y, BlockInWorld Z, in
 		if (temploc)
 		{
 			wWorld.GetPosInChunkByWorld(X + xx[InflLight], Y + yy[InflLight], Z + zz[InflLight], &xloclight, &yloclight, &zloclight);
+			
+			if(yloclight >= CHUNK_SIZE_Y)
+			{	
+				mat[i] = 0.0f; 
+				break;
+			}
+
 			int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
 
 			if((i == 1)&&(temploc->bBlocks[index].cMaterial != MAT_NO)&&(temploc->bBlocks[index].cMaterial != MAT_WATER))
