@@ -609,11 +609,11 @@ float Chunk::GetBrightAverage(BlockInWorld X, BlockInWorld Y, BlockInWorld Z, in
 			wWorld.GetPosInChunkByWorld(X + xx[InflLight], Y + yy[InflLight], Z + zz[InflLight], &xloclight, &yloclight, &zloclight);
 			int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
 
-			if((i == 1)&&(temploc->bBlocks[index].cMaterial != MAT_NO))
+			if((i == 1)&&(temploc->bBlocks[index].cMaterial != MAT_NO)&&(temploc->bBlocks[index].cMaterial != MAT_WATER))
 				DiagonalblockInfluate = false;
 			if(i == 2)
 			{
-				if(temploc->bBlocks[index].cMaterial == MAT_NO)
+				if((temploc->bBlocks[index].cMaterial == MAT_NO)||(temploc->bBlocks[index].cMaterial == MAT_WATER))
 					DiagonalblockInfluate = true;
 			}
 
