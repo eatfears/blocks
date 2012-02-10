@@ -9,20 +9,21 @@ MaterialLibrary::MaterialLibrary()
 
 MaterialLibrary::~MaterialLibrary()
 {
-	glDeleteTextures(1, texture);
+	glDeleteTextures(2, texture);
 	free(texture);
 }
 
 void MaterialLibrary::AllocGLTextures()
 {
-	texture = (GLuint *)calloc(1, sizeof(GLuint));
+	texture = (GLuint *)calloc(2, sizeof(GLuint));
 	
 	//glGenTextures(1, texture); // создаем текстуры 
 }
 
 void MaterialLibrary::LoadGLTextures()
 {
-	texture[0] = loadImage("textures\\terrain.png");
+	texture[TERRAIN] = loadImage("textures\\terrain.png");
+	texture[UNDERWATER] = loadImage("textures\\water.png");
 }
 
 int MaterialLibrary::GetTextureInfo(int ColourType)

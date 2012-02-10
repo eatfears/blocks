@@ -1,8 +1,11 @@
 #include "Engine.h"
 #include <time.h>
 #include <Mmsystem.h>
+#include "Light.h"
+#include "Primes.h"
 
-GLfloat fogColor[4]= {FOG_COLOR};
+GLfloat FogColor[4] = {FOG_COLOR};
+GLfloat WaterfogColor[4] = {WATER_FOG_COLOR};
 
 Engine::Engine()
 	:player(wWorld)
@@ -29,8 +32,8 @@ int Engine::InitGL()
 	glutSetCursor(GLUT_CURSOR_NONE);							//Выставляем на НЕТ КУРСОР
 
 
-	glShadeModel(GL_SMOOTH);									// Разрешить плавное цветовое сглаживание
-	glClearColor(FOG_COLOR);									// Очистка экрана в черный цвет
+	glShadeModel(GL_SMOOTH);
+	glClearColor(FOG_COLOR);
 	glClearDepth(1.0f);											// Разрешить очистку буфера глубины
 
 	glEnable(GL_DEPTH_TEST);									// Разрешить тест глубины
@@ -57,25 +60,10 @@ void Engine::Reshape(int width, int height)
 	if(height == 0)											// Предотвращение деления на ноль 
 		height = 1;
 
-	glViewport(0, 0, width, height);							// Сброс текущей области вывода
-	glMatrixMode(GL_PROJECTION);								// Выбор матрицы проекций
-	glLoadIdentity();											// Сброс матрицы проекции
-
-	//Вычисление соотношения геометрических размеров для окна
-	gluPerspective(70.0f, (GLfloat)width/(GLfloat)height, 0.1f, BLOCK_SIZE + MAX_VIEV_DIST);
-	glMatrixMode(GL_MODELVIEW);								// Выбор матрицы вида модели
-	glLoadIdentity();											// Сброс матрицы вида модели
-
 	this->width = width;
 	this->height = height;
-	/*
-	glViewport(0,0,(GLsizei) w, (GLsizei) h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(-50.0,50.0,-50.0,50.0,-1.0,1.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	*/
+
+	OpenGL3d();
 }
 
 void Engine::Display()
@@ -83,6 +71,7 @@ void Engine::Display()
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Очистить экран и буфер глубины
 	glLoadIdentity();											// Сбросить текущую матрицу
+	OpenGL3d();
 
 	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
 	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
@@ -105,17 +94,30 @@ void Engine::Display()
 	*/
 
 	glEnable(GL_FOG);
-	glFogi(GL_FOG_MODE,  GL_LINEAR);		//Тип тумана
-	glFogfv(GL_FOG_COLOR, fogColor);
-	glFogf(GL_FOG_DENSITY, FOG_DENSITY);	//Насколько густым будет туман
-	glHint(GL_FOG_HINT, GL_DONT_CARE);		//Вспомогательная установка тумана
-	glFogf(GL_FOG_START, FOG_START);		//Глубина, с которой начинается туман
-	glFogf(GL_FOG_END, MAX_VIEV_DIST);		//Глубина, где туман заканчивается
+	glFogi(GL_FOG_MODE,  GL_LINEAR);
+	glHint(GL_FOG_HINT, GL_DONT_CARE);
+	if(player.UnderWater)
+	{
+		glClearColor(WATER_FOG_COLOR);
+		glFogfv(GL_FOG_COLOR, WaterfogColor);
+		glFogf(GL_FOG_DENSITY, 20.0);
+		glFogf(GL_FOG_START, BLOCK_SIZE*10);
+		glFogf(GL_FOG_END, BLOCK_SIZE*30);
+	}
+	else
+	{
+		glClearColor(FOG_COLOR);
+		glFogfv(GL_FOG_COLOR, FogColor);
+		glFogf(GL_FOG_DENSITY, FOG_DENSITY);
+		glFogf(GL_FOG_START, FOG_START);
+		glFogf(GL_FOG_END, MAX_VIEV_DIST);
+	}
+
 
 	glColor3d(1.0, 1.0, 1.0);
 
 	static GLuint *tex = wWorld.MaterialLib.texture;
-	glBindTexture(GL_TEXTURE_2D, tex[0]);
+	glBindTexture(GL_TEXTURE_2D, tex[TERRAIN]);
 
 
 	GLenum mod = GL_EXECUTE;
@@ -201,15 +203,6 @@ void Engine::Display()
 	fclose(out);
 #endif
 
-	// 
-	// 	glClear(GL_COLOR_BUFFER_BIT);
-	// 	glPushMatrix();
-	// 	glRotatef(spin,0.0,0.0,1.0);
-	// 	glColor3f(1.0,1.0,1.0);
-	// 	glRectf(-25.0,-25.0,25.0,25.0);
-	// 	glPopMatrix();
-	// 	glutSwapBuffers();
-
 }
 
 void Engine::Keyboard(unsigned char button, int x, int y, bool KeyDown)
@@ -252,7 +245,6 @@ void Engine::MouseMotion(int x, int y)
 		Lasty = y;
 
 		glutWarpPointer(width/2,height/2);
-
 	}
 	else 
 	{
@@ -347,24 +339,69 @@ void Engine::DrawSelectedItem()
 
 void Engine::DrawInterface()
 {
+	//glPushMatrix();
+	//glPopMatrix();
+
 	DrawSelectedItem();
 
-	//Сбросить текущую матрицу
 	glLoadIdentity();
 
-	//Рисование прицела
-	glTranslated(0, 0, -0.11);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glColor3d(1.0, 1.0, 1.0);
-	glLineWidth (2.0);
-	glBegin(GL_LINES);
-	glVertex2d(0.0,-0.003);
-	glVertex2d(0.0,0.003);
+	OpenGL2d();
 
-	glVertex2d(-0.003,0.0);
-	glVertex2d(0.003,0.0);
+	//Underwater haze
+	BlockInWorld x, y, z;
+	Chunk *chunk;
+	int index;
+
+	x = (BlockInWorld) Primes::Round(player.dPositionX/BLOCK_SIZE);
+	y = (BlockInWorld) Primes::Round(player.dPositionY/BLOCK_SIZE - 0.5);
+	z = (BlockInWorld) Primes::Round(player.dPositionZ/BLOCK_SIZE);
+
+	wWorld.FindBlock(x, y, z, &chunk, &index);
+	if((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_WATER))
+	{
+		player.UnderWater = true;
+
+		GLfloat Brightness = Light::LightTable[chunk->SkyLight[index]];
+		GLfloat TextureRotation = player.dSpinY/90;
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[UNDERWATER]);
+		glColor3f(Brightness, Brightness, Brightness);
+
+		glBegin(GL_QUADS);
+		glTexCoord2d(0.0 - TextureRotation, 0.0);
+		glVertex2d(-3*height, -height);
+		glTexCoord2d(0.0 - TextureRotation, 1.0);
+		glVertex2d(-3*height, height);
+		glTexCoord2d(3.0 - TextureRotation, 1.0);
+		glVertex2d(3*height, height);
+		glTexCoord2d(3.0 - TextureRotation, 0.0);
+		glVertex2d(3*height, -height);
+		glEnd();
+
+		glDisable(GL_BLEND);
+	}else
+	{
+		player.UnderWater = false;
+	}
+
+	//Cross
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3f(1.0, 1.0, 1.0);
+	glLineWidth (2.0);
+
+	glBegin(GL_LINES);
+	glVertex2d(0.0, -17.0);
+	glVertex2d(0.0, 16.0);
+
+	glVertex2d(-15.0, 0.0);
+	glVertex2d(16.0, 0.0);
 	glEnd();
-	glTranslated(0, 0, 0.11);
+
+
 }
 
 void Engine::Loop()
@@ -442,4 +479,26 @@ void Engine::Special(int button, int x, int y, bool KeyDown)
 	default: 
 		player.bSpecial[button] = KeyDown;
 	}
+}
+
+void Engine::OpenGL2d()
+{
+	glViewport(0, 0, width, height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(-width, width, -height, height, -1.0, 1.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glDisable(GL_DEPTH_TEST);
+}
+
+void Engine::OpenGL3d()
+{
+	glViewport(0, 0, width, height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(70.0f, (GLfloat)width/(GLfloat)height, 0.1f, BLOCK_SIZE + MAX_VIEV_DIST);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glEnable(GL_DEPTH_TEST);
 }

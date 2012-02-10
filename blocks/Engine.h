@@ -30,6 +30,9 @@ public:
 	void DrawSelectedItem();
 	void Loop();
 
+	void OpenGL2d();
+	void OpenGL3d();
+
 	World wWorld;
 	Character player;
 

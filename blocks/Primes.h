@@ -14,4 +14,6 @@ public:
 	inline Int IsPrime(Int i);
 	inline Int NextPrime(Int i);
 	Int GenPrime(Int size, gsl_rng *randNumGen);
+
+	static double Round(double x);
 };

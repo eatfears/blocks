@@ -58,3 +58,9 @@ Int Primes::GenPrime(Int size, gsl_rng *randNumGen)
 	
 	return beg;
 }
+
+double Primes::Round(double x)
+{
+	if(x - floor(x) >= 0.5) return ceil(x);
+	return floor(x);
+}

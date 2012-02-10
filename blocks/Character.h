@@ -25,6 +25,7 @@ public:
 	BlockInWorld sCenterBlockCoordX, sCenterBlockCoordY, sCenterBlockCoordZ;	// возвращаемые координаты куба
 
 	World& wWorld;
+	bool UnderWater;
 
 private:
 	void GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr);

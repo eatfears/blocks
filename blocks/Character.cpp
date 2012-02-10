@@ -3,6 +3,7 @@
 #include <process.h>
 #include "Threads.h"
 #include "World.h"
+#include "Primes.h"
 
 Character::Character(World& ww)
 	: wWorld(ww)
@@ -27,16 +28,12 @@ Character::Character(World& ww)
 	sCenterBlockCoordX = 0;
 	sCenterBlockCoordY = 0;
 	sCenterBlockCoordZ = 0;
+
+	UnderWater = false;
 }
 
 Character::~Character()
 {
-}
-
-double round(double x)
-{
-	if(x - floor(x) >= 0.5) return ceil(x);
-	return floor(x);
 }
 
 void Character::GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
@@ -164,24 +161,24 @@ void Character::Control(GLdouble FrameInterval)
 		sCenterBlockCoordX = (BlockInWorld) floor(dDispCenterCoordX/BLOCK_SIZE + 0.5);
 		sCenterBlockCoordY = (BlockInWorld) floor(dDispCenterCoordY/BLOCK_SIZE);
 
-		if(dPositionZ < dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) round(dDispCenterCoordZ/BLOCK_SIZE + 0.5);
-		if(dPositionZ > dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) round(dDispCenterCoordZ/BLOCK_SIZE - 0.5);
+		if(dPositionZ < dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) Primes::Round(dDispCenterCoordZ/BLOCK_SIZE + 0.5);
+		if(dPositionZ > dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) Primes::Round(dDispCenterCoordZ/BLOCK_SIZE - 0.5);
 	}
 	if((xerr < zerr)&&(xerr < yerr))
 	{
 		sCenterBlockCoordZ = (BlockInWorld) floor(dDispCenterCoordZ/BLOCK_SIZE + 0.5);
 		sCenterBlockCoordY = (BlockInWorld) floor(dDispCenterCoordY/BLOCK_SIZE);
 
-		if(dPositionX < dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) round(dDispCenterCoordX/BLOCK_SIZE + 0.5);
-		if(dPositionX > dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) round(dDispCenterCoordX/BLOCK_SIZE - 0.5);
+		if(dPositionX < dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) Primes::Round(dDispCenterCoordX/BLOCK_SIZE + 0.5);
+		if(dPositionX > dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) Primes::Round(dDispCenterCoordX/BLOCK_SIZE - 0.5);
 	}
 	if((yerr < xerr)&&(yerr < zerr))
 	{
 		sCenterBlockCoordX = (BlockInWorld) floor(dDispCenterCoordX/BLOCK_SIZE + 0.5);
 		sCenterBlockCoordZ = (BlockInWorld) floor(dDispCenterCoordZ/BLOCK_SIZE + 0.5);
 
-		if(dPositionY < dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) round(dDispCenterCoordY/BLOCK_SIZE);
-		if(dPositionY > dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) round(dDispCenterCoordY/BLOCK_SIZE - 1.0);
+		if(dPositionY < dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) Primes::Round(dDispCenterCoordY/BLOCK_SIZE);
+		if(dPositionY > dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) Primes::Round(dDispCenterCoordY/BLOCK_SIZE - 1.0);
 	}
 
 	int num = 100;

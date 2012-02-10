@@ -16,6 +16,9 @@
 #define MAT_TNT				11
 #define MAT_PLANK			12
 
+#define TERRAIN				0
+#define UNDERWATER			1
+
 class MaterialLibrary
 {
 public:

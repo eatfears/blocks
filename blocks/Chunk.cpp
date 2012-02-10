@@ -279,8 +279,8 @@ void Chunk::Render(GLenum mode, char mat)
 		static Chunk *temploc;
 
 		//1-sided tiles
-		if(mat == MAT_WATER)	glDisable(GL_CULL_FACE);
-		else					glEnable(GL_CULL_FACE);
+		if (mat == MAT_WATER) glDisable(GL_CULL_FACE);
+		else glEnable(GL_CULL_FACE);
 
 		glBegin(GL_QUADS);
 
