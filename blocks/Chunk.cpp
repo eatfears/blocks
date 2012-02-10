@@ -352,7 +352,7 @@ void Chunk::Render(GLenum mode, char mat)
 						//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
 
 						br = Light::LightTable[temploc->SkyLight[index]];
-					}else br = 0.0f;
+					}else br = 1.0f;
 					if ((i == FRONT)||(i == BACK)) br *= 0.85f;
 					if ((i == RIGHT)||(i == LEFT)) br *= 0.90f;
 					glColor3f(br, br, br);
@@ -616,8 +616,8 @@ float Chunk::GetBrightAverage(BlockInWorld X, BlockInWorld Y, BlockInWorld Z, in
 			
 			if(yloclight >= CHUNK_SIZE_Y)
 			{	
-				mat[i] = 0.0f; 
-				break;
+				mat[i] = 1.0f;
+				continue;
 			}
 
 			int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
@@ -635,7 +635,7 @@ float Chunk::GetBrightAverage(BlockInWorld X, BlockInWorld Y, BlockInWorld Z, in
 			if((i == 3)&&(!DiagonalblockInfluate))
 				mat[i] = 0.0f;
 
-		}else mat[i] = 0.0f;
+		}else mat[i] = 1.0f;
 	}
 
 	for(int i = 0; i < 4; i++)

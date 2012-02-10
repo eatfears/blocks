@@ -349,27 +349,16 @@ void Engine::DrawInterface()
 	OpenGL2d();
 
 	//Underwater haze
-	BlockInWorld x, y, z;
-	Chunk *chunk;
-	int index;
-
-	x = (BlockInWorld) Primes::Round(player.dPositionX/BLOCK_SIZE);
-	y = (BlockInWorld) Primes::Round(player.dPositionY/BLOCK_SIZE - 0.5);
-	z = (BlockInWorld) Primes::Round(player.dPositionZ/BLOCK_SIZE);
-
-	wWorld.FindBlock(x, y, z, &chunk, &index);
-	if((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_WATER))
+	if((player.UnderWater)&&(player.chunk))
 	{
-		player.UnderWater = true;
-
-		GLfloat Brightness = Light::LightTable[chunk->SkyLight[index]];
+		GLfloat Brightness = Light::LightTable[player.chunk->SkyLight[player.index]];
 		GLfloat TextureRotation = player.dSpinY/90;
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[UNDERWATER]);
-		glColor3f(Brightness, Brightness, Brightness);
+		glColor4f(Brightness, Brightness, Brightness, 0.9f);
 
 		glBegin(GL_QUADS);
 		glTexCoord2d(0.0 - TextureRotation, 0.0);
@@ -383,10 +372,28 @@ void Engine::DrawInterface()
 		glEnd();
 
 		glDisable(GL_BLEND);
-	}else
-	{
-		player.UnderWater = false;
 	}
+
+	//Vignette
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+
+	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[VIGNETTE]);
+	
+	glColor3f(0.4f, 0.4f, 0.4f);
+
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0, 0.0);
+	glVertex2d(-width, -height);
+	glTexCoord2d(0.0, 1.0);
+	glVertex2d(-width, height);
+	glTexCoord2d(1.0, 1.0);
+	glVertex2d(width, height);
+	glTexCoord2d(1.0, 0.0);
+	glVertex2d(width, -height);
+	glEnd();
+
+	glDisable(GL_BLEND);
 
 	//Cross
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -406,6 +413,7 @@ void Engine::DrawInterface()
 
 void Engine::Loop()
 {
+	player.GetMyPosition();
 	Display();
 	player.GetCenterCoords(width, height);
 
@@ -494,10 +502,16 @@ void Engine::OpenGL2d()
 
 void Engine::OpenGL3d()
 {
+	float fovy;
+	if (player.UnderWater)
+		fovy = 60.0f;
+	else 
+		fovy = 70.0f;
+
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(70.0f, (GLfloat)width/(GLfloat)height, 0.1f, BLOCK_SIZE + MAX_VIEV_DIST);
+	gluPerspective(fovy, (GLfloat)width/(GLfloat)height, 0.1f, BLOCK_SIZE + MAX_VIEV_DIST);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glEnable(GL_DEPTH_TEST);

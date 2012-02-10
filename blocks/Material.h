@@ -18,6 +18,7 @@
 
 #define TERRAIN				0
 #define UNDERWATER			1
+#define VIGNETTE			2
 
 class MaterialLibrary
 {

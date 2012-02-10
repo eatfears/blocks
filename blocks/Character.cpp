@@ -395,3 +395,17 @@ void Character::GetCenterCoords(GLsizei width, GLsizei height)
 // 	dDispCenterCoordX -= lnwPositionX*LOCATION_SIZE_XZ*TILE_SIZE;
 // 	dDispCenterCoordZ -= lnwPositionZ*LOCATION_SIZE_XZ*TILE_SIZE;
 }
+
+void Character::GetMyPosition()
+{
+	BlockInWorld x, y, z;
+	x = (BlockInWorld) Primes::Round(dPositionX/BLOCK_SIZE);
+	y = (BlockInWorld) Primes::Round(dPositionY/BLOCK_SIZE - 0.5);
+	z = (BlockInWorld) Primes::Round(dPositionZ/BLOCK_SIZE);
+
+	wWorld.FindBlock(x, y, z, &chunk, &index);
+	if((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_WATER))
+		UnderWater = true;
+	else
+		UnderWater = false;
+}

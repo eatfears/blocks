@@ -1,6 +1,7 @@
 #pragma once
 #include "Blocks_Definitions.h"
 #include <GLblocks\blocksglut.h>
+#include "Chunk.h"
 
 class World;
 
@@ -26,6 +27,9 @@ public:
 
 	World& wWorld;
 	bool UnderWater;
+	Chunk *chunk;
+	int index;
+	void GetMyPosition();
 
 private:
 	void GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr);
