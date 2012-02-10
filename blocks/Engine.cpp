@@ -38,9 +38,6 @@ int Engine::InitGL()
 	glDepthFunc(GL_LEQUAL);										// Тип теста глубины
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);			// Улучшение в вычислении перспективы
 
-	//2-sided tiles
-	//glEnable(GL_CULL_FACE);
-
 	//рассчет текстур
 	glEnable(GL_TEXTURE_2D);
 	

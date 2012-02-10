@@ -278,6 +278,10 @@ void Chunk::Render(GLenum mode, char mat)
 			zloclight;
 		static Chunk *temploc;
 
+		//1-sided tiles
+		if(mat == MAT_WATER)	glDisable(GL_CULL_FACE);
+		else					glEnable(GL_CULL_FACE);
+
 		glBegin(GL_QUADS);
 
 		for(int i = 0; i < 6; i++)
@@ -349,7 +353,8 @@ void Chunk::Render(GLenum mode, char mat)
 
 						br = Light::LightTable[temploc->SkyLight[index]];
 					}else br = 0.0f;
-					if ((i == FRONT)||(i == BACK)) br -= 0.05f;
+					if ((i == FRONT)||(i == BACK)) br *= 0.85f;
+					if ((i == RIGHT)||(i == LEFT)) br *= 0.90f;
 					glColor3f(br, br, br);
 
 				}
@@ -579,7 +584,8 @@ void Chunk::GetBrightVertex( BlockInWorld X, BlockInWorld Y, BlockInWorld Z, cha
 			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
 			res = GetBrightAverage(X, Y, Z, xx, yy, zz, side);
 		}
-		if ((side == FRONT)||(side == BACK)) res -= 0.05f;
+		if ((side == FRONT)||(side == BACK)) res *= 0.85f;
+		if ((side == RIGHT)||(side == LEFT)) res *= 0.90f;
 		glColor3f(res, res, res);
 	}
 }
