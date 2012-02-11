@@ -301,7 +301,7 @@ int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bo
 			else {HideTile(TempChunk, TempIndex, BOTTOM); if (TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) ShowTile(chunk, index, TOP);}
 			if(!FindBlock(x, y - 1, z, &TempChunk, &TempIndex)) {
 				if(TempChunk) ShowTile(chunk, index, BOTTOM);}
-			else {HideTile(TempChunk, TempIndex, TOP); if ((TempChunk)&&(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) ShowTile(chunk, index, BOTTOM);}
+			else {if ((TempChunk)&&(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) ShowTile(chunk, index, BOTTOM); else HideTile(TempChunk, TempIndex, TOP); }
 			if(!FindBlock(x + 1, y, z, &TempChunk, &TempIndex)) {
 				if(TempChunk) ShowTile(chunk, index, RIGHT);}
 			else {HideTile(TempChunk, TempIndex, LEFT); if ((TempChunk)&&(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) ShowTile(chunk, index, RIGHT);}

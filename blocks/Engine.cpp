@@ -59,6 +59,7 @@ void Engine::Reshape(int width, int height)
 	this->height = height;
 
 	OpenGL3d();
+	//glutPostRedisplay();
 }
 
 void Engine::Display()
@@ -333,6 +334,9 @@ void Engine::DrawInterface()
 	//glPushMatrix();
 	//glPopMatrix();
 
+	int WidthBy2  = width/2;
+	int HeightBy2 = height/2;
+
 	DrawSelectedItem();
 
 	glLoadIdentity();
@@ -343,7 +347,7 @@ void Engine::DrawInterface()
 	if((player.UnderWater)&&(player.chunk))
 	{
 		GLfloat Brightness = Light::LightTable[player.chunk->SkyLight[player.index]];
-		GLfloat TextureRotation = player.dSpinY/90;
+		GLdouble TextureRotation = player.dSpinY/90;
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -353,13 +357,13 @@ void Engine::DrawInterface()
 
 		glBegin(GL_QUADS);
 		glTexCoord2d(0.0 - TextureRotation, 0.0);
-		glVertex2d(-3*height, -height);
+		glVertex2i(WidthBy2- 3*HeightBy2, 0);
 		glTexCoord2d(0.0 - TextureRotation, 1.0);
-		glVertex2d(-3*height, height);
+		glVertex2i(WidthBy2 - 3*HeightBy2, height);
 		glTexCoord2d(3.0 - TextureRotation, 1.0);
-		glVertex2d(3*height, height);
+		glVertex2i(WidthBy2 + 3*HeightBy2, height);
 		glTexCoord2d(3.0 - TextureRotation, 0.0);
-		glVertex2d(3*height, -height);
+		glVertex2i(WidthBy2 + 3*HeightBy2, 0);
 		glEnd();
 
 		glDisable(GL_BLEND);
@@ -375,13 +379,13 @@ void Engine::DrawInterface()
 
 	glBegin(GL_QUADS);
 	glTexCoord2d(0.0, 0.0);
-	glVertex2d(-width, -height);
+	glVertex2i(0, 0);
 	glTexCoord2d(0.0, 1.0);
-	glVertex2d(-width, height);
+	glVertex2i(0, height);
 	glTexCoord2d(1.0, 1.0);
-	glVertex2d(width, height);
+	glVertex2i(width, height);
 	glTexCoord2d(1.0, 0.0);
-	glVertex2d(width, -height);
+	glVertex2i(width, 0);
 	glEnd();
 
 	glDisable(GL_BLEND);
@@ -395,13 +399,13 @@ void Engine::DrawInterface()
 	glLineWidth (2.0);
 
 	glBegin(GL_LINES);
-	glVertex2d(0.0, -17.0);
-	glVertex2d(0.0, 16.0);
-
-	glVertex2d(-15.0, 0.0);
-	glVertex2d(-2.0, 0.0);
-	glVertex2d(2.0, 0.0);
-	glVertex2d(16.0, 0.0);
+	glVertex2i(WidthBy2, -9 + HeightBy2);
+	glVertex2i(WidthBy2,  9 + HeightBy2);
+	
+	glVertex2i(-9 + WidthBy2, HeightBy2);
+	glVertex2i(-1 + WidthBy2, HeightBy2);
+	glVertex2i( 1 + WidthBy2, HeightBy2);
+	glVertex2i( 9 + WidthBy2, HeightBy2);
 	glEnd();
 
 	glDisable(GL_BLEND);
@@ -464,7 +468,7 @@ void Engine::OpenGL2d()
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(-width, width, -height, height, -1.0, 1.0);
+	glOrtho(0, width, 0, height, -1.0, 1.0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glDisable(GL_DEPTH_TEST);
