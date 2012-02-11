@@ -28,6 +28,7 @@ void MaterialLibrary::LoadGLTextures()
 	texture[VIGNETTE] = loadImage("textures\\misc\\vignette.png");
 	texture[SUN] = loadImage("textures\\terrain\\sun.png");
 	texture[MOON] = loadImage("textures\\terrain\\moon.png");
+	texture[CLOUDS] = loadImage("textures\\environment\\clouds.png");
 }
 
 int MaterialLibrary::GetTextureInfo(int ColourType)

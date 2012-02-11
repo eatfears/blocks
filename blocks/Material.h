@@ -21,6 +21,7 @@
 #define VIGNETTE			2
 #define SUN					3
 #define MOON				4
+#define CLOUDS					5
 
 class MaterialLibrary
 {

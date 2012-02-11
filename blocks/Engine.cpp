@@ -75,7 +75,7 @@ void Engine::Display()
 	glTranslated(-player.dPositionX, -player.dPositionY, -player.dPositionZ);
 
 
-	DrawEnviroment();
+	DrawSunMoon();
 
 
 
@@ -98,6 +98,9 @@ void Engine::Display()
 		glFogf(GL_FOG_START, FOG_START);
 		glFogf(GL_FOG_END, MAX_VIEV_DIST);
 	}
+
+	if(player.dPositionY < (CHUNK_SIZE_Y + 16)*BLOCK_SIZE)
+		DrawClouds();
 
 
 	glColor3d(1.0, 1.0, 1.0);
@@ -177,6 +180,9 @@ void Engine::Display()
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_BLEND);
 
+
+	if(player.dPositionY >= (CHUNK_SIZE_Y + 16)*BLOCK_SIZE)
+		DrawClouds();
 
 	glDisable(GL_FOG);
 
@@ -267,6 +273,8 @@ void Engine::InitGame()
 void Engine::DrawSelectedItem()
 {
 	if(!wWorld.FindBlock(player.sCenterBlockCoordX,player.sCenterBlockCoordY,player.sCenterBlockCoordZ))
+		return;
+	if((player.sCenterBlockCoordY >= CHUNK_SIZE_Y)||(player.sCenterBlockCoordY < 0))
 		return;
 
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -476,7 +484,7 @@ void Engine::OpenGL3d()
 	glEnable(GL_DEPTH_TEST);
 }
 
-void Engine::DrawEnviroment()
+void Engine::DrawSunMoon()
 {
 	glPushMatrix();
 
@@ -527,7 +535,7 @@ void Engine::DrawEnviroment()
 // 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
 //	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
 	
-	glTranslated(-0, -0, sundist);
+	glTranslated(0.0, 0.0, sundist);
 
 	glBegin(GL_QUADS);
 	glNormal3f(0, 0, -1);
@@ -542,7 +550,7 @@ void Engine::DrawEnviroment()
 	glEnd();
 
 	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[MOON]);
-	glTranslated(-0, -0, -2*sundist);
+	glTranslated(0.0, 0.0, -2*sundist);
 
 	glBegin(GL_QUADS);
 	glTexCoord2d(0.0, 0.0);
@@ -561,4 +569,40 @@ void Engine::DrawEnviroment()
 
 	//glDisable(GL_LIGHT2);
 	//glDisable(GL_LIGHTING);
+
+}
+
+void Engine::DrawClouds()
+{
+	static GLdouble time = 0.0;
+	time += 0.0001;
+
+	glPushMatrix();
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[CLOUDS]);
+	glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
+
+	GLdouble CloudSize = FARCUT*1.2;
+	GLdouble Xposition = player.dPositionX/CloudSize;
+	GLdouble Zposition = player.dPositionZ/CloudSize;
+
+	glTranslated(player.dPositionX, (CHUNK_SIZE_Y + 16)*BLOCK_SIZE, player.dPositionZ);
+	glRotated(90, 1.0, 0.0, 0.0);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0 + time + Xposition, 0.0 + Zposition);
+	glVertex2d(-CloudSize, -CloudSize);
+	glTexCoord2d(0.0 + time + Xposition, 1.0 + Zposition);
+	glVertex2d(-CloudSize, CloudSize);
+	glTexCoord2d(1.0 + time + Xposition, 1.0 + Zposition);
+	glVertex2d(CloudSize, CloudSize);
+	glTexCoord2d(1.0 + time + Xposition, 0.0 + Zposition);
+	glVertex2d(CloudSize, -CloudSize);
+	glEnd();
+
+	glDisable(GL_BLEND);
+
+	glPopMatrix();
 }

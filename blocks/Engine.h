@@ -30,7 +30,8 @@ public:
 	void DrawSelectedItem();
 	void Loop();
 
-	void DrawEnviroment();
+	void DrawSunMoon();
+	void DrawClouds();
 
 	void OpenGL2d();
 	void OpenGL3d();
