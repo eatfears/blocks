@@ -19,6 +19,7 @@ X - current chunk to update
 O - also need this chunks to fill * chunks
 ' - dont need this chunks
 */
+class World;
 
 class Light
 {
@@ -32,9 +33,14 @@ public:
 	static char InfluencingLight[6][4];
 	static float LightTable[16];
 
+	static void BlockLight(World& wWorld, Chunk& chunk, int side, BlockInChunk cx, BlockInChunk cy, BlockInChunk cz);
+	static void SoftLight(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorld Z, char side, int vertex);
+
 private:
 	Chunk *ChunkArray[5][5];
-
+	
 	void DiffuseLight(int i, int j, BlockInChunk tempx, BlockInChunk tempy, BlockInChunk tempz, int templight);
 	void FindFillChunk(int i, int j, BlockInWorld tempWx, BlockInWorld tempWy, BlockInWorld tempWz, int templight);
+
+	static float GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int xx[8], int yy[8], int zz[8], char side);
 };

@@ -1,5 +1,6 @@
 #include "Light.h"
 
+#include "World.h"
 #include "Material.h"
 
 char Light::InfluencingLight[6][4] = {
@@ -136,4 +137,195 @@ void Light::FindFillChunk(int i, int j, BlockInWorld tempWx, BlockInWorld tempWy
 			if(TempChunk->SkyLight[tempindex] < templight - 3)
 				TempChunk->SkyLight[tempindex] = templight - 3;
 	}
+}
+
+void Light::BlockLight(World& wWorld, Chunk& chunk, int side, BlockInChunk cx, BlockInChunk cy, BlockInChunk cz)
+{
+	if(!wWorld.SoftLight)
+	{
+		static Chunk *temploc;
+		static BlockInWorld xlight, ylight, zlight;
+		static GLfloat res;
+		static BlockInChunk 
+			xloclight, 
+			yloclight, 
+			zloclight;
+		static BlockInWorld blckwx, blckwz;
+
+		blckwx = chunk.x*CHUNK_SIZE_XZ;
+		blckwz = chunk.z*CHUNK_SIZE_XZ;
+
+
+		switch(side)
+		{
+		case TOP:
+			xlight = cx;
+			ylight = cy + 1;
+			zlight = cz;
+			break;
+		case BOTTOM:
+			xlight = cx;
+			ylight = cy - 1;
+			zlight = cz;
+			break;
+		case RIGHT:
+			xlight = cx + 1;
+			ylight = cy;
+			zlight = cz;
+			break;
+		case LEFT:
+			xlight = cx - 1;
+			ylight = cy;
+			zlight = cz;
+			break;
+		case FRONT:
+			xlight = cx;
+			ylight = cy;
+			zlight = cz - 1;
+			break;
+		case BACK:
+			xlight = cx;
+			ylight = cy;
+			zlight = cz + 1;
+			break;
+		}
+
+		if((xlight >= CHUNK_SIZE_XZ)||(xlight < 0)||(zlight >= CHUNK_SIZE_XZ)||(zlight < 0))
+			temploc = wWorld.GetChunkByBlock(xlight + blckwx, zlight + blckwz);
+		else temploc = &chunk;
+		if((ylight >= CHUNK_SIZE_Y)||(ylight < 0)) temploc = NULL;
+		if (temploc)
+		{
+			wWorld.GetPosInChunkByWorld(xlight, ylight, zlight, &xloclight, &yloclight, &zloclight);
+			int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
+			//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
+
+			res = Light::LightTable[temploc->SkyLight[index]];
+		}else res = 1.0f;
+		if ((side == FRONT)||(side == BACK)) res *= 0.85f;
+		if ((side == RIGHT)||(side == LEFT)) res *= 0.90f;
+		glColor3f(res, res, res);
+	}
+}
+
+void Light::SoftLight(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorld Z, char side, int vertex)
+{
+	if(wWorld.SoftLight)
+	{
+		static GLfloat res = 0;
+
+		if (vertex == 0)
+		{
+			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+		}
+		else if (vertex == 1)
+		{
+			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+		}
+		else if (vertex == 2)
+		{
+			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+		}
+		else if (vertex == 3)
+		{
+			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+		}
+		else if (vertex == 4)
+		{
+			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+		}
+		else if (vertex == 5)
+		{
+			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+		}
+		else if (vertex == 6)
+		{
+			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+		}
+		else if (vertex == 7)
+		{
+			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+		}
+		if ((side == FRONT)||(side == BACK)) res *= 0.85f;
+		if ((side == RIGHT)||(side == LEFT)) res *= 0.90f;
+		glColor3f(res, res, res);
+	}
+}
+
+float Light::GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int xx[8], int yy[8], int zz[8], char side)
+{
+	GLfloat mat[4] = {0, 0, 0, 0};
+	Chunk *temploc;
+	float res = 0;
+	int InflLight;
+
+	static BlockInChunk 
+		xloclight, 
+		yloclight, 
+		zloclight;
+
+	bool DiagonalblockInfluate = true;
+
+	for(int i = 0; i < 4; i++)
+	{
+		InflLight = Light::InfluencingLight[side][i];
+		temploc = wWorld.GetChunkByBlock(X + xx[InflLight], Z + zz[InflLight]);
+
+		//if((ylight >= CHUNK_SIZE_Y)||(ylight < 0)) temploc = NULL;
+		if (temploc)
+		{
+			wWorld.GetPosInChunkByWorld(X + xx[InflLight], Y + yy[InflLight], Z + zz[InflLight], &xloclight, &yloclight, &zloclight);
+
+			if(yloclight >= CHUNK_SIZE_Y)
+			{	
+				mat[i] = 1.0f;
+				continue;
+			}
+
+			int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
+
+			if((i == 1)&&(temploc->bBlocks[index].cMaterial != MAT_NO)&&(temploc->bBlocks[index].cMaterial != MAT_WATER))
+				DiagonalblockInfluate = false;
+			if(i == 2)
+			{
+				if((temploc->bBlocks[index].cMaterial == MAT_NO)||(temploc->bBlocks[index].cMaterial == MAT_WATER))
+					DiagonalblockInfluate = true;
+			}
+
+			mat[i] = Light::LightTable[temploc->SkyLight[index]];
+
+			if((i == 3)&&(!DiagonalblockInfluate))
+				mat[i] = 0.0f;
+
+		}else mat[i] = 1.0f;
+	}
+
+	for(int i = 0; i < 4; i++)
+		res += mat[i];
+
+	return res /= 4;
 }
