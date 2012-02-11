@@ -400,7 +400,7 @@ void Character::GetMyPosition()
 {
 	BlockInWorld x, y, z;
 	x = (BlockInWorld) Primes::Round(dPositionX/BLOCK_SIZE);
-	y = (BlockInWorld) Primes::Round(dPositionY/BLOCK_SIZE - 0.5);
+	y = (BlockInWorld) Primes::Round(dPositionY/BLOCK_SIZE - 0.5 + 0.125);
 	z = (BlockInWorld) Primes::Round(dPositionZ/BLOCK_SIZE);
 
 	wWorld.FindBlock(x, y, z, &chunk, &index);

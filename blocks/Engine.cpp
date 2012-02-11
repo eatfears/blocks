@@ -74,14 +74,12 @@ void Engine::Display()
 	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
 	glTranslated(-player.dPositionX, -player.dPositionY, -player.dPositionZ);
 
-
 	DrawSunMoon();
-
-
 
 	glEnable(GL_FOG);
 	glFogi(GL_FOG_MODE,  GL_LINEAR);
 	glHint(GL_FOG_HINT, GL_DONT_CARE);
+	
 	if(player.UnderWater)
 	{
 		glClearColor(WATER_FOG_COLOR);
@@ -389,6 +387,9 @@ void Engine::DrawInterface()
 	glDisable(GL_BLEND);
 
 	//Cross
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth (2.0);
@@ -398,10 +399,12 @@ void Engine::DrawInterface()
 	glVertex2d(0.0, 16.0);
 
 	glVertex2d(-15.0, 0.0);
+	glVertex2d(-2.0, 0.0);
+	glVertex2d(2.0, 0.0);
 	glVertex2d(16.0, 0.0);
 	glEnd();
 
-
+	glDisable(GL_BLEND);
 }
 
 void Engine::Loop()

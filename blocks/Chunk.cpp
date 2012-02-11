@@ -271,7 +271,7 @@ void Chunk::Render(GLenum mode, char mat)
 
 
 		//1-sided tiles
-		if (mat == MAT_WATER) glDisable(GL_CULL_FACE);
+		if (mat == MAT_WATER) {glTranslated(0.0, -BLOCK_SIZE/8, 0.0); glDisable(GL_CULL_FACE);}
 		else glEnable(GL_CULL_FACE);
 
 		glBegin(GL_QUADS);
@@ -302,6 +302,8 @@ void Chunk::Render(GLenum mode, char mat)
 			}
 		}
 		glEnd();
+		if (mat == MAT_WATER) glTranslated(0.0, BLOCK_SIZE/8, 0.0);
+
 		glEndList();
 
 
@@ -326,7 +328,7 @@ void Chunk::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZ
 	dXcoord -= BLOCK_SIZE/2;
 	dZcoord -= BLOCK_SIZE/2;
 
-	static double space = 0.0005;
+	static double space = 0.0002;
 	static double offsetx = 0;
 	static double offsety = 0;
 
