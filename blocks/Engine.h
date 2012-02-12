@@ -39,6 +39,10 @@ public:
 	World wWorld;
 	Character player;
 
+	void GetFogColor();
+	GLfloat FogColor[4];
+	
+
 	void GetFrameTime();
 	double FrameInterval;
 	double TimeOfDay;

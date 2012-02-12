@@ -4,8 +4,9 @@
 #include "Light.h"
 #include "Primes.h"
 
-GLfloat FogColor[4] = {FOG_COLOR};
-GLfloat WaterfogColor[4] = {WATER_FOG_COLOR};
+GLfloat DayFogColor[4] = {0.50f, 0.67f, 1.00f, 1.00f};
+GLfloat NightFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
+GLfloat WaterFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
 
 Engine::Engine()
 	:player(wWorld)
@@ -16,7 +17,7 @@ Engine::Engine()
 	width = 0;
 	height = 0;
 	FrameInterval = 0.0;
-	TimeOfDay = 0.0;
+	TimeOfDay = 500.0;
 }
 
 Engine::~Engine()
@@ -34,7 +35,7 @@ int Engine::InitGL()
 
 
 	glShadeModel(GL_SMOOTH);
-	glClearColor(FOG_COLOR);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClearDepth(1.0f);											// Разрешить очистку буфера глубины
 
 	glEnable(GL_DEPTH_TEST);									// Разрешить тест глубины
@@ -84,15 +85,15 @@ void Engine::Display()
 	
 	if(player.UnderWater)
 	{
-		glClearColor(WATER_FOG_COLOR);
-		glFogfv(GL_FOG_COLOR, WaterfogColor);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glFogfv(GL_FOG_COLOR, WaterFogColor);
 		glFogf(GL_FOG_DENSITY, 20.0);
 		glFogf(GL_FOG_START, BLOCK_SIZE*10);
 		glFogf(GL_FOG_END, BLOCK_SIZE*30);
 	}
 	else
 	{
-		glClearColor(FOG_COLOR);
+		glClearColor(FogColor[0], FogColor[1], FogColor[2], FogColor[3]);
 		glFogfv(GL_FOG_COLOR, FogColor);
 		glFogf(GL_FOG_DENSITY, FOG_DENSITY);
 		glFogf(GL_FOG_START, FOG_START);
@@ -414,6 +415,7 @@ void Engine::DrawInterface()
 
 void Engine::Loop()
 {
+	GetFogColor();
 	player.GetMyPosition();
 	Display();
 	player.GetCenterCoords(width, height);
@@ -446,6 +448,7 @@ void Engine::GetFrameTime()
 	FrameInterval *= koef;
 
 	TimeOfDay += FrameInterval;
+	while (TimeOfDay >= 2400.0) TimeOfDay -= 2400.0;
 }
 
 void Engine::Special(int button, int x, int y, bool KeyDown)
@@ -614,4 +617,30 @@ void Engine::DrawClouds()
 	glDisable(GL_BLEND);
 
 	glPopMatrix();
+}
+
+void Engine::GetFogColor()
+{
+	static double Dawn = 100.0;
+
+	if ((TimeOfDay > 600.0 + Dawn)&&(TimeOfDay < 1800.0 - Dawn))
+	{
+		for(int i = 0; i < 4; i++)
+			FogColor[i] = DayFogColor[i];
+	}
+	else if ((TimeOfDay < 600.0 - Dawn)||(TimeOfDay > 1800.0 + Dawn))
+	{
+		for(int i = 0; i < 4; i++)
+			FogColor[i] = NightFogColor[i];
+	}
+	else
+	{
+		double ft = (TimeOfDay - (600.0 - Dawn))*3.14 / (2.0 * Dawn);
+		double f = (1.0 - cos(ft)) * 0.5;
+
+		if(TimeOfDay > 1200.0) f = 1.0 - f;
+
+		for(int i = 0; i < 4; i++)
+			FogColor[i] = NightFogColor[i]*(1.0 - f) + DayFogColor[i]*f;
+	}
 }

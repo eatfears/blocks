@@ -302,7 +302,7 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, Blo
 
 			if(yloclight >= CHUNK_SIZE_Y)
 			{	
-				mat[i] = 1.0f;
+				mat[i] = 10.0f;
 				continue;
 			}
 
@@ -321,11 +321,17 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, Blo
 			if((i == 3)&&(!DiagonalblockInfluate))
 				mat[i] = 0.0f;
 
-		}else mat[i] = 1.0f;
+		}else mat[i] = 10.0f;
 	}
 
+	int count = 0;
 	for(int i = 0; i < 4; i++)
-		res += mat[i];
-
-	return res /= 4;
+	{
+		if(mat[i] != 10.0f)
+		{
+			res += mat[i];
+			count ++;
+		}
+	}
+	return res /= count;
 }
