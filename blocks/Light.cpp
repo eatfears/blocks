@@ -205,7 +205,8 @@ void Light::BlockLight(World& wWorld, Chunk& chunk, int side, BlockInChunk cx, B
 		if ((side == FRONT)||(side == BACK)) res *= 0.85f;
 		if ((side == RIGHT)||(side == LEFT)) res *= 0.90f;
 
-		res = res - wWorld.SkyBright;
+		//res = res - wWorld.SkyBright;
+		res = res * ( 1.0 - wWorld.SkyBright);
 		glColor3f(res, res, res);
 	}
 }
@@ -274,7 +275,9 @@ void Light::SoftLight(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorl
 		}
 		if ((side == FRONT)||(side == BACK)) res *= 0.85f;
 		if ((side == RIGHT)||(side == LEFT)) res *= 0.90f;
-		res = res - wWorld.SkyBright;
+		
+		res = res * ( 1.0 - wWorld.SkyBright);
+		//res = res - wWorld.SkyBright;
 		glColor3f(res, res, res);
 	}
 }

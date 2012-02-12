@@ -144,7 +144,7 @@ void Engine::Display()
 			{
 #endif // _DEBUG
 				if (mod == GL_COMPILE)
-					(*chunk)->NeedToRender[0] = RENDER_NEED;
+					(*chunk)->NeedToRender[0] = RENDER_MAYBE;
 				(*chunk)->Render(GL_EXECUTE, MAT_NO, &render);
 				++chunk;
 
@@ -175,7 +175,7 @@ void Engine::Display()
 			{
 #endif // _DEBUG
 				if (mod == GL_COMPILE)
-					(*chunk)->NeedToRender[1] = RENDER_NEED;
+					(*chunk)->NeedToRender[1] = RENDER_MAYBE;
 
 				(*chunk)->Render(GL_EXECUTE, MAT_WATER, &render);
 				++chunk;
@@ -361,6 +361,9 @@ void Engine::DrawInterface()
 	if((player.UnderWater)&&(player.chunk))
 	{
 		GLfloat Brightness = Light::LightTable[player.chunk->SkyLight[player.index]];
+		Brightness = Brightness * ( 1.0 - wWorld.SkyBright);
+		//res = res - wWorld.SkyBright;
+
 		GLdouble TextureRotation = player.dSpinY/90;
 
 		glEnable(GL_BLEND);
@@ -368,7 +371,7 @@ void Engine::DrawInterface()
 
 		glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[UNDERWATER]);
 		glColor4f(Brightness, Brightness, Brightness, 0.9f);
-
+		
 		glBegin(GL_QUADS);
 		glTexCoord2d(0.0 - TextureRotation, 0.0);
 		glVertex2i(WidthBy2- 3*HeightBy2, 0);
@@ -670,5 +673,3 @@ void Engine::GetFogColor()
 		prevBright = wWorld.SkyBright;
 	}	
 }
-
-//0.069f, 0.086f, 0.107f, 0.134f,
