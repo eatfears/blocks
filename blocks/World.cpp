@@ -14,6 +14,9 @@ World::World()
 	mutex = CreateMutex(NULL, false, NULL);
 	semaphore = CreateSemaphore(NULL, 10, 10, NULL);
 	SoftLight = true;
+
+	SkyBright = 1.0f;
+	LightRefresh = true;
 }
 
 World::~World()

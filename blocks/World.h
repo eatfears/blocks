@@ -51,4 +51,8 @@ public:
 
 	void UpdateLight(Chunk& chunk);
 	bool SoftLight;
+
+	GLfloat SkyBright;
+
+	bool LightRefresh;
 };

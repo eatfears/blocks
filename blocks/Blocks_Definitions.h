@@ -23,7 +23,7 @@
 #define PLAYER_HEIGHT	15.0
 #define AIR_ACCEL		0.12
 #define JUMP_STR		4.0
-#define WALK_SPEED		1.5
+#define WALK_SPEED		1000
 
 #define SPRINT_KOEF		2.0
 
@@ -52,7 +52,6 @@ typedef signed short	BlockInWorld;
 #define GL_EXECUTE		0x1302
 #define RENDER_NO_NEED	0
 #define RENDER_NEED		1
-#define RENDER_TRY		2
 
 #define HASH_SIZE		0x1000
 

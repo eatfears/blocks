@@ -1,6 +1,8 @@
 #include "Engine.h"
 #include <time.h>
 #include <Mmsystem.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include "Light.h"
 #include "Primes.h"
 
@@ -108,17 +110,24 @@ void Engine::Display()
 
 	static GLuint *tex = wWorld.MaterialLib.texture;
 	glBindTexture(GL_TEXTURE_2D, tex[TERRAIN]);
+	int render;
 
-
-	GLenum mod = GL_EXECUTE;
 	if(player.bKeyboard['Z'])
 	{
 		player.bKeyboard['Z'] = 0;
 		wWorld.SoftLight = !wWorld.SoftLight;
+		wWorld.LightRefresh = true;
+	}
 
+	GLenum mod = GL_EXECUTE;
+
+	if(wWorld.LightRefresh)
+	{
+		wWorld.LightRefresh = false;
 		mod = GL_COMPILE;
 	}
 	
+	render = 0;
 	for (int bin = 0; bin < HASH_SIZE; bin++)
 	{
 		auto chunk = wWorld.Chunks[bin].begin();
@@ -134,8 +143,9 @@ void Engine::Display()
 			_try 
 			{
 #endif // _DEBUG
-
-				(*chunk)->Render(mod, MAT_NO);
+				if (mod == GL_COMPILE)
+					(*chunk)->NeedToRender[0] = RENDER_NEED;
+				(*chunk)->Render(GL_EXECUTE, MAT_NO, &render);
 				++chunk;
 
 #ifndef _DEBUG
@@ -154,7 +164,7 @@ void Engine::Display()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//transparent tiles here
-
+	render = 0;
 	for (int bin = 0; bin < HASH_SIZE; bin++)
 	{
 		auto chunk = wWorld.Chunks[bin].begin();
@@ -164,8 +174,10 @@ void Engine::Display()
 			_try 
 			{
 #endif // _DEBUG
+				if (mod == GL_COMPILE)
+					(*chunk)->NeedToRender[1] = RENDER_NEED;
 
-				(*chunk)->Render(mod, MAT_WATER);
+				(*chunk)->Render(GL_EXECUTE, MAT_WATER, &render);
 				++chunk;
 
 #ifndef _DEBUG
@@ -430,10 +442,10 @@ void Engine::Loop()
 
 void Engine::GetFrameTime()
 {
-	static double koef = 0.025;
+	static double koef = 0.0005;
 	static double max_FPS = 30;
 	static int sleep_time;
-
+	
 	double currentTime = (double)timeGetTime();
 
 	static double frameTime = currentTime;  // Время последнего кадра
@@ -581,7 +593,6 @@ void Engine::DrawSunMoon()
 
 	//glDisable(GL_LIGHT2);
 	//glDisable(GL_LIGHTING);
-
 }
 
 void Engine::DrawClouds()
@@ -622,25 +633,42 @@ void Engine::DrawClouds()
 void Engine::GetFogColor()
 {
 	static double Dawn = 100.0;
+	static float NightBright = 0.93f;
+	static float DayBright = 0.00f;
 
 	if ((TimeOfDay > 600.0 + Dawn)&&(TimeOfDay < 1800.0 - Dawn))
 	{
 		for(int i = 0; i < 4; i++)
 			FogColor[i] = DayFogColor[i];
+		wWorld.SkyBright = DayBright;
 	}
 	else if ((TimeOfDay < 600.0 - Dawn)||(TimeOfDay > 1800.0 + Dawn))
 	{
 		for(int i = 0; i < 4; i++)
 			FogColor[i] = NightFogColor[i];
+
+		wWorld.SkyBright = NightBright;
 	}
 	else
 	{
-		double ft = (TimeOfDay - (600.0 - Dawn))*3.14 / (2.0 * Dawn);
-		double f = (1.0 - cos(ft)) * 0.5;
+		GLfloat ft = (TimeOfDay - (600.0f - Dawn))*M_PI / (2.0 * Dawn);
+		GLfloat f = (1.0f - cos(ft)) * 0.5f;
 
 		if(TimeOfDay > 1200.0) f = 1.0 - f;
 
 		for(int i = 0; i < 4; i++)
-			FogColor[i] = NightFogColor[i]*(1.0 - f) + DayFogColor[i]*f;
+			FogColor[i] = NightFogColor[i]*(1.0f - f) + DayFogColor[i]*f;
+
+		wWorld.SkyBright = NightBright*(1.0f - f) + DayBright * f;
 	}
+
+	static GLfloat prevBright = 0;
+	GLfloat dif = fabs(wWorld.SkyBright - prevBright);
+	if(dif > 0.005f)
+	{
+		wWorld.LightRefresh = true;
+		prevBright = wWorld.SkyBright;
+	}	
 }
+
+//0.069f, 0.086f, 0.107f, 0.134f,

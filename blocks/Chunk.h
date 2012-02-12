@@ -51,7 +51,7 @@ public:
 	void Generate();
 	void FillSkyLight(char bright);
 
-	void Render(GLenum mode, char mat);
+	void Render(GLenum mode, char mat, int *rendered);
 	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, Block* block, char N);
 
 	HANDLE mutex;

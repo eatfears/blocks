@@ -207,9 +207,9 @@ void Chunk::DrawLoadedBlocks()
 
 void Chunk::Generate()
 {
-	wWorld.lLandscape.Generate(*this);
+	//wWorld.lLandscape.Generate(*this);
 	//wWorld.lLandscape.Fill(*this, 0, 0.999, 64);
-	//wWorld.lLandscape.Fill(*this, MAT_DIRT, 1, 64);
+	wWorld.lLandscape.Fill(*this, MAT_DIRT, 1, 64);
 	//ChunkPosition pos = {x, z};
 	//wWorld.lLandscape.Load(pos);
 }
@@ -240,7 +240,7 @@ void Chunk::FillSkyLight(char bright)
 	}
 }
 
-void Chunk::Render(GLenum mode, char mat)
+void Chunk::Render(GLenum mode, char mat, int *rendered)
 {
 	if(!listgen)
 	{
@@ -257,9 +257,12 @@ void Chunk::Render(GLenum mode, char mat)
 	if(NeedToRender[pointertorender] == RENDER_NEED)
 	{
 		mode = GL_COMPILE;
-		NeedToRender[pointertorender] = RENDER_TRY;
 	}
 
+	int prob = 1000/(*rendered + 1);
+	int r = rand()%1000;
+
+	if(r <= prob*2)
 	if((mode == GL_COMPILE)||(mode == GL_COMPILE_AND_EXECUTE))
 	{
 		glNewList(RenderList + pointertorender, mode);
@@ -306,9 +309,8 @@ void Chunk::Render(GLenum mode, char mat)
 
 		glEndList();
 
-
-		if(NeedToRender[pointertorender] == RENDER_TRY)
-			NeedToRender[pointertorender] = RENDER_NO_NEED;
+		(*rendered) ++;
+		NeedToRender[pointertorender] = RENDER_NO_NEED;
 	}
 
 	if(mode != GL_COMPILE_AND_EXECUTE)
