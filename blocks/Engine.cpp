@@ -15,7 +15,8 @@ Engine::Engine()
 
 	width = 0;
 	height = 0;
-	FrameInterval = 0;
+	FrameInterval = 0.0;
+	TimeOfDay = 0.0;
 }
 
 Engine::~Engine()
@@ -431,17 +432,20 @@ void Engine::GetFrameTime()
 	static double max_FPS = 30;
 	static int sleep_time;
 
-	double currentTime = (double)timeGetTime() * koef;
+	double currentTime = (double)timeGetTime();
 
 	static double frameTime = currentTime;  // Время последнего кадра
 
 	//Интервал времени, прошедшего с прошлого кадра
 	FrameInterval = currentTime - frameTime;
-	sleep_time = (int) (1000.0/max_FPS - FrameInterval/koef);
+	sleep_time = (int) (1000.0/max_FPS - FrameInterval);
 	if(sleep_time > 0) Sleep(sleep_time);
 
 	frameTime = currentTime;
 	//g_FrameInterval = 0.1;
+	FrameInterval *= koef;
+
+	TimeOfDay += FrameInterval;
 }
 
 void Engine::Special(int button, int x, int y, bool KeyDown)
@@ -521,8 +525,6 @@ void Engine::DrawSunMoon()
 
 	//Sun
 	GLdouble SunSize = 100*BLOCK_SIZE, sundist = FARCUT*0.8;
-	static GLdouble time = 0.0;
-	time += 0.01;
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
@@ -532,7 +534,7 @@ void Engine::DrawSunMoon()
 											// Сбросить текущую матрицу
 	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
 	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
-	glRotated(-time, 1.0, 0.0, 0.0);
+	glRotated(-TimeOfDay*360.0/2400.0 + 90.0, 1.0, 0.0, 0.0);
 
 	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[SUN]);
 	

@@ -349,7 +349,7 @@ int World::RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show
 		Chunk *TempChunk = 0;
 		int TempIndex;
 
-		if(!FindBlock(x, y + 1, z, &TempChunk, &TempIndex)) HideTile(chunk, index, TOP);
+		if(!FindBlock(x, y + 1, z, &TempChunk, &TempIndex)||chunk->bBlocks[index].cMaterial == MAT_WATER) HideTile(chunk, index, TOP);
 		else {ShowTile(TempChunk, TempIndex, BOTTOM); if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(chunk, index, TOP);}
 		if(!FindBlock(x, y - 1, z, &TempChunk, &TempIndex)) HideTile(chunk, index, BOTTOM);
 		else {ShowTile(TempChunk, TempIndex, TOP); if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(chunk, index, BOTTOM);}

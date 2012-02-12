@@ -41,4 +41,5 @@ public:
 
 	void GetFrameTime();
 	double FrameInterval;
+	double TimeOfDay;
 };
