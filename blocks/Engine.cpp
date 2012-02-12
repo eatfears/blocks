@@ -19,7 +19,7 @@ Engine::Engine()
 	width = 0;
 	height = 0;
 	FrameInterval = 0.0;
-	TimeOfDay = 500.0;
+	TimeOfDay = 00.0;
 }
 
 Engine::~Engine()
@@ -73,12 +73,18 @@ void Engine::Display()
 	glLoadIdentity();											// —бросить текущую матрицу
 	OpenGL3d();
 
+	if(player.UnderWater)
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	else
+		glClearColor(FogColor[0], FogColor[1], FogColor[2], FogColor[3]);
+
 
 	//Set position
 	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
 	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
 	glTranslated(-player.dPositionX, -player.dPositionY, -player.dPositionZ);
 
+	DrawBottomBorder();
 	DrawSunMoon();
 
 	glEnable(GL_FOG);
@@ -87,7 +93,6 @@ void Engine::Display()
 	
 	if(player.UnderWater)
 	{
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glFogfv(GL_FOG_COLOR, WaterFogColor);
 		glFogf(GL_FOG_DENSITY, 20.0);
 		glFogf(GL_FOG_START, BLOCK_SIZE*10);
@@ -95,7 +100,6 @@ void Engine::Display()
 	}
 	else
 	{
-		glClearColor(FogColor[0], FogColor[1], FogColor[2], FogColor[3]);
 		glFogfv(GL_FOG_COLOR, FogColor);
 		glFogf(GL_FOG_DENSITY, FOG_DENSITY);
 		glFogf(GL_FOG_START, FOG_START);
@@ -507,7 +511,7 @@ void Engine::OpenGL3d()
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(fovy, (GLfloat)width/(GLfloat)height, 0.1f, FARCUT);
+	gluPerspective(fovy, (GLfloat)width/(GLfloat)height, 0.2f, FARCUT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glEnable(GL_DEPTH_TEST);
@@ -598,8 +602,42 @@ void Engine::DrawSunMoon()
 	//glDisable(GL_LIGHTING);
 }
 
+void Engine::DrawBottomBorder()
+{
+	GLdouble CloudSize = FARCUT;
+	GLfloat res;
+
+	glPushMatrix();
+
+	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[CLOUDS]);
+
+	glTranslated(player.dPositionX, 0, player.dPositionZ);
+	glRotated(90, 1.0, 0.0, 0.0);
+
+	res = 1.0 - wWorld.SkyBright;
+	//res = res - wWorld.SkyBright;
+	glColor3f(res, res, res);
+
+	glBegin(GL_QUADS);
+	//glTexCoord2d(0.0 + time + Xposition, 0.0 + Zposition);
+	glVertex2d(-CloudSize, -CloudSize);
+	//glTexCoord2d(0.0 + time + Xposition, 1.0 + Zposition);
+	glVertex2d(-CloudSize, CloudSize);
+	//glTexCoord2d(1.0 + time + Xposition, 1.0 + Zposition);
+	glVertex2d(CloudSize, CloudSize);
+	//glTexCoord2d(1.0 + time + Xposition, 0.0 + Zposition);
+	glVertex2d(CloudSize, -CloudSize);
+	glEnd();
+
+
+	glPopMatrix();
+}
+
 void Engine::DrawClouds()
 {
+	GLdouble CloudSize = FARCUT*1.2;
+	GLfloat res;
+
 	static GLdouble time = 0.0;
 	time += 0.0001;
 
@@ -609,11 +647,12 @@ void Engine::DrawClouds()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[CLOUDS]);
-	glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
+	
+	res = 1.0 - wWorld.SkyBright;
+	glColor4f(res, res, res, 0.8f);
 
-	GLdouble CloudSize = FARCUT*1.2;
-	GLdouble Xposition = player.dPositionX/CloudSize;
-	GLdouble Zposition = player.dPositionZ/CloudSize;
+	GLdouble Xposition = player.dPositionX/(2*CloudSize);
+	GLdouble Zposition = player.dPositionZ/(2*CloudSize);
 
 	glTranslated(player.dPositionX, (CHUNK_SIZE_Y + 16)*BLOCK_SIZE, player.dPositionZ);
 	glRotated(90, 1.0, 0.0, 0.0);
@@ -629,8 +668,8 @@ void Engine::DrawClouds()
 	glEnd();
 
 	glDisable(GL_BLEND);
-
 	glPopMatrix();
+
 }
 
 void Engine::GetFogColor()

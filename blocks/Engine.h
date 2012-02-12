@@ -30,6 +30,7 @@ public:
 	void DrawSelectedItem();
 	void Loop();
 
+	void DrawBottomBorder();
 	void DrawSunMoon();
 	void DrawClouds();
 

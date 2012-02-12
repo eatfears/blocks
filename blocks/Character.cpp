@@ -242,14 +242,14 @@ void Character::Control(GLdouble FrameInterval)
 	}
 	if(bKeyboard['0'])
 	{
-		static Param par = {1, 0, &wWorld};
+		static Param par = {0, 1, &wWorld};
 
 			_beginthread(LoadNGenerate, 0, &par);
 
 		WaitForSingleObject(wWorld.parget2, INFINITE);
 		ResetEvent(wWorld.parget2);
 
-		par.x++;
+		par.z++;
 
 		bKeyboard['0'] = false;
 	}
