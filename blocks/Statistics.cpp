@@ -23,15 +23,24 @@ void Statistics::ComputeFPS( double FrameInterval )
 void Statistics::PrintStat(void)
 {
 	static char cFPS[20] = "";
+	static char pos[40] = "";
+	void *font = GLUT_BITMAP_HELVETICA_12;
 
 	if (TimeCount > 100)
 	{
-		sprintf_s(cFPS, "FPS = %0.1f\n", 1000.0*FrameCount/TimeCount);
+		sprintf_s(cFPS, "FPS: %0.1f\n", 1000.0*FrameCount/TimeCount);
 		TimeCount = 0.0;
 		FrameCount = 0;
 	}
 
-	RenderString(50, engine.height - 50, GLUT_BITMAP_HELVETICA_12, cFPS);
+	RenderString(50, engine.height - 50, font, cFPS);
+
+	sprintf_s(pos, "X: %0.10f\n", engine.player.dPositionX/BLOCK_SIZE);
+	RenderString(50, engine.height - 70, font, pos);
+	sprintf_s(pos, "Y: %0.10f\n", engine.player.dPositionY/BLOCK_SIZE);
+	RenderString(50, engine.height - 90, font, pos);
+	sprintf_s(pos, "Z: %0.10f\n", engine.player.dPositionZ/BLOCK_SIZE);
+	RenderString(50, engine.height - 110, font, pos);
 }
 
 void Statistics::RenderString(int x, int y, void *font, const char string[])

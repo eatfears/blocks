@@ -446,6 +446,7 @@ void Engine::Loop()
 	GetFrameTime();
 
 	glutSwapBuffers();
+	glFinish();				//may be bad!!!!!!!
 }
 
 void Engine::GetFrameTime()
