@@ -4,6 +4,7 @@
 
 #include "World.h"
 #include "Character.h"
+#include "Statistic.h"
 
 class Engine
 {
@@ -46,5 +47,6 @@ public:
 
 	void GetFrameTime();
 	double FrameInterval;
+	Statistic stat;
 	double TimeOfDay;
 };

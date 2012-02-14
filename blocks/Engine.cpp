@@ -19,7 +19,7 @@ Engine::Engine()
 	width = 0;
 	height = 0;
 	FrameInterval = 0.0;
-	TimeOfDay = 00.0;
+	TimeOfDay = 600.0;
 }
 
 Engine::~Engine()
@@ -351,15 +351,16 @@ void Engine::DrawInterface()
 {
 	//glPushMatrix();
 	//glPopMatrix();
-
 	int WidthBy2  = width/2;
 	int HeightBy2 = height/2;
 
 	DrawSelectedItem();
 
-	glLoadIdentity();
-
+	//glLoadIdentity();
 	OpenGL2d();
+
+	//Statistics
+	stat.PrintStat(width, height);
 
 	//Underwater haze
 	if((player.UnderWater)&&(player.chunk))
@@ -460,10 +461,15 @@ void Engine::GetFrameTime()
 	//Интервал времени, прошедшего с прошлого кадра
 	FrameInterval = currentTime - frameTime;
 	sleep_time = (int) (1000.0/max_FPS - FrameInterval);
-	if(sleep_time > 0) Sleep(sleep_time);
-
+	if(sleep_time > 0) 
+	{
+		Sleep(sleep_time);
+		currentTime = (double)timeGetTime();
+		FrameInterval = currentTime - frameTime;
+	}
 	frameTime = currentTime;
-	//g_FrameInterval = 0.1;
+	stat.ComputeFPS(FrameInterval);
+	
 	FrameInterval *= koef;
 
 	TimeOfDay += FrameInterval;

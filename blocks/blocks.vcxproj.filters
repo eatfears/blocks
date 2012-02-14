@@ -53,6 +53,9 @@
     <ClCompile Include="Light.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Statistic.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Character.h">
@@ -89,6 +92,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Light.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Statistic.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
