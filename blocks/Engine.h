@@ -19,17 +19,19 @@ public:
 	void MouseMotion(int x, int y);
 	void MouseButton(int button, int state, int x, int y);
 	void Special(int button, int x, int y, bool KeyDown);
+	void Loop();
 
+	void InitGame();
+
+private:
 	int width, height;
 
 	bool	fullscreen;
 	bool	bMousing;
 
-	void InitGame();
-	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char N);
+	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char side);
 	void DrawInterface();
 	void DrawSelectedItem();
-	void Loop();
 
 	void DrawBottomBorder();
 	void DrawSunMoon();
@@ -41,12 +43,11 @@ public:
 	World wWorld;
 	Character player;
 
+	double TimeOfDay;
 	void GetFogColor();
 	GLfloat FogColor[4];
-	
 
 	void GetFrameTime();
 	double FrameInterval;
 	Statistic stat;
-	double TimeOfDay;
 };

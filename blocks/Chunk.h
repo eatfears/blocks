@@ -36,12 +36,11 @@ public:
 	int	AddBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z, char mat);
 	int RemoveBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z);
 	
-	void ShowTile(Block *bBlock, char N);
-	void HideTile(Block *bBlock, char N);
+	void ShowTile(Block *bBlock, char side);
+	void HideTile(Block *bBlock, char side);
 
 	char GetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z);
-	int SetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z, char cMat);
-	
+
 	int GetBlockPositionByPointer(Block *bCurrentBlock, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z) const;
 	static inline int GetBlockPositionByIndex(int index, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z);
 	int GetIndexByPosition(BlockInChunk x, BlockInChunk y, BlockInChunk z);
@@ -50,13 +49,16 @@ public:
 
 	void Generate();
 	void FillSkyLight(char bright);
+	bool LightToUpdate;
 
 	void Render(GLenum mode, char mat, int *rendered);
-	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, Block* block, char N);
 
 	HANDLE mutex;
 
+private:
+	int SetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z, char cMat);
+	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, Block* block, char side);
+
 	GLuint RenderList;
 	bool listgen;
-	bool LightToUpdate;
 };

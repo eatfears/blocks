@@ -16,7 +16,7 @@ float Light::LightTable[16] = {
 	0.512f, 0.640f, 0.800f, 1.000f
 };
 
-Light::	Light(Chunk *ChnkArr[5][5])
+Light::Light(Chunk *ChnkArr[5][5])
 {
 	for (int i = 0; i < 5; i++)
 	{
@@ -56,7 +56,6 @@ void Light::UpdateLight(void)
 				{
 					for (int index = 0; index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; index++)
 					{
-
 						if(ChunkArray[i][j]->SkyLight[index] == templight)
 						{
 							ChunkArray[i][j]->GetBlockPositionByIndex(index, &tempx, &tempy, &tempz);

@@ -17,8 +17,6 @@ MaterialLibrary::~MaterialLibrary()
 void MaterialLibrary::AllocGLTextures()
 {
 	texture = (GLuint *)calloc(5, sizeof(GLuint));
-	
-	//glGenTextures(1, texture); // создаем текстуры 
 }
 
 void MaterialLibrary::LoadGLTextures()
@@ -31,10 +29,10 @@ void MaterialLibrary::LoadGLTextures()
 	texture[CLOUDS] = loadImage("textures\\environment\\clouds.png");
 }
 
-int MaterialLibrary::GetTextureInfo(int ColourType)
+int MaterialLibrary::GetTextureInfo(int ColorType)
 {
 	int ret;
-	switch(ColourType)
+	switch(ColorType)
 	{
 	case PNG_COLOR_TYPE_GRAY:
 		ret = 1;
@@ -60,7 +58,7 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 	png_structp png_ptr = NULL;
 	png_infop info_ptr = NULL;
 	png_bytep *row_pointers = NULL;
-	int bitDepth, colourType;
+	int bitDepth, ColorType;
 
 	FILE *pngFile;
 	fopen_s(&pngFile, filename, "rb");
@@ -94,12 +92,12 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 
 	bitDepth = png_get_bit_depth(png_ptr, info_ptr);
 
-	colourType = png_get_color_type(png_ptr, info_ptr);
+	ColorType = png_get_color_type(png_ptr, info_ptr);
 
-	if(colourType == PNG_COLOR_TYPE_PALETTE)
+	if(ColorType == PNG_COLOR_TYPE_PALETTE)
 		png_set_palette_to_rgb(png_ptr);
 
-	if(colourType == PNG_COLOR_TYPE_GRAY && bitDepth < 8)
+	if(ColorType == PNG_COLOR_TYPE_GRAY && bitDepth < 8)
 		png_set_expand_gray_1_2_4_to_8(png_ptr);
 
 	if(png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
@@ -114,9 +112,9 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 
 	png_uint_32 width, height;
 	png_get_IHDR(png_ptr, info_ptr, &width, &height,
-		&bitDepth, &colourType, NULL, NULL, NULL);
+		&bitDepth, &ColorType, NULL, NULL, NULL);
 
-	int components = GetTextureInfo(colourType);
+	int components = GetTextureInfo(ColorType);
 
 	if(components == -1)
 	{
@@ -189,7 +187,7 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 	return texture;
 }
 
-void MaterialLibrary::GetTextureOffsets(double& offsetx, double& offsety, int material, char covered, int N)
+void MaterialLibrary::GetTextureOffsets(double& offsetx, double& offsety, int material, char covered, int side)
 {
 	offsetx = 14; 
 	offsety = 0;
@@ -199,14 +197,14 @@ void MaterialLibrary::GetTextureOffsets(double& offsetx, double& offsety, int ma
 	case MAT_DIRT: offsetx = 2; offsety = 0;
 		if (covered & (1 << SNOWCOVERED))
 		{
-			if(N == TOP) {offsetx = 2; offsety = 4;}
-			else if(N == BOTTOM) {offsetx = 2; offsety = 0;}
+			if(side == TOP) {offsetx = 2; offsety = 4;}
+			else if(side == BOTTOM) {offsetx = 2; offsety = 0;}
 			else {offsetx = 4; offsety = 4;}
 		}
 		else if (covered & (1 << GRASSCOVERED))
 		{
-			if(N == TOP) {offsetx = 0; offsety = 0;}
-			else if(N == BOTTOM) {offsetx = 2; offsety = 0;}
+			if(side == TOP) {offsetx = 0; offsety = 0;}
+			else if(side == BOTTOM) {offsetx = 2; offsety = 0;}
 			else {offsetx = 3; offsety = 0;}
 		}
 		break;
@@ -218,17 +216,17 @@ void MaterialLibrary::GetTextureOffsets(double& offsetx, double& offsety, int ma
 		break;
 	case MAT_GLASS: offsetx = 1; offsety = 3;
 		break;
-	case MAT_WOOD: if((N == TOP)||((N == BOTTOM))) {offsetx = 5; offsety = 1;} else {offsetx = 4; offsety = 1;} 
+	case MAT_WOOD: if((side == TOP)||((side == BOTTOM))) {offsetx = 5; offsety = 1;} else {offsetx = 4; offsety = 1;} 
 		break;
 	case MAT_COAL: offsetx = 2; offsety = 2;
 		break;
 	case MAT_BRICKS: offsetx = 7; offsety = 0;
 		break;
-	case MAT_PUMPKIN: if((N == TOP)||((N == BOTTOM))) {offsetx = 6; offsety = 6;} else if(N == FRONT) {offsetx = 7; offsety = 7;} else {offsetx = 6; offsety = 7;} 
+	case MAT_PUMPKIN: if((side == TOP)||((side == BOTTOM))) {offsetx = 6; offsety = 6;} else if(side == FRONT) {offsetx = 7; offsety = 7;} else {offsetx = 6; offsety = 7;} 
 		break;
-	case MAT_PUMPKIN_SHINE: if((N == TOP)||((N == BOTTOM))) {offsetx = 6; offsety = 6;} else if(N == FRONT) {offsetx = 8; offsety = 7;} else {offsetx = 6; offsety = 7;} 
+	case MAT_PUMPKIN_SHINE: if((side == TOP)||((side == BOTTOM))) {offsetx = 6; offsety = 6;} else if(side == FRONT) {offsetx = 8; offsety = 7;} else {offsetx = 6; offsety = 7;} 
 		break;
-	case MAT_TNT: if(N == TOP) {offsetx = 9; offsety = 0;} else if(N == BOTTOM) {offsetx = 10; offsety = 0;} else {offsetx = 8; offsety = 0;} 
+	case MAT_TNT: if(side == TOP) {offsetx = 9; offsety = 0;} else if(side == BOTTOM) {offsetx = 10; offsety = 0;} else {offsetx = 8; offsety = 0;} 
 		break;
 	case MAT_PLANK: offsetx = 4; offsety = 0;
 		break;

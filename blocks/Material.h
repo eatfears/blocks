@@ -21,7 +21,7 @@
 #define VIGNETTE			2
 #define SUN					3
 #define MOON				4
-#define CLOUDS					5
+#define CLOUDS				5
 
 class MaterialLibrary
 {
@@ -34,8 +34,9 @@ public:
 	void AllocGLTextures();
 	void LoadGLTextures();
 
-	int GetTextureInfo(int ColourType);
-	GLuint loadImage(const char *filename);
+	void GetTextureOffsets(double& offsetx, double& offsety, int material, char covered, int side);
 
-	void GetTextureOffsets(double& offsetx, double& offsety, int material, char covered, int N);
+private:
+	int GetTextureInfo(int ColorType);
+	GLuint loadImage(const char *filename);
 };

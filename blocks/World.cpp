@@ -16,7 +16,7 @@ World::World()
 	SoftLight = true;
 
 	SkyBright = 1.0f;
-	LightRefresh = true;
+	LightToRefresh = true;
 }
 
 World::~World()
@@ -381,26 +381,26 @@ int World::RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show
 	return 1;
 }
 
-void World::ShowTile(Chunk *chunk, int index, char N)
+void World::ShowTile(Chunk *chunk, int index, char side)
 {
-	if(!(chunk->bBlocks[index].bVisible & (1 << N)))
+	if(!(chunk->bBlocks[index].bVisible & (1 << side)))
 	{
 		DWORD dwWaitResult; 
 		dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
 
-		chunk->ShowTile(chunk->bBlocks + index, N);
+		chunk->ShowTile(chunk->bBlocks + index, side);
 		ReleaseMutex(chunk->mutex);
 	}
 }
 
-void World::HideTile(Chunk *chunk, int index, char N)
+void World::HideTile(Chunk *chunk, int index, char side)
 {
-	if(chunk->bBlocks[index].bVisible & (1 << N))
+	if(chunk->bBlocks[index].bVisible & (1 << side))
 	{
 		DWORD dwWaitResult; 
 		dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
 
-		chunk->HideTile(chunk->bBlocks + index, N);
+		chunk->HideTile(chunk->bBlocks + index, side);
 		ReleaseMutex(chunk->mutex);
 	}
 }

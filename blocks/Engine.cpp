@@ -120,14 +120,14 @@ void Engine::Display()
 	{
 		player.bKeyboard['Z'] = 0;
 		wWorld.SoftLight = !wWorld.SoftLight;
-		wWorld.LightRefresh = true;
+		wWorld.LightToRefresh = true;
 	}
 
 	GLenum mod = GL_EXECUTE;
 
-	if(wWorld.LightRefresh)
+	if(wWorld.LightToRefresh)
 	{
-		wWorld.LightRefresh = false;
+		wWorld.LightToRefresh = false;
 		mod = GL_COMPILE;
 	}
 	
@@ -714,7 +714,7 @@ void Engine::GetFogColor()
 	GLfloat dif = fabs(wWorld.SkyBright - prevBright);
 	if(dif > 0.005f)
 	{
-		wWorld.LightRefresh = true;
+		wWorld.LightToRefresh = true;
 		prevBright = wWorld.SkyBright;
 	}	
 }
