@@ -11,7 +11,7 @@ GLfloat NightFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
 GLfloat WaterFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
 
 Engine::Engine()
-	:player(wWorld)
+	:player(wWorld), stat(*this)
 {
 	bMousing = false;
 	fullscreen = false;
@@ -19,7 +19,7 @@ Engine::Engine()
 	width = 0;
 	height = 0;
 	FrameInterval = 0.0;
-	TimeOfDay = 600.0;
+	TimeOfDay = 1500.0;
 }
 
 Engine::~Engine()
@@ -359,9 +359,6 @@ void Engine::DrawInterface()
 	//glLoadIdentity();
 	OpenGL2d();
 
-	//Statistics
-	stat.PrintStat(width, height);
-
 	//Underwater haze
 	if((player.UnderWater)&&(player.chunk))
 	{
@@ -429,6 +426,9 @@ void Engine::DrawInterface()
 	glVertex2i( 1 + WidthBy2, HeightBy2);
 	glVertex2i( 9 + WidthBy2, HeightBy2);
 	glEnd();
+
+	//Statistics
+	stat.PrintStat();
 
 	glDisable(GL_BLEND);
 }
@@ -610,7 +610,7 @@ void Engine::DrawSunMoon()
 
 void Engine::DrawBottomBorder()
 {
-	GLdouble CloudSize = FARCUT;
+	GLdouble BottomBorderSize = FARCUT;
 	GLfloat res;
 
 	glPushMatrix();
@@ -626,13 +626,13 @@ void Engine::DrawBottomBorder()
 
 	glBegin(GL_QUADS);
 	//glTexCoord2d(0.0 + time + Xposition, 0.0 + Zposition);
-	glVertex2d(-CloudSize, -CloudSize);
+	glVertex2d(-BottomBorderSize, -BottomBorderSize);
 	//glTexCoord2d(0.0 + time + Xposition, 1.0 + Zposition);
-	glVertex2d(-CloudSize, CloudSize);
+	glVertex2d(-BottomBorderSize, BottomBorderSize);
 	//glTexCoord2d(1.0 + time + Xposition, 1.0 + Zposition);
-	glVertex2d(CloudSize, CloudSize);
+	glVertex2d(BottomBorderSize, BottomBorderSize);
 	//glTexCoord2d(1.0 + time + Xposition, 0.0 + Zposition);
-	glVertex2d(CloudSize, -CloudSize);
+	glVertex2d(BottomBorderSize, -BottomBorderSize);
 	glEnd();
 
 
@@ -641,7 +641,7 @@ void Engine::DrawBottomBorder()
 
 void Engine::DrawClouds()
 {
-	GLdouble CloudSize = FARCUT*1.2;
+	GLdouble CloudSize = FARCUT*2;///4;
 	GLfloat res;
 
 	static GLdouble time = 0.0;
@@ -657,12 +657,13 @@ void Engine::DrawClouds()
 	res = 1.0 - wWorld.SkyBright;
 	glColor4f(res, res, res, 0.8f);
 
-	GLdouble Xposition = player.dPositionX/(2*CloudSize);
-	GLdouble Zposition = player.dPositionZ/(2*CloudSize);
+	GLdouble Xposition = player.dPositionX/(2.5*CloudSize);
+	GLdouble Zposition = player.dPositionZ/(2.5*CloudSize);
 
 	glTranslated(player.dPositionX, (CHUNK_SIZE_Y + 16)*BLOCK_SIZE, player.dPositionZ);
 	glRotated(90, 1.0, 0.0, 0.0);
 	glBegin(GL_QUADS);
+
 	glTexCoord2d(0.0 + time + Xposition, 0.0 + Zposition);
 	glVertex2d(-CloudSize, -CloudSize);
 	glTexCoord2d(0.0 + time + Xposition, 1.0 + Zposition);
@@ -671,6 +672,7 @@ void Engine::DrawClouds()
 	glVertex2d(CloudSize, CloudSize);
 	glTexCoord2d(1.0 + time + Xposition, 0.0 + Zposition);
 	glVertex2d(CloudSize, -CloudSize);
+
 	glEnd();
 
 	glDisable(GL_BLEND);

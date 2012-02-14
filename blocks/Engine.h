@@ -4,7 +4,7 @@
 
 #include "World.h"
 #include "Character.h"
-#include "Statistic.h"
+#include "Statistics.h"
 
 class Engine
 {
@@ -49,5 +49,6 @@ private:
 
 	void GetFrameTime();
 	double FrameInterval;
-	Statistic stat;
+	friend class Statistics;
+	Statistics stat;
 };
