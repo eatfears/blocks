@@ -124,14 +124,14 @@ void Landscape::Load(ChunkPosition chpos)
 	std::fstream filestr;
 
 	filestr.open ("test", std::fstream::in | std::fstream::binary);
-	
-	
+
+
 	if(filestr.is_open())
 	{
 		/*int index = 0;
 		TileInLoc chunkx, locy, chunkz;
 		char mat;
-		
+
 		while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
 		{
 			filestr >> mat;
@@ -146,7 +146,7 @@ void Landscape::Load(ChunkPosition chpos)
 
 		filestr.close();
 	}
-	
+
 }
 
 void Landscape::Fill(Chunk& chunk, char mat, double fillness, int height)
@@ -161,7 +161,7 @@ void Landscape::Fill(Chunk& chunk, char mat, double fillness, int height)
 		{
 			for(int j = 0; j < height; j++)
 			{
-				if((double)rand()/(double)RAND_MAX < fillness) 
+				if((double)rand()/(double)RAND_MAX < fillness)
 				{
 					if (mat == 0) material = rand()%4+1;
 					chunk.AddBlock(i, j, k, material);

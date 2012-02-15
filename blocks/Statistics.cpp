@@ -1,6 +1,7 @@
 #include "Statistics.h"
 #include <stdio.h>
 #include "Engine.h"
+#include "PlatformDefinitions.h"
 
 
 Statistics::Statistics(Engine& eng)
@@ -28,18 +29,18 @@ void Statistics::PrintStat(void)
 
 	if (TimeCount > 100)
 	{
-		sprintf_s(cFPS, "FPS: %0.1f\n", 1000.0*FrameCount/TimeCount);
+		b_sprintf(cFPS, "FPS: %0.1f\n", 1000.0*FrameCount/TimeCount);
 		TimeCount = 0.0;
 		FrameCount = 0;
 	}
 
 	RenderString(50, engine.height - 50, font, cFPS);
 
-	sprintf_s(pos, "X: %0.10f\n", engine.player.dPositionX/BLOCK_SIZE);
+	b_sprintf(pos, "X: %0.10f\n", engine.player.dPositionX/BLOCK_SIZE);
 	RenderString(50, engine.height - 70, font, pos);
-	sprintf_s(pos, "Y: %0.10f\n", engine.player.dPositionY/BLOCK_SIZE);
+	b_sprintf(pos, "Y: %0.10f\n", engine.player.dPositionY/BLOCK_SIZE);
 	RenderString(50, engine.height - 90, font, pos);
-	sprintf_s(pos, "Z: %0.10f\n", engine.player.dPositionZ/BLOCK_SIZE);
+	b_sprintf(pos, "Z: %0.10f\n", engine.player.dPositionZ/BLOCK_SIZE);
 	RenderString(50, engine.height - 110, font, pos);
 }
 

@@ -18,7 +18,7 @@ public:
 	void Generate(Chunk &chunk);
 	void Load(ChunkPosition chpos);
 	void Fill(Chunk& chunk, char mat, double fillness, int height);
-	
+
 	int horizon;
 	double scaleHeightMapXZ;
 	double scaleRoughness;

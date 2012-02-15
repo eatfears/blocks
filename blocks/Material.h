@@ -1,6 +1,6 @@
 #pragma once
 #include "Blocks_Definitions.h"
-#include <GLblocks\blocksglut.h>
+#include <GL/freeglut.h>
 
 #define MAT_NO				0
 #define MAT_DIRT			1

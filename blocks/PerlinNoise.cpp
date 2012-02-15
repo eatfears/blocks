@@ -168,7 +168,7 @@ double PerlinNoise::SmoothNoise3d(int x, int y, int z)
 						Noise3d(x-1, y-1, z+1) + Noise3d(x+1, y-1, z+1) +
 						Noise3d(x-1, y+1, z-1) + Noise3d(x+1, y+1, z-1) +
 						Noise3d(x-1, y+1, z+1) + Noise3d(x+1, y+1, z+1)) / 64.0;
-	
+
 	double sides	= (	Noise3d(x-1, y-1, z) + Noise3d(x-1, y+1, z) +
 						Noise3d(x+1, y-1, z) + Noise3d(x+1, y+1, z) +
 						Noise3d(x-1, y, z-1) + Noise3d(x-1, y, z+1) +
@@ -195,7 +195,7 @@ double PerlinNoise::PerlinNoise1d(double x)
 	for(int i = 0; i < n; i++)
 	{
 		total += InterpolatedNoise1d(x*frequency) * amplitude;
-		
+
 		frequency *= 2;
 		amplitude *= persistence;
 	}

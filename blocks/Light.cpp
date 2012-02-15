@@ -10,9 +10,9 @@ char Light::InfluencingLight[6][4] = {
 };
 
 float Light::LightTable[16] = {
-	0.000f, 0.044f, 0.055f, 0.069f, 
-	0.086f, 0.107f, 0.134f, 0.168f, 
-	0.210f, 0.262f, 0.328f, 0.410f, 
+	0.000f, 0.044f, 0.055f, 0.069f,
+	0.086f, 0.107f, 0.134f, 0.168f,
+	0.210f, 0.262f, 0.328f, 0.410f,
 	0.512f, 0.640f, 0.800f, 1.000f
 };
 
@@ -24,7 +24,7 @@ Light::Light(Chunk *ChnkArr[5][5])
 		{
 			ChunkArray[i][j] = ChnkArr[i][j];
 
-			if(ChunkArray[i][j]) 
+			if(ChunkArray[i][j])
 			{
 				if((i > 0)&&(i < 4)&&(j > 0)&&(j < 4))
 				{
@@ -145,9 +145,9 @@ void Light::BlockLight(World& wWorld, Chunk& chunk, int side, BlockInChunk cx, B
 		static Chunk *temploc;
 		static BlockInWorld xlight, ylight, zlight;
 		static GLfloat res;
-		static BlockInChunk 
-			xloclight, 
-			yloclight, 
+		static BlockInChunk
+			xloclight,
+			yloclight,
 			zloclight;
 		static BlockInWorld blckwx, blckwz;
 
@@ -274,7 +274,7 @@ void Light::SoftLight(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorl
 		}
 		if ((side == FRONT)||(side == BACK)) res *= 0.85f;
 		if ((side == RIGHT)||(side == LEFT)) res *= 0.90f;
-		
+
 		res = res * ( 1.0 - wWorld.SkyBright);
 		//res = res - wWorld.SkyBright;
 		glColor3f(res, res, res);
@@ -288,9 +288,9 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, Blo
 	float res = 0;
 	int InflLight;
 
-	static BlockInChunk 
-		xloclight, 
-		yloclight, 
+	static BlockInChunk
+		xloclight,
+		yloclight,
 		zloclight;
 
 	bool DiagonalblockInfluate = true;
@@ -306,7 +306,7 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, Blo
 			wWorld.GetPosInChunkByWorld(X + xx[InflLight], Y + yy[InflLight], Z + zz[InflLight], &xloclight, &yloclight, &zloclight);
 
 			if(yloclight >= CHUNK_SIZE_Y)
-			{	
+			{
 				mat[i] = 10.0f;
 				continue;
 			}

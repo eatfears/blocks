@@ -1,5 +1,5 @@
 #pragma once
-#include "gsl/gsl_randist.h"
+#include <gsl/gsl_randist.h>
 
 #define LINEAR_INTERPOLATE		1
 #define COSINE_INTERPOLATE		2

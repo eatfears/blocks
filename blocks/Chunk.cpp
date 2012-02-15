@@ -12,9 +12,9 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
 
 	DisplayedTiles = new std::list<Block *>[6];
 	DisplayedWaterTiles = new std::list<Block *>[6];
-	
+
 	for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
-	{	
+	{
 		SkyLight[i] = 0;
 		bBlocks[i].cMaterial = MAT_NO;
 		for(int side = 0; side < 6; side++)
@@ -25,7 +25,7 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
 
 	listgen = false;
 	LightToUpdate = true;
-	
+
 	mutex = CreateMutex(NULL, false, NULL);
 }
 
@@ -72,7 +72,7 @@ void Chunk::ShowTile(Block *bBlock, char side)
 	if(!bBlock) return;
 	if(bBlock->cMaterial == MAT_NO) return;
 	if(bBlock->bVisible & (1 << side)) return;
-	
+
 
 	std::list<Block *> *Tiles;
 	if(bBlock->cMaterial == MAT_WATER)
@@ -81,7 +81,7 @@ void Chunk::ShowTile(Block *bBlock, char side)
 		Tiles = &DisplayedTiles[side];
 
 	Tiles->push_back(bBlock);
-		
+
 	bBlock->bVisible |= (1 << side);
 
 	NeedToRender[1] = RENDER_NEED;
@@ -135,18 +135,18 @@ int Chunk::SetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z, char
 	return index;
 }
 
-int Chunk::GetBlockPositionByPointer(Block *tCurrentBlock, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z) 
+int Chunk::GetBlockPositionByPointer(Block *tCurrentBlock, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z)
 	const
 {
 	int t = tCurrentBlock - bBlocks;
 
-	if(GetBlockPositionByIndex(t, x, y, z) == -1) 
+	if(GetBlockPositionByIndex(t, x, y, z) == -1)
 		return -1;
 
 	return 0;
 }
 
-inline int Chunk::GetBlockPositionByIndex(int index, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z)
+int Chunk::GetBlockPositionByIndex(int index, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z)
 {
 	if((index < 0)||(index >= CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y))
 		return -1;
@@ -258,7 +258,7 @@ void Chunk::Render(GLenum mode, char mat, int *rendered)
 	{
 		mode = GL_COMPILE;
 	}
-	
+
 	if(NeedToRender[pointertorender] == RENDER_MAYBE)
 	{
 
@@ -317,7 +317,7 @@ void Chunk::Render(GLenum mode, char mat, int *rendered)
 
 		if (NeedToRender[pointertorender] = RENDER_MAYBE)
 			(*rendered) ++;
-		
+
 		NeedToRender[pointertorender] = RENDER_NO_NEED;
 	}
 
@@ -327,12 +327,12 @@ void Chunk::Render(GLenum mode, char mat, int *rendered)
 
 void Chunk::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, Block* block, char side)
 {
-	GLdouble 
-		// 		dXcoord = (sXcoord-player.lnwPositionX*LOCATION_SIZE_XZ)*TILE_SIZE, 
-		// 		dYcoord = sYcoord*TILE_SIZE, 
+	GLdouble
+		// 		dXcoord = (sXcoord-player.lnwPositionX*LOCATION_SIZE_XZ)*TILE_SIZE,
+		// 		dYcoord = sYcoord*TILE_SIZE,
 		// 		dZcoord = (sZcoord-player.lnwPositionZ*LOCATION_SIZE_XZ)*TILE_SIZE;
-		dXcoord = sXcoord*BLOCK_SIZE, 
-		dYcoord = sYcoord*BLOCK_SIZE, 
+		dXcoord = sXcoord*BLOCK_SIZE,
+		dYcoord = sYcoord*BLOCK_SIZE,
 		dZcoord = sZcoord*BLOCK_SIZE;
 
 	dXcoord -= BLOCK_SIZE/2;
@@ -346,7 +346,7 @@ void Chunk::DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZ
 	char material = block->cMaterial;
 
 	wWorld.MaterialLib.GetTextureOffsets(offsetx, offsety, material, covered, side);
-	
+
 	switch(side)
 	{
 	case TOP:

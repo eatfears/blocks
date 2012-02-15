@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Blocks_Definitions.h"
-#include <GLblocks\blocksglut.h>
+#include <GL/freeglut.h>
 
 class Engine;
 
@@ -18,7 +18,6 @@ private:
 	Engine& engine;
 	void RenderString(int x, int y, void *font, const char string[]);
 
-	double TimeCount;	
+	double TimeCount;
 	int FrameCount;
 };
-

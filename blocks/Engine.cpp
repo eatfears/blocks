@@ -1,10 +1,10 @@
 #include "Engine.h"
 #include <time.h>
-#include <Mmsystem.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include "Light.h"
 #include "Primes.h"
+#include "PlatformDefinitions.h"
 
 GLfloat DayFogColor[4] = {0.50f, 0.67f, 1.00f, 1.00f};
 GLfloat NightFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
@@ -56,7 +56,7 @@ int Engine::InitGL()
 
 void Engine::Reshape(int width, int height)
 {
-	if(height == 0)											// Предотвращение деления на ноль 
+	if(height == 0)											// Предотвращение деления на ноль
 		height = 1;
 
 	this->width = width;
@@ -90,7 +90,7 @@ void Engine::Display()
 	glEnable(GL_FOG);
 	glFogi(GL_FOG_MODE,  GL_LINEAR);
 	glHint(GL_FOG_HINT, GL_DONT_CARE);
-	
+
 	if(player.UnderWater)
 	{
 		glFogfv(GL_FOG_COLOR, WaterFogColor);
@@ -130,7 +130,7 @@ void Engine::Display()
 		wWorld.LightToRefresh = false;
 		mod = GL_COMPILE;
 	}
-	
+
 	render = 0;
 	for (int bin = 0; bin < HASH_SIZE; bin++)
 	{
@@ -144,7 +144,7 @@ void Engine::Display()
 			}
 
 #ifndef _DEBUG
-			_try 
+			_try
 			{
 #endif // _DEBUG
 				if (mod == GL_COMPILE)
@@ -175,7 +175,7 @@ void Engine::Display()
 		while(chunk != wWorld.Chunks[bin].end())
 		{
 #ifndef _DEBUG
-			_try 
+			_try
 			{
 #endif // _DEBUG
 				if (mod == GL_COMPILE)
@@ -217,7 +217,7 @@ void Engine::Keyboard(unsigned char button, int x, int y, bool KeyDown)
 {
 	switch(button)
 	{
-	case VK_ESCAPE: glutExit();
+	case KEY_ESCAPE: glutExit();
 		break;
 	default:
 #ifdef _WIN32
@@ -230,15 +230,12 @@ void Engine::Keyboard(unsigned char button, int x, int y, bool KeyDown)
 
 void Engine::MouseMotion(int x, int y)
 {
-	static int Lastx, Lasty;
-
 	if(bMousing)
 	{
 		bMousing = false;
-		{
-			player.dSpinY -= (x - Lastx)/MOUSE_SENSIVITY;
-			player.dSpinX -= (y - Lasty)/MOUSE_SENSIVITY;
-		}
+
+		player.dSpinY -= (x - width/2)/MOUSE_SENSIVITY;
+		player.dSpinX -= (y - height/2)/MOUSE_SENSIVITY;
 
 		while(player.dSpinY >= 360.0)
 			player.dSpinY -= 360.0;
@@ -249,17 +246,10 @@ void Engine::MouseMotion(int x, int y)
 		if(player.dSpinX < -90.0) player.dSpinX = -90.0;
 		if(player.dSpinX > 90.0) player.dSpinX = 90.0;
 
-		Lastx = x;
-		Lasty = y;
-
 		glutWarpPointer(width/2,height/2);
 	}
-	else 
-	{
+	else
 		bMousing = true;
-		Lastx = x;
-		Lasty = y;
-	}
 }
 
 void Engine::MouseButton(int button, int state, int x, int y)
@@ -268,8 +258,8 @@ void Engine::MouseButton(int button, int state, int x, int y)
 // 	{
 // 	case GLUT_LEFT_BUTTON:
 // 		if (state==GLUT_DOWN) glutIdleFunc(spinDisplay); break;
-// 
-// 	case GLUT_RIGHT_BUTTON: 
+//
+// 	case GLUT_RIGHT_BUTTON:
 // 		if (state==GLUT_DOWN) glutIdleFunc(NULL); break;
 // 	}
 }
@@ -278,6 +268,9 @@ void Engine::InitGame()
 {
 #ifdef _WIN32
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
+
+	HWND console = GetConsoleWindow();
+	ShowWindow(console, SW_HIDE);
 #endif // _WIN32
 
 	srand((unsigned int)time(NULL));
@@ -301,9 +294,9 @@ void Engine::DrawSelectedItem()
 	glLineWidth (1.4f);
 
 	GLdouble BorderSize = BLOCK_SIZE*(1 + 0.005);
-	GLdouble 
-		dXcoord = player.sCenterBlockCoordX*BLOCK_SIZE, 
-		dYcoord = player.sCenterBlockCoordY*BLOCK_SIZE, 
+	GLdouble
+		dXcoord = player.sCenterBlockCoordX*BLOCK_SIZE,
+		dYcoord = player.sCenterBlockCoordY*BLOCK_SIZE,
 		dZcoord = player.sCenterBlockCoordZ*BLOCK_SIZE;
 
 	dXcoord -= BorderSize/2;
@@ -373,7 +366,7 @@ void Engine::DrawInterface()
 
 		glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[UNDERWATER]);
 		glColor4f(Brightness, Brightness, Brightness, 0.9f);
-		
+
 		glBegin(GL_QUADS);
 		glTexCoord2d(0.0 - TextureRotation, 0.0);
 		glVertex2i(WidthBy2- 3*HeightBy2, 0);
@@ -393,7 +386,7 @@ void Engine::DrawInterface()
 	glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 
 	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[VIGNETTE]);
-	
+
 	glColor3f(0.4f, 0.4f, 0.4f);
 
 	glBegin(GL_QUADS);
@@ -420,7 +413,7 @@ void Engine::DrawInterface()
 	glBegin(GL_LINES);
 	glVertex2i(WidthBy2, -9 + HeightBy2);
 	glVertex2i(WidthBy2,  9 + HeightBy2);
-	
+
 	glVertex2i(-9 + WidthBy2, HeightBy2);
 	glVertex2i(-1 + WidthBy2, HeightBy2);
 	glVertex2i( 1 + WidthBy2, HeightBy2);
@@ -454,23 +447,23 @@ void Engine::GetFrameTime()
 	static double koef = 0.0005;
 	static double max_FPS = 30;
 	static int sleep_time;
-	
-	double currentTime = (double)timeGetTime();
+
+	double currentTime = GetMillisecTime();
 
 	static double frameTime = currentTime;  // Время последнего кадра
 
 	//Интервал времени, прошедшего с прошлого кадра
 	FrameInterval = currentTime - frameTime;
 	sleep_time = (int) (1000.0/max_FPS - FrameInterval);
-	if(sleep_time > 0) 
+	if(sleep_time > 0)
 	{
 		Sleep(sleep_time);
-		currentTime = (double)timeGetTime();
+		currentTime = GetMillisecTime();
 		FrameInterval = currentTime - frameTime;
 	}
 	frameTime = currentTime;
 	stat.ComputeFPS(FrameInterval);
-	
+
 	FrameInterval *= koef;
 
 	TimeOfDay += FrameInterval;
@@ -481,17 +474,17 @@ void Engine::Special(int button, int x, int y, bool KeyDown)
 {
 	switch(button)
 	{
-	case GLUT_KEY_F1: 	
+	case GLUT_KEY_F1:
 		if(KeyDown)
 		{
-			if(!fullscreen) glutFullScreenToggle(); 
+			if(!fullscreen) glutFullScreenToggle();
 			else glutLeaveFullScreen();
 			fullscreen = !fullscreen;
 		}
 		break;
 //	case GLUT_KEY_F2: 	glutLeaveGameMode();
 //		break;
-	default: 
+	default:
 		player.bSpecial[button] = KeyDown;
 	}
 }
@@ -512,7 +505,7 @@ void Engine::OpenGL3d()
 	float fovy;
 	if (player.UnderWater)
 		fovy = 60.0f;
-	else 
+	else
 		fovy = 70.0f;
 
 	glViewport(0, 0, width, height);
@@ -532,12 +525,12 @@ void Engine::DrawSunMoon()
 	/*
 	glEnable(GL_LIGHTING);
 	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	
+
 	GLfloat material_diffuse[] = {10.0, 1.0, 1.0, 1.0};
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, material_diffuse);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, material_diffuse);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, material_diffuse);
-	
+
 	glTranslated(0, 0, 0);
 	GLfloat light2_diffuse[] = {100.0f, 100.0f, 10.0f};
 	GLfloat light2_position[] = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -566,13 +559,13 @@ void Engine::DrawSunMoon()
 	glRotated(-TimeOfDay*360.0/2400.0 + 90.0, 1.0, 0.0, 0.0);
 
 	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[SUN]);
-	
-// 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE); 
-// 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_ADD); 
-// 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE); 
+
+// 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+// 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_ADD);
+// 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
 // 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
 //	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
-	
+
 	glTranslated(0.0, 0.0, sundist);
 
 	glBegin(GL_QUADS);
@@ -654,7 +647,7 @@ void Engine::DrawClouds()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[CLOUDS]);
-	
+
 	res = 1.0 - wWorld.SkyBright;
 	glColor4f(res, res, res, 0.8f);
 
@@ -719,5 +712,5 @@ void Engine::GetFogColor()
 	{
 		wWorld.LightToRefresh = true;
 		prevBright = wWorld.SkyBright;
-	}	
+	}
 }

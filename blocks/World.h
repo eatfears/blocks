@@ -36,7 +36,7 @@ public:
 	Chunk* GetChunkByBlock(BlockInWorld x, BlockInWorld z);
 	Chunk* GetChunkByPosition(ChunkInWorld Cx, ChunkInWorld Cz);
 	void GetPosInChunkByWorld(BlockInWorld x, BlockInWorld y, BlockInWorld z, BlockInChunk *chnkx, BlockInChunk *chnky, BlockInChunk *chnkz);
-	
+
 	unsigned long Hash(ChunkInWorld x, ChunkInWorld z) {return (x + z*HASH_SIZE)&(HASH_SIZE-1);}
 	void UpdateLight(Chunk& chunk);
 	bool LightToRefresh;

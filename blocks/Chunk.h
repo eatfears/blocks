@@ -2,7 +2,7 @@
 #include <list>
 
 #include "Blocks_Definitions.h"
-#include <GLblocks\blocksglut.h>
+#include <GL/freeglut.h>
 
 class World;
 
@@ -32,17 +32,17 @@ public:
 	ChunkInWorld x;
 	ChunkInWorld z;
 	char NeedToRender[2];
-	
+
 	int	AddBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z, char mat);
 	int RemoveBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z);
-	
+
 	void ShowTile(Block *bBlock, char side);
 	void HideTile(Block *bBlock, char side);
 
 	char GetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z);
 
 	int GetBlockPositionByPointer(Block *bCurrentBlock, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z) const;
-	static inline int GetBlockPositionByIndex(int index, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z);
+	static int GetBlockPositionByIndex(int index, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z);
 	int GetIndexByPosition(BlockInChunk x, BlockInChunk y, BlockInChunk z);
 
 	void DrawLoadedBlocks();

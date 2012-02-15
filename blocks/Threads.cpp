@@ -24,7 +24,7 @@ void LoadChunkThread(void* pParams)
 		_endthread();
 	}
 
-	DWORD dwWaitResult; 
+	DWORD dwWaitResult;
 
 	Chunk *chunk = new Chunk(x, z, wWorld);
 
@@ -33,7 +33,7 @@ void LoadChunkThread(void* pParams)
 	chunk->DrawLoadedBlocks();
 
 	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
-	
+
 	unsigned long bin = wWorld.Hash(x, z);
 	wWorld.Chunks[bin].push_front(chunk);
 	ReleaseMutex(wWorld.mutex);
@@ -59,7 +59,7 @@ void LoadChunkThread(void* pParams)
 	// 		if (((*locc).x == lp.x)&&((*locc).z == lp.z)) break;
 	// 		++chunk;
 	// 	}
-	// 	if (locc == wWorld.LoadedLocations.end()) 
+	// 	if (locc == wWorld.LoadedLocations.end())
 	// 	{
 	// 		ReleaseMutex(wWorld.loading_mutex);
 	// 		_endthread();
@@ -87,7 +87,7 @@ void UnLoadChunkThread(void* pParams)
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 #endif // _WIN32
 
-	DWORD dwWaitResult; 
+	DWORD dwWaitResult;
 
 	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 
@@ -99,8 +99,8 @@ void UnLoadChunkThread(void* pParams)
 		if(((*chunk)->x == x)&&((*chunk)->z == z)) break;
 		++chunk;
 	}
-	if(chunk == wWorld.Chunks[bin].end()) 
-	{	
+	if(chunk == wWorld.Chunks[bin].end())
+	{
 		ReleaseMutex(wWorld.mutex);
 		ReleaseSemaphore(wWorld.semaphore, 1, NULL);
 
@@ -115,12 +115,12 @@ void UnLoadChunkThread(void* pParams)
 		// 		if (locc == wWorld.LoadedLocations.end())
 		// 		{
 		// 			ReleaseMutex(wWorld.loading_mutex);
-		// 			_endthread(); 
+		// 			_endthread();
 		// 			return;
 		// 		}
 		// 		wWorld.LoadedLocations.erase(locc);
 		// 		ReleaseMutex(wWorld.loading_mutex);
-		_endthread(); 
+		_endthread();
 		return;
 	}
 
@@ -132,7 +132,7 @@ void UnLoadChunkThread(void* pParams)
 	wWorld.DrawUnLoadedBlocks(x, z);
 	ReleaseMutex(wWorld.mutex);
 
-	// 
+	//
 	// 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
 	// 	LocationPosiion lp = {x, z};
 	// 	auto locc = wWorld.LoadedLocations.begin();
@@ -144,7 +144,7 @@ void UnLoadChunkThread(void* pParams)
 	// 	if (locc == wWorld.LoadedLocations.end())
 	// 	{
 	// 		ReleaseMutex(wWorld.loading_mutex);
-	// 		_endthread(); 
+	// 		_endthread();
 	// 		return;
 	// 	}
 	// 	wWorld.LoadedLocations.erase(locc);

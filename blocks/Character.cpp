@@ -9,7 +9,7 @@ Character::Character(World& ww)
 	: wWorld(ww)
 {
 	bFalling = true;
-	for(int i = 0; i < 256; i++) 
+	for(int i = 0; i < 256; i++)
 	{
 		bKeyboard[i] = false;
 		bSpecial[i] = false;
@@ -46,28 +46,28 @@ void Character::GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
 	while(*yerr > BLOCK_SIZE + 1) *yerr -= BLOCK_SIZE;
 
 	*yerr = abs(*yerr);
-	if(*yerr > abs(*yerr - BLOCK_SIZE)) *yerr = abs(*yerr - BLOCK_SIZE); 
+	if(*yerr > abs(*yerr - BLOCK_SIZE)) *yerr = abs(*yerr - BLOCK_SIZE);
 
 	while(*xerr < - 1) *xerr += BLOCK_SIZE;
 	while(*xerr > BLOCK_SIZE + 1) *xerr -= BLOCK_SIZE;
 
 	*xerr = abs(*xerr);
-	if(*xerr > abs(*xerr - BLOCK_SIZE)) *xerr = abs(*xerr - BLOCK_SIZE); 
+	if(*xerr > abs(*xerr - BLOCK_SIZE)) *xerr = abs(*xerr - BLOCK_SIZE);
 
 	while(*zerr < - 1) *zerr += BLOCK_SIZE;
 	while(*zerr > BLOCK_SIZE + 1) *zerr -= BLOCK_SIZE;
 
 	*zerr = abs(*zerr);
-	if(*zerr > abs(*zerr - BLOCK_SIZE)) *zerr = abs(*zerr - BLOCK_SIZE); 
+	if(*zerr > abs(*zerr - BLOCK_SIZE)) *zerr = abs(*zerr - BLOCK_SIZE);
 }
 
 void Character::Control(GLdouble FrameInterval)
 {
 	GLdouble step = WALK_SPEED;
-	if(bSpecial[GLUT_KEY_SHIFT_L]) 
+	if(bSpecial[GLUT_KEY_SHIFT_L])
 		step *= SPRINT_KOEF;
 
-	if(bKeyboard['W']) 
+	if(bKeyboard['W'])
 	{
 		if(!bFalling)
 		{
@@ -80,7 +80,7 @@ void Character::Control(GLdouble FrameInterval)
 			dVelocityZ -= FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
 		}
 	}
-	if(bKeyboard['S']) 
+	if(bKeyboard['S'])
 	{
 		if(!bFalling)
 		{
@@ -93,7 +93,7 @@ void Character::Control(GLdouble FrameInterval)
 			dVelocityZ += FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
 		}
 	}
-	if(bKeyboard['D']) 
+	if(bKeyboard['D'])
 	{
 		if(!bFalling)
 		{
@@ -106,7 +106,7 @@ void Character::Control(GLdouble FrameInterval)
 			dVelocityZ -= FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
 		}
 	}
-	if(bKeyboard['A']) 
+	if(bKeyboard['A'])
 	{
 		if(!bFalling)
 		{
@@ -119,11 +119,11 @@ void Character::Control(GLdouble FrameInterval)
 			dVelocityZ += FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
 		}
 	}
-	if(bKeyboard['R']) 
+	if(bKeyboard['R'])
 	{
 		dVelocityY += FrameInterval*AIR_ACCEL*step;
 	}
-	if(bKeyboard['F']) 
+	if(bKeyboard['F'])
 	{
 		dVelocityY -= FrameInterval*AIR_ACCEL*step;
 	}
@@ -188,7 +188,7 @@ void Character::Control(GLdouble FrameInterval)
 	if(bKeyboard['1'])
 	{
 		int i = 0;
-		
+
 		while(i < num)
 		{
 			if(wWorld.AddBlock(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, rand()%14+1, true))
@@ -205,25 +205,25 @@ void Character::Control(GLdouble FrameInterval)
 				i++;
 		}
 	}
- 
+
 	if(bKeyboard['3'])
 	{
 		for(int i = -sqb2; i <= sqb2; i++)
 		for(int j = -sqb2; j <= sqb2; j++)
 		for(int k = -sqb2; k <= sqb2; k++)
 		{
-			wWorld.RemoveBlock(i, j, k, true);	
+			wWorld.RemoveBlock(i, j, k, true);
 		}
 	}
 
 	if(bKeyboard['4'])
 	{
-		wWorld.LoadChunk(0, 0);	
+		wWorld.LoadChunk(0, 0);
 		bKeyboard['4'] = false;
 	}
 	if(bKeyboard['5'])
 	{
-		wWorld.UnLoadChunk(0, 0);	
+		wWorld.UnLoadChunk(0, 0);
 		bKeyboard['5'] = false;
 	}
 	if(bKeyboard['6'])
@@ -253,7 +253,7 @@ void Character::Control(GLdouble FrameInterval)
 
 		bKeyboard['0'] = false;
 	}
-	if(bKeyboard['C']) 
+	if(bKeyboard['C'])
 	{
 		Chunk *chunk;
 		int index;
@@ -264,7 +264,7 @@ void Character::Control(GLdouble FrameInterval)
 			chunk->bBlocks[index].bVisible ^= (1 << SNOWCOVERED);
 		}
 	}
-	if(bKeyboard['V']) 
+	if(bKeyboard['V'])
 	{
 		Chunk *chunk;
 		int index;
@@ -275,12 +275,12 @@ void Character::Control(GLdouble FrameInterval)
 			chunk->bBlocks[index].bVisible ^= (1 << GRASSCOVERED);
 		}
 	}
-	if(bKeyboard['E']) 
+	if(bKeyboard['E'])
 	{
 		wWorld.RemoveBlock(sCenterBlockCoordX,sCenterBlockCoordY,sCenterBlockCoordZ, true);
 	}
 
-	if(bKeyboard['Q']) 
+	if(bKeyboard['Q'])
 	{
 		signed short ix = sCenterBlockCoordX, iy = sCenterBlockCoordY, iz = sCenterBlockCoordZ;
 		if((zerr < xerr)&&(zerr < yerr))
@@ -357,7 +357,7 @@ void Character::Control(GLdouble FrameInterval)
 		{
 			gfVelY = 0;
 			if(falling)
-			{	
+			{
 				falling = false;
 				gfPosY = (yy + 1)*TILE_SIZE + PLAYER_HEIGHT - 0.001;
 			}
@@ -391,7 +391,7 @@ void Character::GetCenterCoords(GLsizei width, GLsizei height)
 
 	glReadPixels(width/2, height/2, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &vz);
 	gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, &dDispCenterCoordX, &dDispCenterCoordY, &dDispCenterCoordZ);
-	
+
 // 	dDispCenterCoordX -= lnwPositionX*LOCATION_SIZE_XZ*TILE_SIZE;
 // 	dDispCenterCoordZ -= lnwPositionZ*LOCATION_SIZE_XZ*TILE_SIZE;
 }

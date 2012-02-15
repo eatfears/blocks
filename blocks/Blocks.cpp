@@ -1,5 +1,5 @@
 #include "Blocks_Definitions.h"
-#include <GLblocks\blocksglut.h>
+#include <GL/freeglut.h>
 #include "Engine.h"
 
 #pragma comment (lib, "gsl.lib")
@@ -41,12 +41,6 @@ void GlutInit()
 
 int main(int argc, char **argv)
 {
-
-#ifdef _WIN32
-	HWND console = GetConsoleWindow();
-	ShowWindow(console, SW_HIDE);
-#endif
-
 	engine = new Engine();
 
 	glutInit(&argc,argv);
@@ -54,7 +48,7 @@ int main(int argc, char **argv)
 	glutInitWindowSize(RESX, RESY);
 	glutInitWindowPosition(0, 0);
 	glutCreateWindow("Blocks");
-	
+
 	/*
 	glutGameModeString("1280x1024:32");
 	//glutGameModeString("1280x1024:16@60"); //Переход в полноэкранный режим

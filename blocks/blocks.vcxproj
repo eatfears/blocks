@@ -104,6 +104,7 @@
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="PerlinNoise.h" />
+    <ClInclude Include="PlatformDefinitions.h" />
     <ClInclude Include="Primes.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Statistics.h" />
@@ -119,6 +120,7 @@
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="PerlinNoise.cpp" />
+    <ClCompile Include="PlatformDefinitions.cpp" />
     <ClCompile Include="Primes.cpp" />
     <ClCompile Include="Statistics.cpp" />
     <ClCompile Include="Threads.cpp" />

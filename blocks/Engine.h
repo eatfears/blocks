@@ -1,6 +1,6 @@
 #pragma once
 #include "Blocks_Definitions.h"
-#include <GLblocks\blocksglut.h>
+#include <GL/freeglut.h>
 
 #include "World.h"
 #include "Character.h"

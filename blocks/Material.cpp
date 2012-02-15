@@ -1,7 +1,7 @@
-
 #include "Material.h"
-#include <libpng\png.h>
+#include <libpng/png.h>
 #include "Blocks_Definitions.h"
+#include "PlatformDefinitions.h"
 
 MaterialLibrary::MaterialLibrary()
 {
@@ -21,12 +21,12 @@ void MaterialLibrary::AllocGLTextures()
 
 void MaterialLibrary::LoadGLTextures()
 {
-	texture[TERRAIN] = loadImage("textures\\terrain.png");
-	texture[UNDERWATER] = loadImage("textures\\misc\\water.png");
-	texture[VIGNETTE] = loadImage("textures\\misc\\vignette.png");
-	texture[SUN] = loadImage("textures\\terrain\\sun.png");
-	texture[MOON] = loadImage("textures\\terrain\\moon.png");
-	texture[CLOUDS] = loadImage("textures\\environment\\clouds.png");
+	texture[TERRAIN] = loadImage("textures//terrain.png");
+	texture[UNDERWATER] = loadImage("textures//misc//water.png");
+	texture[VIGNETTE] = loadImage("textures//misc//vignette.png");
+	texture[SUN] = loadImage("textures//terrain//sun.png");
+	texture[MOON] = loadImage("textures//terrain//moon.png");
+	texture[CLOUDS] = loadImage("textures//environment//clouds.png");
 }
 
 int MaterialLibrary::GetTextureInfo(int ColorType)
@@ -61,7 +61,7 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 	int bitDepth, ColorType;
 
 	FILE *pngFile;
-	fopen_s(&pngFile, filename, "rb");
+	b_fopen(&pngFile, filename, "rb");
 
 	if(!pngFile)
 		return 0;
@@ -147,8 +147,8 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 	(components==1) ? (glcolours = GL_LUMINANCE): (0);
 
 
-	GLubyte a[1000];
-	strcpy_s((char*)a, sizeof(a), (char*)glGetString(GL_VERSION));
+	//GLubyte a[1000];
+	//strcpy_s((char*)a, sizeof(a), (char*)glGetString(GL_VERSION));
 
 
 	// stretch it
@@ -159,21 +159,21 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 	//	gluBuild2DMipmaps(GL_TEXTURE_2D, components, width, height, glcolours, GL_UNSIGNED_BYTE, pixels);
 
 	//OpenGL 1.4
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
-	//	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); 
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
-	
+
 	//OpenGL 3.0
 	//	http://www.opengl.org/wiki/Common_Mistakes#gluBuild2DMipmaps
 	//On ATI glEnable(GL_TEXTURE_2D);
-	//Warning: It has been reported that on some ATI drivers, 
-	//glGenerateMipmap(GL_TEXTURE_2D) has no effect unless you 
-	//precede it with a call to glEnable(GL_TEXTURE_2D) in this particular case. 
-	//Once again, to be clear, bind the texture, glEnable, then glGenerateMipmap. 
-	//This is a bug and has been in the ATI drivers for a while. 
-	//Perhaps by the time you read this, it will have been corrected. 
+	//Warning: It has been reported that on some ATI drivers,
+	//glGenerateMipmap(GL_TEXTURE_2D) has no effect unless you
+	//precede it with a call to glEnable(GL_TEXTURE_2D) in this particular case.
+	//Once again, to be clear, bind the texture, glEnable, then glGenerateMipmap.
+	//This is a bug and has been in the ATI drivers for a while.
+	//Perhaps by the time you read this, it will have been corrected.
 	//(glGenerateMipmap doesn't work on ATI as of 2011)
-	// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
+	// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	// 	glGenerateMipmap(GL_TEXTURE_2D);  //Generate mipmaps now!!!
 
 	glTexImage2D(GL_TEXTURE_2D, 0, components, width, height, 0, glcolours, GL_UNSIGNED_BYTE, pixels);
@@ -189,7 +189,7 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 
 void MaterialLibrary::GetTextureOffsets(double& offsetx, double& offsety, int material, char covered, int side)
 {
-	offsetx = 14; 
+	offsetx = 14;
 	offsety = 0;
 
 	switch(material)
@@ -216,22 +216,22 @@ void MaterialLibrary::GetTextureOffsets(double& offsetx, double& offsety, int ma
 		break;
 	case MAT_GLASS: offsetx = 1; offsety = 3;
 		break;
-	case MAT_WOOD: if((side == TOP)||((side == BOTTOM))) {offsetx = 5; offsety = 1;} else {offsetx = 4; offsety = 1;} 
+	case MAT_WOOD: if((side == TOP)||((side == BOTTOM))) {offsetx = 5; offsety = 1;} else {offsetx = 4; offsety = 1;}
 		break;
 	case MAT_COAL: offsetx = 2; offsety = 2;
 		break;
 	case MAT_BRICKS: offsetx = 7; offsety = 0;
 		break;
-	case MAT_PUMPKIN: if((side == TOP)||((side == BOTTOM))) {offsetx = 6; offsety = 6;} else if(side == FRONT) {offsetx = 7; offsety = 7;} else {offsetx = 6; offsety = 7;} 
+	case MAT_PUMPKIN: if((side == TOP)||((side == BOTTOM))) {offsetx = 6; offsety = 6;} else if(side == FRONT) {offsetx = 7; offsety = 7;} else {offsetx = 6; offsety = 7;}
 		break;
-	case MAT_PUMPKIN_SHINE: if((side == TOP)||((side == BOTTOM))) {offsetx = 6; offsety = 6;} else if(side == FRONT) {offsetx = 8; offsety = 7;} else {offsetx = 6; offsety = 7;} 
+	case MAT_PUMPKIN_SHINE: if((side == TOP)||((side == BOTTOM))) {offsetx = 6; offsety = 6;} else if(side == FRONT) {offsetx = 8; offsety = 7;} else {offsetx = 6; offsety = 7;}
 		break;
-	case MAT_TNT: if(side == TOP) {offsetx = 9; offsety = 0;} else if(side == BOTTOM) {offsetx = 10; offsety = 0;} else {offsetx = 8; offsety = 0;} 
+	case MAT_TNT: if(side == TOP) {offsetx = 9; offsety = 0;} else if(side == BOTTOM) {offsetx = 10; offsety = 0;} else {offsetx = 8; offsety = 0;}
 		break;
 	case MAT_PLANK: offsetx = 4; offsety = 0;
 		break;
 	}
 
-	 offsetx *= 0.0625; 
+	 offsetx *= 0.0625;
 	 offsety *= 0.0625;
 }

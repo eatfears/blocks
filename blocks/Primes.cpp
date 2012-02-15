@@ -55,7 +55,7 @@ Int Primes::GenPrime(Int size, gsl_rng *randNumGen)
 	while(beg < (Int) (1 << (size-1)))
 		beg = gsl_rng_uniform_int(randNumGen, (1 << size));
 	beg = NextPrime(beg);
-	
+
 	return beg;
 }
 
