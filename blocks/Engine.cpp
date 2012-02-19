@@ -1,5 +1,5 @@
 #include "Engine.h"
-#include <time.h>
+#include <ctime>
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include "Light.h"
@@ -273,8 +273,7 @@ void Engine::InitGame()
 	ShowWindow(console, SW_HIDE);
 #endif // _WIN32
 
-	srand((unsigned int)time(NULL));
-	int seed = rand();
+	unsigned int seed = std::time(0);
 
 	wWorld.lLandscape.Init(seed);
 	wWorld.BuildWorld();

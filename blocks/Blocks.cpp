@@ -2,7 +2,6 @@
 #include <GL/freeglut.h>
 #include "Engine.h"
 
-#pragma comment (lib, "gsl.lib")
 #pragma comment (lib, "libpng15.lib")
 #pragma comment (lib, "zlib.lib")
 

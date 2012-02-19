@@ -1,6 +1,6 @@
 #pragma once
 #include "Blocks_Definitions.h"
-#include <gsl/gsl_randist.h>
+#include <boost/random.hpp>
 
 #define Int unsigned long int
 
@@ -13,7 +13,7 @@ public:
 	inline Int Sqrt(Int i);
 	inline Int IsPrime(Int i);
 	inline Int NextPrime(Int i);
-	Int GenPrime(Int size, gsl_rng *randNumGen);
+	Int GenPrime(Int size, boost::mt19937 *randNumGen);
 
 	static double Round(double x);
 };

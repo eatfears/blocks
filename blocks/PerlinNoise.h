@@ -1,5 +1,5 @@
 #pragma once
-#include <gsl/gsl_randist.h>
+#include <boost/random.hpp>
 
 #define LINEAR_INTERPOLATE		1
 #define COSINE_INTERPOLATE		2
@@ -10,7 +10,7 @@ public:
 	PerlinNoise(double persistence = 0.5, int NumberOfOctaves = 4);
 	~PerlinNoise();
 
-	void InitNoise(gsl_rng *randNumGen);
+	void InitNoise(boost::mt19937 *randNumGen);
 
 	double PerlinNoise1d(double x);
 	double PerlinNoise2d(double x, double y);

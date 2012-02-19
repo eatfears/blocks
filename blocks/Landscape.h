@@ -13,7 +13,7 @@ public:
 	Landscape();
 	~Landscape();
 
-	void Init(int seed);
+	void Init(unsigned int seed);
 
 	void Generate(Chunk &chunk);
 	void Load(ChunkPosition chpos);
@@ -39,6 +39,6 @@ public:
 	PerlinNoise pnRoughness;
 	PerlinNoise pnDetails;
 
-	gsl_rng *LandGen;
+	boost::mt19937 *generator;
 };
 

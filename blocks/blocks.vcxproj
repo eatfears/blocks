@@ -40,13 +40,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\dev\libs\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\dev\libs\dll;C:\dev\libs\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\dev\libs\projects\boost_1_48_0;C:\dev\libs\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\dev\libs\projects\boost_1_48_0\stage\lib;C:\dev\libs\dll;C:\dev\libs\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\dev\libs\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\dev\libs\dll;C:\dev\libs\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\dev\libs\projects\boost_1_48_0;C:\dev\libs\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\dev\libs\projects\boost_1_48_0\stage\lib;C:\dev\libs\dll;C:\dev\libs\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

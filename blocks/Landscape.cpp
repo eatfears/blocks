@@ -4,7 +4,7 @@
 
 Landscape::Landscape()
 {
-	LandGen = gsl_rng_alloc(gsl_rng_mt19937);
+	generator = new boost::mt19937;
 
 	horizon				= CHUNK_SIZE_Y/2;
 	scaleHeightMapXZ	= 128.0;
@@ -28,17 +28,17 @@ Landscape::Landscape()
 
 Landscape::~Landscape()
 {
-	gsl_rng_free(LandGen);
+	delete generator;
 }
 
-void Landscape::Init(int seed)
+void Landscape::Init(unsigned int seed)
 {
-	gsl_rng_set(LandGen, seed);
+	generator->seed(seed);
 
-	pnBubbles.InitNoise(LandGen);
-	pnHeightMap.InitNoise(LandGen);
-	pnRoughness.InitNoise(LandGen);
-	pnDetails.InitNoise(LandGen);
+	pnBubbles.InitNoise(generator);
+	pnHeightMap.InitNoise(generator);
+	pnRoughness.InitNoise(generator);
+	pnDetails.InitNoise(generator);
 }
 
 void Landscape::Generate(Chunk &chunk)

@@ -17,7 +17,7 @@ PerlinNoise::PerlinNoise(double persistence, int NumberOfOctaves)
 	e = 107;
 }
 
-void PerlinNoise::InitNoise(gsl_rng *randNumGen)
+void PerlinNoise::InitNoise(boost::mt19937 *randNumGen)
 {
 	Primes p;
 	a = p.GenPrime(14, randNumGen);
