@@ -20,8 +20,8 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
 		for(int side = 0; side < 6; side++)
 			bBlocks[i].bVisible &= ~(1 << side);
 	}
-	NeedToRender[0] = RENDER_NEED;
-	NeedToRender[1] = RENDER_NEED;
+	NeedToRender[0] = RENDER_NO_NEED;
+	NeedToRender[1] = RENDER_NO_NEED;
 
 	listgen = false;
 	LightToUpdate = true;
@@ -83,9 +83,6 @@ void Chunk::ShowTile(Block *bBlock, char side)
 	Tiles->push_back(bBlock);
 
 	bBlock->bVisible |= (1 << side);
-
-	NeedToRender[1] = RENDER_NEED;
-	NeedToRender[0] = RENDER_NEED;
 }
 
 void Chunk::HideTile(Block *bBlock, char side)
@@ -111,9 +108,6 @@ void Chunk::HideTile(Block *bBlock, char side)
 
 	(*it)->bVisible &= ~(1 << side);
 	Tiles->erase(it);
-
-	NeedToRender[1] = RENDER_NEED;
-	NeedToRender[0] = RENDER_NEED;
 }
 
 char Chunk::GetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z)
@@ -240,8 +234,10 @@ void Chunk::FillSkyLight(char bright)
 	}
 }
 
-void Chunk::Render(GLenum mode, char mat, int *rendered)
+void Chunk::Render(char mat, int *rendered)
 {
+	GLenum mode = GL_EXECUTE;
+
 	if(!listgen)
 	{
 		// 1 - solid tiles
@@ -315,7 +311,7 @@ void Chunk::Render(GLenum mode, char mat, int *rendered)
 
 		glEndList();
 
-		if (NeedToRender[pointertorender] = RENDER_MAYBE)
+		if (NeedToRender[pointertorender] == RENDER_MAYBE)
 			(*rendered) ++;
 
 		NeedToRender[pointertorender] = RENDER_NO_NEED;

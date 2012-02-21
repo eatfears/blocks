@@ -131,6 +131,8 @@ void Engine::Display()
 		mod = GL_COMPILE;
 	}
 
+	stat.reRenderedChunks = 0;
+
 	render = 0;
 	for (int bin = 0; bin < HASH_SIZE; bin++)
 	{
@@ -149,7 +151,7 @@ void Engine::Display()
 #endif // _DEBUG
 				if (mod == GL_COMPILE)
 					(*chunk)->NeedToRender[0] = RENDER_MAYBE;
-				(*chunk)->Render(GL_EXECUTE, MAT_NO, &render);
+				(*chunk)->Render(MAT_NO, &render);
 				++chunk;
 
 #ifndef _DEBUG
@@ -162,6 +164,7 @@ void Engine::Display()
 		}
 	}
 
+	stat.reRenderedChunks += render;
 
 	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
@@ -181,7 +184,7 @@ void Engine::Display()
 				if (mod == GL_COMPILE)
 					(*chunk)->NeedToRender[1] = RENDER_MAYBE;
 
-				(*chunk)->Render(GL_EXECUTE, MAT_WATER, &render);
+				(*chunk)->Render(MAT_WATER, &render);
 				++chunk;
 
 #ifndef _DEBUG
@@ -196,6 +199,8 @@ void Engine::Display()
 
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_BLEND);
+
+	stat.reRenderedChunks += render;
 
 
 	if(player.dPositionY >= (CHUNK_SIZE_Y + 16)*BLOCK_SIZE)

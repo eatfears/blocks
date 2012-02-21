@@ -260,7 +260,6 @@ void Character::Control(GLdouble FrameInterval)
 		wWorld.FindBlock(sCenterBlockCoordX, sCenterBlockCoordY, sCenterBlockCoordZ, &chunk, &index);
 		if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT))
 		{
-			chunk->NeedToRender[0] = true;
 			chunk->bBlocks[index].bVisible ^= (1 << SNOWCOVERED);
 		}
 	}
@@ -271,7 +270,6 @@ void Character::Control(GLdouble FrameInterval)
 		wWorld.FindBlock(sCenterBlockCoordX, sCenterBlockCoordY, sCenterBlockCoordZ, &chunk, &index);
 		if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT))
 		{
-			chunk->NeedToRender[0] = true;
 			chunk->bBlocks[index].bVisible ^= (1 << GRASSCOVERED);
 		}
 	}

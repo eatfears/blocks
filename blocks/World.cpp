@@ -13,7 +13,7 @@ World::World()
 	parget = CreateEvent(NULL, false, false, NULL);
 	parget2 = CreateEvent(NULL, false, false, NULL);
 	mutex = CreateMutex(NULL, false, NULL);
-	semaphore = CreateSemaphore(NULL, 10, 10, NULL);
+	semaphore = CreateSemaphore(NULL, 5, 5, NULL);
 	SoftLight = true;
 
 	SkyBright = 1.0f;
@@ -525,4 +525,16 @@ void World::UpdateLight(Chunk& chunk)
 
 	Light lightfill(ChunkArray);
 	lightfill.UpdateLight();
+
+	for (int i = 0; i < 5; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			if(ChunkArray[i][j])
+			{
+				ChunkArray[i][j]->NeedToRender[0] = RENDER_MAYBE;
+				ChunkArray[i][j]->NeedToRender[1] = RENDER_MAYBE;
+			}
+		}
+	}
 }

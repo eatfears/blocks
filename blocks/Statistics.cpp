@@ -9,6 +9,7 @@ Statistics::Statistics(Engine& eng)
 {
 	TimeCount = 0;
 	FrameCount = 0;
+	reRenderedChunks = 0;
 }
 
 Statistics::~Statistics(void)
@@ -42,6 +43,9 @@ void Statistics::PrintStat(void)
 	RenderString(50, engine.height - 90, font, pos);
 	b_sprintf(pos, "Z: %0.10f\n", engine.player.dPositionZ/BLOCK_SIZE);
 	RenderString(50, engine.height - 110, font, pos);
+
+	b_sprintf(pos, "Rendered: %d\n", reRenderedChunks);
+	RenderString(50, engine.height - 130, font, pos);
 }
 
 void Statistics::RenderString(int x, int y, void *font, const char string[])

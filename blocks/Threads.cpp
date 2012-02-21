@@ -35,6 +35,7 @@ void LoadChunkThread(void* pParams)
 	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 
 	unsigned long bin = wWorld.Hash(x, z);
+
 	wWorld.Chunks[bin].push_front(chunk);
 	ReleaseMutex(wWorld.mutex);
 
@@ -46,10 +47,6 @@ void LoadChunkThread(void* pParams)
 		wWorld.UpdateLight(*chunk);
 		chunk->LightToUpdate = false;
 	}
-
-
-	chunk->NeedToRender[0] = RENDER_NEED;
-	chunk->NeedToRender[1] = RENDER_NEED;
 
 	// 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
 	// 	LocationPosiion lp = {x, z};

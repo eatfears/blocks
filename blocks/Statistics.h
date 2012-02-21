@@ -14,6 +14,8 @@ public:
 	void ComputeFPS( double FrameInterval );
 	void PrintStat(void);
 
+	int reRenderedChunks;
+
 private:
 	Engine& engine;
 	void RenderString(int x, int y, void *font, const char string[]);

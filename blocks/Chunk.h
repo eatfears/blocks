@@ -51,7 +51,7 @@ public:
 	void FillSkyLight(char bright);
 	bool LightToUpdate;
 
-	void Render(GLenum mode, char mat, int *rendered);
+	void Render(char mat, int *rendered);
 
 	HANDLE mutex;
 

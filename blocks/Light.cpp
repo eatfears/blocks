@@ -29,8 +29,8 @@ Light::Light(Chunk *ChnkArr[5][5])
 				if((i > 0)&&(i < 4)&&(j > 0)&&(j < 4))
 				{
 					ChunkArray[i][j]->FillSkyLight(DAYLIGHT);
-					ChunkArray[i][j]->NeedToRender[0] = true;
-					ChunkArray[i][j]->NeedToRender[1] = true;
+					//ChunkArray[i][j]->NeedToRender[0] = true;
+					//ChunkArray[i][j]->NeedToRender[1] = true;
 				}
 			}
 		}
