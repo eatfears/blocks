@@ -24,15 +24,8 @@ Light::Light(Chunk *ChnkArr[5][5])
 		{
 			ChunkArray[i][j] = ChnkArr[i][j];
 
-			if(ChunkArray[i][j])
-			{
-				if((i > 0)&&(i < 4)&&(j > 0)&&(j < 4))
-				{
-					ChunkArray[i][j]->FillSkyLight(DAYLIGHT);
-					//ChunkArray[i][j]->NeedToRender[0] = true;
-					//ChunkArray[i][j]->NeedToRender[1] = true;
-				}
-			}
+			if(ChunkArray[i][j] && (i > 0)&&(i < 4)&&(j > 0)&&(j < 4))
+				ChunkArray[i][j]->FillSkyLight(DAYLIGHT);
 		}
 	}
 }
@@ -43,98 +36,95 @@ Light::~Light(void)
 
 void Light::UpdateLight(void)
 {
-	BlockInChunk tempx, tempy, tempz;
-
-	for(int templight = DAYLIGHT; templight > 0; templight--)
+	
+	for (BlockInWorld i = CHUNK_SIZE_XZ - 1; i < 4*CHUNK_SIZE_XZ + 1; i++)
 	{
-		for (int i = 0; i < 5; i++)
+		for (BlockInWorld j = 0; j < CHUNK_SIZE_Y; j++)
 		{
-			for (int j = 0; j < 5; j++)
+			for (BlockInWorld k = CHUNK_SIZE_XZ - 1; k < 4*CHUNK_SIZE_XZ + 1; k++)
 			{
+				rec_diffuse(i, j, k, GetVal(i, j, k, NULL), true);
+			}
+		}
+	}
 
-				if(ChunkArray[i][j])
-				{
-					for (int index = 0; index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; index++)
-					{
-						if(ChunkArray[i][j]->SkyLight[index] == templight)
-						{
-							ChunkArray[i][j]->GetBlockPositionByIndex(index, &tempx, &tempy, &tempz);
-							if((i == 0)&&(tempx < CHUNK_SIZE_XZ - 1)) continue;
-							if((i == 4)&&(tempx > 0)) continue;
-							if((j == 0)&&(tempz < CHUNK_SIZE_XZ - 1)) continue;
-							if((j == 4)&&(tempz > 0)) continue;
+}
 
-							DiffuseLight(i, j, tempx, tempy, tempz, templight);
-						}
-					}
+void Light::rec_diffuse( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val, bool initial )
+{
+	int temp_val;
+	bool water_flag = false;
 
-				}
+	if((val > 0)&&(val <= DAYLIGHT))
+	{
+		if(	(i >= CHUNK_SIZE_XZ - 1)&&(j >= 0)&&(k >= CHUNK_SIZE_XZ - 1)&&
+			(i < 4*CHUNK_SIZE_XZ + 1)&&(j < CHUNK_SIZE_Y)&&(k < 4*CHUNK_SIZE_XZ + 1))
+		{
+			temp_val = GetVal(i, j, k, &water_flag);
+			if((temp_val <= val)&&initial || (temp_val < val))
+			{	
+				SetVal(i, j, k, val);
 
+				if(water_flag) val -= 3;
+				else val--;
+
+				rec_diffuse(i - 1, j, k, val, false);
+				rec_diffuse(i + 1, j, k, val, false);
+				rec_diffuse(i, j - 1, k, val, false);
+				rec_diffuse(i, j + 1, k, val, false);
+				rec_diffuse(i, j, k - 1, val, false);
+				rec_diffuse(i, j, k + 1, val, false);
 			}
 		}
 	}
 }
 
-void Light::DiffuseLight(int i, int j, BlockInChunk tempx, BlockInChunk tempy, BlockInChunk tempz, int templight)
+int Light::GetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, bool *water_flag )
 {
-	BlockInWorld tempWx, tempWy, tempWz;
+	BlockInChunk x, y, z;
+	ChunkInWorld cx, cz;
+	char ret = DAYLIGHT+1;
 
-	tempWx = tempx + 1;
-	tempWy = tempy;
-	tempWz = tempz;
-	FindFillChunk(i, j, tempWx, tempWy, tempWz, templight);
+	cx = i/CHUNK_SIZE_XZ;
+	cz = k/CHUNK_SIZE_XZ;
+	
+	x = i%CHUNK_SIZE_XZ;
+	y = j%CHUNK_SIZE_Y;
+	z = k%CHUNK_SIZE_XZ;
 
-	tempWx = tempx - 1;
-	tempWy = tempy;
-	tempWz = tempz;
-	FindFillChunk(i, j, tempWx, tempWy, tempWz, templight);
-
-	tempWx = tempx;
-	tempWy = tempy;
-	tempWz = tempz + 1;
-	FindFillChunk(i, j, tempWx, tempWy, tempWz, templight);
-
-	tempWx = tempx;
-	tempWy = tempy;
-	tempWz = tempz - 1;
-	FindFillChunk(i, j, tempWx, tempWy, tempWz, templight);
-
-	tempWx = tempx;
-	tempWy = tempy + 1;
-	tempWz = tempz;
-	FindFillChunk(i, j, tempWx, tempWy, tempWz, templight);
-
-	tempWx = tempx;
-	tempWy = tempy - 1;
-	tempWz = tempz;
-	FindFillChunk(i, j, tempWx, tempWy, tempWz, templight);
+	if(ChunkArray[cx][cz])
+	{
+		int index = ChunkArray[cx][cz]->GetIndexByPosition(x, y, z);
+		char mat = ChunkArray[cx][cz]->bBlocks[index].cMaterial;
+		
+		if((mat == MAT_NO)||(mat == MAT_WATER))
+			ret = ChunkArray[cx][cz]->SkyLight[index];
+		
+		if(water_flag)
+		{	
+			if(mat == MAT_WATER) *water_flag = true;
+		}
+	}
+	return ret;
 }
 
-void Light::FindFillChunk(int i, int j, BlockInWorld tempWx, BlockInWorld tempWy, BlockInWorld tempWz, int templight)
+void Light::SetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val )
 {
-	int tempindex;
-	Chunk *TempChunk;
-	int tempI = i, tempJ = j;
+	BlockInChunk x, y, z;
+	ChunkInWorld cx, cz;
 
-	if(tempWx >= CHUNK_SIZE_XZ) {tempI++; tempWx -= CHUNK_SIZE_XZ;}
-	if(tempWx < 0) {tempI--; tempWx += CHUNK_SIZE_XZ;}
-	if(tempWz >= CHUNK_SIZE_XZ) {tempJ++; tempWz -= CHUNK_SIZE_XZ;}
-	if(tempWz < 0) {tempJ--; tempWz += CHUNK_SIZE_XZ;}
+	cx = i/CHUNK_SIZE_XZ;
+	cz = k/CHUNK_SIZE_XZ;
 
-	if((tempI >= 1)&&(tempI < 4)&&(tempJ >= 1)&&(tempJ < 4)&&(tempWy > 0)&&(tempWy < CHUNK_SIZE_Y))
-		TempChunk = ChunkArray[tempI][tempJ];
-	else TempChunk = NULL;
-
-	if(TempChunk)
+	x = i%CHUNK_SIZE_XZ;
+	y = j%CHUNK_SIZE_Y;
+	z = k%CHUNK_SIZE_XZ;
+	
+	if(ChunkArray[cx][cz])
 	{
-		tempindex = TempChunk->GetIndexByPosition(tempWx, tempWy, tempWz);
-		if(TempChunk->bBlocks[tempindex].cMaterial == MAT_NO)
-			if(TempChunk->SkyLight[tempindex] < templight - 1)
-				TempChunk->SkyLight[tempindex] = templight - 1;
+		int index = ChunkArray[cx][cz]->GetIndexByPosition(x, y, z);
 
-		if(TempChunk->bBlocks[tempindex].cMaterial == MAT_WATER)
-			if(TempChunk->SkyLight[tempindex] < templight - 3)
-				TempChunk->SkyLight[tempindex] = templight - 3;
+		ChunkArray[cx][cz]->SkyLight[index] = val;
 	}
 }
 

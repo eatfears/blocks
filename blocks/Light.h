@@ -39,7 +39,8 @@ private:
 
 	Chunk *ChunkArray[5][5];
 
-	void DiffuseLight(int i, int j, BlockInChunk tempx, BlockInChunk tempy, BlockInChunk tempz, int templight);
-	void FindFillChunk(int i, int j, BlockInWorld tempWx, BlockInWorld tempWy, BlockInWorld tempWz, int templight);
+	void SetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val );
+	int GetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, bool *water_flag );
 	static float GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int xx[8], int yy[8], int zz[8], char side);
+	void rec_diffuse( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val, bool initial );
 };
