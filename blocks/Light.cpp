@@ -1,5 +1,8 @@
 #include "Light.h"
-
+/*
+#include "PlatformDefinitions.h"
+#include <fstream>
+*/
 #include "World.h"
 #include "Material.h"
 
@@ -36,7 +39,11 @@ Light::~Light(void)
 
 void Light::UpdateLight(void)
 {
-	
+	/*
+	unsigned int start = GetMillisecTime();
+	unsigned int dur;
+	*/
+
 	for (BlockInWorld i = CHUNK_SIZE_XZ - 1; i < 4*CHUNK_SIZE_XZ + 1; i++)
 	{
 		for (BlockInWorld j = 0; j < CHUNK_SIZE_Y; j++)
@@ -48,20 +55,30 @@ void Light::UpdateLight(void)
 		}
 	}
 
+
+	/*
+	dur = GetMillisecTime() - start;
+
+	std::fstream ds("out.txt", std::ios_base::out);
+
+	ds << dur << "\t";
+	ds << std::endl;
+	*/
 }
 
 void Light::rec_diffuse( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val, bool initial )
 {
-	int temp_val;
-	bool water_flag = false;
-
 	if((val > 0)&&(val <= DAYLIGHT))
 	{
+		int temp_val;
+		bool water_flag = false;
+
 		if(	(i >= CHUNK_SIZE_XZ - 1)&&(j >= 0)&&(k >= CHUNK_SIZE_XZ - 1)&&
 			(i < 4*CHUNK_SIZE_XZ + 1)&&(j < CHUNK_SIZE_Y)&&(k < 4*CHUNK_SIZE_XZ + 1))
 		{
 			temp_val = GetVal(i, j, k, &water_flag);
-			if((temp_val <= val)&&initial || (temp_val < val))
+		
+			if((temp_val < val) || (temp_val <= val)&&initial )
 			{	
 				SetVal(i, j, k, val);
 
@@ -82,23 +99,20 @@ void Light::rec_diffuse( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val
 int Light::GetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, bool *water_flag )
 {
 	BlockInChunk x, y, z;
-	ChunkInWorld cx, cz;
 	char ret = DAYLIGHT+1;
-
-	cx = i/CHUNK_SIZE_XZ;
-	cz = k/CHUNK_SIZE_XZ;
 	
 	x = i%CHUNK_SIZE_XZ;
 	y = j%CHUNK_SIZE_Y;
 	z = k%CHUNK_SIZE_XZ;
 
-	if(ChunkArray[cx][cz])
+	Chunk *TempChunk = ChunkArray[i/CHUNK_SIZE_XZ][k/CHUNK_SIZE_XZ];
+	if(TempChunk)
 	{
-		int index = ChunkArray[cx][cz]->GetIndexByPosition(x, y, z);
-		char mat = ChunkArray[cx][cz]->bBlocks[index].cMaterial;
+		int index = TempChunk->GetIndexByPosition(x, y, z);
+		char mat = TempChunk->bBlocks[index].cMaterial;
 		
 		if((mat == MAT_NO)||(mat == MAT_WATER))
-			ret = ChunkArray[cx][cz]->SkyLight[index];
+			ret = TempChunk->SkyLight[index];
 		
 		if(water_flag)
 		{	
@@ -111,20 +125,17 @@ int Light::GetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, bool *water_f
 void Light::SetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val )
 {
 	BlockInChunk x, y, z;
-	ChunkInWorld cx, cz;
-
-	cx = i/CHUNK_SIZE_XZ;
-	cz = k/CHUNK_SIZE_XZ;
 
 	x = i%CHUNK_SIZE_XZ;
 	y = j%CHUNK_SIZE_Y;
 	z = k%CHUNK_SIZE_XZ;
 	
-	if(ChunkArray[cx][cz])
+	Chunk *TempChunk = ChunkArray[i/CHUNK_SIZE_XZ][k/CHUNK_SIZE_XZ];
+	if(TempChunk)
 	{
-		int index = ChunkArray[cx][cz]->GetIndexByPosition(x, y, z);
+		int index = TempChunk->GetIndexByPosition(x, y, z);
 
-		ChunkArray[cx][cz]->SkyLight[index] = val;
+		TempChunk->SkyLight[index] = val;
 	}
 }
 
@@ -206,62 +217,74 @@ void Light::SoftLight(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorl
 	{
 		static GLfloat res = 0;
 
-		if (vertex == 0)
+		switch (vertex)
 		{
-			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+		case 0:
+			{
+				int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+				int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+				int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+			}
+			break;
+		case 1:
+			{
+				int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+				int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+				int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+			}
+			break;
+		case 2:
+			{
+				int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+				int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+				int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+			}
+			break;
+		case 3:
+			{
+				int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+				int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+				int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+			}
+			break;
+		case 4:
+			{
+				int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+				int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+				int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+			}
+			break;
+		case 5:
+			{
+				int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+				int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+				int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+			}
+			break;
+		case 6:
+			{
+				int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+				int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+				int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+			}
+			break;
+		case 7:
+			{
+				int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+				int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+				int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
+			}
+			break;
 		}
-		else if (vertex == 1)
-		{
-			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-		}
-		else if (vertex == 2)
-		{
-			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-		}
-		else if (vertex == 3)
-		{
-			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-			int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-		}
-		else if (vertex == 4)
-		{
-			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-		}
-		else if (vertex == 5)
-		{
-			int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-		}
-		else if (vertex == 6)
-		{
-			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-			int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-		}
-		else if (vertex == 7)
-		{
-			int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-			int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-			int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-			res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-		}
+		
 		if ((side == FRONT)||(side == BACK)) res *= 0.85f;
 		if ((side == RIGHT)||(side == LEFT)) res *= 0.90f;
 
