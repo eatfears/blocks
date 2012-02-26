@@ -211,28 +211,47 @@ void Chunk::Generate()
 	//wWorld.lLandscape.Load(pos);
 }
 
-void Chunk::FillSkyLight(char bright)
+void Chunk::FillLight( char bright, bool skylight )
 {
-	BlockInChunk y;
-	int index;
-
-	for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
-		SkyLight[i] = 0;
-
-	for(BlockInChunk x = 0; x < CHUNK_SIZE_XZ; x++)
+	if (skylight)
 	{
-		for(BlockInChunk z = 0; z < CHUNK_SIZE_XZ; z++)
-		{
-			y = CHUNK_SIZE_Y - 1;
-			while (y > 0)
-			{
-				index = GetIndexByPosition(x, y, z);
-				if(bBlocks[index].cMaterial != MAT_NO)
-					break;
+		BlockInChunk y;
+		int index;
 
-				SkyLight[index] = bright;
-				y--;
+		for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
+		{
+			SkyLight[i] = 0;
+			if(bBlocks[i].cMaterial == MAT_PUMPKIN_SHINE)
+				TorchLight[i] = 14;
+			else
+				TorchLight[i] = 0;
+		}
+
+		for(BlockInChunk x = 0; x < CHUNK_SIZE_XZ; x++)
+		{
+			for(BlockInChunk z = 0; z < CHUNK_SIZE_XZ; z++)
+			{
+				y = CHUNK_SIZE_Y - 1;
+				while (y > 0)
+				{
+					index = GetIndexByPosition(x, y, z);
+					if(bBlocks[index].cMaterial != MAT_NO)
+						break;
+
+					SkyLight[index] = bright;
+					y--;
+				}
 			}
+		}
+	} 
+	else
+	{
+		for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
+		{
+			if(bBlocks[i].cMaterial == MAT_PUMPKIN_SHINE)
+				TorchLight[i] = 14;
+			else
+				TorchLight[i] = 0;
 		}
 	}
 }

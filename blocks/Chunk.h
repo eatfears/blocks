@@ -49,7 +49,7 @@ public:
 	void DrawLoadedBlocks();
 
 	void Generate();
-	void FillSkyLight(char bright);
+	void FillLight(char bright, bool skylight);
 	bool LightToUpdate;
 
 	void Render(char mat, int *rendered);

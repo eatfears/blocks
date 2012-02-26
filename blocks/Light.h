@@ -42,7 +42,7 @@ private:
 	Chunk *ChunkArray[5][5];
 
 	void SetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val );
-	int GetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, bool *water_flag );
+	int GetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, bool *water_flag, bool *wall_flag  );
 	static float GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int xx[8], int yy[8], int zz[8], char side);
 	void rec_diffuse( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val, bool initial );
 };

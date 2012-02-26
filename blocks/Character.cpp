@@ -297,7 +297,7 @@ void Character::Control(GLdouble FrameInterval)
 			if(dPositionY > dDispCenterCoordY) iy = sCenterBlockCoordY + 1;
 		}
 
-		wWorld.AddBlock(ix, iy, iz, MAT_STONE, true);
+		wWorld.AddBlock(ix, iy, iz, MAT_PUMPKIN_SHINE, true);
 	}
 
 	dPositionX += FrameInterval*dVelocityX;

@@ -31,10 +31,7 @@ Light::Light(Chunk *ChnkArr[5][5], bool skylight)
 
 			if(ChunkArray[i][j] && (i > 0)&&(i < 4)&&(j > 0)&&(j < 4))
 			{
-				if(skylight)
-					ChunkArray[i][j]->FillSkyLight(DAYLIGHT);
-				for (int k = 0; k < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; k+= 261)
-					ChunkArray[i][j]->TorchLight[k] = 12;
+				ChunkArray[i][j]->FillLight(DAYLIGHT, skylight);
 			}
 		}
 	}
@@ -57,7 +54,7 @@ void Light::UpdateLight(void)
 		{
 			for (BlockInWorld k = CHUNK_SIZE_XZ - 1; k < 4*CHUNK_SIZE_XZ + 1; k++)
 			{
-				rec_diffuse(i, j, k, GetVal(i, j, k, NULL), true);
+				rec_diffuse(i, j, k, GetVal(i, j, k, NULL, NULL), true);
 			}
 		}
 	}
@@ -79,12 +76,14 @@ void Light::rec_diffuse( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val
 	{
 		int temp_val;
 		bool water_flag = false;
+		bool wall_flag = false;
 
 		if(	(i >= CHUNK_SIZE_XZ - 1)&&(j >= 0)&&(k >= CHUNK_SIZE_XZ - 1)&&
 			(i < 4*CHUNK_SIZE_XZ + 1)&&(j < CHUNK_SIZE_Y)&&(k < 4*CHUNK_SIZE_XZ + 1))
 		{
-			temp_val = GetVal(i, j, k, &water_flag);
+			temp_val = GetVal(i, j, k, &water_flag, &wall_flag);
 		
+			if(!wall_flag || initial)
 			if((temp_val < val) || (temp_val <= val)&&initial )
 			{	
 				SetVal(i, j, k, val);
@@ -103,10 +102,12 @@ void Light::rec_diffuse( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val
 	}
 }
 
-int Light::GetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, bool *water_flag )
+int Light::GetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, bool *water_flag, bool *wall_flag )
 {
 	BlockInChunk x, y, z;
-	char ret = DAYLIGHT+1;
+	char ret = 0;
+	if(wall_flag)
+		*wall_flag = true;
 	
 	x = i%CHUNK_SIZE_XZ;
 	y = j%CHUNK_SIZE_Y;
@@ -120,11 +121,14 @@ int Light::GetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, bool *water_f
 		
 		if((mat == MAT_NO)||(mat == MAT_WATER))
 		{
-			if(skylight)
-				ret = TempChunk->SkyLight[index];
-			else
-				ret = TempChunk->TorchLight[index];
+			if(wall_flag)
+				*wall_flag = false;
 		}
+		if(skylight)
+			ret = TempChunk->SkyLight[index];
+		else
+			ret = TempChunk->TorchLight[index];
+
 		if(water_flag)
 		{	
 			if(mat == MAT_WATER) *water_flag = true;
