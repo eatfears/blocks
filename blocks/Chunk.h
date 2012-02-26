@@ -26,6 +26,7 @@ public:
 
 	Block *bBlocks;
 	char *SkyLight;
+	char *TorchLight;
 	World& wWorld;
 	std::list<Block *> *DisplayedTiles;
 	std::list<Block *> *DisplayedWaterTiles;

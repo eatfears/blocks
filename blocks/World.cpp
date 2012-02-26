@@ -509,7 +509,9 @@ void World::UpdateLight(Chunk& chunk)
 		}
 	}
 
-	Light lightfill(ChunkArray);
+	Light lightfill(ChunkArray, true);
+	lightfill.UpdateLight();
+	lightfill.skylight = false;
 	lightfill.UpdateLight();
 
 	for (int i = 0; i < 5; i++)

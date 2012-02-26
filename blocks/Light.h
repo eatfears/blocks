@@ -24,7 +24,7 @@ class World;
 class Light
 {
 public:
-	Light(Chunk *ChnkArr[5][5]);
+	Light(Chunk *ChnkArr[5][5], bool skylight);
 	Light() {};
 	~Light(void);
 
@@ -33,7 +33,9 @@ public:
 	void UpdateLight(void);
 	static void BlockLight(World& wWorld, Chunk& chunk, int side, BlockInChunk cx, BlockInChunk cy, BlockInChunk cz);
 	static void SoftLight(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorld Z, char side, int vertex);
+	bool skylight;
 
+	static void GetLight(Chunk& chunk, int index, GLfloat& br);
 private:
 	static char InfluencingLight[6][4];
 

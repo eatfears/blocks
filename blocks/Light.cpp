@@ -19,8 +19,10 @@ float Light::LightTable[16] = {
 	0.512f, 0.640f, 0.800f, 1.000f
 };
 
-Light::Light(Chunk *ChnkArr[5][5])
+Light::Light(Chunk *ChnkArr[5][5], bool skylight)
 {
+	this->skylight = skylight;
+
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
@@ -28,7 +30,12 @@ Light::Light(Chunk *ChnkArr[5][5])
 			ChunkArray[i][j] = ChnkArr[i][j];
 
 			if(ChunkArray[i][j] && (i > 0)&&(i < 4)&&(j > 0)&&(j < 4))
-				ChunkArray[i][j]->FillSkyLight(DAYLIGHT);
+			{
+				if(skylight)
+					ChunkArray[i][j]->FillSkyLight(DAYLIGHT);
+				for (int k = 0; k < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; k+= 261)
+					ChunkArray[i][j]->TorchLight[k] = 12;
+			}
 		}
 	}
 }
@@ -112,8 +119,12 @@ int Light::GetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, bool *water_f
 		char mat = TempChunk->bBlocks[index].cMaterial;
 		
 		if((mat == MAT_NO)||(mat == MAT_WATER))
-			ret = TempChunk->SkyLight[index];
-		
+		{
+			if(skylight)
+				ret = TempChunk->SkyLight[index];
+			else
+				ret = TempChunk->TorchLight[index];
+		}
 		if(water_flag)
 		{	
 			if(mat == MAT_WATER) *water_flag = true;
@@ -135,7 +146,10 @@ void Light::SetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val )
 	{
 		int index = TempChunk->GetIndexByPosition(x, y, z);
 
-		TempChunk->SkyLight[index] = val;
+		if(skylight)
+			TempChunk->SkyLight[index] = val;
+		else
+			TempChunk->TorchLight[index] = val;
 	}
 }
 
@@ -198,15 +212,13 @@ void Light::BlockLight(World& wWorld, Chunk& chunk, int side, BlockInChunk cx, B
 		{
 			wWorld.GetPosInChunkByWorld(xlight, ylight, zlight, &xloclight, &yloclight, &zloclight);
 			int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
-			//wWorld.lLocations.begin()->GetIndexByPosition(sXcoord, sXcoord, sXcoord);
 
-			res = Light::LightTable[temploc->SkyLight[index]];
-		}else res = 1.0f;
+			Light::GetLight(*temploc, index, res);
+		}else res = (1.0 - wWorld.SkyBright);
+
 		if ((side == FRONT)||(side == BACK)) res *= 0.85f;
 		if ((side == RIGHT)||(side == LEFT)) res *= 0.90f;
 
-		//res = res - wWorld.SkyBright;
-		res = res * ( 1.0 - wWorld.SkyBright);
 		glColor3f(res, res, res);
 	}
 }
@@ -288,8 +300,6 @@ void Light::SoftLight(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorl
 		if ((side == FRONT)||(side == BACK)) res *= 0.85f;
 		if ((side == RIGHT)||(side == LEFT)) res *= 0.90f;
 
-		res = res * ( 1.0 - wWorld.SkyBright);
-		//res = res - wWorld.SkyBright;
 		glColor3f(res, res, res);
 	}
 }
@@ -313,7 +323,6 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, Blo
 		InflLight = Light::InfluencingLight[side][i];
 		temploc = wWorld.GetChunkByBlock(X + xx[InflLight], Z + zz[InflLight]);
 
-		//if((ylight >= CHUNK_SIZE_Y)||(ylight < 0)) temploc = NULL;
 		if (temploc)
 		{
 			wWorld.GetPosInChunkByWorld(X + xx[InflLight], Y + yy[InflLight], Z + zz[InflLight], &xloclight, &yloclight, &zloclight);
@@ -334,7 +343,7 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, Blo
 					DiagonalblockInfluate = true;
 			}
 
-			mat[i] = Light::LightTable[temploc->SkyLight[index]];
+			Light::GetLight(*temploc, index, mat[i]);
 
 			if((i == 3)&&(!DiagonalblockInfluate))
 				mat[i] = 0.0f;
@@ -352,4 +361,12 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, Blo
 		}
 	}
 	return res /= count;
+}
+
+void Light::GetLight( Chunk& chunk, int index, GLfloat& br )
+{
+	br = Light::LightTable[chunk.SkyLight[index]] * ( 1.0 - chunk.wWorld.SkyBright);
+
+	if(br < Light::LightTable[chunk.TorchLight[index]])
+		br = Light::LightTable[chunk.TorchLight[index]];
 }

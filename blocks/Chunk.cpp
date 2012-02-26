@@ -9,6 +9,7 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
 
 	bBlocks = new Block[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
 	SkyLight = new char[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
+	TorchLight = new char[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
 
 	DisplayedTiles = new std::list<Block *>[6];
 	DisplayedWaterTiles = new std::list<Block *>[6];
@@ -16,6 +17,7 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
 	for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
 	{
 		SkyLight[i] = 0;
+		TorchLight[i] = 0;
 		bBlocks[i].cMaterial = MAT_NO;
 		for(int side = 0; side < 6; side++)
 			bBlocks[i].bVisible &= ~(1 << side);
@@ -33,6 +35,7 @@ Chunk::~Chunk()
 {
 	delete[] bBlocks;
 	delete[] SkyLight;
+	delete[] TorchLight;
 
 	delete[] DisplayedTiles;
 	delete[] DisplayedWaterTiles;

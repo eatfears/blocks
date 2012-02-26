@@ -359,9 +359,8 @@ void Engine::DrawInterface()
 	//Underwater haze
 	if((player.UnderWater)&&(player.chunk))
 	{
-		GLfloat Brightness = Light::LightTable[player.chunk->SkyLight[player.index]];
-		Brightness = Brightness * ( 1.0 - wWorld.SkyBright);
-		//res = res - wWorld.SkyBright;
+		GLfloat Brightness;
+		Light::GetLight(*player.chunk, player.index, Brightness);
 
 		GLdouble TextureRotation = player.dSpinY/90;
 
