@@ -45,4 +45,5 @@ private:
 	int GetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, bool *water_flag, bool *wall_flag  );
 	static float GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int xx[8], int yy[8], int zz[8], char side);
 	void rec_diffuse( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val, bool initial );
+	void FillLight(Chunk& chunk, char bright, bool skylight);
 };

@@ -31,7 +31,7 @@ Light::Light(Chunk *ChnkArr[5][5], bool skylight)
 
 			if(ChunkArray[i][j] && (i > 0)&&(i < 4)&&(j > 0)&&(j < 4))
 			{
-				ChunkArray[i][j]->FillLight(DAYLIGHT, skylight);
+				FillLight(*ChunkArray[i][j], DAYLIGHT, skylight);
 			}
 		}
 	}
@@ -375,4 +375,49 @@ void Light::GetLight( Chunk& chunk, int index, GLfloat& br )
 	torch_light *= 1.0 + 0.03*((rand()%100)/100.0 - 0.5);
 
 	if(br < torch_light) br = torch_light;
+}
+
+void Light::FillLight( Chunk& chunk, char bright, bool skylight )
+{
+	if (skylight)
+	{
+		BlockInChunk y;
+		int index;
+
+		for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
+		{
+			chunk.SkyLight[i] = 0;
+			if(chunk.bBlocks[i].cMaterial == MAT_PUMPKIN_SHINE)
+				chunk.TorchLight[i] = 14;
+			else
+				chunk.TorchLight[i] = 0;
+		}
+
+		for(BlockInChunk x = 0; x < CHUNK_SIZE_XZ; x++)
+		{
+			for(BlockInChunk z = 0; z < CHUNK_SIZE_XZ; z++)
+			{
+				y = CHUNK_SIZE_Y - 1;
+				while (y > 0)
+				{
+					index = Chunk::GetIndexByPosition(x, y, z);
+					if(chunk.bBlocks[index].cMaterial != MAT_NO)
+						break;
+
+					chunk.SkyLight[index] = bright;
+					y--;
+				}
+			}
+		}
+	} 
+	else
+	{
+		for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
+		{
+			if(chunk.bBlocks[i].cMaterial == MAT_PUMPKIN_SHINE)
+				chunk.TorchLight[i] = 14;
+			else
+				chunk.TorchLight[i] = 0;
+		}
+	}
 }

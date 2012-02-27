@@ -44,12 +44,11 @@ public:
 
 	int GetBlockPositionByPointer(Block *bCurrentBlock, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z) const;
 	static int GetBlockPositionByIndex(int index, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z);
-	int GetIndexByPosition(BlockInChunk x, BlockInChunk y, BlockInChunk z);
+	static int GetIndexByPosition(BlockInChunk x, BlockInChunk y, BlockInChunk z);
 
 	void DrawLoadedBlocks();
 
 	void Generate();
-	void FillLight(char bright, bool skylight);
 	bool LightToUpdate;
 
 	void Render(char mat, int *rendered);

@@ -531,28 +531,6 @@ void Engine::DrawSunMoon()
 	glPushMatrix();
 
 	glLoadIdentity();
-	/*
-	glEnable(GL_LIGHTING);
-	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-
-	GLfloat material_diffuse[] = {10.0, 1.0, 1.0, 1.0};
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, material_diffuse);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, material_diffuse);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, material_diffuse);
-
-	glTranslated(0, 0, 0);
-	GLfloat light2_diffuse[] = {100.0f, 100.0f, 10.0f};
-	GLfloat light2_position[] = {0.0f, 0.0f, 0.0f, 1.0f};
-	glEnable(GL_LIGHT2);
-	glLightfv(GL_LIGHT2, GL_AMBIENT, light2_diffuse);
-	glLightfv(GL_LIGHT2, GL_DIFFUSE, light2_diffuse);
-	glLightfv(GL_LIGHT2, GL_SPECULAR, light2_diffuse);
-	glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
-	glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.0);
-	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.0);
-	glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0);
-	glTranslated(0, 0, 0);
-	*/
 
 	//Sun
 	GLdouble SunSize = 100*BLOCK_SIZE, sundist = FARCUT*0.8;
@@ -568,12 +546,6 @@ void Engine::DrawSunMoon()
 	glRotated(-TimeOfDay*360.0/2400.0 + 90.0, 1.0, 0.0, 0.0);
 
 	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[SUN]);
-
-// 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-// 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_ADD);
-// 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
-// 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
-//	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
 
 	glTranslated(0.0, 0.0, sundist);
 
@@ -607,8 +579,6 @@ void Engine::DrawSunMoon()
 
 	glPopMatrix();
 
-	//glDisable(GL_LIGHT2);
-	//glDisable(GL_LIGHTING);
 }
 
 void Engine::DrawBottomBorder()
