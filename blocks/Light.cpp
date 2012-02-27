@@ -372,7 +372,7 @@ void Light::GetLight( Chunk& chunk, int index, GLfloat& br )
 	br = Light::LightTable[chunk.SkyLight[index]] * ( 1.0 - chunk.wWorld.SkyBright);
 
 	GLfloat torch_light = Light::LightTable[chunk.TorchLight[index]];
-	torch_light *= 1.0 + 0.03*((rand()%100)/100.0 - 0.5);
+	torch_light *= chunk.wWorld.TorchBright;
 
 	if(br < torch_light) br = torch_light;
 }
@@ -388,7 +388,7 @@ void Light::FillLight( Chunk& chunk, char bright, bool skylight )
 		{
 			chunk.SkyLight[i] = 0;
 			if(chunk.bBlocks[i].cMaterial == MAT_PUMPKIN_SHINE)
-				chunk.TorchLight[i] = 14;
+				chunk.TorchLight[i] = 15;
 			else
 				chunk.TorchLight[i] = 0;
 		}
@@ -415,7 +415,7 @@ void Light::FillLight( Chunk& chunk, char bright, bool skylight )
 		for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
 		{
 			if(chunk.bBlocks[i].cMaterial == MAT_PUMPKIN_SHINE)
-				chunk.TorchLight[i] = 14;
+				chunk.TorchLight[i] = 15;
 			else
 				chunk.TorchLight[i] = 0;
 		}

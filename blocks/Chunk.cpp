@@ -242,10 +242,14 @@ void Chunk::Render(char mat, int *rendered)
 			mode = GL_COMPILE;
 	}
 
-	Character &player = wWorld.player;
-	if(	player.chunk->x >= x - 1 && player.chunk->z >= z - 1 &&
-		player.chunk->x <= x + 1 && player.chunk->z <= z + 1 ) 
-		mode = GL_RENDER;
+	Chunk *chunk = wWorld.player.chunk;
+	if(chunk)
+		if(	chunk->x >= x - 1 && chunk->z >= z - 1 &&
+			chunk->x <= x + 1 && chunk->z <= z + 1 ) 
+		{
+			NeedToRender[pointertorender] = RENDER_NEED;
+			mode = GL_RENDER;
+		}
 
 	if((mode == GL_COMPILE)||(mode == GL_COMPILE_AND_EXECUTE)||(mode == GL_RENDER))
 	{

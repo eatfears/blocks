@@ -51,6 +51,7 @@ public:
 	bool SoftLight;
 
 	GLfloat SkyBright;
+	GLfloat TorchBright;
 
 private:
 	void ShowTile(Chunk *chunk, int index, char side);

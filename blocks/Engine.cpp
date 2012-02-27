@@ -19,7 +19,7 @@ Engine::Engine()
 	width = 0;
 	height = 0;
 	FrameInterval = 0.0;
-	TimeOfDay = 100.0;
+	TimeOfDay = 500.0;
 }
 
 Engine::~Engine()
@@ -694,4 +694,6 @@ void Engine::GetFogColor()
 		wWorld.LightToRefresh = true;
 		prevBright = wWorld.SkyBright;
 	}
+
+	wWorld.TorchBright = 1.0 - 0.05*((rand()%100)/100.0 - 0.5);
 }
