@@ -371,6 +371,8 @@ void Light::GetLight( Chunk& chunk, int index, GLfloat& br )
 {
 	br = Light::LightTable[chunk.SkyLight[index]] * ( 1.0 - chunk.wWorld.SkyBright);
 
-	if(br < Light::LightTable[chunk.TorchLight[index]])
-		br = Light::LightTable[chunk.TorchLight[index]];
+	GLfloat torch_light = Light::LightTable[chunk.TorchLight[index]];
+	torch_light *= 1.0 + 0.03*((rand()%100)/100.0 - 0.5);
+
+	if(br < torch_light) br = torch_light;
 }

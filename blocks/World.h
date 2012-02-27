@@ -4,6 +4,7 @@
 #include "Chunk.h"
 #include "Material.h"
 #include "Landscape.h"
+#include "Character.h"
 
 typedef struct params
 {
@@ -21,6 +22,7 @@ public:
 	MaterialLibrary MaterialLib;
 	std::list<Chunk *> *Chunks;
 	Landscape lLandscape;
+	Character player;
 
 	void BuildWorld();
 	int FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z);

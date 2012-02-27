@@ -41,7 +41,6 @@ private:
 	void OpenGL3d();
 
 	World wWorld;
-	Character player;
 
 	double TimeOfDay;
 	void GetFogColor();

@@ -287,9 +287,15 @@ void Chunk::Render(char mat, int *rendered)
 			mode = GL_COMPILE;
 	}
 
-	if((mode == GL_COMPILE)||(mode == GL_COMPILE_AND_EXECUTE))
+	Character &player = wWorld.player;
+	if(	player.chunk->x >= x - 1 && player.chunk->z >= z - 1 &&
+		player.chunk->x <= x + 1 && player.chunk->z <= z + 1 ) 
+		mode = GL_RENDER;
+
+	if((mode == GL_COMPILE)||(mode == GL_COMPILE_AND_EXECUTE)||(mode == GL_RENDER))
 	{
-		glNewList(RenderList + pointertorender, mode);
+		if(mode != GL_RENDER)
+			glNewList(RenderList + pointertorender, mode);
 
 		std::list<Block *> *Tiles;
 		static BlockInChunk cx, cy, cz;
@@ -331,15 +337,18 @@ void Chunk::Render(char mat, int *rendered)
 		glEnd();
 		if (mat == MAT_WATER) glTranslated(0.0, BLOCK_SIZE*(0.95/8), 0.0);
 
-		glEndList();
-
 		if (NeedToRender[pointertorender] == RENDER_MAYBE)
 			(*rendered) ++;
 
-		NeedToRender[pointertorender] = RENDER_NO_NEED;
+		if(mode != GL_RENDER)
+		{
+			glEndList();
+
+			NeedToRender[pointertorender] = RENDER_NO_NEED;
+		}
 	}
 
-	if(mode != GL_COMPILE_AND_EXECUTE)
+	if((mode != GL_COMPILE_AND_EXECUTE)&&(mode != GL_RENDER))
 		glCallList(RenderList + pointertorender);
 }
 

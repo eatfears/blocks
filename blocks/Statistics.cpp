@@ -37,11 +37,12 @@ void Statistics::PrintStat(void)
 
 	RenderString(50, engine.height - 50, font, cFPS);
 
-	b_sprintf(pos, "X: %0.10f\n", engine.player.dPositionX/BLOCK_SIZE);
+	Character &player = engine.wWorld.player;
+	b_sprintf(pos, "X: %0.10f\n", player.dPositionX/BLOCK_SIZE);
 	RenderString(50, engine.height - 70, font, pos);
-	b_sprintf(pos, "Y: %0.10f\n", engine.player.dPositionY/BLOCK_SIZE);
+	b_sprintf(pos, "Y: %0.10f\n", player.dPositionY/BLOCK_SIZE);
 	RenderString(50, engine.height - 90, font, pos);
-	b_sprintf(pos, "Z: %0.10f\n", engine.player.dPositionZ/BLOCK_SIZE);
+	b_sprintf(pos, "Z: %0.10f\n", player.dPositionZ/BLOCK_SIZE);
 	RenderString(50, engine.height - 110, font, pos);
 
 	b_sprintf(pos, "Rendered: %d\n", reRenderedChunks);

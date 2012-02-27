@@ -7,6 +7,7 @@
 #include <math.h>
 
 World::World()
+	:player(*this)
 {
 	Chunks = new std::list<Chunk *>[HASH_SIZE];
 

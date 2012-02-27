@@ -11,7 +11,7 @@ GLfloat NightFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
 GLfloat WaterFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
 
 Engine::Engine()
-	:player(wWorld), stat(*this)
+	:stat(*this)
 {
 	bMousing = false;
 	fullscreen = false;
@@ -31,8 +31,8 @@ int Engine::InitGL()
 	wWorld.MaterialLib.AllocGLTextures();
 	wWorld.MaterialLib.LoadGLTextures();
 
-	player.dPositionY = 100*BLOCK_SIZE+00.0;
-	player.dSpinY = -90 - 45;
+	wWorld.player.dPositionY = 100*BLOCK_SIZE+00.0;
+	wWorld.player.dSpinY = -90 - 45;
 	glutSetCursor(GLUT_CURSOR_NONE);							//Выставляем на НЕТ КУРСОР
 
 
@@ -73,6 +73,7 @@ void Engine::Display()
 	glLoadIdentity();											// Сбросить текущую матрицу
 	OpenGL3d();
 
+	Character &player = wWorld.player;
 	if(player.UnderWater)
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	else
@@ -228,7 +229,7 @@ void Engine::Keyboard(unsigned char button, int x, int y, bool KeyDown)
 #ifdef _WIN32
 		button = VkKeyScan(button);
 #endif
-		player.bKeyboard[button] = KeyDown;
+		wWorld.player.bKeyboard[button] = KeyDown;
 		break;
 	}
 }
@@ -237,6 +238,7 @@ void Engine::MouseMotion(int x, int y)
 {
 	if(bMousing)
 	{
+		Character &player = wWorld.player;
 		bMousing = false;
 
 		player.dSpinY -= (x - width/2)/MOUSE_SENSIVITY;
@@ -286,6 +288,7 @@ void Engine::InitGame()
 
 void Engine::DrawSelectedItem()
 {
+	Character &player = wWorld.player;
 	if(!wWorld.FindBlock(player.sCenterBlockCoordX,player.sCenterBlockCoordY,player.sCenterBlockCoordZ))
 		return;
 	if((player.sCenterBlockCoordY >= CHUNK_SIZE_Y)||(player.sCenterBlockCoordY < 0))
@@ -346,6 +349,7 @@ void Engine::DrawSelectedItem()
 
 void Engine::DrawInterface()
 {
+	Character &player = wWorld.player;
 	//glPushMatrix();
 	//glPopMatrix();
 	int WidthBy2  = width/2;
@@ -431,6 +435,7 @@ void Engine::DrawInterface()
 
 void Engine::Loop()
 {
+	Character &player = wWorld.player;
 	GetFogColor();
 	player.GetMyPosition();
 	Display();
@@ -488,7 +493,7 @@ void Engine::Special(int button, int x, int y, bool KeyDown)
 //	case GLUT_KEY_F2: 	glutLeaveGameMode();
 //		break;
 	default:
-		player.bSpecial[button] = KeyDown;
+		wWorld.player.bSpecial[button] = KeyDown;
 	}
 }
 
@@ -506,7 +511,7 @@ void Engine::OpenGL2d()
 void Engine::OpenGL3d()
 {
 	float fovy;
-	if (player.UnderWater)
+	if (wWorld.player.UnderWater)
 		fovy = 60.0f;
 	else
 		fovy = 70.0f;
@@ -522,6 +527,7 @@ void Engine::OpenGL3d()
 
 void Engine::DrawSunMoon()
 {
+	Character &player = wWorld.player;
 	glPushMatrix();
 
 	glLoadIdentity();
@@ -607,6 +613,7 @@ void Engine::DrawSunMoon()
 
 void Engine::DrawBottomBorder()
 {
+	Character &player = wWorld.player;
 	GLdouble BottomBorderSize = FARCUT;
 	GLfloat res;
 
@@ -638,6 +645,7 @@ void Engine::DrawBottomBorder()
 
 void Engine::DrawClouds()
 {
+	Character &player = wWorld.player;
 	GLdouble CloudSize = FARCUT*2;///4;
 	GLfloat res;
 
