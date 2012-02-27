@@ -311,6 +311,7 @@ void Light::SoftLight(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorl
 float Light::GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int xx[8], int yy[8], int zz[8], char side)
 {
 	GLfloat mat[4] = {0, 0, 0, 0};
+	Chunk *center;
 	Chunk *temploc;
 	float res = 0;
 	int InflLight;
@@ -322,10 +323,14 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, Blo
 
 	bool DiagonalblockInfluate = true;
 
+	center = wWorld.GetChunkByBlock(X, Z);
+
 	for(int i = 0; i < 4; i++)
 	{
 		InflLight = Light::InfluencingLight[side][i];
-		temploc = wWorld.GetChunkByBlock(X + xx[InflLight], Z + zz[InflLight]);
+		if(((X + xx[InflLight])/CHUNK_SIZE_XZ != X/CHUNK_SIZE_XZ)||((Z + zz[InflLight])/CHUNK_SIZE_XZ != Z/CHUNK_SIZE_XZ))
+			temploc = wWorld.GetChunkByBlock(X + xx[InflLight], Z + zz[InflLight]);
+		else temploc = center;
 
 		if (temploc)
 		{
