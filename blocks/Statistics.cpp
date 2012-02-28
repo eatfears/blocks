@@ -47,6 +47,11 @@ void Statistics::PrintStat(void)
 
 	b_sprintf(pos, "Rendered: %d\n", reRenderedChunks);
 	RenderString(50, engine.height - 130, font, pos);
+	int h = ((int)engine.TimeOfDay)/100;
+	int m = ((int)(engine.TimeOfDay*0.6))%60;
+	int s = ((int)(engine.TimeOfDay*36.0))%60;
+	b_sprintf(pos, "Time: %d:%.2d:%.2d\n", h, m, s);
+	RenderString(50, engine.height - 150, font, pos);
 }
 
 void Statistics::RenderString(int x, int y, void *font, const char string[])
