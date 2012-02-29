@@ -119,34 +119,38 @@ void Landscape::Generate(Chunk &chunk)
 	}
 }
 
-void Landscape::Load(ChunkPosition chpos)
+void Landscape::Load(Chunk &chunk)
 {
 	std::fstream filestr;
 
-	filestr.open ("test", std::fstream::in | std::fstream::binary);
+	std::stringstream temp;
+	std::string filename;
 
+	temp << "world\\" << chunk.x << "_" << chunk.z << ".map";
+	filename = temp.str();
+
+	filestr.open (filename, std::fstream::out | std::fstream::binary);
 
 	if(filestr.is_open())
 	{
-		/*int index = 0;
-		TileInLoc chunkx, locy, chunkz;
+	//	for(;;);
+	/*	int index = 0;
+		BlockInChunk chunkx, chunky, chunkz;
 		char mat;
 
-		while(index < LOCATION_SIZE_XZ*LOCATION_SIZE_XZ*LOCATION_SIZE_Y)
+		while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
 		{
 			filestr >> mat;
 			if (filestr.eof()) break;
 
-			chunk->GetTilePositionByIndex(index, &chunkx, &locy, &chunkz);
-			chunk->AddTile(chunkx, locy, chunkz, mat);
+			chunk.GetBlockPositionByIndex(index, &chunkx, &chunky, &chunkz);
+			chunk.AddBlock(chunkx, chunky, chunkz, mat);
 
 	//		if(rand()%500) filestr << (char) (rand()%4 + 1); else filestr << (char) 0;
 			index++;
 		}*/
-
 		filestr.close();
 	}
-
 }
 
 void Landscape::Fill(Chunk& chunk, char mat, double fillness, int height)

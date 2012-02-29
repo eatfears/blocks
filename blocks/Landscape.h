@@ -16,7 +16,7 @@ public:
 	void Init(unsigned int seed);
 
 	void Generate(Chunk &chunk);
-	void Load(ChunkPosition chpos);
+	void Load(Chunk &chunk);
 	void Fill(Chunk& chunk, char mat, double fillness, int height);
 
 	int horizon;
