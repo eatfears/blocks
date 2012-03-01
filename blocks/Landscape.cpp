@@ -33,6 +33,27 @@ Landscape::~Landscape()
 
 void Landscape::Init(unsigned int seed)
 {
+	CreateDirectory("save//", NULL);
+
+	std::fstream savefile;
+
+	savefile.open ("save//conf.wld", std::fstream::in | std::fstream::binary);
+	if(savefile.is_open())
+	{
+		savefile.read((char*)&seed, sizeof(seed));
+		savefile.close();
+	}
+	else
+	{
+		savefile.open ("save//conf.wld", std::fstream::out | std::fstream::binary);
+
+		if(savefile.is_open())
+		{
+			savefile.write((char*)&seed, sizeof(seed));
+			savefile.close();
+		}
+	}
+
 	generator->seed(seed);
 
 	pnBubbles.InitNoise(generator);
@@ -54,7 +75,6 @@ void Landscape::Generate(Chunk &chunk)
 	double details;
 	double temp;
 	double temp2 = 0;
-	double temp3;
 
 	double dens[CHUNK_SIZE_XZ][CHUNK_SIZE_Y][CHUNK_SIZE_XZ];
 	for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++)
@@ -119,37 +139,42 @@ void Landscape::Generate(Chunk &chunk)
 	}
 }
 
-void Landscape::Load(Chunk &chunk)
+bool Landscape::Load(Chunk& chunk, std::fstream& savefile)
 {
-	std::fstream filestr;
+	int index = 0;
+	char mat;
 
-	std::stringstream temp;
-	std::string filename;
-
-	temp << "world\\" << chunk.x << "_" << chunk.z << ".map";
-	filename = temp.str();
-
-	filestr.open (filename, std::fstream::out | std::fstream::binary);
-
-	if(filestr.is_open())
+	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
 	{
-	//	for(;;);
-	/*	int index = 0;
-		BlockInChunk chunkx, chunky, chunkz;
-		char mat;
+		savefile.read((char*)&mat, sizeof(mat));
+		if (savefile.eof()) return false;
+		chunk.bBlocks[index].cMaterial = mat;
 
-		while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
-		{
-			filestr >> mat;
-			if (filestr.eof()) break;
+		savefile.read((char*)&mat, sizeof(mat));
+		if (savefile.eof()) return false;
+		chunk.bBlocks[index].bVisible = mat;
 
-			chunk.GetBlockPositionByIndex(index, &chunkx, &chunky, &chunkz);
-			chunk.AddBlock(chunkx, chunky, chunkz, mat);
+		index++;
+	}
+	chunk.LightToUpdate = true;
 
-	//		if(rand()%500) filestr << (char) (rand()%4 + 1); else filestr << (char) 0;
-			index++;
-		}*/
-		filestr.close();
+	return true;
+}
+
+void Landscape::Save(Chunk& chunk, std::fstream& savefile)
+{
+	int index = 0;
+	char mat;
+
+	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
+	{
+		mat = chunk.bBlocks[index].cMaterial;
+		savefile.write((char*)&mat, sizeof(mat));
+
+		mat = chunk.bBlocks[index].bVisible & ((1 << SNOWCOVERED) | (1 << GRASSCOVERED));
+		savefile.write((char*)&mat, sizeof(mat));
+
+		index++;
 	}
 }
 

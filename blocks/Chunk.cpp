@@ -1,4 +1,5 @@
 #include "Chunk.h"
+#include <fstream>
 #include "World.h"
 #include "Light.h"
 
@@ -29,6 +30,7 @@ Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
 	LightToUpdate = true;
 
 	mutex = CreateMutex(NULL, false, NULL);
+	loadmutex = CreateMutex(NULL, false, NULL);
 }
 
 Chunk::~Chunk()
@@ -202,13 +204,42 @@ void Chunk::DrawLoadedBlocks()
 	}
 }
 
-void Chunk::Generate()
+void Chunk::Open()
 {
-	//wWorld.lLandscape.Generate(*this);
-	//wWorld.lLandscape.Fill(*this, 0, 0.999, 64);
-	//wWorld.lLandscape.Fill(*this, MAT_DIRT, 1, 64);
-	//ChunkPosition pos = {x, z};
-	wWorld.lLandscape.Load(*this);
+	bool loaded = false;
+	std::fstream savefile;
+
+	std::stringstream temp;
+	std::string filename;
+
+	temp << "save//" << x << "_" << z << ".mp";
+	filename = temp.str();
+	
+	savefile.open (filename, std::fstream::in | std::fstream::binary);
+	if(savefile.is_open())
+	{
+		WaitForSingleObject(loadmutex, INFINITE);
+
+		loaded = wWorld.lLandscape.Load(*this, savefile);
+
+		ReleaseMutex(loadmutex);
+
+		savefile.close();
+	}
+	
+	if(!loaded)
+	{
+		wWorld.lLandscape.Generate(*this);
+		//wWorld.lLandscape.Fill(*this, 0, 0.999, 64);
+		//wWorld.lLandscape.Fill(*this, MAT_DIRT, 1, 64);
+
+		savefile.open (filename, std::fstream::out | std::fstream::binary);
+		if(savefile.is_open())
+		{	
+			wWorld.lLandscape.Save(*this, savefile);
+			savefile.close();
+		}
+	}
 }
 
 void Chunk::Render(char mat, int *rendered)

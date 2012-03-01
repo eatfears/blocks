@@ -19,7 +19,7 @@ Engine::Engine()
 	width = 0;
 	height = 0;
 	FrameInterval = 0.0;
-	TimeOfDay = 500.0;
+	TimeOfDay = 000.0;
 }
 
 Engine::~Engine()

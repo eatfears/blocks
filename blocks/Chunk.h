@@ -48,12 +48,13 @@ public:
 
 	void DrawLoadedBlocks();
 
-	void Generate();
+	void Open();
 	bool LightToUpdate;
 
 	void Render(char mat, int *rendered);
 
 	HANDLE mutex;
+	HANDLE loadmutex;
 
 private:
 	int SetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z, char cMat);

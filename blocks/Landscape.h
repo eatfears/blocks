@@ -16,7 +16,8 @@ public:
 	void Init(unsigned int seed);
 
 	void Generate(Chunk &chunk);
-	void Load(Chunk &chunk);
+	bool Load(Chunk& chunk, std::fstream& savefile);
+	void Save(Chunk& chunk, std::fstream& savefile);
 	void Fill(Chunk& chunk, char mat, double fillness, int height);
 
 	int horizon;

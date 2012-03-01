@@ -28,7 +28,7 @@ void LoadChunkThread(void* pParams)
 
 	Chunk *chunk = new Chunk(x, z, wWorld);
 
-	chunk->Generate();
+	chunk->Open();
 
 	chunk->DrawLoadedBlocks();
 
