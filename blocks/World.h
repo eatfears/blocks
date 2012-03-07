@@ -53,6 +53,8 @@ public:
 	GLfloat SkyBright;
 	GLfloat TorchBright;
 
+	void SaveChunks();
+
 private:
 	void ShowTile(Chunk *chunk, int index, char side);
 	void HideTile(Chunk *chunk, int index, char side);

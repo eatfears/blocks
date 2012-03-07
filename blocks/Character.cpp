@@ -299,6 +299,10 @@ void Character::Control(GLdouble FrameInterval)
 
 		wWorld.AddBlock(ix, iy, iz, MAT_PUMPKIN_SHINE, true);
 	}
+	if(bKeyboard['O'])
+	{
+		wWorld.SaveChunks();
+	}
 
 	dPositionX += FrameInterval*dVelocityX;
 	dPositionZ += FrameInterval*dVelocityZ;

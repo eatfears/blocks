@@ -232,13 +232,24 @@ void Chunk::Open()
 		wWorld.lLandscape.Generate(*this);
 		//wWorld.lLandscape.Fill(*this, 0, 0.999, 64);
 		//wWorld.lLandscape.Fill(*this, MAT_DIRT, 1, 64);
+	}
+}
 
-		savefile.open (filename, std::fstream::out | std::fstream::binary);
-		if(savefile.is_open())
-		{	
-			wWorld.lLandscape.Save(*this, savefile);
-			savefile.close();
-		}
+void Chunk::Save()
+{
+	std::fstream savefile;
+
+	std::stringstream temp;
+	std::string filename;
+
+	temp << "save//" << x << "_" << z << ".mp";
+	filename = temp.str();
+
+	savefile.open (filename, std::fstream::out | std::fstream::binary);
+	if(savefile.is_open())
+	{	
+		wWorld.lLandscape.Save(*this, savefile);
+		savefile.close();
 	}
 }
 

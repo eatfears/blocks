@@ -529,3 +529,17 @@ void World::UpdateLight(Chunk& chunk)
 		}
 	}
 }
+
+void World::SaveChunks()
+{
+	for(int i = 0; i < HASH_SIZE; i++)
+	{
+		auto chunk = Chunks[i].begin();
+
+		while(chunk != Chunks[i].end())
+		{
+			(*chunk)->Save();
+			++chunk;
+		}
+	}
+}

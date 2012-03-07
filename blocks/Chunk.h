@@ -49,6 +49,7 @@ public:
 	void DrawLoadedBlocks();
 
 	void Open();
+	void Save();
 	bool LightToUpdate;
 
 	void Render(char mat, int *rendered);

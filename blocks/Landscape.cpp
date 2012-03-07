@@ -1,6 +1,7 @@
 #include "Landscape.h"
 #include <fstream>
 #include "World.h"
+#include "zlib.h"
 
 Landscape::Landscape()
 {
@@ -142,21 +143,37 @@ void Landscape::Generate(Chunk &chunk)
 bool Landscape::Load(Chunk& chunk, std::fstream& savefile)
 {
 	int index = 0;
-	char mat;
+	int res;
+	Bytef *buf;
+	Bytef *bufcompress;
+	uLongf destlen = CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2;
+	uLongf comptlen;
+
+	buf = new Bytef[destlen];
+	bufcompress = new Bytef[compressBound(destlen)];
+
+	savefile.seekg(0, std::ios::end);
+	comptlen = savefile.tellg();
+	savefile.seekg(0);
+
+	savefile.read((char*)bufcompress, comptlen);
+
+	res = uncompress(buf, &destlen, bufcompress, comptlen);
+
+	if((destlen != CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2)||(res != Z_OK))
+		return false;
 
 	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
 	{
-		savefile.read((char*)&mat, sizeof(mat));
-		if (savefile.eof()) return false;
-		chunk.bBlocks[index].cMaterial = mat;
-
-		savefile.read((char*)&mat, sizeof(mat));
-		if (savefile.eof()) return false;
-		chunk.bBlocks[index].bVisible = mat;
+		chunk.bBlocks[index].cMaterial = buf[index];
+		chunk.bBlocks[index].bVisible = buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
 
 		index++;
 	}
 	chunk.LightToUpdate = true;
+
+	delete buf;
+	delete bufcompress;
 
 	return true;
 }
@@ -164,18 +181,25 @@ bool Landscape::Load(Chunk& chunk, std::fstream& savefile)
 void Landscape::Save(Chunk& chunk, std::fstream& savefile)
 {
 	int index = 0;
-	char mat;
+	Bytef *buf;
+	Bytef *bufcompress;
+	uLongf destlen;
+	
+	buf = new Bytef[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2];
+	bufcompress = new Bytef[compressBound(CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2)];
 
 	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
 	{
-		mat = chunk.bBlocks[index].cMaterial;
-		savefile.write((char*)&mat, sizeof(mat));
-
-		mat = chunk.bBlocks[index].bVisible & ((1 << SNOWCOVERED) | (1 << GRASSCOVERED));
-		savefile.write((char*)&mat, sizeof(mat));
-
+		buf[index] = chunk.bBlocks[index].cMaterial;
+		buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y] = chunk.bBlocks[index].bVisible & ((1 << SNOWCOVERED) | (1 << GRASSCOVERED));
 		index++;
 	}
+	compress(bufcompress, &destlen, buf, CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2);
+
+	savefile.write((char*)bufcompress, destlen);
+
+	delete buf;
+	delete bufcompress;
 }
 
 void Landscape::Fill(Chunk& chunk, char mat, double fillness, int height)
