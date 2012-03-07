@@ -146,27 +146,28 @@ bool Landscape::Load(Chunk& chunk, std::fstream& savefile)
 	int res;
 	Bytef *buf;
 	Bytef *bufcompress;
-	uLongf destlen = CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2;
-	uLongf comptlen;
+	uLongf uncompsize = CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2;
+	uLongf compsize;
+	Block *blocks = chunk.bBlocks;
 
-	buf = new Bytef[destlen];
-	bufcompress = new Bytef[compressBound(destlen)];
+	buf = new Bytef[uncompsize];
+	bufcompress = new Bytef[compressBound(uncompsize)];
 
 	savefile.seekg(0, std::ios::end);
-	comptlen = savefile.tellg();
+	compsize = savefile.tellg();
 	savefile.seekg(0);
 
-	savefile.read((char*)bufcompress, comptlen);
+	savefile.read((char*)bufcompress, compsize);
 
-	res = uncompress(buf, &destlen, bufcompress, comptlen);
+	res = uncompress(buf, &uncompsize, bufcompress, compsize);
 
-	if((destlen != CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2)||(res != Z_OK))
+	if((uncompsize != CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2)||(res != Z_OK))
 		return false;
 
 	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
 	{
-		chunk.bBlocks[index].cMaterial = buf[index];
-		chunk.bBlocks[index].bVisible = buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
+		blocks[index].cMaterial = buf[index];
+		blocks[index].bVisible = buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
 
 		index++;
 	}
@@ -183,20 +184,22 @@ void Landscape::Save(Chunk& chunk, std::fstream& savefile)
 	int index = 0;
 	Bytef *buf;
 	Bytef *bufcompress;
-	uLongf destlen;
-	
-	buf = new Bytef[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2];
-	bufcompress = new Bytef[compressBound(CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2)];
+	uLongf uncompsize = CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2;
+	uLongf compsize;
+	Block *blocks = chunk.bBlocks;
+
+	buf = new Bytef[uncompsize];
+	bufcompress = new Bytef[compressBound(uncompsize)];
 
 	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
 	{
-		buf[index] = chunk.bBlocks[index].cMaterial;
-		buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y] = chunk.bBlocks[index].bVisible & ((1 << SNOWCOVERED) | (1 << GRASSCOVERED));
+		buf[index] = blocks[index].cMaterial;
+		buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y] = blocks[index].bVisible & ((1 << SNOWCOVERED) | (1 << GRASSCOVERED));
 		index++;
 	}
-	compress(bufcompress, &destlen, buf, CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2);
+	compress(bufcompress, &compsize, buf, uncompsize);
 
-	savefile.write((char*)bufcompress, destlen);
+	savefile.write((char*)bufcompress, compsize);
 
 	delete buf;
 	delete bufcompress;

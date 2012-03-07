@@ -28,6 +28,8 @@ Character::Character(World& ww)
 	sCenterBlockCoordX = 0;
 	sCenterBlockCoordY = 0;
 	sCenterBlockCoordZ = 0;
+	LocalTimeOfDay = 0;
+	Longitude = 0;
 
 	UnderWater = false;
 }
@@ -394,8 +396,15 @@ void Character::GetCenterCoords(GLsizei width, GLsizei height)
 	glReadPixels(width/2, height/2, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &vz);
 	gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, &dDispCenterCoordX, &dDispCenterCoordY, &dDispCenterCoordZ);
 
-// 	dDispCenterCoordX -= lnwPositionX*LOCATION_SIZE_XZ*TILE_SIZE;
-// 	dDispCenterCoordZ -= lnwPositionZ*LOCATION_SIZE_XZ*TILE_SIZE;
+	// 	dDispCenterCoordX -= lnwPositionX*LOCATION_SIZE_XZ*TILE_SIZE;
+	// 	dDispCenterCoordZ -= lnwPositionZ*LOCATION_SIZE_XZ*TILE_SIZE;
+}
+
+void Character::GetLocalTime(double TimeOfDay)
+{
+	LocalTimeOfDay = TimeOfDay + Longitude*2400.0;
+	while (LocalTimeOfDay >= 2400.0) LocalTimeOfDay -= 2400.0;
+	while (LocalTimeOfDay < 0.0) LocalTimeOfDay += 2400.0;
 }
 
 void Character::GetMyPosition()
@@ -410,4 +419,6 @@ void Character::GetMyPosition()
 		UnderWater = true;
 	else
 		UnderWater = false;
+
+	Longitude = dPositionZ/(BLOCK_SIZE*CHUNK_SIZE_XZ*160);
 }

@@ -26,7 +26,8 @@ void Statistics::PrintStat(void)
 {
 	static char cFPS[20] = "";
 	static char pos[40] = "";
-	void *font = GLUT_BITMAP_HELVETICA_12;
+	static void *font = GLUT_BITMAP_HELVETICA_12;
+	static int h, m, s;
 
 	if (TimeCount > 100)
 	{
@@ -47,11 +48,18 @@ void Statistics::PrintStat(void)
 
 	b_sprintf(pos, "Rendered: %d\n", reRenderedChunks);
 	RenderString(50, engine.height - 130, font, pos);
-	int h = ((int)engine.TimeOfDay)/100;
-	int m = ((int)(engine.TimeOfDay*0.6))%60;
-	int s = ((int)(engine.TimeOfDay*36.0))%60;
+
+	h = ((int)engine.TimeOfDay)/100;
+	m = ((int)(engine.TimeOfDay*0.6))%60;
+	s = ((int)(engine.TimeOfDay*36.0))%60;
 	b_sprintf(pos, "Time: %d:%.2d:%.2d\n", h, m, s);
 	RenderString(50, engine.height - 150, font, pos);
+
+	h = ((int)engine.wWorld.player.LocalTimeOfDay)/100;
+	m = ((int)(engine.wWorld.player.LocalTimeOfDay*0.6))%60;
+	s = ((int)(engine.wWorld.player.LocalTimeOfDay*36.0))%60;
+	b_sprintf(pos, "Local time: %d:%.2d:%.2d\n", h, m, s);
+	RenderString(50, engine.height - 170, font, pos);
 }
 
 void Statistics::RenderString(int x, int y, void *font, const char string[])

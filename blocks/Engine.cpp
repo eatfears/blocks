@@ -439,6 +439,7 @@ void Engine::Loop()
 	GetFogColor();
 	player.GetMyPosition();
 	Display();
+	player.GetLocalTime(TimeOfDay);
 	player.GetCenterCoords(width, height);
 
 	player.Control(FrameInterval);
@@ -543,7 +544,7 @@ void Engine::DrawSunMoon()
 											// —бросить текущую матрицу
 	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
 	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
-	glRotated(-TimeOfDay*360.0/2400.0 + 90.0, 1.0, 0.0, 0.0);
+	glRotated(-player.LocalTimeOfDay*360.0/2400.0 + 90.0, 1.0, 0.0, 0.0);
 
 	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[SUN]);
 
@@ -660,14 +661,15 @@ void Engine::GetFogColor()
 	static double Dawn = 100.0;
 	static float NightBright = 0.93f;
 	static float DayBright = 0.00f;
+	double LocalTimeOfDay = wWorld.player.LocalTimeOfDay;
 
-	if ((TimeOfDay > 600.0 + Dawn)&&(TimeOfDay < 1800.0 - Dawn))
+	if ((LocalTimeOfDay > 600.0 + Dawn)&&(LocalTimeOfDay < 1800.0 - Dawn))
 	{
 		for(int i = 0; i < 4; i++)
 			FogColor[i] = DayFogColor[i];
 		wWorld.SkyBright = DayBright;
 	}
-	else if ((TimeOfDay < 600.0 - Dawn)||(TimeOfDay > 1800.0 + Dawn))
+	else if ((LocalTimeOfDay < 600.0 - Dawn)||(LocalTimeOfDay > 1800.0 + Dawn))
 	{
 		for(int i = 0; i < 4; i++)
 			FogColor[i] = NightFogColor[i];
@@ -676,10 +678,10 @@ void Engine::GetFogColor()
 	}
 	else
 	{
-		GLfloat ft = (TimeOfDay - (600.0f - Dawn))*M_PI / (2.0 * Dawn);
+		GLfloat ft = (LocalTimeOfDay - (600.0f - Dawn))*M_PI / (2.0 * Dawn);
 		GLfloat f = (1.0f - cos(ft)) * 0.5f;
 
-		if(TimeOfDay > 1200.0) f = 1.0 - f;
+		if(LocalTimeOfDay > 1200.0) f = 1.0 - f;
 
 		for(int i = 0; i < 4; i++)
 			FogColor[i] = NightFogColor[i]*(1.0f - f) + DayFogColor[i]*f;
