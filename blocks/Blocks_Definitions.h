@@ -57,3 +57,6 @@ typedef signed short	BlockInWorld;
 #define HASH_SIZE		0x1000
 
 #define DAYLIGHT		15
+
+#define DAY_TIME		2400.0
+#define WINAL_TIME		24000.0

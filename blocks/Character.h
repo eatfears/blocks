@@ -16,6 +16,7 @@ public:
 	GLdouble dSpinY, dSpinX;
 	GLdouble dVelocityX, dVelocityY, dVelocityZ;
 	GLdouble Longitude;
+	GLdouble Longitude2;
 
 	bool bFalling;
 	void Control(GLdouble FrameInterval);
@@ -31,8 +32,9 @@ public:
 	Chunk *chunk;
 	int index;
 	void GetMyPosition();
+	double LocalTimeOfWinal;
 	double LocalTimeOfDay;
-	void GetLocalTime(double TimeOfDay);
+	void GetLocalTime(double TimeOfDay, double TimeOfWinal);
 
 private:
 	void GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr);

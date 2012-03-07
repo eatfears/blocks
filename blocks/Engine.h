@@ -42,7 +42,8 @@ private:
 
 	World wWorld;
 
-	double TimeOfDay;
+	double TimeOfDay; 
+	double TimeOfWinal;
 	void GetFogColor();
 	GLfloat FogColor[4];
 

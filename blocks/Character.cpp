@@ -29,7 +29,10 @@ Character::Character(World& ww)
 	sCenterBlockCoordY = 0;
 	sCenterBlockCoordZ = 0;
 	LocalTimeOfDay = 0;
+	LocalTimeOfWinal = 0;
+		
 	Longitude = 0;
+	Longitude2 = 0;
 
 	UnderWater = false;
 }
@@ -400,11 +403,16 @@ void Character::GetCenterCoords(GLsizei width, GLsizei height)
 	// 	dDispCenterCoordZ -= lnwPositionZ*LOCATION_SIZE_XZ*TILE_SIZE;
 }
 
-void Character::GetLocalTime(double TimeOfDay)
+void Character::GetLocalTime(double TimeOfDay, double TimeOfWinal)
 {
-	LocalTimeOfDay = TimeOfDay + Longitude*2400.0;
-	while (LocalTimeOfDay >= 2400.0) LocalTimeOfDay -= 2400.0;
-	while (LocalTimeOfDay < 0.0) LocalTimeOfDay += 2400.0;
+	LocalTimeOfDay = TimeOfDay + Longitude*DAY_TIME;
+	LocalTimeOfWinal = TimeOfWinal + Longitude2*WINAL_TIME;
+
+	while (LocalTimeOfDay >= DAY_TIME) LocalTimeOfDay -= DAY_TIME;
+	while (LocalTimeOfDay < 0.0) LocalTimeOfDay += DAY_TIME;
+
+	while (LocalTimeOfWinal >= WINAL_TIME) LocalTimeOfWinal -= WINAL_TIME;
+	while (LocalTimeOfWinal < 0.0) LocalTimeOfWinal += WINAL_TIME;
 }
 
 void Character::GetMyPosition()
@@ -421,4 +429,5 @@ void Character::GetMyPosition()
 		UnderWater = false;
 
 	Longitude = dPositionZ/(BLOCK_SIZE*CHUNK_SIZE_XZ*160);
+	Longitude2 = -dPositionX/(BLOCK_SIZE*CHUNK_SIZE_XZ*160);
 }

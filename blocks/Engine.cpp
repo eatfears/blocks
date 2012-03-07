@@ -20,6 +20,7 @@ Engine::Engine()
 	height = 0;
 	FrameInterval = 0.0;
 	TimeOfDay = 000.0;
+	TimeOfWinal = 000.0;
 }
 
 Engine::~Engine()
@@ -439,7 +440,7 @@ void Engine::Loop()
 	GetFogColor();
 	player.GetMyPosition();
 	Display();
-	player.GetLocalTime(TimeOfDay);
+	player.GetLocalTime(TimeOfDay, TimeOfWinal);
 	player.GetCenterCoords(width, height);
 
 	player.Control(FrameInterval);
@@ -476,7 +477,9 @@ void Engine::GetFrameTime()
 	FrameInterval *= koef;
 
 	TimeOfDay += FrameInterval;
-	while (TimeOfDay >= 2400.0) TimeOfDay -= 2400.0;
+	TimeOfWinal += FrameInterval;
+	while (TimeOfDay >= DAY_TIME) TimeOfDay -= DAY_TIME;
+	while (TimeOfWinal >= WINAL_TIME) TimeOfWinal -= WINAL_TIME;
 }
 
 void Engine::Special(int button, int x, int y, bool KeyDown)
@@ -544,7 +547,8 @@ void Engine::DrawSunMoon()
 											// —бросить текущую матрицу
 	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
 	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
-	glRotated(-player.LocalTimeOfDay*360.0/2400.0 + 90.0, 1.0, 0.0, 0.0);
+	glRotated(-player.LocalTimeOfWinal*360.0/WINAL_TIME, 0.0, 0.0, 1.0);
+	glRotated(-player.LocalTimeOfDay*360.0/DAY_TIME + 90.0, 1.0, 0.0, 0.0);
 
 	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[SUN]);
 
