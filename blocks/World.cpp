@@ -1,5 +1,4 @@
 #include <process.h>
-
 #include "Blocks_Definitions.h"
 #include "World.h"
 #include "Threads.h"
@@ -32,70 +31,10 @@ World::~World()
 void World::BuildWorld()
 {
 	Param par = {0, 0, this};
-
 	_beginthread(LoadNGenerate, 0, &par);
 
 	WaitForSingleObject(parget2, INFINITE);
 	ResetEvent(parget2);
-	/**/
-	/*
-	for(int i = -10; i < 10; i++)
-	for(int j = -10; j < 10; j++)
-	{
-		AddLocation(i,j);
-	}
-	//AddLocation(0,0);
-
-	for(int j = 0; j < 20; j++)
-	{
-		for(int i = -60; i < 60; i++)
-		{
-			for(int k = -60; k < 60; k++)
-			{
-				AddTile(i, j, k, MAT_GRASS, true);
-				//AddTile(i, j, k, rand()%4+1, true);
-			}
-		}
-	}
-	/**/
-	/*
-	for(int k = 20; k > 0; k--)
-	{
-		//AddTile(i, j, k, MAT_GRASS, true);
-		//if(rand()%2)AddTile(0, k, 0, rand()%4+1, true);
-	}
-
-	//AddTile(0,3,0,MAT_GRASS, true);
-	//AddTile(0,1,0,MAT_DIRT, true);
-	//AddTile(0,0,0,MAT_STONE, true);
-	/**/
-
-	/*
-	AddTile(10,0,0,MAT_DIRT);
-	AddTile(0,1,0,MAT_DIRT);
-	AddTile(0,-3,0,MAT_STONE);
-	AddTile(1,0,0,MAT_STONE);
-	AddTile(-1,0,0,MAT_STONE);
-	/**/
-	/*
-	for(int i = 0 ; i< 40 ; i++)
-	{
-		for(int k = 0 ; k < 1 ; k++)
-		{
-			AddTile(rand()%100-50,k,rand()%100-50,MAT_STONE);
-			AddTile(rand()%100-50,k,rand()%100-50,MAT_SAND);
-			AddTile(rand()%100-50,k,rand()%100-50,MAT_DIRT);
-			AddTile(rand()%100-50,k,rand()%100-50,MAT_GRASS);
-			AddTile(rand()%100-50,k,rand()%100-50,MAT_NO);
-		}
-	}
-	/**/
-	/*
-	AddTile(1,-1,0,MAT_DIRT);
-	AddTile(2,-1,0,MAT_STONE);
-	AddTile(3,-1,0,MAT_STONE);
-	AddTile(4,-1,0,MAT_DIRT);
-	/**/
 }
 
 void World::GetChunkByBlock(BlockInWorld x, BlockInWorld z, ChunkInWorld *Cx, ChunkInWorld *Cz)
@@ -186,7 +125,6 @@ void World::DrawLoadedBlocksFinish(Chunk &chunk)
 		}
 		index++;
 	}
-	/**/
 	ReleaseMutex(chunk.mutex);
 
 	// draw boundary tiles
@@ -252,7 +190,6 @@ void World::DrawUnLoadedBlocks(ChunkInWorld Cx, ChunkInWorld Cz)
 int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bool show)
 {
 	if((y < 0)||(y >= CHUNK_SIZE_Y)) return 0;
-
 	if(FindBlock(x, y, z)) return 0;
 
 	Chunk *chunk = GetChunkByBlock(x, z);
@@ -260,9 +197,7 @@ int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bo
 	if(chunk == NULL) return 0;
 
 	BlockInChunk chnkx, chnky, chnkz;
-
 	GetPosInChunkByWorld(x, y, z, &chnkx, &chnky, &chnkz);
-
 	DWORD dwWaitResult;
 	dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
 	int index = chunk->AddBlock(chnkx, chnky, chnkz, mat);
@@ -311,7 +246,6 @@ int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bo
 int World::RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show)
 {
 	if((y < 0)||(y >= CHUNK_SIZE_Y)) return 0;
-
 	if(!FindBlock(x, y, z)) return 0;
 
 	Chunk *chunk = GetChunkByBlock(x, z);
@@ -320,11 +254,8 @@ int World::RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show
 	if(chunk == NULL) return 0;
 
 	BlockInChunk chnkx, chnky, chnkz;
-
 	GetPosInChunkByWorld(x, y, z, &chnkx, &chnky, &chnkz);
-
 	index = chunk->GetIndexByPosition(chnkx, chnky, chnkz);
-
 	Chunk *TempChunk = 0;
 	int TempIndex;
 
@@ -380,97 +311,42 @@ void World::HideTile(Chunk *chunk, int index, char side)
 int World::FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, Chunk **chunk, int *index)
 {
 	if((y < 0)||(y >= CHUNK_SIZE_Y)) { *chunk = NULL; *index = 0; return 0;}
-
 	(*chunk) = GetChunkByBlock(x, z);
-
 	if((*chunk) == NULL) { *index = 0; return 0;}
-
 	BlockInChunk chnkx, chnky, chnkz;
-
 	GetPosInChunkByWorld(x, y, z, &chnkx, &chnky, &chnkz);
-
 	*index = chnkx*CHUNK_SIZE_XZ + chnkz + chnky*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
-
 	if((*chunk)->GetBlockMaterial(chnkx, chnky, chnkz) == MAT_NO)
 		return 0;
-
 	return 1;
 }
 
 int World::FindBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z)
 {
 	if(y < 0) return 0;
-
 	Chunk *chunk = GetChunkByBlock(x, z);
-
 	if(chunk == NULL) return 0;
-
 	BlockInChunk chnkx, chnky, chnkz;
-
 	GetPosInChunkByWorld(x, y, z, &chnkx, &chnky, &chnkz);
-
 	if(chunk->GetBlockMaterial(chnkx, chnky, chnkz) == MAT_NO)
 		return 0;
-
 	return 1;
 }
 
 void World::LoadChunk(ChunkInWorld x, ChunkInWorld z)
 {
-// 	WaitForSingleObject(loading_mutex, INFINITE);
-// 	LocationPosiion lp = {x, z};
-//
-// 	auto chunk = LoadedLocations.begin();
-//
-// 	while (chunk != LoadedLocations.end())
-// 	{
-// 		if (((*chunk).x == lp.x)&&((*chunk).z == lp.z))
-// 		{
-// 			ReleaseMutex(loading_mutex);
-// 			return;
-// 		}
-// 		++chunk;
-// 	}
-// 	LoadedLocations.push_back(lp);
-// 	ReleaseMutex(loading_mutex);
-
-
 	Param par = {x, z, this};
-
 	HANDLE hThread;
-	hThread = (HANDLE) _beginthread(LoadChunkThread, 0, &par);//&Param(par));
-
-	//WaitForSingleObject(hThread, 30);
+	hThread = (HANDLE) _beginthread(LoadChunkThread, 0, &par);
 	WaitForSingleObject(parget, INFINITE);
 	ResetEvent(parget);
 }
 
 void World::UnLoadChunk(ChunkInWorld x, ChunkInWorld z)
 {
-// 	WaitForSingleObject(loading_mutex, INFINITE);
-// 	LocationPosiion lp = {x, z};
-//
-// 	auto chunk = LoadedLocations.begin();
-//
-// 	while (chunk != LoadedLocations.end())
-// 	{
-// 		if (((*chunk).x == lp.x)&&((*chunk).z == lp.z))
-// 		{
-// 			ReleaseMutex(loading_mutex);
-// 			return;
-// 		}
-// 		++chunk;
-// 	}
-// 	LoadedLocations.push_back(lp);
-// 	ReleaseMutex(loading_mutex);
-
 	Param par = {x, z, this};
-
 	HANDLE hThread;
-
-	hThread = (HANDLE) _beginthread(UnLoadChunkThread, 0, &par);//&Param(par));
-
-	//WaitForSingleObject(hThread, 30);
+	hThread = (HANDLE) _beginthread(UnLoadChunkThread, 0, &par);
 	WaitForSingleObject(parget, INFINITE);
 	ResetEvent(parget);
 }
@@ -483,10 +359,11 @@ void World::UpdateLight(Chunk& chunk)
 	for(int i = 0; i < 5; i++) {
 		for(int j = 0; j < 5; j++) {
 			if((i!=2)||(j!=2)) {
-				if((i == 0)&&(j == 0) || (i == 4)&&(j == 0) || (i == 0)&&(j == 4) || (i == 4)&&(j == 4))
+				if((i == 0)&&(j == 0) || (i == 4)&&(j == 0) || (i == 0)&&(j == 4) || (i == 4)&&(j == 4)) {
 					ChunkArray[i][j] = NULL;
-				else
+				} else {
 					ChunkArray[i][j] = GetChunkByPosition((chunk.x + i - 2), (chunk.z + j - 2));
+				}
 			}
 		}
 	}

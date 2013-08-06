@@ -78,7 +78,6 @@ void Chunk::ShowTile(Block *bBlock, char side)
 	if(bBlock->cMaterial == MAT_NO) return;
 	if(bBlock->bVisible & (1 << side)) return;
 
-
 	std::list<Block *> *Tiles;
 	if(bBlock->cMaterial == MAT_WATER) {
 		Tiles = &DisplayedWaterTiles[side];
@@ -136,7 +135,6 @@ int Chunk::GetBlockPositionByPointer(Block *tCurrentBlock, BlockInChunk *x, Bloc
 	const
 {
 	int t = tCurrentBlock - bBlocks;
-
 	if(GetBlockPositionByIndex(t, x, y, z) == -1)
 		return -1;
 
@@ -287,7 +285,6 @@ void Chunk::Render(char mat, int *rendered)
 		static BlockInChunk cx, cy, cz;
 		static BlockInWorld xx, yy, zz;
 		static BlockInWorld blckwx, blckwz;
-
 
 		//1-sided tiles
 		if (mat == MAT_WATER) {glTranslated(0.0, -BLOCK_SIZE*(0.95/8), 0.0); glDisable(GL_CULL_FACE);}
