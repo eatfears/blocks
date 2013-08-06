@@ -32,8 +32,7 @@ void MaterialLibrary::LoadGLTextures()
 int MaterialLibrary::GetTextureInfo(int ColorType)
 {
 	int ret;
-	switch(ColorType)
-	{
+	switch(ColorType) {
 	case PNG_COLOR_TYPE_GRAY:
 		ret = 1;
 		break;
@@ -116,8 +115,7 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 
 	int components = GetTextureInfo(ColorType);
 
-	if(components == -1)
-	{
+	if(components == -1) {
 		if(png_ptr)
 			png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 		return 0;
@@ -192,17 +190,14 @@ void MaterialLibrary::GetTextureOffsets(double& offsetx, double& offsety, int ma
 	offsetx = 14;
 	offsety = 0;
 
-	switch(material)
-	{
+	switch(material) {
 	case MAT_DIRT: offsetx = 2; offsety = 0;
 		if (covered & (1 << SNOWCOVERED))
 		{
 			if(side == TOP) {offsetx = 2; offsety = 4;}
 			else if(side == BOTTOM) {offsetx = 2; offsety = 0;}
 			else {offsetx = 4; offsety = 4;}
-		}
-		else if (covered & (1 << GRASSCOVERED))
-		{
+		} else if (covered & (1 << GRASSCOVERED)) {
 			if(side == TOP) {offsetx = 0; offsety = 0;}
 			else if(side == BOTTOM) {offsetx = 2; offsety = 0;}
 			else {offsetx = 3; offsety = 0;}

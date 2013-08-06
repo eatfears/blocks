@@ -29,8 +29,7 @@ void Statistics::PrintStat(void)
 	static void *font = GLUT_BITMAP_HELVETICA_12;
 	static int h, m, s;
 
-	if (TimeCount > 100)
-	{
+	if (TimeCount > 100) {
 		b_sprintf(cFPS, "FPS: %0.1f\n", 1000.0*FrameCount/TimeCount);
 		TimeCount = 0.0;
 		FrameCount = 0;

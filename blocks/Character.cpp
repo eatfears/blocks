@@ -9,8 +9,7 @@ Character::Character(World& ww)
 	: wWorld(ww)
 {
 	bFalling = true;
-	for(int i = 0; i < 256; i++)
-	{
+	for(int i = 0; i < 256; i++) {
 		bKeyboard[i] = false;
 		bSpecial[i] = false;
 	}
@@ -72,87 +71,65 @@ void Character::Control(GLdouble FrameInterval)
 	if(bSpecial[GLUT_KEY_SHIFT_L])
 		step *= SPRINT_KOEF;
 
-	if(bKeyboard['W'])
-	{
-		if(!bFalling)
-		{
+	if(bKeyboard['W']) {
+		if(!bFalling) {
 			dVelocityX -= step*sin(TORAD(dSpinY));
 			dVelocityZ -= step*cos(TORAD(dSpinY));
-		}
-		else
-		{
+		} else {
 			dVelocityX -= FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
 			dVelocityZ -= FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
 		}
 	}
-	if(bKeyboard['S'])
-	{
-		if(!bFalling)
-		{
+	if(bKeyboard['S']) {
+		if(!bFalling) {
 			dVelocityX += step*sin(TORAD(dSpinY));
 			dVelocityZ += step*cos(TORAD(dSpinY));
-		}
-		else
-		{
+		} else {
 			dVelocityX += FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
 			dVelocityZ += FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
 		}
 	}
-	if(bKeyboard['D'])
-	{
-		if(!bFalling)
-		{
+	if(bKeyboard['D']) {
+		if(!bFalling) {
 			dVelocityX += step*cos(TORAD(dSpinY));
 			dVelocityZ -= step*sin(TORAD(dSpinY));
-		}
-		else
-		{
+		} else {
 			dVelocityX += FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
 			dVelocityZ -= FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
 		}
 	}
-	if(bKeyboard['A'])
-	{
-		if(!bFalling)
-		{
+	if(bKeyboard['A']) {
+		if(!bFalling) {
 			dVelocityX -= step*cos(TORAD(dSpinY));
 			dVelocityZ += step*sin(TORAD(dSpinY));
-		}
-		else
-		{
+		} else {
 			dVelocityX -= FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
 			dVelocityZ += FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
 		}
 	}
-	if(bKeyboard['R'])
-	{
+	if(bKeyboard['R']) {
 		dVelocityY += FrameInterval*AIR_ACCEL*step;
 	}
-	if(bKeyboard['F'])
-	{
+	if(bKeyboard['F']) {
 		dVelocityY -= FrameInterval*AIR_ACCEL*step;
 	}
 
 	GLdouble ko = dVelocityX*dVelocityX + dVelocityZ*dVelocityZ;
-	if(ko > WALK_SPEED*WALK_SPEED*SPRINT_KOEF*SPRINT_KOEF)
-	{
+	if(ko > WALK_SPEED*WALK_SPEED*SPRINT_KOEF*SPRINT_KOEF) {
 		ko = pow(ko, 0.5);
 		dVelocityX = dVelocityX*WALK_SPEED*SPRINT_KOEF/ko;
 		dVelocityZ = dVelocityZ*WALK_SPEED*SPRINT_KOEF/ko;
 	}
 
-	if(bKeyboard[VK_SPACE])
-	{
-		if(!bFalling)
-		{
+	if(bKeyboard[VK_SPACE]) {
+		if(!bFalling) {
 			dVelocityY = -JUMP_STR;
 			bFalling = true;
 			dPositionY += FrameInterval;
 		}
 	}
 
-	if(bKeyboard['X'])
-	{
+	if(bKeyboard['X']) {
 		dVelocityX = 0;
 		dVelocityY = 0;
 		dVelocityZ = 0;
@@ -161,24 +138,21 @@ void Character::Control(GLdouble FrameInterval)
 	GLdouble yerr, xerr, zerr;
 	GetPlane(&xerr, &yerr, &zerr);
 
-	if((zerr < xerr)&&(zerr < yerr))
-	{
+	if((zerr < xerr)&&(zerr < yerr)) {
 		sCenterBlockCoordX = (BlockInWorld) floor(dDispCenterCoordX/BLOCK_SIZE + 0.5);
 		sCenterBlockCoordY = (BlockInWorld) floor(dDispCenterCoordY/BLOCK_SIZE);
 
 		if(dPositionZ < dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) Primes::Round(dDispCenterCoordZ/BLOCK_SIZE + 0.5);
 		if(dPositionZ > dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) Primes::Round(dDispCenterCoordZ/BLOCK_SIZE - 0.5);
 	}
-	if((xerr < zerr)&&(xerr < yerr))
-	{
+	if((xerr < zerr)&&(xerr < yerr)) {
 		sCenterBlockCoordZ = (BlockInWorld) floor(dDispCenterCoordZ/BLOCK_SIZE + 0.5);
 		sCenterBlockCoordY = (BlockInWorld) floor(dDispCenterCoordY/BLOCK_SIZE);
 
 		if(dPositionX < dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) Primes::Round(dDispCenterCoordX/BLOCK_SIZE + 0.5);
 		if(dPositionX > dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) Primes::Round(dDispCenterCoordX/BLOCK_SIZE - 0.5);
 	}
-	if((yerr < xerr)&&(yerr < zerr))
-	{
+	if((yerr < xerr)&&(yerr < zerr)) {
 		sCenterBlockCoordX = (BlockInWorld) floor(dDispCenterCoordX/BLOCK_SIZE + 0.5);
 		sCenterBlockCoordZ = (BlockInWorld) floor(dDispCenterCoordZ/BLOCK_SIZE + 0.5);
 
@@ -190,22 +164,16 @@ void Character::Control(GLdouble FrameInterval)
 	int sq = 100;
 	int sqb2 = sq/2;
 
-	if(bKeyboard['1'])
-	{
+	if(bKeyboard['1']) {
 		int i = 0;
-
-		while(i < num)
-		{
+		while(i < num) {
 			if(wWorld.AddBlock(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, rand()%14+1, true))
 				i++;
 		}
 	}
-	if(bKeyboard['2'])
-	{
+	if(bKeyboard['2']) {
 		int i = 0;
-
-		while(i < num)
-		{
+		while(i < num) {
 			if(wWorld.RemoveBlock(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, true))
 				i++;
 		}
@@ -213,11 +181,12 @@ void Character::Control(GLdouble FrameInterval)
 
 	if(bKeyboard['3'])
 	{
-		for(int i = -sqb2; i <= sqb2; i++)
-		for(int j = -sqb2; j <= sqb2; j++)
-		for(int k = -sqb2; k <= sqb2; k++)
-		{
-			wWorld.RemoveBlock(i, j, k, true);
+		for(int i = -sqb2; i <= sqb2; i++) {
+			for(int j = -sqb2; j <= sqb2; j++) {
+				for(int k = -sqb2; k <= sqb2; k++) {
+					wWorld.RemoveBlock(i, j, k, true);
+				}
+			}
 		}
 	}
 
@@ -238,15 +207,13 @@ void Character::Control(GLdouble FrameInterval)
 				wWorld.LoadChunk(i, j);
 		bKeyboard['6'] = false;
 	}
-	if(bKeyboard['7'])
-	{
+	if(bKeyboard['7']) {
 		for(int i = 0; i < 8; i++)
 			for(int j = 0; j < 8; j++)
 				wWorld.UnLoadChunk(i, j);
 		bKeyboard['7'] = false;
 	}
-	if(bKeyboard['0'])
-	{
+	if(bKeyboard['0']) {
 		static Param par = {0, 1, &wWorld};
 
 			_beginthread(LoadNGenerate, 0, &par);
@@ -258,54 +225,44 @@ void Character::Control(GLdouble FrameInterval)
 
 		bKeyboard['0'] = false;
 	}
-	if(bKeyboard['C'])
-	{
+	if(bKeyboard['C']) {
 		Chunk *chunk;
 		int index;
 		wWorld.FindBlock(sCenterBlockCoordX, sCenterBlockCoordY, sCenterBlockCoordZ, &chunk, &index);
-		if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT))
-		{
+		if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT)) {
 			chunk->bBlocks[index].bVisible ^= (1 << SNOWCOVERED);
 		}
 	}
-	if(bKeyboard['V'])
-	{
+	if(bKeyboard['V']) {
 		Chunk *chunk;
 		int index;
 		wWorld.FindBlock(sCenterBlockCoordX, sCenterBlockCoordY, sCenterBlockCoordZ, &chunk, &index);
-		if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT))
-		{
+		if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT)) {
 			chunk->bBlocks[index].bVisible ^= (1 << GRASSCOVERED);
 		}
 	}
-	if(bKeyboard['E'])
-	{
+	if(bKeyboard['E']) {
 		wWorld.RemoveBlock(sCenterBlockCoordX,sCenterBlockCoordY,sCenterBlockCoordZ, true);
 	}
 
-	if(bKeyboard['Q'])
-	{
+	if(bKeyboard['Q']) {
 		signed short ix = sCenterBlockCoordX, iy = sCenterBlockCoordY, iz = sCenterBlockCoordZ;
-		if((zerr < xerr)&&(zerr < yerr))
-		{
+		if((zerr < xerr)&&(zerr < yerr)) {
 			if(dPositionZ < dDispCenterCoordZ) iz = sCenterBlockCoordZ - 1;
 			if(dPositionZ > dDispCenterCoordZ) iz = sCenterBlockCoordZ + 1;
 		}
-		if((xerr < zerr)&&(xerr < yerr))
-		{
+		if((xerr < zerr)&&(xerr < yerr)) {
 			if(dPositionX < dDispCenterCoordX) ix = sCenterBlockCoordX - 1;
 			if(dPositionX > dDispCenterCoordX) ix = sCenterBlockCoordX + 1;
 		}
-		if((yerr < xerr)&&(yerr < zerr))
-		{
+		if((yerr < xerr)&&(yerr < zerr)) {
 			if(dPositionY < dDispCenterCoordY) iy = sCenterBlockCoordY - 1;
 			if(dPositionY > dDispCenterCoordY) iy = sCenterBlockCoordY + 1;
 		}
 
 		wWorld.AddBlock(ix, iy, iz, MAT_PUMPKIN_SHINE, true);
 	}
-	if(bKeyboard['O'])
-	{
+	if(bKeyboard['O']) {
 		wWorld.SaveChunks();
 	}
 

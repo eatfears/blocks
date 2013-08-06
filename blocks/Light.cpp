@@ -23,14 +23,11 @@ Light::Light(Chunk *ChnkArr[5][5], bool skylight)
 {
 	this->skylight = skylight;
 
-	for (int i = 0; i < 5; i++)
-	{
-		for (int j = 0; j < 5; j++)
-		{
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 5; j++) {
 			ChunkArray[i][j] = ChnkArr[i][j];
 
-			if(ChunkArray[i][j] && (i > 0)&&(i < 4)&&(j > 0)&&(j < 4))
-			{
+			if(ChunkArray[i][j] && (i > 0)&&(i < 4)&&(j > 0)&&(j < 4)) {
 				FillLight(*ChunkArray[i][j], DAYLIGHT, skylight);
 			}
 		}
@@ -48,12 +45,9 @@ void Light::UpdateLight(void)
 	unsigned int dur;
 	*/
 
-	for (BlockInWorld i = CHUNK_SIZE_XZ - 1; i < 4*CHUNK_SIZE_XZ + 1; i++)
-	{
-		for (BlockInWorld j = 0; j < CHUNK_SIZE_Y; j++)
-		{
-			for (BlockInWorld k = CHUNK_SIZE_XZ - 1; k < 4*CHUNK_SIZE_XZ + 1; k++)
-			{
+	for (BlockInWorld i = CHUNK_SIZE_XZ - 1; i < 4*CHUNK_SIZE_XZ + 1; i++) {
+		for (BlockInWorld j = 0; j < CHUNK_SIZE_Y; j++) {
+			for (BlockInWorld k = CHUNK_SIZE_XZ - 1; k < 4*CHUNK_SIZE_XZ + 1; k++) {
 				rec_diffuse(i, j, k, GetVal(i, j, k, NULL, NULL), true);
 			}
 		}
@@ -72,20 +66,17 @@ void Light::UpdateLight(void)
 
 void Light::rec_diffuse( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val, bool initial )
 {
-	if((val > 0)&&(val <= DAYLIGHT))
-	{
+	if((val > 0)&&(val <= DAYLIGHT)) {
 		int temp_val;
 		bool water_flag = false;
 		bool wall_flag = false;
 
 		if(	(i >= CHUNK_SIZE_XZ - 1)&&(j >= 0)&&(k >= CHUNK_SIZE_XZ - 1)&&
-			(i < 4*CHUNK_SIZE_XZ + 1)&&(j < CHUNK_SIZE_Y)&&(k < 4*CHUNK_SIZE_XZ + 1))
-		{
+			(i < 4*CHUNK_SIZE_XZ + 1)&&(j < CHUNK_SIZE_Y)&&(k < 4*CHUNK_SIZE_XZ + 1)) {
 			temp_val = GetVal(i, j, k, &water_flag, &wall_flag);
 		
 			if(!wall_flag || initial)
-			if((temp_val < val) || (temp_val <= val)&&initial )
-			{	
+			if((temp_val < val) || (temp_val <= val) && initial) {	
 				SetVal(i, j, k, val);
 
 				if(water_flag) val -= 3;
@@ -114,23 +105,20 @@ int Light::GetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, bool *water_f
 	z = k%CHUNK_SIZE_XZ;
 
 	Chunk *TempChunk = ChunkArray[i/CHUNK_SIZE_XZ][k/CHUNK_SIZE_XZ];
-	if(TempChunk)
-	{
+	if(TempChunk) {
 		int index = TempChunk->GetIndexByPosition(x, y, z);
 		char mat = TempChunk->bBlocks[index].cMaterial;
 		
-		if((mat == MAT_NO)||(mat == MAT_WATER))
-		{
+		if((mat == MAT_NO)||(mat == MAT_WATER)) {
 			if(wall_flag)
 				*wall_flag = false;
 		}
-		if(skylight)
+		if(skylight) {
 			ret = TempChunk->SkyLight[index];
-		else
+		} else {
 			ret = TempChunk->TorchLight[index];
-
-		if(water_flag)
-		{	
+		}
+		if(water_flag) {	
 			if(mat == MAT_WATER) *water_flag = true;
 		}
 	}
@@ -146,8 +134,7 @@ void Light::SetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val )
 	z = k%CHUNK_SIZE_XZ;
 	
 	Chunk *TempChunk = ChunkArray[i/CHUNK_SIZE_XZ][k/CHUNK_SIZE_XZ];
-	if(TempChunk)
-	{
+	if(TempChunk) {
 		int index = TempChunk->GetIndexByPosition(x, y, z);
 
 		if(skylight)
@@ -159,8 +146,7 @@ void Light::SetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val )
 
 void Light::BlockLight(World& wWorld, Chunk& chunk, int side, BlockInChunk cx, BlockInChunk cy, BlockInChunk cz)
 {
-	if(!wWorld.SoftLight)
-	{
+	if(!wWorld.SoftLight) {
 		static Chunk *temploc;
 		static BlockInWorld xlight, ylight, zlight;
 		static GLfloat res;
@@ -174,8 +160,7 @@ void Light::BlockLight(World& wWorld, Chunk& chunk, int side, BlockInChunk cx, B
 		blckwz = chunk.z*CHUNK_SIZE_XZ;
 
 
-		switch(side)
-		{
+		switch(side) {
 		case TOP:
 			xlight = cx;
 			ylight = cy + 1;
@@ -212,13 +197,12 @@ void Light::BlockLight(World& wWorld, Chunk& chunk, int side, BlockInChunk cx, B
 			temploc = wWorld.GetChunkByBlock(xlight + blckwx, zlight + blckwz);
 		else temploc = &chunk;
 		if((ylight >= CHUNK_SIZE_Y)||(ylight < 0)) temploc = NULL;
-		if (temploc)
-		{
+		if (temploc) {
 			wWorld.GetPosInChunkByWorld(xlight, ylight, zlight, &xloclight, &yloclight, &zloclight);
 			int index = temploc->GetIndexByPosition(xloclight, yloclight, zloclight);
 
 			Light::GetLight(*temploc, index, res);
-		}else res = (1.0 - wWorld.SkyBright);
+		} else res = (1.0 - wWorld.SkyBright);
 
 		if ((side == FRONT)||(side == BACK)) res *= 0.85f;
 		if ((side == RIGHT)||(side == LEFT)) res *= 0.90f;
@@ -229,76 +213,58 @@ void Light::BlockLight(World& wWorld, Chunk& chunk, int side, BlockInChunk cx, B
 
 void Light::SoftLight(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorld Z, char side, int vertex)
 {
-	if(wWorld.SoftLight)
-	{
+	if(wWorld.SoftLight) {
 		static GLfloat res = 0;
 
-		switch (vertex)
-		{
-		case 0:
-			{
+		switch (vertex) {
+		case 0: {
 				int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
 				int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 				int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
 				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-			}
-			break;
-		case 1:
-			{
+			} break;
+		case 1: {
 				int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
 				int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 				int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
 				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-			}
-			break;
-		case 2:
-			{
+			} break;
+		case 2: {
 				int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
 				int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 				int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
 				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-			}
-			break;
-		case 3:
-			{
+			} break;
+		case 3: {
 				int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
 				int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 				int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
 				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-			}
-			break;
-		case 4:
-			{
+			} break;
+		case 4: {
 				int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
 				int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
 				int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
 				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-			}
-			break;
-		case 5:
-			{
+			} break;
+		case 5: {
 				int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
 				int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
 				int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
 				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-			}
-			break;
-		case 6:
-			{
+			} break;
+		case 6: {
 				int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
 				int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
 				int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
 				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-			}
-			break;
-		case 7:
-			{
+			} break;
+		case 7: {
 				int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
 				int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
 				int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
 				res = GetBrightAverage(wWorld, X, Y, Z, xx, yy, zz, side);
-			}
-			break;
+			} break;
 		}
 		
 		if ((side == FRONT)||(side == BACK)) res *= 0.85f;
@@ -326,20 +292,17 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, Blo
 
 	center = wWorld.GetChunkByBlock(X, Z);
 
-	for(int i = 0; i < 4; i++)
-	{
+	for(int i = 0; i < 4; i++) {
 		InflLight = Light::InfluencingLight[side][i];
 		wWorld.GetChunkByBlock(X + xx[InflLight], Z + zz[InflLight], &Cx, &Cz);
 		if((Cx != center->x)||(Cz != center->z))
 			temploc = wWorld.GetChunkByPosition(Cx, Cz);
 		else temploc = center;
 
-		if (temploc)
-		{
+		if(temploc) {
 			wWorld.GetPosInChunkByWorld(X + xx[InflLight], Y + yy[InflLight], Z + zz[InflLight], &xloclight, &yloclight, &zloclight);
 
-			if(yloclight >= CHUNK_SIZE_Y)
-			{
+			if(yloclight >= CHUNK_SIZE_Y) {
 				mat[i] = 10.0f;
 				continue;
 			}
@@ -348,8 +311,7 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, Blo
 
 			if((i == 1)&&(temploc->bBlocks[index].cMaterial != MAT_NO)&&(temploc->bBlocks[index].cMaterial != MAT_WATER))
 				DiagonalblockInfluate = false;
-			if(i == 2)
-			{
+			if(i == 2) {
 				if((temploc->bBlocks[index].cMaterial == MAT_NO)||(temploc->bBlocks[index].cMaterial == MAT_WATER))
 					DiagonalblockInfluate = true;
 			}
@@ -359,14 +321,12 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, Blo
 			if((i == 3)&&(!DiagonalblockInfluate))
 				mat[i] = 0.0f;
 
-		}else mat[i] = 10.0f;
+		} else mat[i] = 10.0f;
 	}
 
 	int count = 0;
-	for(int i = 0; i < 4; i++)
-	{
-		if(mat[i] != 10.0f)
-		{
+	for(int i = 0; i < 4; i++) {
+		if(mat[i] != 10.0f) {
 			res += mat[i];
 			count ++;
 		}
@@ -386,13 +346,11 @@ void Light::GetLight( Chunk& chunk, int index, GLfloat& br )
 
 void Light::FillLight( Chunk& chunk, char bright, bool skylight )
 {
-	if (skylight)
-	{
+	if (skylight) {
 		BlockInChunk y;
 		int index;
 
-		for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
-		{
+		for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++) {
 			chunk.SkyLight[i] = 0;
 			if(chunk.bBlocks[i].cMaterial == MAT_PUMPKIN_SHINE)
 				chunk.TorchLight[i] = 15;
@@ -400,13 +358,10 @@ void Light::FillLight( Chunk& chunk, char bright, bool skylight )
 				chunk.TorchLight[i] = 0;
 		}
 
-		for(BlockInChunk x = 0; x < CHUNK_SIZE_XZ; x++)
-		{
-			for(BlockInChunk z = 0; z < CHUNK_SIZE_XZ; z++)
-			{
+		for(BlockInChunk x = 0; x < CHUNK_SIZE_XZ; x++) {
+			for(BlockInChunk z = 0; z < CHUNK_SIZE_XZ; z++) {
 				y = CHUNK_SIZE_Y - 1;
-				while (y > 0)
-				{
+				while (y > 0) {
 					index = Chunk::GetIndexByPosition(x, y, z);
 					if(chunk.bBlocks[index].cMaterial != MAT_NO)
 						break;
@@ -416,11 +371,8 @@ void Light::FillLight( Chunk& chunk, char bright, bool skylight )
 				}
 			}
 		}
-	} 
-	else
-	{
-		for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
-		{
+	} else {
+		for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++) {
 			if(chunk.bBlocks[i].cMaterial == MAT_PUMPKIN_SHINE)
 				chunk.TorchLight[i] = 15;
 			else

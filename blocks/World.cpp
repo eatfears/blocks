@@ -23,9 +23,9 @@ World::World()
 
 World::~World()
 {
-	for(int i = 0; i < HASH_SIZE; i++)
+	for(int i = 0; i < HASH_SIZE; i++) {
 		Chunks[i].clear();
-
+	}
 	delete[] Chunks;
 }
 
@@ -126,13 +126,13 @@ Chunk* World::GetChunkByPosition(ChunkInWorld Cx, ChunkInWorld Cz)
 	unsigned long bin = Hash(Cx, Cz);
 	auto chunk = Chunks[bin].begin();
 
-	while(chunk != Chunks[bin].end())
-	{
+	while(chunk != Chunks[bin].end()) {
 		if(((*chunk)->x == Cx)&&((*chunk)->z == Cz)) break;
 		++chunk;
 	}
-	if(chunk == Chunks[bin].end())
+	if(chunk == Chunks[bin].end()) {
 		return NULL;
+	}
 
 	return *chunk;
 }
@@ -146,12 +146,10 @@ void World::DrawLoadedBlocksFinish(Chunk &chunk)
 	BlockInChunk chnkx, chnky, chnkz;
 	BlockInWorld x, y, z;
 
-	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
-	{
+	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y) {
 		chunk.GetBlockPositionByPointer(chunk.bBlocks + index, &chnkx, &chnky, &chnkz);
 
-		if((chnkx > 0)&&(chnkx < CHUNK_SIZE_XZ - 1)&&(chnkz > 0)&&(chnkz < CHUNK_SIZE_XZ - 1))
-		{
+		if((chnkx > 0)&&(chnkx < CHUNK_SIZE_XZ - 1)&&(chnkz > 0)&&(chnkz < CHUNK_SIZE_XZ - 1)) {
 			index++;
 			continue;
 		}
@@ -160,24 +158,20 @@ void World::DrawLoadedBlocksFinish(Chunk &chunk)
 		y = chnky;
 		z = chnkz + CHUNK_SIZE_XZ*chunk.z;
 
-		if(chunk.bBlocks[index].cMaterial != MAT_NO)
-		{
+		if(chunk.bBlocks[index].cMaterial != MAT_NO) {
 			Chunk *TempChunk;
 			int TempIndex;
 
-			if(chunk.bBlocks[index].cMaterial == MAT_WATER)
-			{
+			if(chunk.bBlocks[index].cMaterial == MAT_WATER) {
 				if(!FindBlock(x, y + 1, z, &TempChunk, &TempIndex)) ShowTile(&chunk, index, TOP);
-				if(!FindBlock(x, y - 1, z, &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(&chunk, index, BOTTOM);}
-				if(!FindBlock(x + 1, y, z, &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(&chunk, index, RIGHT);}
-				if(!FindBlock(x - 1, y, z, &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(&chunk, index, LEFT);}
-				if(!FindBlock(x, y, z + 1, &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(&chunk, index, BACK);}
-				if(!FindBlock(x, y, z - 1, &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(&chunk, index, FRONT);}
-			}
-			else
-			{
-				if(!FindBlock(x, y + 1, z, &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER))
-					ShowTile(&chunk, index, TOP);
+				if(!FindBlock(x, y - 1, z, &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, BOTTOM); }
+				if(!FindBlock(x + 1, y, z, &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, RIGHT); }
+				if(!FindBlock(x - 1, y, z, &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, LEFT); }
+				if(!FindBlock(x, y, z + 1, &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, BACK); }
+				if(!FindBlock(x, y, z - 1, &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, FRONT); }
+			} else {
+				if(!FindBlock(x, y + 1, z, &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
+					ShowTile(&chunk, index, TOP);}
 				if(!FindBlock(x, y - 1, z, &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
 					if(TempChunk) ShowTile(&chunk, index, BOTTOM);}
 				if(!FindBlock(x + 1, y, z, &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
@@ -197,12 +191,10 @@ void World::DrawLoadedBlocksFinish(Chunk &chunk)
 
 	// draw boundary tiles
 	index = 0;
-	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
-	{
+	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y) {
 		chunk.GetBlockPositionByPointer(chunk.bBlocks + index, &chnkx, &chnky, &chnkz);
 
-		if((chnkx > 0)&&(chnkx < CHUNK_SIZE_XZ - 1)&&(chnkz > 0)&&(chnkz < CHUNK_SIZE_XZ - 1))
-		{
+		if((chnkx > 0)&&(chnkx < CHUNK_SIZE_XZ - 1)&&(chnkz > 0)&&(chnkz < CHUNK_SIZE_XZ - 1)) {
 			index++;
 			continue;
 		}
@@ -211,8 +203,7 @@ void World::DrawLoadedBlocksFinish(Chunk &chunk)
 		y = chnky;
 		z = chnkz + CHUNK_SIZE_XZ*chunk.z;
 
-		if((chunk.bBlocks[index].cMaterial == MAT_NO)||(chunk.bBlocks[index].cMaterial == MAT_WATER))
-		{
+		if((chunk.bBlocks[index].cMaterial == MAT_NO)||(chunk.bBlocks[index].cMaterial == MAT_WATER)) {
 			Chunk *tempLoc;
 			Chunk *tCurLoc = &chunk;
 			int tempIndex;
@@ -236,12 +227,10 @@ void World::DrawUnLoadedBlocks(ChunkInWorld Cx, ChunkInWorld Cz)
 	BlockInChunk chnkx, chnky, chnkz;
 	BlockInWorld x, y, z;
 
-	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
-	{
+	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y) {
 		Chunk::GetBlockPositionByIndex(index, &chnkx, &chnky, &chnkz);
 
-		if((chnkx > 0)&&(chnkx < CHUNK_SIZE_XZ - 1)&&(chnkz > 0)&&(chnkz < CHUNK_SIZE_XZ - 1))
-		{
+		if((chnkx > 0)&&(chnkx < CHUNK_SIZE_XZ - 1)&&(chnkz > 0)&&(chnkz < CHUNK_SIZE_XZ - 1)) {
 			index++;
 			continue;
 		}
@@ -282,8 +271,7 @@ int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bo
 	Chunk *TempChunk = 0;
 	int TempIndex;
 
-	if(chunk->bBlocks[index].cMaterial == MAT_WATER)
-	{
+	if(chunk->bBlocks[index].cMaterial == MAT_WATER) {
 		if(!FindBlock(x, y + 1, z, &TempChunk, &TempIndex)) ShowTile(chunk, index, TOP);
 		else if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(TempChunk, TempIndex, BOTTOM);
 		if(!FindBlock(x, y - 1, z, &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(chunk, index, BOTTOM);}
@@ -296,9 +284,7 @@ int World::AddBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, char mat, bo
 		else if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(TempChunk, TempIndex, FRONT);
 		if(!FindBlock(x, y, z - 1, &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(chunk, index, FRONT);}
 		else if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(TempChunk, TempIndex, BACK);
-	}
-	else
-	{
+	} else {
 		if(!FindBlock(x, y + 1, z, &TempChunk, &TempIndex))
 			ShowTile(chunk, index, TOP);
 		else {HideTile(TempChunk, TempIndex, BOTTOM); if (TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) ShowTile(chunk, index, TOP);}
@@ -365,8 +351,7 @@ int World::RemoveBlock(BlockInWorld x, BlockInWorld y, BlockInWorld z, bool show
 
 void World::ShowTile(Chunk *chunk, int index, char side)
 {
-	if(!(chunk->bBlocks[index].bVisible & (1 << side)))
-	{
+	if(!(chunk->bBlocks[index].bVisible & (1 << side))) {
 		DWORD dwWaitResult;
 		dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
 
@@ -380,8 +365,7 @@ void World::ShowTile(Chunk *chunk, int index, char side)
 
 void World::HideTile(Chunk *chunk, int index, char side)
 {
-	if(chunk->bBlocks[index].bVisible & (1 << side))
-	{
+	if(chunk->bBlocks[index].bVisible & (1 << side)) {
 		DWORD dwWaitResult;
 		dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
 
@@ -496,12 +480,9 @@ void World::UpdateLight(Chunk& chunk)
 	Chunk *ChunkArray[5][5];
 	ChunkArray[2][2] = &chunk;
 
-	for (int i = 0; i < 5; i++)
-	{
-		for (int j = 0; j < 5; j++)
-		{
-			if((i!=2)||(j!=2))
-			{
+	for(int i = 0; i < 5; i++) {
+		for(int j = 0; j < 5; j++) {
+			if((i!=2)||(j!=2)) {
 				if((i == 0)&&(j == 0) || (i == 4)&&(j == 0) || (i == 0)&&(j == 4) || (i == 4)&&(j == 4))
 					ChunkArray[i][j] = NULL;
 				else
@@ -515,12 +496,9 @@ void World::UpdateLight(Chunk& chunk)
 	lightfill.skylight = false;
 	lightfill.UpdateLight();
 
-	for (int i = 0; i < 5; i++)
-	{
-		for (int j = 0; j < 5; j++)
-		{
-			if(ChunkArray[i][j])
-			{
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 5; j++) {
+			if(ChunkArray[i][j]) {
 				if(ChunkArray[i][j]->NeedToRender[0] != RENDER_NEED)
 					ChunkArray[i][j]->NeedToRender[0] = RENDER_MAYBE;
 				if(ChunkArray[i][j]->NeedToRender[1] != RENDER_NEED)
@@ -532,12 +510,10 @@ void World::UpdateLight(Chunk& chunk)
 
 void World::SaveChunks()
 {
-	for(int i = 0; i < HASH_SIZE; i++)
-	{
+	for(int i = 0; i < HASH_SIZE; i++) {
 		auto chunk = Chunks[i].begin();
 
-		while(chunk != Chunks[i].end())
-		{
+		while(chunk != Chunks[i].end()) {
 			(*chunk)->Save();
 			++chunk;
 		}

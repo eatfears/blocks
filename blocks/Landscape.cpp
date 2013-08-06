@@ -39,17 +39,13 @@ void Landscape::Init(unsigned int seed)
 	std::fstream savefile;
 
 	savefile.open ("save//conf.wld", std::fstream::in | std::fstream::binary);
-	if(savefile.is_open())
-	{
+	if(savefile.is_open()) {
 		savefile.read((char*)&seed, sizeof(seed));
 		savefile.close();
-	}
-	else
-	{
+	} else {
 		savefile.open ("save//conf.wld", std::fstream::out | std::fstream::binary);
 
-		if(savefile.is_open())
-		{
+		if(savefile.is_open()) {
 			savefile.write((char*)&seed, sizeof(seed));
 			savefile.close();
 		}
@@ -78,39 +74,31 @@ void Landscape::Generate(Chunk &chunk)
 	double temp2 = 0;
 
 	double dens[CHUNK_SIZE_XZ][CHUNK_SIZE_Y][CHUNK_SIZE_XZ];
-	for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++)
-	{
+	for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++) {
 		bx = i/scaleBubblesXZ;
-		for(int k = chunkz*CHUNK_SIZE_XZ; k < (chunkz + 1)*CHUNK_SIZE_XZ; k++)
-		{
+		for(int k = chunkz*CHUNK_SIZE_XZ; k < (chunkz + 1)*CHUNK_SIZE_XZ; k++) {
 			bz = k/scaleBubblesXZ;
-			for(int j = 0; j < CHUNK_SIZE_Y; j++)
-			{
+			for(int j = 0; j < CHUNK_SIZE_Y; j++) {
 				by = j/scaleBubblesY;
 				dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ] = (BubblesAmp)*pnBubbles.PerlinNoise3d(bx, by, bz);
 			}
 		}
 	}
 
-	for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++)
-	{
+	for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++) {
 		hx = i/scaleHeightMapXZ;
 		rx = i/scaleRoughness;
 		dx = i/scaleDetails;
 
-		for(int k = chunkz*CHUNK_SIZE_XZ; k < (chunkz + 1)*CHUNK_SIZE_XZ; k++)
-		{
+		for(int k = chunkz*CHUNK_SIZE_XZ; k < (chunkz + 1)*CHUNK_SIZE_XZ; k++) {
 			hz = k/scaleHeightMapXZ;
 			rz = k/scaleRoughness;
 			dz = k/scaleDetails;
 
-
 			details = pnDetails.PerlinNoise2d(dx, dz);
 			height = HeghtMapAmp/1.5*(pnHeightMap.PerlinNoise2d(hx, hz) + RoughnessAmp*pnRoughness.PerlinNoise2d(rx, rz)*details) + horizon;
 
-			for(int j = 0; j < CHUNK_SIZE_Y; j++)
-			{
-
+			for(int j = 0; j < CHUNK_SIZE_Y; j++) {
 				//density = j;
 				temp = dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ];
 				//temp2 = dens[i%LOCATION_SIZE_XZ][(j+1)%LOCATION_SIZE_Y][k%LOCATION_SIZE_XZ];
@@ -122,15 +110,11 @@ void Landscape::Generate(Chunk &chunk)
 		}
 	}
 
-	for(int i = 0; i < CHUNK_SIZE_XZ; i++)
-	{
-		for(int k = 0; k < CHUNK_SIZE_XZ; k++)
-		{
-			for(int j = CHUNK_SIZE_Y - 1; j >= 0; j--)
-			{
+	for(int i = 0; i < CHUNK_SIZE_XZ; i++) {
+		for(int k = 0; k < CHUNK_SIZE_XZ; k++) {
+			for(int j = CHUNK_SIZE_Y - 1; j >= 0; j--) {
 				int index = chunk.GetIndexByPosition(i, j, k);
-				if(chunk.bBlocks[index].cMaterial != MAT_NO)
-				{
+				if(chunk.bBlocks[index].cMaterial != MAT_NO) {
 					if(chunk.bBlocks[index].cMaterial == MAT_DIRT)
 						chunk.bBlocks[index].bVisible |= (1 << SNOWCOVERED);
 					break;
@@ -161,11 +145,10 @@ bool Landscape::Load(Chunk& chunk, std::fstream& savefile)
 
 	res = uncompress(buf, &uncompsize, bufcompress, compsize);
 
-	if((uncompsize != CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2)||(res != Z_OK))
+	if((uncompsize != CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2)||(res != Z_OK)) {
 		return false;
-
-	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
-	{
+	}
+	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y) {
 		blocks[index].cMaterial = buf[index];
 		blocks[index].bVisible = buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
 
@@ -191,8 +174,7 @@ void Landscape::Save(Chunk& chunk, std::fstream& savefile)
 	buf = new Bytef[uncompsize];
 	bufcompress = new Bytef[compressBound(uncompsize)];
 
-	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
-	{
+	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y) {
 		buf[index] = blocks[index].cMaterial;
 		buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y] = blocks[index].bVisible & ((1 << SNOWCOVERED) | (1 << GRASSCOVERED));
 		index++;
@@ -211,14 +193,10 @@ void Landscape::Fill(Chunk& chunk, char mat, double fillness, int height)
 	ChunkInWorld chunkx = chunk.x;
 	ChunkInWorld chunkz = chunk.z;
 
-	for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++)
-	{
-		for(int k = chunkz*CHUNK_SIZE_XZ; k < (chunkz + 1)*CHUNK_SIZE_XZ; k++)
-		{
-			for(int j = 0; j < height; j++)
-			{
-				if((double)rand()/(double)RAND_MAX < fillness)
-				{
+	for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++) {
+		for(int k = chunkz*CHUNK_SIZE_XZ; k < (chunkz + 1)*CHUNK_SIZE_XZ; k++) {
+			for(int j = 0; j < height; j++) {
+				if((double)rand()/(double)RAND_MAX < fillness) {
 					if (mat == 0) material = rand()%4+1;
 					chunk.AddBlock(i, j, k, material);
 				}
