@@ -59,6 +59,9 @@
     <ClCompile Include="PlatformDefinitions.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="PositionItems.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Character.h">
@@ -101,6 +104,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="PlatformDefinitions.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionItems.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

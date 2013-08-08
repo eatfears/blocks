@@ -8,8 +8,8 @@ class World;
 
 typedef struct chnkpos
 {
-	ChunkInWorld x;
-	ChunkInWorld z;
+	ChunkCoord x;
+	ChunkCoord z;
 }ChunkPosition;
 
 typedef struct blockstruct
@@ -21,7 +21,7 @@ typedef struct blockstruct
 class Chunk
 {
 public:
-	Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld);
+	Chunk(ChunkCoord x, ChunkCoord z, World& wrld);
 	~Chunk();
 
 	Block *bBlocks;
@@ -30,21 +30,21 @@ public:
 	World& wWorld;
 	std::list<Block *> *DisplayedTiles;
 	std::list<Block *> *DisplayedWaterTiles;
-	ChunkInWorld x;
-	ChunkInWorld z;
+	ChunkCoord x;
+	ChunkCoord z;
 	char NeedToRender[2];
 
-	int	AddBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z, char mat);
-	int RemoveBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z);
+	int	AddBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
+	int RemoveBlock(BlockCoord x, BlockCoord y, BlockCoord z);
 
 	void ShowTile(Block *bBlock, char side);
 	void HideTile(Block *bBlock, char side);
 
-	char GetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z);
+	char GetBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z);
 
-	int GetBlockPositionByPointer(Block *bCurrentBlock, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z) const;
-	static int GetBlockPositionByIndex(int index, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z);
-	static int GetIndexByPosition(BlockInChunk x, BlockInChunk y, BlockInChunk z);
+	int GetBlockPositionByPointer(Block *bCurrentBlock, BlockCoord *x, BlockCoord *y, BlockCoord *z) const;
+	static int GetBlockPositionByIndex(int index, BlockCoord *x, BlockCoord *y, BlockCoord *z);
+	static int GetIndexByPosition(BlockCoord x, BlockCoord y, BlockCoord z);
 
 	void DrawLoadedBlocks();
 
@@ -58,7 +58,7 @@ public:
 	HANDLE loadmutex;
 
 private:
-	int SetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z, char cMat);
+	int SetBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat);
 	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, Block* block, char side);
 
 	GLuint RenderList;

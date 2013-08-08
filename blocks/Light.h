@@ -31,8 +31,8 @@ public:
 	static float LightTable[16];
 
 	void UpdateLight(void);
-	static void BlockLight(World& wWorld, Chunk& chunk, int side, BlockInChunk cx, BlockInChunk cy, BlockInChunk cz);
-	static void SoftLight(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorld Z, char side, int vertex);
+	static void BlockLight(World& wWorld, Chunk& chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz);
+	static void SoftLight(World& wWorld, BlockInWorld pos, char side, int vertex);
 	bool skylight;
 
 	static void GetLight(Chunk& chunk, int index, GLfloat& br);
@@ -41,9 +41,9 @@ private:
 
 	Chunk *ChunkArray[5][5];
 
-	void SetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val );
-	int GetVal( BlockInWorld i, BlockInWorld j, BlockInWorld k, bool *water_flag, bool *wall_flag  );
-	static float GetBrightAverage(World& wWorld, BlockInWorld X, BlockInWorld Y, BlockInWorld Z, int xx[8], int yy[8], int zz[8], char side);
-	void rec_diffuse( BlockInWorld i, BlockInWorld j, BlockInWorld k, int val, bool initial );
+	void SetVal( BlockInWorld pos, int val );
+	int GetVal( BlockInWorld pos, bool *water_flag, bool *wall_flag  );
+	static float GetBrightAverage(World& wWorld, BlockInWorld pos, int xx[8], int yy[8], int zz[8], char side);
+	void rec_diffuse( BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial );
 	void FillLight(Chunk& chunk, char bright, bool skylight);
 };

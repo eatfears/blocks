@@ -25,7 +25,7 @@ public:
 	bool  bSpecial[256];					// Массив, используемый для операций с клавиатурой
 
 	GLdouble dDispCenterCoordX, dDispCenterCoordY, dDispCenterCoordZ;			// возвращаемые мировые координаты центра
-	BlockInWorld sCenterBlockCoordX, sCenterBlockCoordY, sCenterBlockCoordZ;	// возвращаемые координаты куба
+	BlockInWorld sCenterBlockCoord;	// возвращаемые координаты куба
 
 	World& wWorld;
 	bool UnderWater;

@@ -61,8 +61,8 @@ void Landscape::Init(unsigned int seed)
 
 void Landscape::Generate(Chunk &chunk)
 {
-	ChunkInWorld chunkx = chunk.x;
-	ChunkInWorld chunkz = chunk.z;
+	ChunkCoord chunkx = chunk.x;
+	ChunkCoord chunkz = chunk.z;
 	double height;
 	double density;
 	double hx, hz;
@@ -190,8 +190,8 @@ void Landscape::Save(Chunk& chunk, std::fstream& savefile)
 void Landscape::Fill(Chunk& chunk, char mat, double fillness, int height)
 {
 	int material = mat;
-	ChunkInWorld chunkx = chunk.x;
-	ChunkInWorld chunkz = chunk.z;
+	ChunkCoord chunkx = chunk.x;
+	ChunkCoord chunkz = chunk.z;
 
 	for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++) {
 		for(int k = chunkz*CHUNK_SIZE_XZ; k < (chunkz + 1)*CHUNK_SIZE_XZ; k++) {

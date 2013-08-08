@@ -3,7 +3,7 @@
 #include "World.h"
 #include "Light.h"
 
-Chunk::Chunk(ChunkInWorld x, ChunkInWorld z, World& wrld)
+Chunk::Chunk(ChunkCoord x, ChunkCoord z, World& wrld)
 	: wWorld(wrld)
 {
 	Chunk::x = x; Chunk::z = z;
@@ -45,28 +45,26 @@ Chunk::~Chunk()
 	glDeleteLists(RenderList, 2);
 }
 
-int Chunk::AddBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z, char mat)
+int Chunk::AddBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat)
 {
 	x = x%CHUNK_SIZE_XZ;
 	y = y%CHUNK_SIZE_Y;
 	z = z%CHUNK_SIZE_XZ;
 	if((GetBlockMaterial(x, y, z) != MAT_NO)||(GetBlockMaterial(x, y, z) == -1)) return -1;
 
-	BlockInChunk index = SetBlockMaterial(x, y, z, mat);
+	BlockCoord index = SetBlockMaterial(x, y, z, mat);
 	bBlocks[index].bVisible = 0;
-
 	LightToUpdate = true;
 
 	return index;
 }
 
-int Chunk::RemoveBlock(BlockInChunk x, BlockInChunk y, BlockInChunk z)
+int Chunk::RemoveBlock(BlockCoord x, BlockCoord y, BlockCoord z)
 {
 	if((GetBlockMaterial(x, y, z) == MAT_NO)||(GetBlockMaterial(x, y, z) == -1)) return -1;
 
-	BlockInChunk index = SetBlockMaterial(x, y, z, MAT_NO);
+	BlockCoord index = SetBlockMaterial(x, y, z, MAT_NO);
 	bBlocks[index].bVisible = 0;
-
 	LightToUpdate = true;
 
 	return index;
@@ -113,7 +111,7 @@ void Chunk::HideTile(Block *bBlock, char side)
 	Tiles->erase(it);
 }
 
-char Chunk::GetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z)
+char Chunk::GetBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z)
 {
 	if((x >= CHUNK_SIZE_XZ)||(z >= CHUNK_SIZE_XZ)||(y >= CHUNK_SIZE_Y)) {
 		return -1;
@@ -121,7 +119,7 @@ char Chunk::GetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z)
 	return bBlocks[x*CHUNK_SIZE_XZ + z + y*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ].cMaterial;
 }
 
-int Chunk::SetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z, char cMat)
+int Chunk::SetBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat)
 {
 	if((x >= CHUNK_SIZE_XZ)||(z >= CHUNK_SIZE_XZ)||(y >= CHUNK_SIZE_Y)) {
 		return -1;
@@ -131,7 +129,7 @@ int Chunk::SetBlockMaterial(BlockInChunk x, BlockInChunk y, BlockInChunk z, char
 	return index;
 }
 
-int Chunk::GetBlockPositionByPointer(Block *tCurrentBlock, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z)
+int Chunk::GetBlockPositionByPointer(Block *tCurrentBlock, BlockCoord *x, BlockCoord *y, BlockCoord *z)
 	const
 {
 	int t = tCurrentBlock - bBlocks;
@@ -141,7 +139,7 @@ int Chunk::GetBlockPositionByPointer(Block *tCurrentBlock, BlockInChunk *x, Bloc
 	return 0;
 }
 
-int Chunk::GetBlockPositionByIndex(int index, BlockInChunk *x, BlockInChunk *y, BlockInChunk *z)
+int Chunk::GetBlockPositionByIndex(int index, BlockCoord *x, BlockCoord *y, BlockCoord *z)
 {
 	if((index < 0)||(index >= CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y))
 		return -1;
@@ -155,7 +153,7 @@ int Chunk::GetBlockPositionByIndex(int index, BlockInChunk *x, BlockInChunk *y, 
 	return 0;
 }
 
-int Chunk::GetIndexByPosition(BlockInChunk x, BlockInChunk y, BlockInChunk z)
+int Chunk::GetIndexByPosition(BlockCoord x, BlockCoord y, BlockCoord z)
 {
 	return x*CHUNK_SIZE_XZ + z + y*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
 }
@@ -163,7 +161,7 @@ int Chunk::GetIndexByPosition(BlockInChunk x, BlockInChunk y, BlockInChunk z)
 void Chunk::DrawLoadedBlocks()
 {
 	int index = 0;
-	BlockInChunk xx, yy, zz;
+	BlockCoord xx, yy, zz;
 
 	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y) {
 		GetBlockPositionByPointer(bBlocks + index, &xx, &yy, &zz);
@@ -282,7 +280,7 @@ void Chunk::Render(char mat, int *rendered)
 		}
 
 		std::list<Block *> *Tiles;
-		static BlockInChunk cx, cy, cz;
+		static BlockCoord cx, cy, cz;
 		static BlockInWorld xx, yy, zz;
 		static BlockInWorld blckwx, blckwz;
 

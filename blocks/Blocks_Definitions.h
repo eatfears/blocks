@@ -45,10 +45,6 @@
 #define CHUNK_SIZE_XZ	16
 #define CHUNK_SIZE_Y	128
 
-typedef unsigned short	BlockInChunk;
-typedef signed short	ChunkInWorld;
-typedef signed short	BlockInWorld;
-
 #define GL_EXECUTE		0x1302
 #define RENDER_NO_NEED	0
 #define RENDER_NEED		1
@@ -60,3 +56,5 @@ typedef signed short	BlockInWorld;
 
 #define DAY_TIME		2400.0
 #define WINAL_TIME		24000.0
+
+#include "PositionItems.h"

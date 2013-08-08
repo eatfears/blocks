@@ -105,6 +105,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="PlatformDefinitions.h" />
+    <ClInclude Include="PositionItems.h" />
     <ClInclude Include="Primes.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Statistics.h" />
@@ -112,6 +113,7 @@
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="PositionItems.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Blocks.cpp" />

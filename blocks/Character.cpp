@@ -24,9 +24,11 @@ Character::Character(World& ww)
 	dSpinX = 0;
 	dSpinY = 0;
 
-	sCenterBlockCoordX = 0;
-	sCenterBlockCoordY = 0;
-	sCenterBlockCoordZ = 0;
+	sCenterBlockCoord.cx = 0;
+	sCenterBlockCoord.cz = 0;
+	sCenterBlockCoord.bx = 0;
+	sCenterBlockCoord.by = 0;
+	sCenterBlockCoord.bz = 0;
 	LocalTimeOfDay = 0;
 	LocalTimeOfWinal = 0;
 		
@@ -139,6 +141,7 @@ void Character::Control(GLdouble FrameInterval)
 	GetPlane(&xerr, &yerr, &zerr);
 
 	if((zerr < xerr)&&(zerr < yerr)) {
+		BlockInWorld pos;
 		sCenterBlockCoordX = (BlockInWorld) floor(dDispCenterCoordX/BLOCK_SIZE + 0.5);
 		sCenterBlockCoordY = (BlockInWorld) floor(dDispCenterCoordY/BLOCK_SIZE);
 

@@ -7,8 +7,8 @@
 void LoadChunkThread(void* pParams)
 {
 	Param pParameters = *(Param*)pParams;
-	ChunkInWorld x = pParameters.x;
-	ChunkInWorld z = pParameters.z;
+	ChunkCoord x = pParameters.x;
+	ChunkCoord z = pParameters.z;
 	World &wWorld = *pParameters.wWorld;
 
 	SetEvent(wWorld.parget);
@@ -18,7 +18,7 @@ void LoadChunkThread(void* pParams)
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 #endif // _WIN32
 
-	if(wWorld.GetChunkByBlock(x*CHUNK_SIZE_XZ, z*CHUNK_SIZE_XZ)) {
+	if(wWorld.GetChunkByPosition(x, z)) {
 		ReleaseSemaphore(wWorld.semaphore, 1, NULL);
 		_endthread();
 		return;
@@ -68,8 +68,8 @@ void LoadChunkThread(void* pParams)
 void UnLoadChunkThread(void* pParams)
 {
 	Param pParameters = *(Param*)pParams;
-	ChunkInWorld x = pParameters.x;
-	ChunkInWorld z = pParameters.z;
+	ChunkCoord x = pParameters.x;
+	ChunkCoord z = pParameters.z;
 	World &wWorld = *pParameters.wWorld;
 
 	SetEvent(wWorld.parget);
@@ -144,8 +144,8 @@ void LoadNGenerate(void* pParams)
 {
 	Param pParameters = *(Param*)pParams;
 	World &wWorld = *pParameters.wWorld;
-	ChunkInWorld x = pParameters.x;
-	ChunkInWorld z = pParameters.z;
+	ChunkCoord x = pParameters.x;
+	ChunkCoord z = pParameters.z;
 	SetEvent(wWorld.parget2);
 
 	int size = 2;
