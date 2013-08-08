@@ -76,24 +76,24 @@ void World::DrawLoadedBlocksFinish(Chunk &chunk)
 			int TempIndex;
 
 			if(chunk.bBlocks[index].cMaterial == MAT_WATER) {
-				if(!FindBlock(pos + BlockInChunk(0,1,0), &TempChunk, &TempIndex)) ShowTile(&chunk, index, TOP);
-				if(!FindBlock(pos + BlockInChunk(0,-1,0), &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, BOTTOM); }
-				if(!FindBlock(pos + BlockInChunk(1,0,0), &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, RIGHT); }
-				if(!FindBlock(pos + BlockInChunk(-1,0,0), &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, LEFT); }
-				if(!FindBlock(pos + BlockInChunk(0,0,1), &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, BACK); }
-				if(!FindBlock(pos + BlockInChunk(0,0,-1), &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, FRONT); }
+				if(!FindBlock(pos.getSide(TOP), &TempChunk, &TempIndex)) ShowTile(&chunk, index, TOP);
+				if(!FindBlock(pos.getSide(BOTTOM), &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, BOTTOM); }
+				if(!FindBlock(pos.getSide(RIGHT), &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, RIGHT); }
+				if(!FindBlock(pos.getSide(LEFT), &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, LEFT); }
+				if(!FindBlock(pos.getSide(BACK), &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, BACK); }
+				if(!FindBlock(pos.getSide(FRONT), &TempChunk, &TempIndex)) { if(TempChunk) ShowTile(&chunk, index, FRONT); }
 			} else {
-				if(!FindBlock(pos + BlockInChunk(0,1,0), &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
+				if(!FindBlock(pos.getSide(TOP), &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
 					ShowTile(&chunk, index, TOP);}
-				if(!FindBlock(pos + BlockInChunk(0,-1,0), &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
+				if(!FindBlock(pos.getSide(BOTTOM), &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
 					if(TempChunk) ShowTile(&chunk, index, BOTTOM);}
-				if(!FindBlock(pos + BlockInChunk(1,0,0), &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
+				if(!FindBlock(pos.getSide(RIGHT), &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
 					if(TempChunk) ShowTile(&chunk, index, RIGHT);}
-				if(!FindBlock(pos + BlockInChunk(-1,0,0), &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
+				if(!FindBlock(pos.getSide(LEFT), &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
 					if(TempChunk) ShowTile(&chunk, index, LEFT);}
-				if(!FindBlock(pos + BlockInChunk(0,0,1), &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
+				if(!FindBlock(pos.getSide(BACK), &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
 					if(TempChunk) ShowTile(&chunk, index, BACK);}
-				if(!FindBlock(pos + BlockInChunk(0,0,-1), &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
+				if(!FindBlock(pos.getSide(FRONT), &TempChunk, &TempIndex)||(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) {
 					if(TempChunk) ShowTile(&chunk, index, FRONT);}
 			}
 		}
@@ -117,13 +117,13 @@ void World::DrawLoadedBlocksFinish(Chunk &chunk)
 			Chunk *tempLoc;
 			Chunk *tCurLoc = &chunk;
 			int tempIndex;
-			if(FindBlock(pos + BlockInChunk(1,0,0), &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc->bBlocks != tCurLoc->bBlocks)
+			if(FindBlock(pos.getSide(RIGHT), &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc->bBlocks != tCurLoc->bBlocks)
 				ShowTile(&*tempLoc, tempIndex, LEFT);
-			if(FindBlock(pos + BlockInChunk(-1,0,0), &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc->bBlocks != tCurLoc->bBlocks)
+			if(FindBlock(pos.getSide(LEFT), &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc->bBlocks != tCurLoc->bBlocks)
 				ShowTile(&*tempLoc, tempIndex, RIGHT);
-			if(FindBlock(pos + BlockInChunk(0,0,1), &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc->bBlocks != tCurLoc->bBlocks)
+			if(FindBlock(pos.getSide(BACK), &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc->bBlocks != tCurLoc->bBlocks)
 				ShowTile(&*tempLoc, tempIndex, FRONT);
-			if(FindBlock(pos + BlockInChunk(0,0,-1), &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc->bBlocks != tCurLoc->bBlocks)
+			if(FindBlock(pos.getSide(FRONT), &tempLoc, &tempIndex)&&(tempLoc->bBlocks[tempIndex].cMaterial != MAT_WATER)) if(tempLoc->bBlocks != tCurLoc->bBlocks)
 				ShowTile(&*tempLoc, tempIndex, BACK);
 		}
 		index++;
@@ -148,10 +148,10 @@ void World::DrawUnLoadedBlocks(ChunkCoord Cx, ChunkCoord Cz)
 
 		Chunk *TempChunk;
 		int TempIndex;
-		if(FindBlock(pos + BlockInChunk(1,0,0), &TempChunk, &TempIndex)) HideTile(&*TempChunk, TempIndex, LEFT);
-		if(FindBlock(pos + BlockInChunk(-1,0,0), &TempChunk, &TempIndex)) HideTile(&*TempChunk, TempIndex, RIGHT);
-		if(FindBlock(pos + BlockInChunk(0,0,1), &TempChunk, &TempIndex)) HideTile(&*TempChunk, TempIndex, FRONT);
-		if(FindBlock(pos + BlockInChunk(0,0,-1), &TempChunk, &TempIndex)) HideTile(&*TempChunk, TempIndex, BACK);
+		if(FindBlock(pos.getSide(RIGHT), &TempChunk, &TempIndex)) HideTile(&*TempChunk, TempIndex, LEFT);
+		if(FindBlock(pos.getSide(LEFT), &TempChunk, &TempIndex)) HideTile(&*TempChunk, TempIndex, RIGHT);
+		if(FindBlock(pos.getSide(BACK), &TempChunk, &TempIndex)) HideTile(&*TempChunk, TempIndex, FRONT);
+		if(FindBlock(pos.getSide(FRONT), &TempChunk, &TempIndex)) HideTile(&*TempChunk, TempIndex, BACK);
 		index++;
 	}
 }
@@ -174,35 +174,35 @@ int World::AddBlock(BlockInWorld pos, char mat, bool show)
 	int TempIndex;
 
 	if(chunk->bBlocks[index].cMaterial == MAT_WATER) {
-		if(!FindBlock(pos + BlockInChunk(0,1,0), &TempChunk, &TempIndex)) ShowTile(chunk, index, TOP);
+		if(!FindBlock(pos.getSide(TOP), &TempChunk, &TempIndex)) ShowTile(chunk, index, TOP);
 		else if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(TempChunk, TempIndex, BOTTOM);
-		if(!FindBlock(pos + BlockInChunk(0,-1,0), &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(chunk, index, BOTTOM);}
+		if(!FindBlock(pos.getSide(BOTTOM), &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(chunk, index, BOTTOM);}
 		else if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(TempChunk, TempIndex, TOP);
-		if(!FindBlock(pos + BlockInChunk(1,0,0), &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(chunk, index, RIGHT);}
+		if(!FindBlock(pos.getSide(RIGHT), &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(chunk, index, RIGHT);}
 		else if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(TempChunk, TempIndex, LEFT);
-		if(!FindBlock(pos + BlockInChunk(-1,0,0), &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(chunk, index, LEFT);}
+		if(!FindBlock(pos.getSide(LEFT), &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(chunk, index, LEFT);}
 		else if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(TempChunk, TempIndex, RIGHT);
-		if(!FindBlock(pos + BlockInChunk(0,0,1), &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(chunk, index, BACK);}
+		if(!FindBlock(pos.getSide(BACK), &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(chunk, index, BACK);}
 		else if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(TempChunk, TempIndex, FRONT);
-		if(!FindBlock(pos + BlockInChunk(0,0,-1), &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(chunk, index, FRONT);}
+		if(!FindBlock(pos.getSide(FRONT), &TempChunk, &TempIndex)) {if(TempChunk) ShowTile(chunk, index, FRONT);}
 		else if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(TempChunk, TempIndex, BACK);
 	} else {
-		if(!FindBlock(pos + BlockInChunk(0,1,0), &TempChunk, &TempIndex))
+		if(!FindBlock(pos.getSide(TOP), &TempChunk, &TempIndex))
 			ShowTile(chunk, index, TOP);
 		else {HideTile(TempChunk, TempIndex, BOTTOM); if (TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) ShowTile(chunk, index, TOP);}
-		if(!FindBlock(pos + BlockInChunk(0,-1,0), &TempChunk, &TempIndex)) {
+		if(!FindBlock(pos.getSide(BOTTOM), &TempChunk, &TempIndex)) {
 			if(TempChunk) ShowTile(chunk, index, BOTTOM);}
 		else {if ((TempChunk)&&(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) ShowTile(chunk, index, BOTTOM); else HideTile(TempChunk, TempIndex, TOP); }
-		if(!FindBlock(pos + BlockInChunk(1,0,0), &TempChunk, &TempIndex)) {
+		if(!FindBlock(pos.getSide(RIGHT), &TempChunk, &TempIndex)) {
 			if(TempChunk) ShowTile(chunk, index, RIGHT);}
 		else {HideTile(TempChunk, TempIndex, LEFT); if ((TempChunk)&&(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) ShowTile(chunk, index, RIGHT);}
-		if(!FindBlock(pos + BlockInChunk(-1,0,0), &TempChunk, &TempIndex)) {
+		if(!FindBlock(pos.getSide(LEFT), &TempChunk, &TempIndex)) {
 			if(TempChunk) ShowTile(chunk, index, LEFT);}
 		else {HideTile(TempChunk, TempIndex, RIGHT); if ((TempChunk)&&(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) ShowTile(chunk, index, LEFT);}
-		if(!FindBlock(pos + BlockInChunk(0,0,1), &TempChunk, &TempIndex)) {
+		if(!FindBlock(pos.getSide(BACK), &TempChunk, &TempIndex)) {
 			if(TempChunk) ShowTile(chunk, index, BACK);}
 		else {HideTile(TempChunk, TempIndex, FRONT); if ((TempChunk)&&(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) ShowTile(chunk, index, BACK);}
-		if(!FindBlock(pos + BlockInChunk(0,0,-1), &TempChunk, &TempIndex)) {
+		if(!FindBlock(pos.getSide(FRONT), &TempChunk, &TempIndex)) {
 			if(TempChunk) ShowTile(chunk, index, FRONT);}
 		else {HideTile(TempChunk, TempIndex, BACK); if ((TempChunk)&&(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER)) ShowTile(chunk, index, FRONT);}
 	}

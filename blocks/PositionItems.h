@@ -27,6 +27,9 @@ public:
 	BlockInWorld(ChunkCoord cx, ChunkCoord cz, BlockCoord bx, BlockCoord by, BlockCoord bz)
 		:cx(cx), cz(cz), bx(bx), by(by), bz(bz) { norm(); }
 
+	BlockInWorld(ChunkCoord cx, ChunkCoord cz)
+		:cx(cx), cz(cz), bx(0), by(0), bz(0) {}
+
 	BlockInWorld(BlockCoord bx, BlockCoord by, BlockCoord bz)
 		:cx(0), cz(0), bx(bx), by(by), bz(bz) { norm(); }
 

@@ -59,7 +59,7 @@ public:
 
 private:
 	int SetBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat);
-	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, Block* block, char side);
+	void DrawTile(BlockInWorld pos, Block* block, char side);
 
 	GLuint RenderList;
 	bool listgen;

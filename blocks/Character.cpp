@@ -136,7 +136,7 @@ void Character::Control(GLdouble FrameInterval)
 		dVelocityY = 0;
 		dVelocityZ = 0;
 	}
-
+	/*
 	GLdouble yerr, xerr, zerr;
 	GetPlane(&xerr, &yerr, &zerr);
 
@@ -170,41 +170,37 @@ void Character::Control(GLdouble FrameInterval)
 	if(bKeyboard['1']) {
 		int i = 0;
 		while(i < num) {
-			if(wWorld.AddBlock(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, rand()%14+1, true))
+			if(wWorld.AddBlock(BlockInWorld(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2), rand()%14+1, true))
 				i++;
 		}
 	}
 	if(bKeyboard['2']) {
 		int i = 0;
 		while(i < num) {
-			if(wWorld.RemoveBlock(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2, true))
+			if(wWorld.RemoveBlock(BlockInWorld(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2), true))
 				i++;
 		}
 	}
 
-	if(bKeyboard['3'])
-	{
-		for(int i = -sqb2; i <= sqb2; i++) {
-			for(int j = -sqb2; j <= sqb2; j++) {
-				for(int k = -sqb2; k <= sqb2; k++) {
-					wWorld.RemoveBlock(i, j, k, true);
+	if(bKeyboard['3']) {
+		for(BlockCoord i = -sqb2; i <= sqb2; i++) {
+			for(BlockCoord j = -sqb2; j <= sqb2; j++) {
+				for(BlockCoord k = -sqb2; k <= sqb2; k++) {
+					wWorld.RemoveBlock(BlockInWorld(i, j, k), true);
 				}
 			}
 		}
 	}
 
-	if(bKeyboard['4'])
-	{
+	if(bKeyboard['4']) {
 		wWorld.LoadChunk(0, 0);
 		bKeyboard['4'] = false;
 	}
-	if(bKeyboard['5'])
-	{
+	if(bKeyboard['5']) {
 		wWorld.UnLoadChunk(0, 0);
 		bKeyboard['5'] = false;
 	}
-	if(bKeyboard['6'])
-	{
+	if(bKeyboard['6']) {
 		for(int i = 0; i < 8; i++)
 			for(int j = 0; j < 8; j++)
 				wWorld.LoadChunk(i, j);
@@ -268,6 +264,7 @@ void Character::Control(GLdouble FrameInterval)
 	if(bKeyboard['O']) {
 		wWorld.SaveChunks();
 	}
+	*/
 
 	dPositionX += FrameInterval*dVelocityX;
 	dPositionZ += FrameInterval*dVelocityZ;
@@ -377,12 +374,13 @@ void Character::GetLocalTime(double TimeOfDay, double TimeOfWinal)
 
 void Character::GetMyPosition()
 {
-	BlockInWorld x, y, z;
-	x = (BlockInWorld) Primes::Round(dPositionX/BLOCK_SIZE);
-	y = (BlockInWorld) Primes::Round(dPositionY/BLOCK_SIZE - 0.5 + 0.125);
-	z = (BlockInWorld) Primes::Round(dPositionZ/BLOCK_SIZE);
+	BlockInWorld pos(
+		Primes::Round(dPositionX/BLOCK_SIZE),
+		Primes::Round(dPositionY/BLOCK_SIZE - 0.5 + 0.125),
+		Primes::Round(dPositionZ/BLOCK_SIZE)
+		);
 
-	wWorld.FindBlock(x, y, z, &chunk, &index);
+	wWorld.FindBlock(pos, &chunk, &index);
 	if((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_WATER))
 		UnderWater = true;
 	else

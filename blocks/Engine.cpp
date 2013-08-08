@@ -233,7 +233,7 @@ void Engine::InitGame()
 }
 
 void Engine::DrawSelectedItem()
-{
+{/*
 	Character &player = wWorld.player;
 	if(!wWorld.FindBlock(player.sCenterBlockCoordX,player.sCenterBlockCoordY,player.sCenterBlockCoordZ))
 		return;
@@ -291,6 +291,7 @@ void Engine::DrawSelectedItem()
 	glEnd();
 
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+	*/
 }
 
 void Engine::DrawInterface()
