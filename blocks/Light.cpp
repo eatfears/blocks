@@ -6,6 +6,7 @@
 #include "World.h"
 #include "Material.h"
 
+// todo: first frame of game is in night
 char Light::InfluencingLight[6][4] = {
 	4, 5, 6, 7, 4, 5, 6, 7,
 	2, 3, 6, 7, 2, 3, 6, 7,

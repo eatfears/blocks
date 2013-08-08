@@ -113,7 +113,7 @@ void Chunk::HideTile(Block *bBlock, char side)
 
 char Chunk::GetBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z)
 {
-	if((x >= CHUNK_SIZE_XZ)||(z >= CHUNK_SIZE_XZ)||(y >= CHUNK_SIZE_Y)) {
+	if((x < 0)||(z < 0)||(y < 0)||(x >= CHUNK_SIZE_XZ)||(z >= CHUNK_SIZE_XZ)||(y >= CHUNK_SIZE_Y)) {
 		return -1;
 	}
 	return bBlocks[x*CHUNK_SIZE_XZ + z + y*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ].cMaterial;

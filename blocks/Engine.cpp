@@ -19,7 +19,8 @@ Engine::Engine()
 	width = 0;
 	height = 0;
 	FrameInterval = 0.0;
-	TimeOfDay = 000.0;
+	// todo: time problem!
+	TimeOfDay = 6*100;
 	TimeOfWinal = 000.0;
 }
 

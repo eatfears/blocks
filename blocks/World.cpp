@@ -30,13 +30,11 @@ World::~World()
 
 void World::BuildWorld()
 {
-	/*
 	Param par = {0, 0, this};
 	_beginthread(LoadNGenerate, 0, &par);
 
 	WaitForSingleObject(parget2, INFINITE);
 	ResetEvent(parget2);
-	*/
 }
 
 Chunk* World::GetChunkByPosition(ChunkCoord Cx, ChunkCoord Cz)
