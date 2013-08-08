@@ -162,6 +162,7 @@ void Character::Control(GLdouble FrameInterval)
 		if(dPositionY < dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) Primes::Round(dDispCenterCoordY/BLOCK_SIZE);
 		if(dPositionY > dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) Primes::Round(dDispCenterCoordY/BLOCK_SIZE - 1.0);
 	}
+	*/
 
 	int num = 100;
 	int sq = 100;
@@ -212,18 +213,19 @@ void Character::Control(GLdouble FrameInterval)
 				wWorld.UnLoadChunk(i, j);
 		bKeyboard['7'] = false;
 	}
+
 	if(bKeyboard['0']) {
 		static Param par = {0, 1, &wWorld};
 
-			_beginthread(LoadNGenerate, 0, &par);
+		_beginthread(LoadNGenerate, 0, &par);
 
 		WaitForSingleObject(wWorld.parget2, INFINITE);
 		ResetEvent(wWorld.parget2);
 
 		par.z++;
-
 		bKeyboard['0'] = false;
 	}
+	/*
 	if(bKeyboard['C']) {
 		Chunk *chunk;
 		int index;
@@ -261,10 +263,10 @@ void Character::Control(GLdouble FrameInterval)
 
 		wWorld.AddBlock(ix, iy, iz, MAT_PUMPKIN_SHINE, true);
 	}
+	*/
 	if(bKeyboard['O']) {
 		wWorld.SaveChunks();
 	}
-	*/
 
 	dPositionX += FrameInterval*dVelocityX;
 	dPositionZ += FrameInterval*dVelocityZ;

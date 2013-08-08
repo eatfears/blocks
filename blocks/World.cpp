@@ -14,7 +14,7 @@ World::World()
 	parget2 = CreateEvent(NULL, false, false, NULL);
 	mutex = CreateMutex(NULL, false, NULL);
 	semaphore = CreateSemaphore(NULL, 4, 4, NULL);
-	SoftLight = true;
+	SoftLight = 0;
 
 	SkyBright = 1.0f;
 	LightToRefresh = true;
@@ -30,11 +30,13 @@ World::~World()
 
 void World::BuildWorld()
 {
+	/*
 	Param par = {0, 0, this};
 	_beginthread(LoadNGenerate, 0, &par);
 
 	WaitForSingleObject(parget2, INFINITE);
 	ResetEvent(parget2);
+	*/
 }
 
 Chunk* World::GetChunkByPosition(ChunkCoord Cx, ChunkCoord Cz)

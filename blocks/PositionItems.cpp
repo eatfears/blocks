@@ -3,27 +3,28 @@
 
 BlockInWorld BlockInWorld::getSide(char side)
 {
+	BlockInWorld res(*this);
 	switch(side) {
 	case TOP:
-		return *this + BlockInWorld(0,1,0);
+		return res + BlockInWorld(0,1,0);
 		break;
 	case BOTTOM:
-		return *this + BlockInWorld(0,-1,0);
+		return res + BlockInWorld(0,-1,0);
 		break;
 	case RIGHT:
-		return *this + BlockInWorld(1,0,0);
+		return res + BlockInWorld(1,0,0);
 		break;
 	case LEFT:
-		return *this + BlockInWorld(-1,0,0);
+		return res + BlockInWorld(-1,0,0);
 		break;
 	case FRONT:
-		return *this + BlockInWorld(0,0,-1);
+		return res + BlockInWorld(0,0,-1);
 		break;
 	case BACK:
-		return *this + BlockInWorld(0,0,1);
+		return res + BlockInWorld(0,0,1);
 		break;
 	}
-	return *this;
+	return res;
 }
 
 void BlockInWorld::norm()

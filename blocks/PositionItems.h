@@ -36,20 +36,14 @@ public:
 	~BlockInWorld() {}
 
 	BlockInWorld operator + (BlockInWorld b) {
-		cx += b.cx;
-		cz += b.cz;
-		bx += b.bx;
-		by += b.by;
-		bz += b.bz;
-		norm();
-		return *this;
+		BlockInWorld res(cx+b.cx,cz+b.cz,bx+b.bx,by+b.by,bz+b.bz);
+		res.norm();
+		return res;
 	}
 	BlockInWorld operator + (BlockInChunk b) {
-		bx += b.x;
-		by += b.y;
-		bz += b.z;
+		BlockInWorld res(cx,cz,bx+b.x,by+b.y,bz+b.z);
 		norm();
-		return *this;
+		return res;
 	}
 
 	BlockInWorld getSide(char side);
