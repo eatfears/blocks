@@ -140,10 +140,6 @@ void Light::BlockLight(World& wWorld, Chunk& chunk, char side, BlockCoord cx, Bl
 		static Chunk *temploc;
 		static BlockInWorld pos, posSide;
 		static GLfloat res;
-		static BlockCoord
-			xloclight,
-			yloclight,
-			zloclight;
 		static BlockInWorld chunkPos;
 
 		pos = BlockInWorld(chunk.x, chunk.z, cx, cy, cz);
@@ -154,8 +150,7 @@ void Light::BlockLight(World& wWorld, Chunk& chunk, char side, BlockCoord cx, Bl
 			temploc = wWorld.GetChunkByPosition(posSide.cx, posSide.cz);
 		} else temploc = &chunk;
 
-		// todo: check bounds
-		//if((ylight >= CHUNK_SIZE_Y)||(ylight < 0)) temploc = NULL;
+		if(pos.overflow()) temploc = NULL;
 		if (temploc) {
 			int index = temploc->GetIndexByPosition(posSide.bx, posSide.by, posSide.bz);
 

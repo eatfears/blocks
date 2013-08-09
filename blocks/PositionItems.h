@@ -47,6 +47,7 @@ public:
 	}
 
 	BlockInWorld getSide(char side);
+	bool overflow() { return by >= CHUNK_SIZE_Y || by < 0; }
 
 private:
 	void norm();

@@ -224,17 +224,17 @@ int World::RemoveBlock(BlockInWorld pos, bool show)
 	Chunk *TempChunk = 0;
 	int TempIndex;
 
-	if(!FindBlock(pos + BlockInChunk(0,1,0), &TempChunk, &TempIndex)||chunk->bBlocks[index].cMaterial == MAT_WATER) HideTile(chunk, index, TOP);
+	if(!FindBlock(pos.getSide(TOP), &TempChunk, &TempIndex)||chunk->bBlocks[index].cMaterial == MAT_WATER) HideTile(chunk, index, TOP);
 	else {ShowTile(TempChunk, TempIndex, BOTTOM); if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(chunk, index, TOP);}
-	if(!FindBlock(pos + BlockInChunk(0,-1,0), &TempChunk, &TempIndex)) HideTile(chunk, index, BOTTOM);
+	if(!FindBlock(pos.getSide(BOTTOM), &TempChunk, &TempIndex)) HideTile(chunk, index, BOTTOM);
 	else {ShowTile(TempChunk, TempIndex, TOP); if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(chunk, index, BOTTOM);}
-	if(!FindBlock(pos + BlockInChunk(1,0,0), &TempChunk, &TempIndex)) HideTile(chunk, index, RIGHT);
+	if(!FindBlock(pos.getSide(RIGHT), &TempChunk, &TempIndex)) HideTile(chunk, index, RIGHT);
 	else {ShowTile(TempChunk, TempIndex, LEFT); if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(chunk, index, RIGHT);}
-	if(!FindBlock(pos + BlockInChunk(-1,0,0), &TempChunk, &TempIndex)) HideTile(chunk, index, LEFT);
+	if(!FindBlock(pos.getSide(LEFT), &TempChunk, &TempIndex)) HideTile(chunk, index, LEFT);
 	else {ShowTile(TempChunk, TempIndex, RIGHT); if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(chunk, index, LEFT);}
-	if(!FindBlock(pos + BlockInChunk(0,0,1), &TempChunk, &TempIndex)) HideTile(chunk, index, BACK);
+	if(!FindBlock(pos.getSide(BACK), &TempChunk, &TempIndex)) HideTile(chunk, index, BACK);
 	else {ShowTile(TempChunk, TempIndex, FRONT); if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(chunk, index, BACK);}
-	if(!FindBlock(pos + BlockInChunk(0,0,-1), &TempChunk, &TempIndex)) HideTile(chunk, index, FRONT);
+	if(!FindBlock(pos.getSide(FRONT), &TempChunk, &TempIndex)) HideTile(chunk, index, FRONT);
 	else {ShowTile(TempChunk, TempIndex, BACK); if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(chunk, index, FRONT);}
 
 	DWORD dwWaitResult;

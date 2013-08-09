@@ -45,7 +45,4 @@ void BlockInWorld::norm()
 		bz += CHUNK_SIZE_XZ;
 		cz--;
 	}
-	// todo: what to do here?
-	//if(by >= CHUNK_SIZE_Y) { by = CHUNK_SIZE_Y - 1; }
-	//if(by < 0) { by = 0; }
 }
