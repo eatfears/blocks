@@ -171,7 +171,7 @@ void Character::Control(GLdouble FrameInterval)
 	if(bKeyboard['1']) {
 		int i = 0;
 		while(i < num) {
-			if(wWorld.AddBlock(BlockInWorld(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2), rand()%14+1, true))
+			if(wWorld.AddBlock(BlockInWorld(rand()%sq-sqb2, abs(rand()%sq-sqb2), rand()%sq-sqb2), rand()%14+1, true))
 				i++;
 		}
 	}

@@ -14,7 +14,7 @@ World::World()
 	parget2 = CreateEvent(NULL, false, false, NULL);
 	mutex = CreateMutex(NULL, false, NULL);
 	semaphore = CreateSemaphore(NULL, 4, 4, NULL);
-	SoftLight = 0;
+	SoftLight = true;
 
 	SkyBright = 1.0f;
 	LightToRefresh = true;
@@ -172,7 +172,7 @@ int World::AddBlock(BlockInWorld pos, char mat, bool show)
 
 	Chunk *TempChunk = 0;
 	int TempIndex;
-
+	
 	if(chunk->bBlocks[index].cMaterial == MAT_WATER) {
 		if(!FindBlock(pos.getSide(TOP), &TempChunk, &TempIndex)) ShowTile(chunk, index, TOP);
 		else if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(TempChunk, TempIndex, BOTTOM);
