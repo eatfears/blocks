@@ -19,7 +19,7 @@ Engine::Engine()
 	width = 0;
 	height = 0;
 	FrameInterval = 0.0;
-	// todo: time problem!
+	// todo: time problem! how to measure?
 	TimeOfDay = 6*100;
 	TimeOfWinal = 000.0;
 }
@@ -33,24 +33,19 @@ int Engine::InitGL()
 	wWorld.MaterialLib.AllocGLTextures();
 	wWorld.MaterialLib.LoadGLTextures();
 
-	wWorld.player.dPositionY = 100*BLOCK_SIZE+00.0;
+	wWorld.player.position = PosInWorld(0, 100*BLOCK_SIZE, 0);
 	wWorld.player.dSpinY = -90 - 45;
-	glutSetCursor(GLUT_CURSOR_NONE);							//Выставляем на НЕТ КУРСОР
+	glutSetCursor(GLUT_CURSOR_NONE);
 
 	glShadeModel(GL_SMOOTH);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClearDepth(1.0f);											// Разрешить очистку буфера глубины
+	glClearDepth(1.0f);
 
-	glEnable(GL_DEPTH_TEST);									// Разрешить тест глубины
-
-	glDepthFunc(GL_LEQUAL);										// Тип теста глубины
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);			// Улучшение в вычислении перспективы
-
-	//рассчет текстур
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glEnable(GL_TEXTURE_2D);
-
-	//автоматическое приведение нормалей к единичной длине
-	glEnable(GL_NORMALIZE);
+	glEnable(GL_NORMALIZE);		// normales to 1
 
 	return true;
 }
@@ -75,7 +70,7 @@ void Engine::Display()
 	OpenGL3d();
 
 	Character &player = wWorld.player;
-	if(player.UnderWater) {
+	if(player.underWater) {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	} else {
 		glClearColor(FogColor[0], FogColor[1], FogColor[2], FogColor[3]);
@@ -84,7 +79,7 @@ void Engine::Display()
 	//Set position
 	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
 	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
-	glTranslated(-player.dPositionX, -player.dPositionY, -player.dPositionZ);
+	glTranslated(-player.position.bx, -player.position.by, -player.position.bz);
 
 	DrawBottomBorder();
 	DrawSunMoon();
@@ -93,7 +88,7 @@ void Engine::Display()
 	glFogi(GL_FOG_MODE,  GL_LINEAR);
 	glHint(GL_FOG_HINT, GL_DONT_CARE);
 
-	if(player.UnderWater) {
+	if(player.underWater) {
 		glFogfv(GL_FOG_COLOR, WaterFogColor);
 		glFogf(GL_FOG_DENSITY, 20.0);
 		glFogf(GL_FOG_START, BLOCK_SIZE*10);
@@ -105,7 +100,7 @@ void Engine::Display()
 		glFogf(GL_FOG_END, MAX_VIEV_DIST);
 	}
 
-	if(player.dPositionY < (CHUNK_SIZE_Y + 16)*BLOCK_SIZE) {
+	if(player.position.by < (CHUNK_SIZE_Y + 16)*BLOCK_SIZE) {
 		DrawClouds();
 	}
 
@@ -170,8 +165,9 @@ void Engine::Display()
 
 	stat.reRenderedChunks += render;
 
-	if(player.dPositionY >= (CHUNK_SIZE_Y + 16)*BLOCK_SIZE)
+	if(player.position.by >= (CHUNK_SIZE_Y + 16)*BLOCK_SIZE) {
 		DrawClouds();
+	}
 
 	glDisable(GL_FOG);
 }
@@ -309,7 +305,7 @@ void Engine::DrawInterface()
 	OpenGL2d();
 
 	//Underwater haze
-	if((player.UnderWater)&&(player.chunk)) {
+	if((player.underWater)&&(player.chunk)) {
 		GLfloat Brightness;
 		Light::GetLight(*player.chunk, player.index, Brightness);
 
@@ -374,7 +370,6 @@ void Engine::DrawInterface()
 	glVertex2i( 9 + WidthBy2, HeightBy2);
 	glEnd();
 
-	//Statistics
 	stat.PrintStat();
 
 	glDisable(GL_BLEND);
@@ -382,6 +377,7 @@ void Engine::DrawInterface()
 
 void Engine::Loop()
 {
+	GetFrameTime();
 	Character &player = wWorld.player;
 	GetFogColor();
 	player.GetMyPosition();
@@ -391,8 +387,6 @@ void Engine::Loop()
 
 	player.Control(FrameInterval);
 	DrawInterface();
-
-	GetFrameTime();
 
 	glutSwapBuffers();
 	glFinish();				//may be bad!!!!!!!
@@ -457,7 +451,7 @@ void Engine::OpenGL2d()
 void Engine::OpenGL3d()
 {
 	float fovy;
-	if(wWorld.player.UnderWater) {
+	if(wWorld.player.underWater) {
 		fovy = 60.0f;
 	} else {
 		fovy = 70.0f;
@@ -536,8 +530,8 @@ void Engine::DrawBottomBorder()
 	glPushMatrix();
 
 	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[CLOUDS]);
-
-	glTranslated(player.dPositionX, 0, player.dPositionZ);
+	// todo: coords!!
+	glTranslated(player.position.bx, 0, player.position.bz);
 	glRotated(90, 1.0, 0.0, 0.0);
 
 	res = 1.0 - wWorld.SkyBright;
@@ -572,11 +566,12 @@ void Engine::DrawClouds()
 
 	res = 1.0 - wWorld.SkyBright;
 	glColor4f(res, res, res, 0.8f);
+	// todo: wtf with coords
 
-	GLdouble Xposition = player.dPositionX/(2.5*CloudSize);
-	GLdouble Zposition = player.dPositionZ/(2.5*CloudSize);
+	GLdouble Xposition = player.position.bx/(2.5*CloudSize);
+	GLdouble Zposition = player.position.bz/(2.5*CloudSize);
 
-	glTranslated(player.dPositionX, (CHUNK_SIZE_Y + 16)*BLOCK_SIZE, player.dPositionZ);
+	glTranslated(player.position.bx, (CHUNK_SIZE_Y + 16)*BLOCK_SIZE, player.position.bz);
 	glRotated(90, 1.0, 0.0, 0.0);
 	glBegin(GL_QUADS);
 

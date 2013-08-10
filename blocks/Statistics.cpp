@@ -35,14 +35,19 @@ void Statistics::PrintStat(void)
 		FrameCount = 0;
 	}
 
-	RenderString(50, engine.height - 50, font, cFPS);
+	RenderString(50, engine.height - 10, font, cFPS);
 
 	Character &player = engine.wWorld.player;
-	b_sprintf(pos, "X: %0.10f\n", player.dPositionX/BLOCK_SIZE);
+
+	b_sprintf(pos, "CX: %d\n", player.position.cx);
+	RenderString(50, engine.height - 30, font, pos);
+	b_sprintf(pos, "CZ: %d\n", player.position.cz);
+	RenderString(50, engine.height - 50, font, pos);
+	b_sprintf(pos, "X: %0.10f\n", player.position.bx/BLOCK_SIZE);
 	RenderString(50, engine.height - 70, font, pos);
-	b_sprintf(pos, "Y: %0.10f\n", player.dPositionY/BLOCK_SIZE);
+	b_sprintf(pos, "Y: %0.10f\n", player.position.by/BLOCK_SIZE);
 	RenderString(50, engine.height - 90, font, pos);
-	b_sprintf(pos, "Z: %0.10f\n", player.dPositionZ/BLOCK_SIZE);
+	b_sprintf(pos, "Z: %0.10f\n", player.position.bz/BLOCK_SIZE);
 	RenderString(50, engine.height - 110, font, pos);
 
 	b_sprintf(pos, "Rendered: %d\n", reRenderedChunks);

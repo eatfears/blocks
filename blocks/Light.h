@@ -20,7 +20,7 @@ O - also need this chunks to fill * chunks
 ' - dont need this chunks
 */
 class World;
-
+// todo: rendered tiles dont saved
 class Light
 {
 public:

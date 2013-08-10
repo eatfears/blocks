@@ -133,9 +133,9 @@ int Chunk::GetBlockPositionByPointer(Block *tCurrentBlock, BlockCoord *x, BlockC
 	const
 {
 	int t = tCurrentBlock - bBlocks;
-	if(GetBlockPositionByIndex(t, x, y, z) == -1)
+	if(GetBlockPositionByIndex(t, x, y, z) == -1) {
 		return -1;
-
+	}
 	return 0;
 }
 
@@ -197,7 +197,6 @@ void Chunk::Open()
 {
 	bool loaded = false;
 	std::fstream savefile;
-
 	std::stringstream temp;
 	std::string filename;
 
@@ -222,7 +221,6 @@ void Chunk::Open()
 void Chunk::Save()
 {
 	std::fstream savefile;
-
 	std::stringstream temp;
 	std::string filename;
 
@@ -230,8 +228,7 @@ void Chunk::Save()
 	filename = temp.str();
 
 	savefile.open (filename, std::fstream::out | std::fstream::binary);
-	if(savefile.is_open())
-	{	
+	if(savefile.is_open()) s{	
 		wWorld.lLandscape.Save(*this, savefile);
 		savefile.close();
 	}

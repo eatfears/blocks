@@ -1,5 +1,9 @@
 #include "Blocks_Definitions.h"
 #include "PositionItems.h"
+#include "Primes.h"
+
+BlockInWorld::BlockInWorld(PosInWorld pos) 
+	:cx(pos.cx), cz(pos.cz), bx(Primes::Round(pos.bx/BLOCK_SIZE)), by(Primes::Round(pos.by/BLOCK_SIZE)), bz(Primes::Round(pos.bz/BLOCK_SIZE)) {};
 
 BlockInWorld BlockInWorld::getSide(char side)
 {
@@ -45,4 +49,28 @@ void BlockInWorld::norm()
 		bz += CHUNK_SIZE_XZ;
 		cz--;
 	}
+}
+
+void PosInWorld::norm()
+{
+	while(bx >= CHUNK_SIZE_XZ*BLOCK_SIZE) {
+		bx -= CHUNK_SIZE_XZ*BLOCK_SIZE;
+		cx++;
+	}
+	while(bz >= CHUNK_SIZE_XZ*BLOCK_SIZE) {
+		bz -= CHUNK_SIZE_XZ*BLOCK_SIZE;
+		cz++;
+	}
+	while(bx < 0) {
+		bx += CHUNK_SIZE_XZ*BLOCK_SIZE;
+		cx--;
+	}
+	while(bz < 0) {
+		bz += CHUNK_SIZE_XZ*BLOCK_SIZE;
+		cz--;
+	}
+}
+
+BlockInWorld PosInWorld::toBlockInChunk() {
+	return 	BlockInWorld(*this);
 }

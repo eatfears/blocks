@@ -8,14 +8,10 @@
 Character::Character(World& ww)
 	: wWorld(ww)
 {
-	bFalling = true;
 	for(int i = 0; i < 256; i++) {
 		bKeyboard[i] = false;
 		bSpecial[i] = false;
 	}
-	dPositionX = 0;
-	dPositionY = 0;
-	dPositionZ = 0;
 
 	dVelocityX = 0;
 	dVelocityY = 0;
@@ -35,7 +31,7 @@ Character::Character(World& ww)
 	Longitude = 0;
 	Longitude2 = 0;
 
-	UnderWater = false;
+	underWater = false;
 }
 
 Character::~Character()
@@ -74,7 +70,7 @@ void Character::Control(GLdouble FrameInterval)
 		step *= SPRINT_KOEF;
 
 	if(bKeyboard['W']) {
-		if(!bFalling) {
+		if(0) {
 			dVelocityX -= step*sin(TORAD(dSpinY));
 			dVelocityZ -= step*cos(TORAD(dSpinY));
 		} else {
@@ -83,7 +79,7 @@ void Character::Control(GLdouble FrameInterval)
 		}
 	}
 	if(bKeyboard['S']) {
-		if(!bFalling) {
+		if(0) {
 			dVelocityX += step*sin(TORAD(dSpinY));
 			dVelocityZ += step*cos(TORAD(dSpinY));
 		} else {
@@ -92,7 +88,7 @@ void Character::Control(GLdouble FrameInterval)
 		}
 	}
 	if(bKeyboard['D']) {
-		if(!bFalling) {
+		if(0) {
 			dVelocityX += step*cos(TORAD(dSpinY));
 			dVelocityZ -= step*sin(TORAD(dSpinY));
 		} else {
@@ -101,7 +97,7 @@ void Character::Control(GLdouble FrameInterval)
 		}
 	}
 	if(bKeyboard['A']) {
-		if(!bFalling) {
+		if(0) {
 			dVelocityX -= step*cos(TORAD(dSpinY));
 			dVelocityZ += step*sin(TORAD(dSpinY));
 		} else {
@@ -124,12 +120,8 @@ void Character::Control(GLdouble FrameInterval)
 	}
 
 	if(bKeyboard[VK_SPACE]) {
-		if(!bFalling) {
-			dVelocityY = -JUMP_STR;
-			bFalling = true;
-			dPositionY += FrameInterval;
-		}
 	}
+	
 
 	if(bKeyboard['X']) {
 		dVelocityX = 0;
@@ -268,9 +260,7 @@ void Character::Control(GLdouble FrameInterval)
 		wWorld.SaveChunks();
 	}
 
-	dPositionX += FrameInterval*dVelocityX;
-	dPositionZ += FrameInterval*dVelocityZ;
-	dPositionY += FrameInterval*dVelocityY;
+	position = position + PosInWorld(FrameInterval*dVelocityX, FrameInterval*dVelocityY, FrameInterval*dVelocityZ);
 
 	/*{
 		signed short xx, yy, zz;
@@ -376,18 +366,14 @@ void Character::GetLocalTime(double TimeOfDay, double TimeOfWinal)
 
 void Character::GetMyPosition()
 {
-	BlockInWorld pos(
-		Primes::Round(dPositionX/BLOCK_SIZE),
-		Primes::Round(dPositionY/BLOCK_SIZE - 0.5 + 0.125),
-		Primes::Round(dPositionZ/BLOCK_SIZE)
-		);
+	// checks if player is under water level
+	PosInWorld pos(position);
+	pos.by += 0.125 - 0.5;
+	BlockInWorld waterPos(pos);
 
-	wWorld.FindBlock(pos, &chunk, &index);
-	if((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_WATER))
-		UnderWater = true;
-	else
-		UnderWater = false;
+	wWorld.FindBlock(waterPos, &chunk, &index);
+	underWater = chunk && chunk->bBlocks[index].cMaterial == MAT_WATER;
 
-	Longitude = dPositionZ/(BLOCK_SIZE*CHUNK_SIZE_XZ*160);
-	Longitude2 = -dPositionX/(BLOCK_SIZE*CHUNK_SIZE_XZ*160);
+	Longitude = (position.bz+position.cz*CHUNK_SIZE_XZ)/(BLOCK_SIZE*CHUNK_SIZE_XZ*160);
+	Longitude2 = -(position.bx+position.cx*CHUNK_SIZE_XZ)/(BLOCK_SIZE*CHUNK_SIZE_XZ*160);
 }
