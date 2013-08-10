@@ -52,7 +52,8 @@ Chunk* World::GetChunkByPosition(ChunkCoord Cx, ChunkCoord Cz)
 
 	return *chunk;
 }
-
+// todo: loaded block under water hides water tile
+// todo: rewrite tile engine!
 void World::DrawLoadedBlocksFinish(Chunk &chunk)
 {
 	int index = 0;

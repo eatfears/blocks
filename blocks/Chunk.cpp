@@ -262,6 +262,7 @@ void Chunk::Render(char mat, int *rendered)
 			mode = GL_COMPILE;
 	}
 
+	// todo: GL_RENDER dont compile chunk
 	Chunk *chunk = wWorld.player.chunk;
 	if(chunk) {
 		if(	chunk->x >= x - 1 && chunk->z >= z - 1 &&
