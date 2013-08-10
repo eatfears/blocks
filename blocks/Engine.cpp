@@ -550,7 +550,7 @@ void Engine::DrawBottomBorder()
 
 void Engine::DrawClouds()
 {
-	Character &player = wWorld.player;
+	PosInWorld pos = wWorld.player.position;
 	GLdouble CloudSize = FARCUT*2;///4;
 	GLfloat res;
 
@@ -568,10 +568,10 @@ void Engine::DrawClouds()
 	glColor4f(res, res, res, 0.8f);
 	// todo: wtf with coords
 
-	GLdouble Xposition = player.position.bx/(2.5*CloudSize);
-	GLdouble Zposition = player.position.bz/(2.5*CloudSize);
+	GLdouble Xposition = pos.bx/(2.5*CloudSize);
+	GLdouble Zposition = pos.bz/(2.5*CloudSize);
 
-	glTranslated(player.position.bx, CHUNK_SIZE_Y + 16, player.position.bz);
+	glTranslated(pos.bx, CHUNK_SIZE_Y + 16, pos.bz);
 	glRotated(90, 1.0, 0.0, 0.0);
 	glBegin(GL_QUADS);
 
