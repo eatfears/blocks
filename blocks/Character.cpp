@@ -40,27 +40,28 @@ Character::~Character()
 
 void Character::GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
 {
-	*xerr = dDispCenterCoordX + BLOCK_SIZE/2;
+	*xerr = dDispCenterCoordX + 0.5;
 	*yerr = dDispCenterCoordY;
-	*zerr = dDispCenterCoordZ + BLOCK_SIZE/2;
+	*zerr = dDispCenterCoordZ + 0.5;
 
-	while(*yerr < -1) *yerr += BLOCK_SIZE;
-	while(*yerr > BLOCK_SIZE + 1) *yerr -= BLOCK_SIZE;
+	// todo: bad resolution
+	while(*yerr < -1) *yerr += 1;
+	while(*yerr > 2) *yerr -= 1;
 
 	*yerr = abs(*yerr);
-	if(*yerr > abs(*yerr - BLOCK_SIZE)) *yerr = abs(*yerr - BLOCK_SIZE);
+	if(*yerr > abs(*yerr - 1)) *yerr = abs(*yerr - 1);
 
-	while(*xerr < - 1) *xerr += BLOCK_SIZE;
-	while(*xerr > BLOCK_SIZE + 1) *xerr -= BLOCK_SIZE;
+	while(*xerr < - 1) *xerr += 1;
+	while(*xerr > 2) *xerr -= 1;
 
 	*xerr = abs(*xerr);
-	if(*xerr > abs(*xerr - BLOCK_SIZE)) *xerr = abs(*xerr - BLOCK_SIZE);
+	if(*xerr > abs(*xerr - 1)) *xerr = abs(*xerr - 1);
 
-	while(*zerr < - 1) *zerr += BLOCK_SIZE;
-	while(*zerr > BLOCK_SIZE + 1) *zerr -= BLOCK_SIZE;
+	while(*zerr < - 1) *zerr += 1;
+	while(*zerr > 2) *zerr -= 1;
 
 	*zerr = abs(*zerr);
-	if(*zerr > abs(*zerr - BLOCK_SIZE)) *zerr = abs(*zerr - BLOCK_SIZE);
+	if(*zerr > abs(*zerr - 1)) *zerr = abs(*zerr - 1);
 }
 
 void Character::Control(GLdouble FrameInterval)
@@ -102,7 +103,6 @@ void Character::Control(GLdouble FrameInterval)
 	if(bKeyboard[VK_SPACE]) {
 	}
 	
-
 	if(bKeyboard['X']) {
 		dVelocityX = 0;
 		dVelocityY = 0;
@@ -114,25 +114,25 @@ void Character::Control(GLdouble FrameInterval)
 
 	if((zerr < xerr)&&(zerr < yerr)) {
 		BlockInWorld pos;
-		sCenterBlockCoordX = (BlockInWorld) floor(dDispCenterCoordX/BLOCK_SIZE + 0.5);
-		sCenterBlockCoordY = (BlockInWorld) floor(dDispCenterCoordY/BLOCK_SIZE);
+		sCenterBlockCoordX = (BlockInWorld) floor(dDispCenterCoordX + 0.5);
+		sCenterBlockCoordY = (BlockInWorld) floor(dDispCenterCoordY);
 
-		if(dPositionZ < dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) Primes::Round(dDispCenterCoordZ/BLOCK_SIZE + 0.5);
-		if(dPositionZ > dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) Primes::Round(dDispCenterCoordZ/BLOCK_SIZE - 0.5);
+		if(dPositionZ < dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) Primes::Round(dDispCenterCoordZ + 0.5);
+		if(dPositionZ > dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) Primes::Round(dDispCenterCoordZ - 0.5);
 	}
 	if((xerr < zerr)&&(xerr < yerr)) {
-		sCenterBlockCoordZ = (BlockInWorld) floor(dDispCenterCoordZ/BLOCK_SIZE + 0.5);
-		sCenterBlockCoordY = (BlockInWorld) floor(dDispCenterCoordY/BLOCK_SIZE);
+		sCenterBlockCoordZ = (BlockInWorld) floor(dDispCenterCoordZ + 0.5);
+		sCenterBlockCoordY = (BlockInWorld) floor(dDispCenterCoordY);
 
-		if(dPositionX < dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) Primes::Round(dDispCenterCoordX/BLOCK_SIZE + 0.5);
-		if(dPositionX > dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) Primes::Round(dDispCenterCoordX/BLOCK_SIZE - 0.5);
+		if(dPositionX < dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) Primes::Round(dDispCenterCoordX + 0.5);
+		if(dPositionX > dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) Primes::Round(dDispCenterCoordX - 0.5);
 	}
 	if((yerr < xerr)&&(yerr < zerr)) {
-		sCenterBlockCoordX = (BlockInWorld) floor(dDispCenterCoordX/BLOCK_SIZE + 0.5);
-		sCenterBlockCoordZ = (BlockInWorld) floor(dDispCenterCoordZ/BLOCK_SIZE + 0.5);
+		sCenterBlockCoordX = (BlockInWorld) floor(dDispCenterCoordX + 0.5);
+		sCenterBlockCoordZ = (BlockInWorld) floor(dDispCenterCoordZ + 0.5);
 
-		if(dPositionY < dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) Primes::Round(dDispCenterCoordY/BLOCK_SIZE);
-		if(dPositionY > dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) Primes::Round(dDispCenterCoordY/BLOCK_SIZE - 1.0);
+		if(dPositionY < dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) Primes::Round(dDispCenterCoordY);
+		if(dPositionY > dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) Primes::Round(dDispCenterCoordY - 1.0);
 	}
 	*/
 
@@ -351,6 +351,6 @@ void Character::GetMyPosition()
 	wWorld.FindBlock(waterPos, &chunk, &index);
 	underWater = chunk && chunk->bBlocks[index].cMaterial == MAT_WATER;
 
-	Longitude = (position.bz/BLOCK_SIZE+position.cz*CHUNK_SIZE_XZ)/(BLOCK_SIZE*CHUNK_SIZE_XZ*160);
-	Longitude2 = -(position.bx/BLOCK_SIZE+position.cx*CHUNK_SIZE_XZ)/(BLOCK_SIZE*CHUNK_SIZE_XZ*160);
+	Longitude = (position.bz/CHUNK_SIZE_XZ + position.cz)/160;
+	Longitude2 = -(position.bx/CHUNK_SIZE_XZ + position.cx)/160;
 }

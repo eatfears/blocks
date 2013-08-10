@@ -33,7 +33,7 @@ int Engine::InitGL()
 	wWorld.MaterialLib.AllocGLTextures();
 	wWorld.MaterialLib.LoadGLTextures();
 
-	wWorld.player.position = PosInWorld(0, 100*BLOCK_SIZE, 0);
+	wWorld.player.position = PosInWorld(0, 100, 0);
 	wWorld.player.dSpinY = -90 - 45;
 	glutSetCursor(GLUT_CURSOR_NONE);
 
@@ -91,8 +91,8 @@ void Engine::Display()
 	if(player.underWater) {
 		glFogfv(GL_FOG_COLOR, WaterFogColor);
 		glFogf(GL_FOG_DENSITY, 20.0);
-		glFogf(GL_FOG_START, BLOCK_SIZE*10);
-		glFogf(GL_FOG_END, BLOCK_SIZE*30);
+		glFogf(GL_FOG_START, 10);
+		glFogf(GL_FOG_END, 30);
 	} else {
 		glFogfv(GL_FOG_COLOR, FogColor);
 		glFogf(GL_FOG_DENSITY, FOG_DENSITY);
@@ -100,7 +100,7 @@ void Engine::Display()
 		glFogf(GL_FOG_END, MAX_VIEV_DIST);
 	}
 
-	if(player.position.by < (CHUNK_SIZE_Y + 16)*BLOCK_SIZE) {
+	if(player.position.by < CHUNK_SIZE_Y + 16) {
 		DrawClouds();
 	}
 
@@ -165,7 +165,7 @@ void Engine::Display()
 
 	stat.reRenderedChunks += render;
 
-	if(player.position.by >= (CHUNK_SIZE_Y + 16)*BLOCK_SIZE) {
+	if(player.position.by >= CHUNK_SIZE_Y + 16) {
 		DrawClouds();
 	}
 
@@ -243,11 +243,11 @@ void Engine::DrawSelectedItem()
 	glColor3f(0.0f, 0.0f, 0.0f);
 	glLineWidth (1.4f);
 
-	GLdouble BorderSize = BLOCK_SIZE*(1 + 0.005);
+	GLdouble BorderSize = 1 + 0.005;
 	GLdouble
-		dXcoord = player.sCenterBlockCoordX*BLOCK_SIZE,
-		dYcoord = player.sCenterBlockCoordY*BLOCK_SIZE,
-		dZcoord = player.sCenterBlockCoordZ*BLOCK_SIZE;
+		dXcoord = player.sCenterBlockCoordX,
+		dYcoord = player.sCenterBlockCoordY,
+		dZcoord = player.sCenterBlockCoordZ;
 
 	dXcoord -= BorderSize/2;
 	dZcoord -= BorderSize/2;
@@ -473,7 +473,7 @@ void Engine::DrawSunMoon()
 	glLoadIdentity();
 
 	//Sun
-	GLdouble SunSize = 100*BLOCK_SIZE, sundist = FARCUT*0.8;
+	GLdouble SunSize = 100, sundist = FARCUT*0.8;
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
@@ -571,7 +571,7 @@ void Engine::DrawClouds()
 	GLdouble Xposition = player.position.bx/(2.5*CloudSize);
 	GLdouble Zposition = player.position.bz/(2.5*CloudSize);
 
-	glTranslated(player.position.bx, (CHUNK_SIZE_Y + 16)*BLOCK_SIZE, player.position.bz);
+	glTranslated(player.position.bx, CHUNK_SIZE_Y + 16, player.position.bz);
 	glRotated(90, 1.0, 0.0, 0.0);
 	glBegin(GL_QUADS);
 

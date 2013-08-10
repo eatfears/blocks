@@ -14,8 +14,6 @@
 #define RESY			482
 #define BITS			32
 
-#define BLOCK_SIZE		1.0
-
 #define MOUSE_SENSIVITY 3.5
 
 #define STEP_DOWNSTEP	0.6
@@ -28,9 +26,9 @@
 #define SPRINT_KOEF		2.0
 
 #define FOG_DENSITY		6.0
-#define FOG_START		CHUNK_SIZE_XZ*BLOCK_SIZE*4
-#define MAX_VIEV_DIST	CHUNK_SIZE_XZ*BLOCK_SIZE*32
-#define FARCUT			CHUNK_SIZE_XZ*BLOCK_SIZE*42
+#define FOG_START		CHUNK_SIZE_XZ*4
+#define MAX_VIEV_DIST	CHUNK_SIZE_XZ*32
+#define FARCUT			CHUNK_SIZE_XZ*42
 
 #define TOP				0
 #define BOTTOM			1

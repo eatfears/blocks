@@ -3,7 +3,7 @@
 #include "Primes.h"
 
 BlockInWorld::BlockInWorld(PosInWorld pos) 
-	:cx(pos.cx), cz(pos.cz), bx(Primes::Round(pos.bx/BLOCK_SIZE)), by(Primes::Round(pos.by/BLOCK_SIZE)), bz(Primes::Round(pos.bz/BLOCK_SIZE)) {};
+	:cx(pos.cx), cz(pos.cz), bx(Primes::Round(pos.bx)), by(Primes::Round(pos.by)), bz(Primes::Round(pos.bz)) {};
 
 BlockInWorld BlockInWorld::getSide(char side)
 {
@@ -53,20 +53,20 @@ void BlockInWorld::norm()
 
 void PosInWorld::norm()
 {
-	while(bx >= CHUNK_SIZE_XZ*BLOCK_SIZE) {
-		bx -= CHUNK_SIZE_XZ*BLOCK_SIZE;
+	while(bx >= CHUNK_SIZE_XZ) {
+		bx -= CHUNK_SIZE_XZ;
 		cx++;
 	}
-	while(bz >= CHUNK_SIZE_XZ*BLOCK_SIZE) {
-		bz -= CHUNK_SIZE_XZ*BLOCK_SIZE;
+	while(bz >= CHUNK_SIZE_XZ) {
+		bz -= CHUNK_SIZE_XZ;
 		cz++;
 	}
 	while(bx < 0) {
-		bx += CHUNK_SIZE_XZ*BLOCK_SIZE;
+		bx += CHUNK_SIZE_XZ;
 		cx--;
 	}
 	while(bz < 0) {
-		bz += CHUNK_SIZE_XZ*BLOCK_SIZE;
+		bz += CHUNK_SIZE_XZ;
 		cz--;
 	}
 }
