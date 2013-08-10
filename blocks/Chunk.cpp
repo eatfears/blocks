@@ -236,6 +236,9 @@ void Chunk::Save()
 
 void Chunk::Render(char mat, int *rendered)
 {
+	glPushMatrix();
+	glTranslated((x-wWorld.player.position.cx)*CHUNK_SIZE_XZ, 0, (z-wWorld.player.position.cz)*CHUNK_SIZE_XZ);
+
 	GLenum mode = GL_EXECUTE;
 
 	if(!listgen) {
@@ -290,9 +293,6 @@ void Chunk::Render(char mat, int *rendered)
 
 		for(int i = 0; i < 6; i++) {
 			blckw = BlockInWorld(x, z);
-			//blckw.cx += 1;
-			//blckw.cx -= wWorld.player.position.cx;
-			//blckw.cz -= wWorld.player.position.cz;
 
 			if(mat == MAT_WATER) {
 				Tiles = &DisplayedWaterTiles[i];
@@ -323,17 +323,19 @@ void Chunk::Render(char mat, int *rendered)
 		}
 	}
 
-	if((mode != GL_COMPILE_AND_EXECUTE)&&(mode != GL_RENDER))
+	if((mode != GL_COMPILE_AND_EXECUTE)&&(mode != GL_RENDER)) {
 		glCallList(RenderList + pointertorender);
+	}
+
+	glPopMatrix();
 }
 
 void Chunk::DrawTile(BlockInWorld tilePos, Block* block, char side)
 {
-	// todo: no big coords
 	GLdouble
-		dXcoord = (tilePos.cx-wWorld.player.position.cx)*CHUNK_SIZE_XZ + tilePos.bx - 0.5,
+		dXcoord = tilePos.bx - 0.5,
 		dYcoord = tilePos.by,
-		dZcoord = (tilePos.cz-wWorld.player.position.cz)*CHUNK_SIZE_XZ + tilePos.bz - 0.5;
+		dZcoord = tilePos.bz - 0.5;
 
 	static double space = 0.0002;
 	static double offsetx = 0;
