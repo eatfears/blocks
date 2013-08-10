@@ -1,6 +1,6 @@
 #include "Material.h"
 #include <libpng/png.h>
-#include "Blocks_Definitions.h"
+#include "Definitions.h"
 #include "PlatformDefinitions.h"
 
 MaterialLibrary::MaterialLibrary()

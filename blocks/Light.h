@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Blocks_Definitions.h"
+#include "Definitions.h"
 #include "Chunk.h"
 
 /*

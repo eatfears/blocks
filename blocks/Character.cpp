@@ -70,40 +70,20 @@ void Character::Control(GLdouble FrameInterval)
 		step *= SPRINT_KOEF;
 
 	if(bKeyboard['W']) {
-		if(0) {
-			dVelocityX -= step*sin(TORAD(dSpinY));
-			dVelocityZ -= step*cos(TORAD(dSpinY));
-		} else {
-			dVelocityX -= FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
-			dVelocityZ -= FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
-		}
+		dVelocityX -= FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
+		dVelocityZ -= FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
 	}
 	if(bKeyboard['S']) {
-		if(0) {
-			dVelocityX += step*sin(TORAD(dSpinY));
-			dVelocityZ += step*cos(TORAD(dSpinY));
-		} else {
-			dVelocityX += FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
-			dVelocityZ += FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
-		}
+		dVelocityX += FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
+		dVelocityZ += FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
 	}
 	if(bKeyboard['D']) {
-		if(0) {
-			dVelocityX += step*cos(TORAD(dSpinY));
-			dVelocityZ -= step*sin(TORAD(dSpinY));
-		} else {
-			dVelocityX += FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
-			dVelocityZ -= FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
-		}
+		dVelocityX += FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
+		dVelocityZ -= FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
 	}
 	if(bKeyboard['A']) {
-		if(0) {
-			dVelocityX -= step*cos(TORAD(dSpinY));
-			dVelocityZ += step*sin(TORAD(dSpinY));
-		} else {
-			dVelocityX -= FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
-			dVelocityZ += FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
-		}
+		dVelocityX -= FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
+		dVelocityZ += FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
 	}
 	if(bKeyboard['R']) {
 		dVelocityY += FrameInterval*AIR_ACCEL*step;
@@ -371,6 +351,6 @@ void Character::GetMyPosition()
 	wWorld.FindBlock(waterPos, &chunk, &index);
 	underWater = chunk && chunk->bBlocks[index].cMaterial == MAT_WATER;
 
-	Longitude = (position.bz+position.cz*CHUNK_SIZE_XZ)/(BLOCK_SIZE*CHUNK_SIZE_XZ*160);
-	Longitude2 = -(position.bx+position.cx*CHUNK_SIZE_XZ)/(BLOCK_SIZE*CHUNK_SIZE_XZ*160);
+	Longitude = (position.bz/BLOCK_SIZE+position.cz*CHUNK_SIZE_XZ)/(BLOCK_SIZE*CHUNK_SIZE_XZ*160);
+	Longitude2 = -(position.bx/BLOCK_SIZE+position.cx*CHUNK_SIZE_XZ)/(BLOCK_SIZE*CHUNK_SIZE_XZ*160);
 }

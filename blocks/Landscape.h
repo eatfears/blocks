@@ -1,6 +1,6 @@
 #pragma once
 #include "PerlinNoise.h"
-#include "Blocks_Definitions.h"
+#include "Definitions.h"
 
 class World;
 

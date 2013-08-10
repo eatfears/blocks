@@ -73,9 +73,6 @@
     <ClInclude Include="Material.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Blocks_Definitions.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="World.h">
       <Filter>Headers</Filter>
     </ClInclude>
@@ -107,6 +104,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="PositionItems.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Definitions.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

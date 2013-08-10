@@ -1,7 +1,7 @@
 #pragma once
 #include <list>
 
-#include "Blocks_Definitions.h"
+#include "Definitions.h"
 #include <GL/freeglut.h>
 
 class World;

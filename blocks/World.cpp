@@ -1,5 +1,5 @@
 #include <process.h>
-#include "Blocks_Definitions.h"
+#include "Definitions.h"
 #include "World.h"
 #include "Threads.h"
 #include "Light.h"
@@ -53,7 +53,7 @@ Chunk* World::GetChunkByPosition(ChunkCoord Cx, ChunkCoord Cz)
 	return *chunk;
 }
 // todo: loaded block under water hides water tile
-// todo: rewrite tile engine!
+// todo: rewrite tiling engine!
 void World::DrawLoadedBlocksFinish(Chunk &chunk)
 {
 	int index = 0;

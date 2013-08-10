@@ -14,7 +14,7 @@
 #define RESY			482
 #define BITS			32
 
-#define BLOCK_SIZE		5.0
+#define BLOCK_SIZE		1.0
 
 #define MOUSE_SENSIVITY 3.5
 
