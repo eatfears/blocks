@@ -111,15 +111,14 @@ void Character::Control(GLdouble FrameInterval)
 	GetPlane(&xerr, &yerr, &zerr);
 	
 	PosInWorld pos;
-
 	if(zerr < xerr && zerr < yerr) {
-		if(position.bz < centerPos.bz || position.cz < centerPos.cz) {
+		if((position.bz < centerPos.bz && position.cz == centerPos.cz) || position.cz < centerPos.cz) {
 			pos = PosInWorld(0, 0, 0.5);
 		} else {
 			pos = PosInWorld(0, 0, -0.5);
 		}
 	} else if(xerr < zerr && xerr < yerr) {
-		if(position.bx < centerPos.bx || position.cx < centerPos.cx) {
+		if((position.bx < centerPos.bx && position.cx == centerPos.cx) || position.cx < centerPos.cx) {
 			pos = PosInWorld(0.5, 0, 0);
 		} else {
 			pos = PosInWorld(-0.5, 0, 0);
