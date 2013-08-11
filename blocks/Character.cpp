@@ -40,27 +40,25 @@ Character::~Character()
 
 void Character::GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
 {
-	*xerr = dDispCenterCoordX + 0.5;
-	*yerr = dDispCenterCoordY;
-	*zerr = dDispCenterCoordZ + 0.5;
+
+	*xerr = centerPos.bx + 0.5;
+	*yerr = centerPos.by;
+	*zerr = centerPos.bz + 0.5;
 
 	// todo: bad resolution
-	while(*yerr < -1) *yerr += 1;
-	while(*yerr > 2) *yerr -= 1;
+	while(*yerr < 0) *yerr += 1;
+	while(*yerr > 1) *yerr -= 1;
 
-	*yerr = abs(*yerr);
 	if(*yerr > abs(*yerr - 1)) *yerr = abs(*yerr - 1);
 
-	while(*xerr < - 1) *xerr += 1;
-	while(*xerr > 2) *xerr -= 1;
+	while(*xerr < 0) *xerr += 1;
+	while(*xerr > 1) *xerr -= 1;
 
-	*xerr = abs(*xerr);
 	if(*xerr > abs(*xerr - 1)) *xerr = abs(*xerr - 1);
 
-	while(*zerr < - 1) *zerr += 1;
-	while(*zerr > 2) *zerr -= 1;
+	while(*zerr < 0) *zerr += 1;
+	while(*zerr > 1) *zerr -= 1;
 
-	*zerr = abs(*zerr);
 	if(*zerr > abs(*zerr - 1)) *zerr = abs(*zerr - 1);
 }
 
@@ -108,34 +106,37 @@ void Character::Control(GLdouble FrameInterval)
 		dVelocityY = 0;
 		dVelocityZ = 0;
 	}
-	/*
+	
 	GLdouble yerr, xerr, zerr;
 	GetPlane(&xerr, &yerr, &zerr);
+	
+	BlockInWorld pos(centerPos);
 
+	sCenterBlockCoord = BlockInWorld(centerPos);
+	/*
 	if((zerr < xerr)&&(zerr < yerr)) {
-		BlockInWorld pos;
-		sCenterBlockCoordX = (BlockInWorld) floor(dDispCenterCoordX + 0.5);
-		sCenterBlockCoordY = (BlockInWorld) floor(dDispCenterCoordY);
+		pos = pos + BlockInWorld(0.5, 0, 0.5);
+		sCenterBlockCoord = BlockInWorld(centerPos);
 
-		if(dPositionZ < dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) Primes::Round(dDispCenterCoordZ + 0.5);
-		if(dPositionZ > dDispCenterCoordZ) sCenterBlockCoordZ = (BlockInWorld) Primes::Round(dDispCenterCoordZ - 0.5);
+		//if(position.bz < dDispCenterCoordZ) sCenterBlockCoordZ = Primes::Round(dDispCenterCoordZ + 0.5);
+		//if(position.bz > dDispCenterCoordZ) sCenterBlockCoordZ = Primes::Round(dDispCenterCoordZ - 0.5);
 	}
+	/*
 	if((xerr < zerr)&&(xerr < yerr)) {
-		sCenterBlockCoordZ = (BlockInWorld) floor(dDispCenterCoordZ + 0.5);
-		sCenterBlockCoordY = (BlockInWorld) floor(dDispCenterCoordY);
+		sCenterBlockCoordZ = floor(dDispCenterCoordZ + 0.5);
+		sCenterBlockCoordY = floor(dDispCenterCoordY);
 
-		if(dPositionX < dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) Primes::Round(dDispCenterCoordX + 0.5);
-		if(dPositionX > dDispCenterCoordX) sCenterBlockCoordX = (BlockInWorld) Primes::Round(dDispCenterCoordX - 0.5);
+		if(position.bx < dDispCenterCoordX) sCenterBlockCoordX = Primes::Round(dDispCenterCoordX + 0.5);
+		if(position.bx > dDispCenterCoordX) sCenterBlockCoordX = Primes::Round(dDispCenterCoordX - 0.5);
 	}
 	if((yerr < xerr)&&(yerr < zerr)) {
-		sCenterBlockCoordX = (BlockInWorld) floor(dDispCenterCoordX + 0.5);
-		sCenterBlockCoordZ = (BlockInWorld) floor(dDispCenterCoordZ + 0.5);
+		sCenterBlockCoordX = floor(dDispCenterCoordX + 0.5);
+		sCenterBlockCoordZ = floor(dDispCenterCoordZ + 0.5);
 
-		if(dPositionY < dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) Primes::Round(dDispCenterCoordY);
-		if(dPositionY > dDispCenterCoordY) sCenterBlockCoordY = (BlockInWorld) Primes::Round(dDispCenterCoordY - 1.0);
+		if(position.by < dDispCenterCoordY) sCenterBlockCoordY = Primes::Round(dDispCenterCoordY);
+		if(position.by > dDispCenterCoordY) sCenterBlockCoordY = Primes::Round(dDispCenterCoordY - 1.0);
 	}
 	*/
-
 	int num = 100;
 	int sq = 100;
 	int sqb2 = sq/2;
@@ -197,11 +198,11 @@ void Character::Control(GLdouble FrameInterval)
 		par.z++;
 		bKeyboard['0'] = false;
 	}
-	/*
+	
 	if(bKeyboard['C']) {
 		Chunk *chunk;
 		int index;
-		wWorld.FindBlock(sCenterBlockCoordX, sCenterBlockCoordY, sCenterBlockCoordZ, &chunk, &index);
+		wWorld.FindBlock(sCenterBlockCoord, &chunk, &index);
 		if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT)) {
 			chunk->bBlocks[index].bVisible ^= (1 << SNOWCOVERED);
 		}
@@ -209,16 +210,17 @@ void Character::Control(GLdouble FrameInterval)
 	if(bKeyboard['V']) {
 		Chunk *chunk;
 		int index;
-		wWorld.FindBlock(sCenterBlockCoordX, sCenterBlockCoordY, sCenterBlockCoordZ, &chunk, &index);
+		wWorld.FindBlock(sCenterBlockCoord, &chunk, &index);
 		if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT)) {
 			chunk->bBlocks[index].bVisible ^= (1 << GRASSCOVERED);
 		}
 	}
 	if(bKeyboard['E']) {
-		wWorld.RemoveBlock(sCenterBlockCoordX,sCenterBlockCoordY,sCenterBlockCoordZ, true);
+		wWorld.RemoveBlock(sCenterBlockCoord, true);
 	}
 
 	if(bKeyboard['Q']) {
+		/*
 		signed short ix = sCenterBlockCoordX, iy = sCenterBlockCoordY, iz = sCenterBlockCoordZ;
 		if((zerr < xerr)&&(zerr < yerr)) {
 			if(dPositionZ < dDispCenterCoordZ) iz = sCenterBlockCoordZ - 1;
@@ -234,8 +236,8 @@ void Character::Control(GLdouble FrameInterval)
 		}
 
 		wWorld.AddBlock(ix, iy, iz, MAT_PUMPKIN_SHINE, true);
+		*/
 	}
-	*/
 	if(bKeyboard['O']) {
 		wWorld.SaveChunks();
 	}
@@ -320,13 +322,22 @@ void Character::GetCenterCoords(GLsizei width, GLsizei height)
 	GLdouble projection[16];	// матрица проекции.
 	GLdouble modelview[16];		// видовая матрица.
 	GLfloat vz;					// координаты курсора мыши в системе координат viewport-a.
+	GLdouble dispCenterX, dispCenterY, dispCenterZ;			// возвращаемые мировые координаты центра
 
 	glGetIntegerv(GL_VIEWPORT,viewport);           // узнаём параметры viewport-a.
 	glGetDoublev(GL_PROJECTION_MATRIX,projection); // узнаём матрицу проекции.
 	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);   // узнаём видовую матрицу.
 
 	glReadPixels(width/2, height/2, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &vz);
-	gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, &dDispCenterCoordX, &dDispCenterCoordY, &dDispCenterCoordZ);
+	gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, &dispCenterX, &dispCenterY, &dispCenterZ);
+	centerPos = position;
+
+	centerPos.bx = 0;
+	centerPos.by = 0;
+	centerPos.bz = 0;
+
+	centerPos = centerPos + PosInWorld(dispCenterX, dispCenterY, dispCenterZ);
+
 }
 
 void Character::GetLocalTime(double TimeOfDay, double TimeOfWinal)

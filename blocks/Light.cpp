@@ -1,6 +1,6 @@
 #include "Light.h"
 /*
-#include "PlatformDefinitions.h"
+#include "Platform.h"
 #include <fstream>
 */
 #include "World.h"

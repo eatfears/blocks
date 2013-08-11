@@ -4,7 +4,7 @@
 #include <math.h>
 #include "Light.h"
 #include "Primes.h"
-#include "PlatformDefinitions.h"
+#include "Platform.h"
 
 GLfloat DayFogColor[4] = {0.50f, 0.67f, 1.00f, 1.00f};
 GLfloat NightFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
@@ -230,13 +230,11 @@ void Engine::InitGame()
 }
 
 void Engine::DrawSelectedItem()
-{/*
+{
 	Character &player = wWorld.player;
-	if(!wWorld.FindBlock(player.sCenterBlockCoordX,player.sCenterBlockCoordY,player.sCenterBlockCoordZ))
+	if(!wWorld.FindBlock(player.sCenterBlockCoord)) {
 		return;
-	if((player.sCenterBlockCoordY >= CHUNK_SIZE_Y)||(player.sCenterBlockCoordY < 0))
-		return;
-
+	}
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -245,9 +243,9 @@ void Engine::DrawSelectedItem()
 
 	GLdouble BorderSize = 1 + 0.005;
 	GLdouble
-		dXcoord = player.sCenterBlockCoordX,
-		dYcoord = player.sCenterBlockCoordY,
-		dZcoord = player.sCenterBlockCoordZ;
+		dXcoord = (player.sCenterBlockCoord.cx - player.position.cx)*CHUNK_SIZE_XZ + player.sCenterBlockCoord.bx,
+		dYcoord = player.sCenterBlockCoord.by,
+		dZcoord = (player.sCenterBlockCoord.cz - player.position.cz)*CHUNK_SIZE_XZ + player.sCenterBlockCoord.bz;
 
 	dXcoord -= BorderSize/2;
 	dZcoord -= BorderSize/2;
@@ -288,7 +286,6 @@ void Engine::DrawSelectedItem()
 	glEnd();
 
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	*/
 }
 
 void Engine::DrawInterface()

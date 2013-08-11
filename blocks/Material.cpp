@@ -1,7 +1,7 @@
 #include "Material.h"
 #include <libpng/png.h>
 #include "Definitions.h"
-#include "PlatformDefinitions.h"
+#include "Platform.h"
 
 MaterialLibrary::MaterialLibrary()
 {

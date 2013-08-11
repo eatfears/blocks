@@ -11,9 +11,8 @@ public:
 	Character(World& ww);
 	~Character();
 
-//	GLdouble dPositionX, dPositionY, dPositionZ;
 	PosInWorld position;
-//	LocInWorld lnwPositionX, lnwPositionZ;
+
 	GLdouble dSpinY, dSpinX;
 	GLdouble dVelocityX, dVelocityY, dVelocityZ;
 	GLdouble Longitude;
@@ -24,8 +23,8 @@ public:
 	bool  bKeyboard[256];					// Массив, используемый для операций с клавиатурой
 	bool  bSpecial[256];					// Массив, используемый для операций с клавиатурой
 
-	GLdouble dDispCenterCoordX, dDispCenterCoordY, dDispCenterCoordZ;			// возвращаемые мировые координаты центра
 	BlockInWorld sCenterBlockCoord;	// возвращаемые координаты куба
+	PosInWorld centerPos;
 
 	World& wWorld;
 	bool underWater;

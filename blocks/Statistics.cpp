@@ -1,7 +1,7 @@
 #include "Statistics.h"
 #include <stdio.h>
 #include "Engine.h"
-#include "PlatformDefinitions.h"
+#include "Platform.h"
 
 
 Statistics::Statistics(Engine& eng)
@@ -34,8 +34,8 @@ void Statistics::PrintStat(void)
 		TimeCount = 0.0;
 		FrameCount = 0;
 	}
-
-	RenderString(50, engine.height - 10, font, cFPS);
+	
+	RenderString(engine.width - 100, engine.height - 30, font, cFPS);
 
 	Character &player = engine.wWorld.player;
 
@@ -49,6 +49,18 @@ void Statistics::PrintStat(void)
 	RenderString(50, engine.height - 90, font, pos);
 	b_sprintf(pos, "Z: %0.10f\n", player.position.bz);
 	RenderString(50, engine.height - 110, font, pos);
+
+
+	b_sprintf(pos, "CX: %d\n", player.centerPos.cx);
+	RenderString(200, engine.height - 30, font, pos);
+	b_sprintf(pos, "CZ: %d\n", player.centerPos.cz);
+	RenderString(200, engine.height - 50, font, pos);
+	b_sprintf(pos, "X: %0.10f\n", player.centerPos.bx);
+	RenderString(200, engine.height - 70, font, pos);
+	b_sprintf(pos, "Y: %0.10f\n", player.centerPos.by);
+	RenderString(200, engine.height - 90, font, pos);
+	b_sprintf(pos, "Z: %0.10f\n", player.centerPos.bz);
+	RenderString(200, engine.height - 110, font, pos);
 
 	b_sprintf(pos, "Rendered: %d\n", reRenderedChunks);
 	RenderString(50, engine.height - 130, font, pos);

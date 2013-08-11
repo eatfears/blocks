@@ -56,10 +56,10 @@
     <ClCompile Include="Statistics.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="PlatformDefinitions.cpp">
+    <ClCompile Include="PositionItems.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="PositionItems.cpp">
+    <ClCompile Include="Platform.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -100,13 +100,13 @@
     <ClInclude Include="Statistics.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="PlatformDefinitions.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="PositionItems.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Definitions.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,4 +1,4 @@
-#include "PlatformDefinitions.h"
+#include "Platform.h"
 
 #ifdef _WIN32
 #include <windows.h>
