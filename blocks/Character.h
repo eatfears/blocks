@@ -23,7 +23,8 @@ public:
 	bool  bKeyboard[256];					// Массив, используемый для операций с клавиатурой
 	bool  bSpecial[256];					// Массив, используемый для операций с клавиатурой
 
-	BlockInWorld sCenterBlockCoord;	// возвращаемые координаты куба
+	BlockInWorld aimedBlock;	// возвращаемые координаты куба
+	BlockInWorld freeBlock;
 	PosInWorld centerPos;
 
 	World& wWorld;

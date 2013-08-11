@@ -232,7 +232,7 @@ void Engine::InitGame()
 void Engine::DrawSelectedItem()
 {
 	Character &player = wWorld.player;
-	if(!wWorld.FindBlock(player.sCenterBlockCoord)) {
+	if(!wWorld.FindBlock(player.aimedBlock)) {
 		return;
 	}
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -241,13 +241,14 @@ void Engine::DrawSelectedItem()
 	glColor3f(0.0f, 0.0f, 0.0f);
 	glLineWidth (1.4f);
 
-	GLdouble BorderSize = 1 + 0.005;
+	GLdouble BorderSize = 1 + 0.05;
 	GLdouble
-		dXcoord = (player.sCenterBlockCoord.cx - player.position.cx)*CHUNK_SIZE_XZ + player.sCenterBlockCoord.bx,
-		dYcoord = player.sCenterBlockCoord.by,
-		dZcoord = (player.sCenterBlockCoord.cz - player.position.cz)*CHUNK_SIZE_XZ + player.sCenterBlockCoord.bz;
+		dXcoord = (player.aimedBlock.cx - player.position.cx)*CHUNK_SIZE_XZ + player.aimedBlock.bx,
+		dYcoord = player.aimedBlock.by,
+		dZcoord = (player.aimedBlock.cz - player.position.cz)*CHUNK_SIZE_XZ + player.aimedBlock.bz;
 
 	dXcoord -= BorderSize/2;
+	dYcoord -= BorderSize/2 - 0.5;
 	dZcoord -= BorderSize/2;
 
 	glBegin(GL_QUADS);

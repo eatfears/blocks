@@ -93,6 +93,18 @@ public:
 		return res;
 	}
 
+	PosInWorld operator * (int i) {
+		PosInWorld res(cx*i,cz*i,bx*i,by*i,bz*i);
+		res.norm();
+		return res;
+	}
+
+	PosInWorld inv() {
+		PosInWorld res(-cx,-cz,-bx,-by,-bz);
+		res.norm();
+		return res;
+	}
+
 	//BlockInWorld getSide(char side);
 	bool overflow() { return by >= CHUNK_SIZE_Y || by < 0; }
 	BlockInWorld toBlockInChunk();

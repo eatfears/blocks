@@ -62,6 +62,15 @@ void Statistics::PrintStat(void)
 	b_sprintf(pos, "Z: %0.10f\n", player.centerPos.bz);
 	RenderString(200, engine.height - 110, font, pos);
 
+	/*
+	b_sprintf(pos, "X: %0.10f\n", player.xerr);
+	RenderString(200, engine.height - 130, font, pos);
+	b_sprintf(pos, "Y: %0.10f\n", player.yerr);
+	RenderString(200, engine.height - 150, font, pos);
+	b_sprintf(pos, "Z: %0.10f\n", player.zerr);
+	RenderString(200, engine.height - 170, font, pos);
+	*/
+
 	b_sprintf(pos, "Rendered: %d\n", reRenderedChunks);
 	RenderString(50, engine.height - 130, font, pos);
 

@@ -20,11 +20,11 @@ Character::Character(World& ww)
 	dSpinX = 0;
 	dSpinY = 0;
 
-	sCenterBlockCoord.cx = 0;
-	sCenterBlockCoord.cz = 0;
-	sCenterBlockCoord.bx = 0;
-	sCenterBlockCoord.by = 0;
-	sCenterBlockCoord.bz = 0;
+	aimedBlock.cx = 0;
+	aimedBlock.cz = 0;
+	aimedBlock.bx = 0;
+	aimedBlock.by = 0;
+	aimedBlock.bz = 0;
 	LocalTimeOfDay = 0;
 	LocalTimeOfWinal = 0;
 		
@@ -110,33 +110,30 @@ void Character::Control(GLdouble FrameInterval)
 	GLdouble yerr, xerr, zerr;
 	GetPlane(&xerr, &yerr, &zerr);
 	
-	BlockInWorld pos(centerPos);
+	PosInWorld pos;
 
-	sCenterBlockCoord = BlockInWorld(centerPos);
-	/*
-	if((zerr < xerr)&&(zerr < yerr)) {
-		pos = pos + BlockInWorld(0.5, 0, 0.5);
-		sCenterBlockCoord = BlockInWorld(centerPos);
-
-		//if(position.bz < dDispCenterCoordZ) sCenterBlockCoordZ = Primes::Round(dDispCenterCoordZ + 0.5);
-		//if(position.bz > dDispCenterCoordZ) sCenterBlockCoordZ = Primes::Round(dDispCenterCoordZ - 0.5);
+	if(zerr < xerr && zerr < yerr) {
+		if(position.bz < centerPos.bz || position.cz < centerPos.cz) {
+			pos = PosInWorld(0, 0, 0.5);
+		} else {
+			pos = PosInWorld(0, 0, -0.5);
+		}
+	} else if(xerr < zerr && xerr < yerr) {
+		if(position.bx < centerPos.bx || position.cx < centerPos.cx) {
+			pos = PosInWorld(0.5, 0, 0);
+		} else {
+			pos = PosInWorld(-0.5, 0, 0);
+		}
+	} else if(yerr < xerr && yerr < zerr) {
+		if(position.by < centerPos.by) {
+			pos = PosInWorld(0, 0.5, 0);
+		} else {
+			pos = PosInWorld(0, -0.5, 0);
+		}
 	}
-	/*
-	if((xerr < zerr)&&(xerr < yerr)) {
-		sCenterBlockCoordZ = floor(dDispCenterCoordZ + 0.5);
-		sCenterBlockCoordY = floor(dDispCenterCoordY);
+	aimedBlock = BlockInWorld(centerPos + pos);
+	freeBlock = BlockInWorld(centerPos + pos.inv());
 
-		if(position.bx < dDispCenterCoordX) sCenterBlockCoordX = Primes::Round(dDispCenterCoordX + 0.5);
-		if(position.bx > dDispCenterCoordX) sCenterBlockCoordX = Primes::Round(dDispCenterCoordX - 0.5);
-	}
-	if((yerr < xerr)&&(yerr < zerr)) {
-		sCenterBlockCoordX = floor(dDispCenterCoordX + 0.5);
-		sCenterBlockCoordZ = floor(dDispCenterCoordZ + 0.5);
-
-		if(position.by < dDispCenterCoordY) sCenterBlockCoordY = Primes::Round(dDispCenterCoordY);
-		if(position.by > dDispCenterCoordY) sCenterBlockCoordY = Primes::Round(dDispCenterCoordY - 1.0);
-	}
-	*/
 	int num = 100;
 	int sq = 100;
 	int sqb2 = sq/2;
@@ -202,7 +199,7 @@ void Character::Control(GLdouble FrameInterval)
 	if(bKeyboard['C']) {
 		Chunk *chunk;
 		int index;
-		wWorld.FindBlock(sCenterBlockCoord, &chunk, &index);
+		wWorld.FindBlock(aimedBlock, &chunk, &index);
 		if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT)) {
 			chunk->bBlocks[index].bVisible ^= (1 << SNOWCOVERED);
 		}
@@ -210,33 +207,16 @@ void Character::Control(GLdouble FrameInterval)
 	if(bKeyboard['V']) {
 		Chunk *chunk;
 		int index;
-		wWorld.FindBlock(sCenterBlockCoord, &chunk, &index);
+		wWorld.FindBlock(aimedBlock, &chunk, &index);
 		if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT)) {
 			chunk->bBlocks[index].bVisible ^= (1 << GRASSCOVERED);
 		}
 	}
 	if(bKeyboard['E']) {
-		wWorld.RemoveBlock(sCenterBlockCoord, true);
+		wWorld.RemoveBlock(aimedBlock, true);
 	}
-
 	if(bKeyboard['Q']) {
-		/*
-		signed short ix = sCenterBlockCoordX, iy = sCenterBlockCoordY, iz = sCenterBlockCoordZ;
-		if((zerr < xerr)&&(zerr < yerr)) {
-			if(dPositionZ < dDispCenterCoordZ) iz = sCenterBlockCoordZ - 1;
-			if(dPositionZ > dDispCenterCoordZ) iz = sCenterBlockCoordZ + 1;
-		}
-		if((xerr < zerr)&&(xerr < yerr)) {
-			if(dPositionX < dDispCenterCoordX) ix = sCenterBlockCoordX - 1;
-			if(dPositionX > dDispCenterCoordX) ix = sCenterBlockCoordX + 1;
-		}
-		if((yerr < xerr)&&(yerr < zerr)) {
-			if(dPositionY < dDispCenterCoordY) iy = sCenterBlockCoordY - 1;
-			if(dPositionY > dDispCenterCoordY) iy = sCenterBlockCoordY + 1;
-		}
-
-		wWorld.AddBlock(ix, iy, iz, MAT_PUMPKIN_SHINE, true);
-		*/
+		wWorld.AddBlock(freeBlock, MAT_PUMPKIN_SHINE, true);
 	}
 	if(bKeyboard['O']) {
 		wWorld.SaveChunks();
