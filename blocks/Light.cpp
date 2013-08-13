@@ -51,14 +51,14 @@ void Light::UpdateLight(void)
 	for (BlockCoord j = 0; j < CHUNK_SIZE_Y; j++) {
 		for (BlockCoord i = CHUNK_SIZE_XZ - 1; i < 4*CHUNK_SIZE_XZ + 1; i++) {
 			for (BlockCoord k = CHUNK_SIZE_XZ - 1; k < 4*CHUNK_SIZE_XZ + 1; k++) {
-				rec_diffuse(i, j, k, GetVal(BlockInWorld(i, j, k), NULL, NULL), true);
+				recursiveDiffuse(i, j, k, GetVal(BlockInWorld(i, j, k), NULL, NULL), true);
 			}
 		}
 	}
 	update += GetMillisecTime();
 }
 
-void Light::rec_diffuse( BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial )
+void Light::recursiveDiffuse( BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial )
 {
 	if((val > 0)&&(val <= DAYLIGHT)) {
 		int temp_val;
@@ -76,12 +76,12 @@ void Light::rec_diffuse( BlockCoord i, BlockCoord j, BlockCoord k, int val, bool
 				if(water_flag) val -= 3;
 				else val--;
 
-				rec_diffuse(i - 1, j, k, val, false);
-				rec_diffuse(i + 1, j, k, val, false);
-				rec_diffuse(i, j - 1, k, val, false);
-				rec_diffuse(i, j + 1, k, val, false);
-				rec_diffuse(i, j, k - 1, val, false);
-				rec_diffuse(i, j, k + 1, val, false);
+				recursiveDiffuse(i - 1, j, k, val, false);
+				recursiveDiffuse(i + 1, j, k, val, false);
+				recursiveDiffuse(i, j - 1, k, val, false);
+				recursiveDiffuse(i, j + 1, k, val, false);
+				recursiveDiffuse(i, j, k - 1, val, false);
+				recursiveDiffuse(i, j, k + 1, val, false);
 			}
 		}
 	}
