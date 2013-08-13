@@ -22,6 +22,9 @@ void Statistics::ComputeFPS( double FrameInterval )
 	TimeCount += FrameInterval;
 }
 
+extern double constr;
+extern double update;
+
 void Statistics::PrintStat(void)
 {
 	static char cFPS[20] = "";
@@ -62,14 +65,10 @@ void Statistics::PrintStat(void)
 	b_sprintf(pos, "Z: %0.10f\n", player.centerPos.bz);
 	RenderString(200, engine.height - 110, font, pos);
 
-	/*
-	b_sprintf(pos, "X: %0.10f\n", player.xerr);
+	b_sprintf(pos, "Constr: %0.10f\n", constr);
 	RenderString(200, engine.height - 130, font, pos);
-	b_sprintf(pos, "Y: %0.10f\n", player.yerr);
+	b_sprintf(pos, "Update: %0.10f\n", update);
 	RenderString(200, engine.height - 150, font, pos);
-	b_sprintf(pos, "Z: %0.10f\n", player.zerr);
-	RenderString(200, engine.height - 170, font, pos);
-	*/
 
 	b_sprintf(pos, "Rendered: %d\n", reRenderedChunks);
 	RenderString(50, engine.height - 130, font, pos);

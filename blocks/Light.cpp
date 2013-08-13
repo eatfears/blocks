@@ -20,8 +20,13 @@ float Light::LightTable[16] = {
 	0.512f, 0.640f, 0.800f, 1.000f
 };
 
+#include "Platform.h"
+double constr = 0;
+double update = 0;
+
 Light::Light(Chunk *ChnkArr[5][5], bool skylight)
 {
+	constr -= GetMillisecTime();
 	this->skylight = skylight;
 
 	for (int i = 0; i < 5; i++) {
@@ -33,6 +38,7 @@ Light::Light(Chunk *ChnkArr[5][5], bool skylight)
 			}
 		}
 	}
+	constr += GetMillisecTime();
 }
 
 Light::~Light(void)
@@ -41,27 +47,15 @@ Light::~Light(void)
 
 void Light::UpdateLight(void)
 {
-	/*
-	unsigned int start = GetMillisecTime();
-	unsigned int dur;
-	*/
-	for (BlockCoord i = CHUNK_SIZE_XZ - 1; i < 4*CHUNK_SIZE_XZ + 1; i++) {
-		for (BlockCoord j = 0; j < CHUNK_SIZE_Y; j++) {
+	update -= GetMillisecTime();
+	for (BlockCoord j = 0; j < CHUNK_SIZE_Y; j++) {
+		for (BlockCoord i = CHUNK_SIZE_XZ - 1; i < 4*CHUNK_SIZE_XZ + 1; i++) {
 			for (BlockCoord k = CHUNK_SIZE_XZ - 1; k < 4*CHUNK_SIZE_XZ + 1; k++) {
 				rec_diffuse(i, j, k, GetVal(BlockInWorld(i, j, k), NULL, NULL), true);
 			}
 		}
 	}
-
-
-	/*
-	dur = GetMillisecTime() - start;
-
-	std::fstream ds("out.txt", std::ios_base::out);
-
-	ds << dur << "\t";
-	ds << std::endl;
-	*/
+	update += GetMillisecTime();
 }
 
 void Light::rec_diffuse( BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial )
@@ -145,7 +139,7 @@ void Light::BlockLight(World& wWorld, Chunk& chunk, char side, BlockCoord cx, Bl
 		pos = BlockInWorld(chunk.x, chunk.z, cx, cy, cz);
 		posSide = pos.getSide(side);
 
-		//if in neighbor chunk
+		// if in neighbor chunk
 		if(pos.cx != posSide.cx || pos.cz != posSide.cz) {
 			temploc = wWorld.GetChunkByPosition(posSide.cx, posSide.cz);
 		} else temploc = &chunk;
@@ -250,8 +244,7 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld pos, int xx[8], int yy
 		if(temploc) {
 			tempPos = pos + BlockInChunk(xx[InflLight], yy[InflLight], zz[InflLight]); // todo: delete
 
-			// todo: check bounds
-			if(tempPos.by >= CHUNK_SIZE_Y-1) {
+			if(tempPos.by >= CHUNK_SIZE_Y) {
 				mat[i] = 10.0f;
 				continue;
 			}
@@ -285,6 +278,11 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld pos, int xx[8], int yy
 
 void Light::GetLight( Chunk& chunk, int index, GLfloat& br )
 {
+	if(index < 0 || index >= CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y) {
+		br = 1.0 - chunk.wWorld.SkyBright;
+		return;
+	}
+
 	br = Light::LightTable[chunk.SkyLight[index]] * ( 1.0 - chunk.wWorld.SkyBright);
 
 	GLfloat torch_light = Light::LightTable[chunk.TorchLight[index]];
@@ -295,7 +293,7 @@ void Light::GetLight( Chunk& chunk, int index, GLfloat& br )
 
 void Light::FillLight( Chunk& chunk, char bright, bool skylight )
 {
-	if (skylight) {
+	if(skylight) {
 		BlockCoord y;
 		int index;
 
@@ -310,7 +308,7 @@ void Light::FillLight( Chunk& chunk, char bright, bool skylight )
 		for(BlockCoord x = 0; x < CHUNK_SIZE_XZ; x++) {
 			for(BlockCoord z = 0; z < CHUNK_SIZE_XZ; z++) {
 				y = CHUNK_SIZE_Y - 1;
-				while (y > 0) {
+				while(y > 0) {
 					index = Chunk::GetIndexByPosition(x, y, z);
 					if(chunk.bBlocks[index].cMaterial != MAT_NO)
 						break;
@@ -322,10 +320,11 @@ void Light::FillLight( Chunk& chunk, char bright, bool skylight )
 		}
 	} else {
 		for(int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++) {
-			if(chunk.bBlocks[i].cMaterial == MAT_PUMPKIN_SHINE)
+			if(chunk.bBlocks[i].cMaterial == MAT_PUMPKIN_SHINE) {
 				chunk.TorchLight[i] = 15;
-			else
+			} else {
 				chunk.TorchLight[i] = 0;
+			}
 		}
 	}
 }
