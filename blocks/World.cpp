@@ -1,4 +1,3 @@
-#include <process.h>
 #include "Definitions.h"
 #include "World.h"
 #include "Threads.h"
@@ -10,10 +9,10 @@ World::World()
 {
 	Chunks = new std::list<Chunk *>[HASH_SIZE];
 
-	parget = CreateEvent(NULL, false, false, NULL);
-	parget2 = CreateEvent(NULL, false, false, NULL);
-	mutex = CreateMutex(NULL, false, NULL);
-	semaphore = CreateSemaphore(NULL, 4, 4, NULL);
+//	parget = CreateEvent(NULL, false, false, NULL);
+//	parget2 = CreateEvent(NULL, false, false, NULL);
+//	mutex = CreateMutex(NULL, false, NULL);
+//	semaphore = CreateSemaphore(NULL, 4, 4, NULL);
 	SoftLight = true;
 
 	SkyBright = 1.0f;
@@ -31,10 +30,11 @@ World::~World()
 void World::BuildWorld()
 {
 	Param par = {0, 0, this};
-	_beginthread(LoadNGenerate, 0, &par);
+    LoadNGenerate(&par);
+//	_beginthread(LoadNGenerate, 0, &par);
 
-	WaitForSingleObject(parget2, INFINITE);
-	ResetEvent(parget2);
+//	WaitForSingleObject(parget2, INFINITE);
+//	ResetEvent(parget2);
 }
 
 Chunk* World::GetChunkByPosition(ChunkCoord Cx, ChunkCoord Cz)
@@ -57,8 +57,8 @@ Chunk* World::GetChunkByPosition(ChunkCoord Cx, ChunkCoord Cz)
 void World::DrawLoadedBlocksFinish(Chunk &chunk)
 {
 	int index = 0;
- 	DWORD dwWaitResult;
- 	dwWaitResult = WaitForSingleObject(chunk.mutex, INFINITE);
+// 	DWORD dwWaitResult;
+// 	dwWaitResult = WaitForSingleObject(chunk.mutex, INFINITE);
 	BlockCoord chnkx, chnky, chnkz;
 	BlockInWorld pos;
 
@@ -100,7 +100,7 @@ void World::DrawLoadedBlocksFinish(Chunk &chunk)
 		}
 		index++;
 	}
-	ReleaseMutex(chunk.mutex);
+//	ReleaseMutex(chunk.mutex);
 
 	// draw boundary tiles
 	index = 0;
@@ -166,10 +166,10 @@ int World::AddBlock(BlockInWorld pos, char mat, bool show)
 
 	if(chunk == NULL) return 0;
 
-	DWORD dwWaitResult;
-	dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
+//	DWORD dwWaitResult;
+//	dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
 	int index = chunk->AddBlock(pos.bx, pos.by, pos.bz, mat);
-	ReleaseMutex(chunk->mutex);
+//	ReleaseMutex(chunk->mutex);
 
 	Chunk *TempChunk = 0;
 	int TempIndex;
@@ -238,10 +238,10 @@ int World::RemoveBlock(BlockInWorld pos, bool show)
 	if(!FindBlock(pos.getSide(FRONT), &TempChunk, &TempIndex)) HideTile(chunk, index, FRONT);
 	else {ShowTile(TempChunk, TempIndex, BACK); if(TempChunk->bBlocks[TempIndex].cMaterial == MAT_WATER) HideTile(chunk, index, FRONT);}
 
-	DWORD dwWaitResult;
-	dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
+//	DWORD dwWaitResult;
+//	dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
 	chunk->RemoveBlock(pos.bx, pos.by, pos.bz);
-	ReleaseMutex(chunk->mutex);
+//	ReleaseMutex(chunk->mutex);
 
 	return 1;
 }
@@ -249,28 +249,28 @@ int World::RemoveBlock(BlockInWorld pos, bool show)
 void World::ShowTile(Chunk *chunk, int index, char side)
 {
 	if(!(chunk->bBlocks[index].bVisible & (1 << side))) {
-		DWORD dwWaitResult;
-		dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
+//		DWORD dwWaitResult;
+//		dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
 
 		chunk->ShowTile(chunk->bBlocks + index, side);
 
 		chunk->NeedToRender[0] = RENDER_NEED;
 		chunk->NeedToRender[1] = RENDER_NEED;
-		ReleaseMutex(chunk->mutex);
+//		ReleaseMutex(chunk->mutex);
 	}
 }
 
 void World::HideTile(Chunk *chunk, int index, char side)
 {
 	if(chunk->bBlocks[index].bVisible & (1 << side)) {
-		DWORD dwWaitResult;
-		dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
+//		DWORD dwWaitResult;
+//		dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
 
 		chunk->HideTile(chunk->bBlocks + index, side);
 
 		chunk->NeedToRender[0] = RENDER_NEED;
 		chunk->NeedToRender[1] = RENDER_NEED;
-		ReleaseMutex(chunk->mutex);
+//		ReleaseMutex(chunk->mutex);
 	}
 }
 
@@ -299,19 +299,19 @@ int World::FindBlock(BlockInWorld pos)
 void World::LoadChunk(ChunkCoord x, ChunkCoord z)
 {
 	Param par = {x, z, this};
-	HANDLE hThread;
-	hThread = (HANDLE) _beginthread(LoadChunkThread, 0, &par);
-	WaitForSingleObject(parget, INFINITE);
-	ResetEvent(parget);
+//	HANDLE hThread;
+//	hThread = (HANDLE) _beginthread(LoadChunkThread, 0, &par);
+//	WaitForSingleObject(parget, INFINITE);
+//	ResetEvent(parget);
 }
 
 void World::UnLoadChunk(ChunkCoord x, ChunkCoord z)
 {
 	Param par = {x, z, this};
-	HANDLE hThread;
-	hThread = (HANDLE) _beginthread(UnLoadChunkThread, 0, &par);
-	WaitForSingleObject(parget, INFINITE);
-	ResetEvent(parget);
+//	HANDLE hThread;
+//	hThread = (HANDLE) _beginthread(UnLoadChunkThread, 0, &par);
+//	WaitForSingleObject(parget, INFINITE);
+//	ResetEvent(parget);
 }
 
 void World::UpdateLight(Chunk& chunk)

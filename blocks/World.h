@@ -40,11 +40,6 @@ public:
 	void UpdateLight(Chunk& chunk);
 	bool LightToRefresh;
 
-	HANDLE mutex;
-	HANDLE parget;
-	HANDLE parget2;
-	HANDLE semaphore;
-
 	bool SoftLight;
 
 	GLfloat SkyBright;

@@ -1,6 +1,5 @@
 #include "Character.h"
 #include <math.h>
-#include <process.h>
 #include "Threads.h"
 #include "World.h"
 #include "Primes.h"
@@ -97,8 +96,8 @@ void Character::Control(GLdouble FrameInterval)
 		dVelocityZ = dVelocityZ*WALK_SPEED*SPRINT_KOEF/ko;
 	}
 
-	if(bKeyboard[VK_SPACE]) {
-	}
+//	if(bKeyboard[VK_SPACE]) {
+//	}
 	
 	if(bKeyboard['X']) {
 		dVelocityX = 0;
@@ -182,17 +181,17 @@ void Character::Control(GLdouble FrameInterval)
 		bKeyboard['7'] = false;
 	}
 
-	if(bKeyboard['0']) {
-		static Param par = {0, 1, &wWorld};
+//	if(bKeyboard['0']) {
+//		static Param par = {0, 1, &wWorld};
 
-		_beginthread(LoadNGenerate, 0, &par);
+//		_beginthread(LoadNGenerate, 0, &par);
 
-		WaitForSingleObject(wWorld.parget2, INFINITE);
-		ResetEvent(wWorld.parget2);
+//		WaitForSingleObject(wWorld.parget2, INFINITE);
+//		ResetEvent(wWorld.parget2);
 
-		par.z++;
-		bKeyboard['0'] = false;
-	}
+//		par.z++;
+//		bKeyboard['0'] = false;
+//	}
 	
 	if(bKeyboard['C']) {
 		Chunk *chunk;

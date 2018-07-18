@@ -1,7 +1,6 @@
 #pragma once
 #include <list>
 
-#include <process.h>
 #include "Definitions.h"
 #include <GL/freeglut.h>
 
@@ -54,9 +53,6 @@ public:
 	bool LightToUpdate;
 
 	void Render(char mat, int *rendered);
-
-	HANDLE mutex;
-	HANDLE loadmutex;
 
 private:
 	int SetBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat);

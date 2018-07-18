@@ -30,8 +30,8 @@ Chunk::Chunk(ChunkCoord x, ChunkCoord z, World& wrld)
 	listgen = false;
 	LightToUpdate = true;
 
-	mutex = CreateMutex(NULL, false, NULL);
-	loadmutex = CreateMutex(NULL, false, NULL);
+//	mutex = CreateMutex(NULL, false, NULL);
+//	loadmutex = CreateMutex(NULL, false, NULL);
 }
 
 Chunk::~Chunk()
@@ -205,12 +205,12 @@ void Chunk::Open()
 	filename = temp.str();
 	
 	savefile.open (filename, std::fstream::in | std::fstream::binary);
-	if(savefile.is_open()) {
-		WaitForSingleObject(loadmutex, INFINITE);
-		loaded = wWorld.lLandscape.Load(*this, savefile);
-		ReleaseMutex(loadmutex);
-		savefile.close();
-	}
+//	if(savefile.is_open()) {
+//		WaitForSingleObject(loadmutex, INFINITE);
+//		loaded = wWorld.lLandscape.Load(*this, savefile);
+//		ReleaseMutex(loadmutex);
+//		savefile.close();
+//	}
 	
 	if(!loaded) {
 		wWorld.lLandscape.Generate(*this);

@@ -1,5 +1,3 @@
-#include <process.h>
-
 #include "Definitions.h"
 #include "World.h"
 #include "Landscape.h"
@@ -11,31 +9,31 @@ void LoadChunkThread(void* pParams)
 	ChunkCoord z = pParameters.z;
 	World &wWorld = *pParameters.wWorld;
 
-	SetEvent(wWorld.parget);
-	WaitForSingleObject(wWorld.semaphore, INFINITE);
+//	SetEvent(wWorld.parget);
+//	WaitForSingleObject(wWorld.semaphore, INFINITE);
 
 #ifdef _WIN32
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 #endif // _WIN32
 
 	if(wWorld.GetChunkByPosition(x, z)) {
-		ReleaseSemaphore(wWorld.semaphore, 1, NULL);
-		_endthread();
-		return;
+//		ReleaseSemaphore(wWorld.semaphore, 1, NULL);
+//		_endthread();
+//		return;
 	}
 
-	DWORD dwWaitResult;
+//	DWORD dwWaitResult;
 	Chunk *chunk = new Chunk(x, z, wWorld);
 
 	chunk->Open();
 	chunk->DrawLoadedBlocks();
 
-	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
+//	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 
 	unsigned long bin = wWorld.Hash(x, z);
 
 	wWorld.Chunks[bin].push_front(chunk);
-	ReleaseMutex(wWorld.mutex);
+//	ReleaseMutex(wWorld.mutex);
 
 	wWorld.DrawLoadedBlocksFinish(*chunk);
 
@@ -59,9 +57,9 @@ void LoadChunkThread(void* pParams)
 	// 	wWorld.LoadedLocations.erase(locc);
 	// 	ReleaseMutex(wWorld.loading_mutex);
 
-	ReleaseSemaphore(wWorld.semaphore, 1, NULL);
+//	ReleaseSemaphore(wWorld.semaphore, 1, NULL);
 
-	_endthread();
+//	_endthread();
 	return;
 }
 
@@ -72,16 +70,16 @@ void UnLoadChunkThread(void* pParams)
 	ChunkCoord z = pParameters.z;
 	World &wWorld = *pParameters.wWorld;
 
-	SetEvent(wWorld.parget);
-	WaitForSingleObject(wWorld.semaphore, INFINITE);
+//	SetEvent(wWorld.parget);
+//	WaitForSingleObject(wWorld.semaphore, INFINITE);
 
 #ifdef _WIN32
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 #endif // _WIN32
 
-	DWORD dwWaitResult;
+//	DWORD dwWaitResult;
 
-	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
+//	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 
 	unsigned long bin = wWorld.Hash(x, z);
 	auto chunk = wWorld.Chunks[bin].begin();
@@ -90,9 +88,9 @@ void UnLoadChunkThread(void* pParams)
 		if(((*chunk)->x == x)&&((*chunk)->z == z)) break;
 		++chunk;
 	}
-	if(chunk == wWorld.Chunks[bin].end()) {
+    if(chunk == wWorld.Chunks[bin].end()) {/*
 		ReleaseMutex(wWorld.mutex);
-		ReleaseSemaphore(wWorld.semaphore, 1, NULL);
+        ReleaseSemaphore(wWorld.semaphore, 1, NULL);*/
 
 		// 		dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
 		// 		LocationPosiion lp = {x, z};
@@ -108,17 +106,17 @@ void UnLoadChunkThread(void* pParams)
 		// 		}
 		// 		wWorld.LoadedLocations.erase(locc);
 		// 		ReleaseMutex(wWorld.loading_mutex);
-		_endthread();
+//		_endthread();
 		return;
 	}
 
-	dwWaitResult = WaitForSingleObject((*chunk)->mutex, INFINITE);
+//	dwWaitResult = WaitForSingleObject((*chunk)->mutex, INFINITE);
 
 	delete *chunk;
 	wWorld.Chunks[bin].erase(chunk);
 
 	wWorld.DrawUnLoadedBlocks(x, z);
-	ReleaseMutex(wWorld.mutex);
+//	ReleaseMutex(wWorld.mutex);
 
 	//
 	// 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
@@ -135,8 +133,8 @@ void UnLoadChunkThread(void* pParams)
 	// 	}
 	// 	wWorld.LoadedLocations.erase(locc);
 	// 	ReleaseMutex(wWorld.loading_mutex);
-	ReleaseSemaphore(wWorld.semaphore, 1, NULL);
-	_endthread();
+//	ReleaseSemaphore(wWorld.semaphore, 1, NULL);
+//	_endthread();
 	return;
 }
 
@@ -146,7 +144,7 @@ void LoadNGenerate(void* pParams)
 	World &wWorld = *pParameters.wWorld;
 	ChunkCoord x = pParameters.x;
 	ChunkCoord z = pParameters.z;
-	SetEvent(wWorld.parget2);
+//	SetEvent(wWorld.parget2);
 
 	int size = 4;
 
@@ -156,6 +154,6 @@ void LoadNGenerate(void* pParams)
 			//Sleep(30);
 		}
 	}
-	_endthread();
+//	_endthread();
 	return;
 }
