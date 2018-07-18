@@ -63,7 +63,7 @@ void World::DrawLoadedBlocksFinish(Chunk &chunk)
 	BlockInWorld pos;
 
 	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y) {
-		chunk.GetBlockPositionByPointer(chunk.bBlocks + index, &chnkx, &chnky, &chnkz);
+        chunk.getBlockPositionByPointer(chunk.bBlocks + index, &chnkx, &chnky, &chnkz);
 
 		if((chnkx > 0)&&(chnkx < CHUNK_SIZE_XZ - 1)&&(chnkz > 0)&&(chnkz < CHUNK_SIZE_XZ - 1)) {
 			index++;
@@ -105,7 +105,7 @@ void World::DrawLoadedBlocksFinish(Chunk &chunk)
 	// draw boundary tiles
 	index = 0;
 	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y) {
-		chunk.GetBlockPositionByPointer(chunk.bBlocks + index, &chnkx, &chnky, &chnkz);
+        chunk.getBlockPositionByPointer(chunk.bBlocks + index, &chnkx, &chnky, &chnkz);
 
 		if((chnkx > 0)&&(chnkx < CHUNK_SIZE_XZ - 1)&&(chnkz > 0)&&(chnkz < CHUNK_SIZE_XZ - 1)) {
 			index++;
@@ -138,7 +138,7 @@ void World::DrawUnLoadedBlocks(ChunkCoord Cx, ChunkCoord Cz)
 	BlockCoord chnkx, chnky, chnkz;
 
 	while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y) {
-		Chunk::GetBlockPositionByIndex(index, &chnkx, &chnky, &chnkz);
+        Chunk::getBlockPositionByIndex(index, &chnkx, &chnky, &chnkz);
 
 		if((chnkx > 0)&&(chnkx < CHUNK_SIZE_XZ - 1)&&(chnkz > 0)&&(chnkz < CHUNK_SIZE_XZ - 1)) {
 			index++;
@@ -168,7 +168,7 @@ int World::AddBlock(BlockInWorld pos, char mat, bool show)
 
 //	DWORD dwWaitResult;
 //	dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
-	int index = chunk->AddBlock(pos.bx, pos.by, pos.bz, mat);
+    int index = chunk->addBlock(pos.bx, pos.by, pos.bz, mat);
 //	ReleaseMutex(chunk->mutex);
 
 	Chunk *TempChunk = 0;
@@ -221,7 +221,7 @@ int World::RemoveBlock(BlockInWorld pos, bool show)
 
 	if(chunk == NULL) return 0;
 
-	index = chunk->GetIndexByPosition(pos.bx, pos.by, pos.bz);
+    index = chunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
 	Chunk *TempChunk = 0;
 	int TempIndex;
 
@@ -240,7 +240,7 @@ int World::RemoveBlock(BlockInWorld pos, bool show)
 
 //	DWORD dwWaitResult;
 //	dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
-	chunk->RemoveBlock(pos.bx, pos.by, pos.bz);
+    chunk->removeBlock(pos.bx, pos.by, pos.bz);
 //	ReleaseMutex(chunk->mutex);
 
 	return 1;
@@ -252,7 +252,7 @@ void World::ShowTile(Chunk *chunk, int index, char side)
 //		DWORD dwWaitResult;
 //		dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
 
-		chunk->ShowTile(chunk->bBlocks + index, side);
+        chunk->showTile(chunk->bBlocks + index, side);
 
 		chunk->NeedToRender[0] = RENDER_NEED;
 		chunk->NeedToRender[1] = RENDER_NEED;
@@ -266,7 +266,7 @@ void World::HideTile(Chunk *chunk, int index, char side)
 //		DWORD dwWaitResult;
 //		dwWaitResult = WaitForSingleObject(chunk->mutex, INFINITE);
 
-		chunk->HideTile(chunk->bBlocks + index, side);
+        chunk->hideTile(chunk->bBlocks + index, side);
 
 		chunk->NeedToRender[0] = RENDER_NEED;
 		chunk->NeedToRender[1] = RENDER_NEED;
@@ -280,7 +280,7 @@ int World::FindBlock(BlockInWorld pos, Chunk **chunk, int *index)
 	(*chunk) = GetChunkByPosition(pos.cx, pos.cz);
 	if((*chunk) == NULL) { *index = 0; return 0;}
 	*index = pos.bx*CHUNK_SIZE_XZ + pos.bz + pos.by*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
-	if((*chunk)->GetBlockMaterial(pos.bx, pos.by, pos.bz) == MAT_NO)
+    if((*chunk)->getBlockMaterial(pos.bx, pos.by, pos.bz) == MAT_NO)
 		return 0;
 	return 1;
 }
@@ -291,7 +291,7 @@ int World::FindBlock(BlockInWorld pos)
 	Chunk *chunk = GetChunkByPosition(pos.cx, pos.cz);
 	if(chunk == NULL) return 0;
 	BlockCoord chnkx, chnky, chnkz;
-	if(chunk->GetBlockMaterial(pos.bx, pos.by, pos.bz) == MAT_NO)
+    if(chunk->getBlockMaterial(pos.bx, pos.by, pos.bz) == MAT_NO)
 		return 0;
 	return 1;
 }
@@ -354,7 +354,7 @@ void World::SaveChunks()
 		auto chunk = Chunks[i].begin();
 
 		while(chunk != Chunks[i].end()) {
-			(*chunk)->Save();
+            (*chunk)->save();
 			++chunk;
 		}
 	}

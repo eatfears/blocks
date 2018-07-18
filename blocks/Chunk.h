@@ -6,17 +6,17 @@
 
 class World;
 
-typedef struct chnkpos
+typedef struct
 {
 	ChunkCoord x;
 	ChunkCoord z;
-}ChunkPosition;
+} ChunkPosition;
 
-typedef struct blockstruct
+typedef struct
 {
 	char cMaterial;
 	char bVisible;
-}Block;
+} Block;
 
 class Chunk
 {
@@ -34,29 +34,29 @@ public:
 	ChunkCoord z;
 	char NeedToRender[2];
 
-	int	AddBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
-	int RemoveBlock(BlockCoord x, BlockCoord y, BlockCoord z);
+    int	addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
+    int removeBlock(BlockCoord x, BlockCoord y, BlockCoord z);
 
-	void ShowTile(Block *bBlock, char side);
-	void HideTile(Block *bBlock, char side);
+    void showTile(Block *bBlock, char side);
+    void hideTile(Block *bBlock, char side);
 
-	char GetBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z);
+    char getBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z);
 
-	int GetBlockPositionByPointer(Block *bCurrentBlock, BlockCoord *x, BlockCoord *y, BlockCoord *z) const;
-	static int GetBlockPositionByIndex(int index, BlockCoord *x, BlockCoord *y, BlockCoord *z);
-	static int GetIndexByPosition(BlockCoord x, BlockCoord y, BlockCoord z);
+    int getBlockPositionByPointer(Block *bCurrentBlock, BlockCoord *x, BlockCoord *y, BlockCoord *z) const;
+    static int getBlockPositionByIndex(int index, BlockCoord *x, BlockCoord *y, BlockCoord *z);
+    static int getIndexByPosition(BlockCoord x, BlockCoord y, BlockCoord z);
 
-	void DrawLoadedBlocks();
+    void drawLoadedBlocks();
 
-	void Open();
-	void Save();
-	bool LightToUpdate;
+    void open();
+    void save();
+    bool m_LightToUpdate;
 
-	void Render(char mat, int *rendered);
+    void render(char mat, int *rendered);
 
 private:
-	int SetBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat);
-	void DrawTile(BlockInWorld pos, Block* block, char side);
+    int setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat);
+    void drawTile(BlockInWorld pos, Block* block, char side);
 
 	GLuint RenderList;
 	bool listgen;

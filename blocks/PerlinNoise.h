@@ -10,7 +10,7 @@ public:
     PerlinNoise(double m_Persistence = 0.5, int m_NumberOfOctaves = 4);
 	~PerlinNoise();
 
-    void initNoise(boost::mt19937 *randNumGen);
+    void initNoise(boost::mt19937 &randNumGen);
 
     double perlinNoise1d(double x);
     double perlinNoise2d(double x, double y);

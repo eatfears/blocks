@@ -25,8 +25,8 @@ void LoadChunkThread(void* pParams)
 //	DWORD dwWaitResult;
 	Chunk *chunk = new Chunk(x, z, wWorld);
 
-	chunk->Open();
-	chunk->DrawLoadedBlocks();
+    chunk->open();
+    chunk->drawLoadedBlocks();
 
 //	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 
@@ -37,9 +37,9 @@ void LoadChunkThread(void* pParams)
 
 	wWorld.DrawLoadedBlocksFinish(*chunk);
 
-	if(chunk->LightToUpdate) {
+    if(chunk->m_LightToUpdate) {
 		wWorld.UpdateLight(*chunk);
-		chunk->LightToUpdate = false;
+        chunk->m_LightToUpdate = false;
 	}
 
 	// 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);

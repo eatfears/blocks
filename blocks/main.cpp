@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
 	glutInitWindowSize(RESX, RESY);
 	glutInitWindowPosition(0, 0);
-	glutCreateWindow("Blocks");
+    glutCreateWindow("Blocks");
 
 	/*
 	glutGameModeString("1280x1024:32");
@@ -63,6 +63,8 @@ int main(int argc, char **argv)
 
 	GlutInit();
 	glutMainLoop();
+
+    glutExit();
 
 	return 0;
 }

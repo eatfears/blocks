@@ -8,8 +8,7 @@ class World;
 class Character
 {
 public:
-	Character(World& ww);
-	~Character();
+    Character(World& ww);
 
 	PosInWorld position;
 
@@ -31,11 +30,12 @@ public:
 	bool underWater;
 	Chunk *chunk;
 	int index;
-    void GetMyPosition();
-	double LocalTimeOfDay;
-    void GetLocalTime(double TimeOfDay);
+    double LocalTimeOfDay;
+
+    void getMyPosition();
+    void getLocalTime(double TimeOfDay);
 
 private:
-	void GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr);
+    void getPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr);
 };
 

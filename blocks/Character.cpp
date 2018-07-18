@@ -32,13 +32,8 @@ Character::Character(World& ww)
 	underWater = false;
 }
 
-Character::~Character()
+void Character::getPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
 {
-}
-
-void Character::GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
-{
-
 	*xerr = centerPos.bx + 0.5;
 	*yerr = centerPos.by;
 	*zerr = centerPos.bz + 0.5;
@@ -106,7 +101,7 @@ void Character::Control(GLdouble FrameInterval)
 	}
 	
 	GLdouble yerr, xerr, zerr;
-	GetPlane(&xerr, &yerr, &zerr);
+    getPlane(&xerr, &yerr, &zerr);
 	
 	PosInWorld pos;
 	if(zerr < xerr && zerr < yerr) {
@@ -317,7 +312,7 @@ void Character::GetCenterCoords(GLsizei width, GLsizei height)
 
 }
 
-void Character::GetLocalTime(double TimeOfDay)
+void Character::getLocalTime(double TimeOfDay)
 {
     LocalTimeOfDay = TimeOfDay + Longitude*DAY_TIME;
 
@@ -325,7 +320,7 @@ void Character::GetLocalTime(double TimeOfDay)
     while (LocalTimeOfDay < 0.0) LocalTimeOfDay += DAY_TIME;
 }
 
-void Character::GetMyPosition()
+void Character::getMyPosition()
 {
 	// checks if player is under water level
 	PosInWorld pos(position);

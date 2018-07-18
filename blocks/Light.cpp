@@ -95,7 +95,7 @@ int Light::getVal( BlockInWorld pos, bool *water_flag, bool *wall_flag )
 	}
     Chunk *TempChunk = m_ChunkArray[pos.cx][pos.cz];
 	if(TempChunk) {
-		int index = TempChunk->GetIndexByPosition(pos.bx, pos.by, pos.bz);
+		int index = TempChunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
 		char mat = TempChunk->bBlocks[index].cMaterial;
 		
 		if((mat == MAT_NO)||(mat == MAT_WATER)) {
@@ -118,7 +118,7 @@ void Light::setVal( BlockInWorld pos, int val )
 {
     Chunk *TempChunk = m_ChunkArray[pos.cx][pos.cz];
 	if(TempChunk) {
-		int index = TempChunk->GetIndexByPosition(pos.bx, pos.by, pos.bz);
+		int index = TempChunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
 
 		if(skylight) {
 			TempChunk->SkyLight[index] = val;
@@ -146,7 +146,7 @@ void Light::blockLight(World& wWorld, Chunk& chunk, char side, BlockCoord cx, Bl
 
 		if(pos.overflow()) temploc = NULL;
 		if (temploc) {
-			int index = temploc->GetIndexByPosition(posSide.bx, posSide.by, posSide.bz);
+			int index = temploc->getIndexByPosition(posSide.bx, posSide.by, posSide.bz);
 
             Light::getLight(*temploc, index, res);
 		} else res = (1.0 - wWorld.SkyBright);
@@ -249,7 +249,7 @@ float Light::getBrightAverage(World& wWorld, BlockInWorld pos, int xx[8], int yy
 				continue;
 			}
 
-			int index = temploc->GetIndexByPosition(tempPos.bx, tempPos.by, tempPos.bz);
+			int index = temploc->getIndexByPosition(tempPos.bx, tempPos.by, tempPos.bz);
 
 			if((i == 1)&&(temploc->bBlocks[index].cMaterial != MAT_NO)&&(temploc->bBlocks[index].cMaterial != MAT_WATER))
 				DiagonalblockInfluate = false;
@@ -309,7 +309,7 @@ void Light::fillLight( Chunk& chunk, char bright, bool skylight )
 			for(BlockCoord z = 0; z < CHUNK_SIZE_XZ; z++) {
 				y = CHUNK_SIZE_Y - 1;
 				while(y > 0) {
-					index = Chunk::GetIndexByPosition(x, y, z);
+					index = Chunk::getIndexByPosition(x, y, z);
 					if(chunk.bBlocks[index].cMaterial != MAT_NO)
 						break;
 

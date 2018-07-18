@@ -48,12 +48,12 @@ inline Int Primes::nextPrime(Int i)
 	return si;
 }
 
-Int Primes::genPrime(Int size, boost::mt19937 *randNumGen)
+Int Primes::genPrime(Int size, boost::mt19937 &randNumGen)
 {
 	Int beg = 1;
 
 	boost::uniform_int<> degen_dist(1 << (size-1), 1 << size);
-	boost::variate_generator<boost::mt19937&, boost::uniform_int<> > sampler(*randNumGen, degen_dist);
+    boost::variate_generator<boost::mt19937&, boost::uniform_int<> > sampler(randNumGen, degen_dist);
 
 	beg = sampler();
 	beg = nextPrime(beg);

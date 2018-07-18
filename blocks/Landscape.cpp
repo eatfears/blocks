@@ -5,8 +5,6 @@
 
 Landscape::Landscape()
 {
-	generator = new boost::mt19937;
-
 	horizon				= CHUNK_SIZE_Y/2;
 	scaleHeightMapXZ	= 128.0;
 	scaleRoughness		= 32.0;
@@ -29,10 +27,9 @@ Landscape::Landscape()
 
 Landscape::~Landscape()
 {
-	delete generator;
 }
 
-void Landscape::Init(unsigned int seed)
+void Landscape::init(unsigned int seed)
 {
     //CreateDirectory("save//", NULL);
 
@@ -51,7 +48,7 @@ void Landscape::Init(unsigned int seed)
 		}
 	}
 
-	generator->seed(seed);
+    generator.seed(seed);
 
 	pnBubbles.initNoise(generator);
 	pnHeightMap.initNoise(generator);
@@ -59,7 +56,7 @@ void Landscape::Init(unsigned int seed)
 	pnDetails.initNoise(generator);
 }
 
-void Landscape::Generate(Chunk &chunk)
+void Landscape::generate(Chunk &chunk)
 {
 	ChunkCoord chunkx = chunk.x;
 	ChunkCoord chunkz = chunk.z;
@@ -104,8 +101,8 @@ void Landscape::Generate(Chunk &chunk)
 				//temp2 = dens[i%LOCATION_SIZE_XZ][(j+1)%LOCATION_SIZE_Y][k%LOCATION_SIZE_XZ];
 
 				density = temp*(4*details + 0.3) + j;
-				if(density < height) {if(density < height - 3) chunk.AddBlock(i, j, k, MAT_STONE); else if(j < horizon) chunk.AddBlock(i, j, k, MAT_SAND); else chunk.AddBlock(i, j, k, MAT_DIRT);}
-				else if(j < horizon) chunk.AddBlock(i, j, k, MAT_WATER);
+				if(density < height) {if(density < height - 3) chunk.addBlock(i, j, k, MAT_STONE); else if(j < horizon) chunk.addBlock(i, j, k, MAT_SAND); else chunk.addBlock(i, j, k, MAT_DIRT);}
+				else if(j < horizon) chunk.addBlock(i, j, k, MAT_WATER);
 			}
 		}
 	}
@@ -113,7 +110,7 @@ void Landscape::Generate(Chunk &chunk)
 	for(int i = 0; i < CHUNK_SIZE_XZ; i++) {
 		for(int k = 0; k < CHUNK_SIZE_XZ; k++) {
 			for(int j = CHUNK_SIZE_Y - 1; j >= 0; j--) {
-				int index = chunk.GetIndexByPosition(i, j, k);
+				int index = chunk.getIndexByPosition(i, j, k);
 				if(chunk.bBlocks[index].cMaterial != MAT_NO) {
 					if(chunk.bBlocks[index].cMaterial == MAT_DIRT)
 						chunk.bBlocks[index].bVisible |= (1 << SNOWCOVERED);
@@ -124,7 +121,7 @@ void Landscape::Generate(Chunk &chunk)
 	}
 }
 
-bool Landscape::Load(Chunk& chunk, std::fstream& savefile)
+bool Landscape::load(Chunk& chunk, std::fstream& savefile)
 {
 	int index = 0;
 	int res;
@@ -154,7 +151,7 @@ bool Landscape::Load(Chunk& chunk, std::fstream& savefile)
 
 		index++;
 	}
-	chunk.LightToUpdate = true;
+	chunk.m_LightToUpdate = true;
 
 	delete buf;
 	delete bufcompress;
@@ -162,7 +159,7 @@ bool Landscape::Load(Chunk& chunk, std::fstream& savefile)
 	return true;
 }
 
-void Landscape::Save(Chunk& chunk, std::fstream& savefile)
+void Landscape::save(Chunk& chunk, std::fstream& savefile)
 {
 	int index = 0;
 	Bytef *buf;
@@ -187,7 +184,7 @@ void Landscape::Save(Chunk& chunk, std::fstream& savefile)
 	delete bufcompress;
 }
 
-void Landscape::Fill(Chunk& chunk, char mat, double fillness, int height)
+void Landscape::fill(Chunk& chunk, char mat, double fillness, int height)
 {
 	int material = mat;
 	ChunkCoord chunkx = chunk.x;
@@ -198,7 +195,7 @@ void Landscape::Fill(Chunk& chunk, char mat, double fillness, int height)
 			for(int j = 0; j < height; j++) {
 				if((double)rand()/(double)RAND_MAX < fillness) {
 					if (mat == 0) material = rand()%4+1;
-					chunk.AddBlock(i, j, k, material);
+					chunk.addBlock(i, j, k, material);
 				}
 			}
 		}

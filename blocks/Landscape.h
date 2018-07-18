@@ -2,10 +2,9 @@
 #include "PerlinNoise.h"
 #include "Definitions.h"
 
-class World;
 
+class World;
 class Chunk;
-typedef struct chnkpos ChunkPosition;
 
 class Landscape
 {
@@ -13,12 +12,12 @@ public:
 	Landscape();
 	~Landscape();
 
-	void Init(unsigned int seed);
+    void init(unsigned int seed);
 
-	void Generate(Chunk &chunk);
-	bool Load(Chunk& chunk, std::fstream& savefile);
-	void Save(Chunk& chunk, std::fstream& savefile);
-	void Fill(Chunk& chunk, char mat, double fillness, int height);
+    void generate(Chunk &chunk);
+    bool load(Chunk& chunk, std::fstream& savefile);
+    void save(Chunk& chunk, std::fstream& savefile);
+    void fill(Chunk& chunk, char mat, double fillness, int height);
 
 	int horizon;
 	double scaleHeightMapXZ;
@@ -40,6 +39,6 @@ public:
 	PerlinNoise pnRoughness;
 	PerlinNoise pnDetails;
 
-	boost::mt19937 *generator;
+    boost::mt19937 generator;
 };
 
