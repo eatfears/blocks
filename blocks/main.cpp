@@ -7,14 +7,14 @@
 
 Engine *engine;
 
-void Display() { engine->Loop(); }
-void Reshape(int width, int height) { engine->Reshape(width, height); }
-void SpecialDown(int button, int x, int y) { engine->Special(button, x, y, true); }
-void SpecialUp(int button, int x, int y) { engine->Special(button, x, y, false); }
-void MouseMotion(int x, int y) { engine->MouseMotion(x, y); }
-void MouseButton(int button, int state, int x, int y) { engine->MouseButton(button, state, x, y); }
-void KeyboardDown(unsigned char button, int x, int y) { engine->Keyboard(button, x, y, true); }
-void KeyboardUp(unsigned char button, int x, int y) { engine->Keyboard(button, x, y, false); }
+void Display() { engine->loop(); }
+void Reshape(int width, int height) { engine->reshape(width, height); }
+void SpecialDown(int button, int x, int y) { engine->special(button, x, y, true); }
+void SpecialUp(int button, int x, int y) { engine->special(button, x, y, false); }
+void MouseMotion(int x, int y) { engine->mouseMotion(x, y); }
+void MouseButton(int button, int state, int x, int y) { engine->mouseButton(button, state, x, y); }
+void KeyboardDown(unsigned char button, int x, int y) { engine->keyboard(button, x, y, true); }
+void KeyboardUp(unsigned char button, int x, int y) { engine->keyboard(button, x, y, false); }
 void MouseEntry (int state) { if (state == GLUT_ENTERED){} }
 
 // void idle() { glutPostRedisplay(); }
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 
 	/*
 	glutGameModeString("1280x1024:32");
-	//glutGameModeString("1280x1024:16@60"); //Ïåðåõîä â ïîëíîýêðàííûé ðåæèì
+	//glutGameModeString("1280x1024:16@60"); //ÐŸÐµÑ€ÐµÑ…Ð¾Ð´ Ð² Ð¿Ð¾Ð»Ð½Ð¾ÑÐºÑ€Ð°Ð½Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼
 
 	if(glutGameModeGet(GLUT_GAME_MODE_POSSIBLE))
 		glutEnterGameMode();
@@ -58,8 +58,8 @@ int main(int argc, char **argv)
 		exit(1);
 	*/
 
-	engine->InitGL();
-	engine->InitGame();
+	engine->initGL();
+	engine->initGame();
 
 	GlutInit();
 	glutMainLoop();

@@ -25,25 +25,25 @@ class Light
 {
 public:
 	Light(Chunk *ChnkArr[5][5], bool skylight);
-	Light() {};
+    Light() {}
 	~Light(void);
 
-	static float LightTable[16];
+    static float m_LightTable[16];
 
-	void UpdateLight(void);
-	static void BlockLight(World& wWorld, Chunk& chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz);
-	static void SoftLight(World& wWorld, BlockInWorld pos, char side, int vertex);
+    void updateLight(void);
+    static void blockLight(World& wWorld, Chunk& chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz);
+    static void softLight(World& wWorld, BlockInWorld pos, char side, int vertex);
 	bool skylight;
 
-	static void GetLight(Chunk& chunk, int index, GLfloat& br);
+    static void getLight(Chunk& chunk, int index, GLfloat& br);
 private:
-	static char InfluencingLight[6][4];
+    static char m_InfluencingLight[6][4];
 
-	Chunk *ChunkArray[5][5];
+    Chunk *m_ChunkArray[5][5];
 
-	void SetVal( BlockInWorld pos, int val );
-	int GetVal( BlockInWorld pos, bool *water_flag, bool *wall_flag  );
-	static float GetBrightAverage(World& wWorld, BlockInWorld pos, int xx[8], int yy[8], int zz[8], char side);
-	void recursiveDiffuse( BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial );
-	void FillLight(Chunk& chunk, char bright, bool skylight);
+    void setVal(BlockInWorld pos, int val);
+    int getVal(BlockInWorld pos, bool *water_flag, bool *wall_flag);
+    static float getBrightAverage(World& wWorld, BlockInWorld pos, int xx[8], int yy[8], int zz[8], char side);
+    void recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial);
+    void fillLight(Chunk& chunk, char bright, bool skylight);
 };

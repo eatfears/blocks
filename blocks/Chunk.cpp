@@ -1,5 +1,6 @@
 #include "Chunk.h"
 #include <fstream>
+#include <sstream>
 #include "World.h"
 #include "Light.h"
 
@@ -304,7 +305,7 @@ void Chunk::Render(char mat, int *rendered)
 			while(it != Tiles->end()) {
 				GetBlockPositionByPointer(*it, &cx, &cy, &cz);
 
-				Light::BlockLight(wWorld, *this, i, cx, cy, cz);
+				Light::blockLight(wWorld, *this, i, cx, cy, cz);
 				temp = blckw + BlockInWorld(cx,cy,cz);
 				DrawTile(temp, *it, i);
 				++it;
@@ -344,108 +345,108 @@ void Chunk::DrawTile(BlockInWorld tilePos, Block* block, char side)
 	char covered = block->bVisible;
 	char material = block->cMaterial;
 
-	wWorld.MaterialLib.GetTextureOffsets(offsetx, offsety, material, covered, side);
+	wWorld.MaterialLib.getTextureOffsets(offsetx, offsety, material, covered, side);
 
 	switch(side) {
 	case TOP: {
-			Light::SoftLight(wWorld, tilePos, side, 0);
+			Light::softLight(wWorld, tilePos, side, 0);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + 1, dZcoord);
 
-			Light::SoftLight(wWorld, tilePos, side, 1);
+			Light::softLight(wWorld, tilePos, side, 1);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + 1, dZcoord + 1);
 
-			Light::SoftLight(wWorld, tilePos, side, 2);
+			Light::softLight(wWorld, tilePos, side, 2);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + 1, dYcoord + 1, dZcoord + 1);
 
-			Light::SoftLight(wWorld, tilePos, side, 3);
+			Light::softLight(wWorld, tilePos, side, 3);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + 1, dYcoord + 1, dZcoord);
 		} break;
 	case BOTTOM: {
-			Light::SoftLight(wWorld, tilePos, side, 4);
+			Light::softLight(wWorld, tilePos, side, 4);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
 
-			Light::SoftLight(wWorld, tilePos, side, 7);
+			Light::softLight(wWorld, tilePos, side, 7);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + 1, dYcoord, dZcoord);
 
-			Light::SoftLight(wWorld, tilePos, side, 6);
+			Light::softLight(wWorld, tilePos, side, 6);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + 1, dYcoord, dZcoord + 1);
 
-			Light::SoftLight(wWorld, tilePos, side, 5);
+			Light::softLight(wWorld, tilePos, side, 5);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord + 1);
 		} break;
 	case RIGHT: {
-			Light::SoftLight(wWorld, tilePos, side, 7);
+			Light::softLight(wWorld, tilePos, side, 7);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + 1, dYcoord, dZcoord);
 
-			Light::SoftLight(wWorld, tilePos, side, 3);
+			Light::softLight(wWorld, tilePos, side, 3);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord + 1, dYcoord + 1, dZcoord);
 
-			Light::SoftLight(wWorld, tilePos, side, 2);
+			Light::softLight(wWorld, tilePos, side, 2);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord + 1, dYcoord + 1, dZcoord + 1);
 
-			Light::SoftLight(wWorld, tilePos, side, 6);
+			Light::softLight(wWorld, tilePos, side, 6);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + 1, dYcoord, dZcoord + 1);
 		} break;
 	case LEFT: {
-			Light::SoftLight(wWorld, tilePos, side, 4);
+			Light::softLight(wWorld, tilePos, side, 4);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
 
-			Light::SoftLight(wWorld, tilePos, side, 5);
+			Light::softLight(wWorld, tilePos, side, 5);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord + 1);
 
-			Light::SoftLight(wWorld, tilePos, side, 1);
+			Light::softLight(wWorld, tilePos, side, 1);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + 1, dZcoord + 1);
 
-			Light::SoftLight(wWorld, tilePos, side, 0);
+			Light::softLight(wWorld, tilePos, side, 0);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + 1, dZcoord);
 		} break;
 	case BACK: {
-			Light::SoftLight(wWorld, tilePos, side, 5);
+			Light::softLight(wWorld, tilePos, side, 5);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord + 1);
 
-			Light::SoftLight(wWorld, tilePos, side, 6);
+			Light::softLight(wWorld, tilePos, side, 6);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + 1, dYcoord, dZcoord + 1);
 
-			Light::SoftLight(wWorld, tilePos, side, 2);
+			Light::softLight(wWorld, tilePos, side, 2);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord + 1, dYcoord + 1, dZcoord + 1);
 
-			Light::SoftLight(wWorld, tilePos, side, 1);
+			Light::softLight(wWorld, tilePos, side, 1);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + 1, dZcoord + 1);
 		} break;
 	case FRONT: {
-			Light::SoftLight(wWorld, tilePos, side, 4);
+			Light::softLight(wWorld, tilePos, side, 4);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord, dYcoord, dZcoord);
 
-			Light::SoftLight(wWorld, tilePos, side, 0);
+			Light::softLight(wWorld, tilePos, side, 0);
 			glTexCoord2d(0.0625 - space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord, dYcoord + 1, dZcoord);
 
-			Light::SoftLight(wWorld, tilePos, side, 3);
+			Light::softLight(wWorld, tilePos, side, 3);
 			glTexCoord2d(0.0 + space + offsetx, 0.0 + space + offsety);
 			glVertex3d (dXcoord + 1, dYcoord + 1, dZcoord);
 
-			Light::SoftLight(wWorld, tilePos, side, 7);
+			Light::softLight(wWorld, tilePos, side, 7);
 			glTexCoord2d(0.0 + space + offsetx, 0.0625 - space + offsety);
 			glVertex3d (dXcoord + 1, dYcoord, dZcoord);
 		} break;

@@ -25,8 +25,7 @@ Character::Character(World& ww)
 	aimedBlock.bx = 0;
 	aimedBlock.by = 0;
 	aimedBlock.bz = 0;
-	LocalTimeOfDay = 0;
-	LocalTimeOfWinal = 0;
+    LocalTimeOfDay = 0;
 		
 	Longitude = 0;
 	Longitude2 = 0;
@@ -297,15 +296,15 @@ void Character::Control(GLdouble FrameInterval)
 
 void Character::GetCenterCoords(GLsizei width, GLsizei height)
 {
-	GLint    viewport[4];		// ïàðàìåòðû viewport-a.
-	GLdouble projection[16];	// ìàòðèöà ïðîåêöèè.
-	GLdouble modelview[16];		// âèäîâàÿ ìàòðèöà.
-	GLfloat vz;					// êîîðäèíàòû êóðñîðà ìûøè â ñèñòåìå êîîðäèíàò viewport-a.
-	GLdouble dispCenterX, dispCenterY, dispCenterZ;			// âîçâðàùàåìûå ìèðîâûå êîîðäèíàòû öåíòðà
+	GLint    viewport[4];		// Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ viewport-a.
+	GLdouble projection[16];	// Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ð° Ð¿Ñ€Ð¾ÐµÐºÑ†Ð¸Ð¸.
+	GLdouble modelview[16];		// Ð²Ð¸Ð´Ð¾Ð²Ð°Ñ Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ð°.
+	GLfloat vz;					// ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹ ÐºÑƒÑ€ÑÐ¾Ñ€Ð° Ð¼Ñ‹ÑˆÐ¸ Ð² ÑÐ¸ÑÑ‚ÐµÐ¼Ðµ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚ viewport-a.
+	GLdouble dispCenterX, dispCenterY, dispCenterZ;			// Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÐ¼Ñ‹Ðµ Ð¼Ð¸Ñ€Ð¾Ð²Ñ‹Ðµ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹ Ñ†ÐµÐ½Ñ‚Ñ€Ð°
 
-	glGetIntegerv(GL_VIEWPORT,viewport);           // óçíà¸ì ïàðàìåòðû viewport-a.
-	glGetDoublev(GL_PROJECTION_MATRIX,projection); // óçíà¸ì ìàòðèöó ïðîåêöèè.
-	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);   // óçíà¸ì âèäîâóþ ìàòðèöó.
+	glGetIntegerv(GL_VIEWPORT,viewport);           // ÑƒÐ·Ð½Ð°Ñ‘Ð¼ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ viewport-a.
+	glGetDoublev(GL_PROJECTION_MATRIX,projection); // ÑƒÐ·Ð½Ð°Ñ‘Ð¼ Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ñƒ Ð¿Ñ€Ð¾ÐµÐºÑ†Ð¸Ð¸.
+	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);   // ÑƒÐ·Ð½Ð°Ñ‘Ð¼ Ð²Ð¸Ð´Ð¾Ð²ÑƒÑŽ Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ñƒ.
 
 	glReadPixels(width/2, height/2, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &vz);
 	gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, &dispCenterX, &dispCenterY, &dispCenterZ);
@@ -319,16 +318,12 @@ void Character::GetCenterCoords(GLsizei width, GLsizei height)
 
 }
 
-void Character::GetLocalTime(double TimeOfDay, double TimeOfWinal)
+void Character::GetLocalTime(double TimeOfDay)
 {
-	LocalTimeOfDay = TimeOfDay + Longitude*DAY_TIME;
-	LocalTimeOfWinal = TimeOfWinal + Longitude2*WINAL_TIME;
+    LocalTimeOfDay = TimeOfDay + Longitude*DAY_TIME;
 
 	while (LocalTimeOfDay >= DAY_TIME) LocalTimeOfDay -= DAY_TIME;
-	while (LocalTimeOfDay < 0.0) LocalTimeOfDay += DAY_TIME;
-
-	while (LocalTimeOfWinal >= WINAL_TIME) LocalTimeOfWinal -= WINAL_TIME;
-	while (LocalTimeOfWinal < 0.0) LocalTimeOfWinal += WINAL_TIME;
+    while (LocalTimeOfDay < 0.0) LocalTimeOfDay += DAY_TIME;
 }
 
 void Character::GetMyPosition()

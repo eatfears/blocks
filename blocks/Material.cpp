@@ -5,31 +5,31 @@
 
 MaterialLibrary::MaterialLibrary()
 {
-	texture = 0;
+    m_Texture = 0;
 }
 
 MaterialLibrary::~MaterialLibrary()
 {
-	glDeleteTextures(5, texture);
-	free(texture);
+    glDeleteTextures(5, m_Texture);
+    free(m_Texture);
 }
 
-void MaterialLibrary::AllocGLTextures()
+void MaterialLibrary::allocGLTextures()
 {
-	texture = (GLuint *)calloc(5, sizeof(GLuint));
+    m_Texture = (GLuint *)calloc(5, sizeof(GLuint));
 }
 
-void MaterialLibrary::LoadGLTextures()
+void MaterialLibrary::loadGLTextures()
 {
-	texture[TERRAIN] = loadImage("textures//terrain.png");
-	texture[UNDERWATER] = loadImage("textures//misc//water.png");
-	texture[VIGNETTE] = loadImage("textures//misc//vignette.png");
-	texture[SUN] = loadImage("textures//terrain//sun.png");
-	texture[MOON] = loadImage("textures//terrain//moon.png");
-	texture[CLOUDS] = loadImage("textures//environment//clouds.png");
+    m_Texture[TERRAIN] = loadImage("textures//terrain.png");
+    m_Texture[UNDERWATER] = loadImage("textures//misc//water.png");
+    m_Texture[VIGNETTE] = loadImage("textures//misc//vignette.png");
+    m_Texture[SUN] = loadImage("textures//terrain//sun.png");
+    m_Texture[MOON] = loadImage("textures//terrain//moon.png");
+    m_Texture[CLOUDS] = loadImage("textures//environment//clouds.png");
 }
 
-int MaterialLibrary::GetTextureInfo(int ColorType)
+int MaterialLibrary::getTextureInfo(int ColorType)
 {
 	int ret;
 	switch(ColorType) {
@@ -113,7 +113,7 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 	png_get_IHDR(png_ptr, info_ptr, &width, &height,
 		&bitDepth, &ColorType, NULL, NULL, NULL);
 
-	int components = GetTextureInfo(ColorType);
+    int components = getTextureInfo(ColorType);
 
 	if(components == -1) {
 		if(png_ptr)
@@ -185,7 +185,7 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 	return texture;
 }
 
-void MaterialLibrary::GetTextureOffsets(double& offsetx, double& offsety, int material, char covered, int side)
+void MaterialLibrary::getTextureOffsets(double& offsetx, double& offsety, int material, char covered, int side)
 {
 	offsetx = 14;
 	offsety = 0;

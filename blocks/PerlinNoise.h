@@ -7,41 +7,40 @@
 class PerlinNoise
 {
 public:
-	PerlinNoise(double persistence = 0.5, int NumberOfOctaves = 4);
+    PerlinNoise(double m_Persistence = 0.5, int m_NumberOfOctaves = 4);
 	~PerlinNoise();
 
-	void InitNoise(boost::mt19937 *randNumGen);
+    void initNoise(boost::mt19937 *randNumGen);
 
-	double PerlinNoise1d(double x);
-	double PerlinNoise2d(double x, double y);
-	double PerlinNoise3d(double x, double y, double z);
-
-	double persistence;
-	int NumberOfOctaves;
+    double perlinNoise1d(double x);
+    double perlinNoise2d(double x, double y);
+    double perlinNoise3d(double x, double y, double z);
 
 private:
-	double Noise1d(int x);
-	double Noise2d(int x, int y);
-	double Noise3d(int x, int y, int z);
+    double noise1d(int x);
+    double noise2d(int x, int y);
+    double noise3d(int x, int y, int z);
 
-	double SmoothNoise1d(int x);
-	double SmoothNoise2d(int x, int y);
-	double SmoothNoise3d(int x, int y, int z);
+    double smoothNoise1d(int x);
+    double smoothNoise2d(int x, int y);
+    double smoothNoise3d(int x, int y, int z);
 
-	double UseNoise1d(int x);
-	double UseNoise2d(int x, int y);
-	double UseNoise3d(int x, int y, int z);
+    double useNoise1d(int x);
+    double useNoise2d(int x, int y);
+    double useNoise3d(int x, int y, int z);
 
-	double InterpolatedNoise1d(double x);
-	double InterpolatedNoise2d(double x, double y);
-	double InterpolatedNoise3d(double x, double y, double z);
+    double interpolatedNoise1d(double x);
+    double interpolatedNoise2d(double x, double y);
+    double interpolatedNoise3d(double x, double y, double z);
 
-	double LinearInterpolate(double a, double b, double x);
-	double CosineInterpolate(double a, double b, double x);
-	double CubicInterpolate(double v0, double v1, double v2, double v3, double x);
-	double Interpolate(double a, double b, double x);
+    double linearInterpolate(double a, double b, double x);
+    double cosineInterpolate(double a, double b, double x);
+    double cubicInterpolate(double v0, double v1, double v2, double v3, double x);
+    double interpolate(double a, double b, double x);
 
-	int interpolation;
+    int m_Interpolation;
+    double m_Persistence;
+    int m_NumberOfOctaves;
 
 	int a, b, c, d, e;
 };

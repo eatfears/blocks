@@ -53,6 +53,5 @@
 #define DAYLIGHT		15
 
 #define DAY_TIME		2400.0
-#define WINAL_TIME		24000.0
 
 #include "PositionItems.h"

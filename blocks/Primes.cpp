@@ -9,7 +9,7 @@ Primes::~Primes()
 {
 }
 
-inline Int Primes::Sqrt(Int i)
+inline Int Primes::sqrt(Int i)
 {
 	Int r = 1, rnew = 1, rold = r;
 
@@ -24,10 +24,10 @@ inline Int Primes::Sqrt(Int i)
 	return rnew;
 }
 
-inline Int Primes::IsPrime(Int i)
+inline Int Primes::isPrime(Int i)
 {
 	Int si, j;
-	si = Sqrt(i);
+	si = sqrt(i);
 
 	for (j=2; (j <= si); j++)
 	{
@@ -38,17 +38,17 @@ inline Int Primes::IsPrime(Int i)
 	return 1;
 }
 
-inline Int Primes::NextPrime(Int i)
+inline Int Primes::nextPrime(Int i)
 {
 	Int si = i;
 
-	while(!IsPrime(si))
+	while(!isPrime(si))
 		si++;
 
 	return si;
 }
 
-Int Primes::GenPrime(Int size, boost::mt19937 *randNumGen)
+Int Primes::genPrime(Int size, boost::mt19937 *randNumGen)
 {
 	Int beg = 1;
 
@@ -56,12 +56,12 @@ Int Primes::GenPrime(Int size, boost::mt19937 *randNumGen)
 	boost::variate_generator<boost::mt19937&, boost::uniform_int<> > sampler(*randNumGen, degen_dist);
 
 	beg = sampler();
-	beg = NextPrime(beg);
+	beg = nextPrime(beg);
 
 	return beg;
 }
 
-double Primes::Round(double x)
+double Primes::round(double x)
 {
 	if(x - floor(x) >= 0.5) return ceil(x);
 	return floor(x);

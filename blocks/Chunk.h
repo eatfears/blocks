@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
 
+#include <process.h>
 #include "Definitions.h"
 #include <GL/freeglut.h>
 

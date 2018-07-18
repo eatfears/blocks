@@ -34,7 +34,7 @@ Landscape::~Landscape()
 
 void Landscape::Init(unsigned int seed)
 {
-	CreateDirectory("save//", NULL);
+    //CreateDirectory("save//", NULL);
 
 	std::fstream savefile;
 
@@ -53,10 +53,10 @@ void Landscape::Init(unsigned int seed)
 
 	generator->seed(seed);
 
-	pnBubbles.InitNoise(generator);
-	pnHeightMap.InitNoise(generator);
-	pnRoughness.InitNoise(generator);
-	pnDetails.InitNoise(generator);
+	pnBubbles.initNoise(generator);
+	pnHeightMap.initNoise(generator);
+	pnRoughness.initNoise(generator);
+	pnDetails.initNoise(generator);
 }
 
 void Landscape::Generate(Chunk &chunk)
@@ -80,7 +80,7 @@ void Landscape::Generate(Chunk &chunk)
 			bz = k/scaleBubblesXZ;
 			for(int j = 0; j < CHUNK_SIZE_Y; j++) {
 				by = j/scaleBubblesY;
-				dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ] = (BubblesAmp)*pnBubbles.PerlinNoise3d(bx, by, bz);
+				dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ] = (BubblesAmp)*pnBubbles.perlinNoise3d(bx, by, bz);
 			}
 		}
 	}
@@ -95,8 +95,8 @@ void Landscape::Generate(Chunk &chunk)
 			rz = k/scaleRoughness;
 			dz = k/scaleDetails;
 
-			details = pnDetails.PerlinNoise2d(dx, dz);
-			height = HeghtMapAmp/1.5*(pnHeightMap.PerlinNoise2d(hx, hz) + RoughnessAmp*pnRoughness.PerlinNoise2d(rx, rz)*details) + horizon;
+			details = pnDetails.perlinNoise2d(dx, dz);
+			height = HeghtMapAmp/1.5*(pnHeightMap.perlinNoise2d(hx, hz) + RoughnessAmp*pnRoughness.perlinNoise2d(rx, rz)*details) + horizon;
 
 			for(int j = 0; j < CHUNK_SIZE_Y; j++) {
 				//density = j;

@@ -5,88 +5,88 @@
 
 
 Statistics::Statistics(Engine& eng)
-	: engine(eng)
+    : m_Engine(eng)
 {
-	TimeCount = 0;
-	FrameCount = 0;
-	reRenderedChunks = 0;
+    m_TimeCount = 0;
+    m_FrameCount = 0;
+    m_ReRenderedChunks = 0;
 }
 
 Statistics::~Statistics(void)
 {
 }
 
-void Statistics::ComputeFPS( double FrameInterval )
+void Statistics::computeFPS( double FrameInterval )
 {
-	FrameCount++;
-	TimeCount += FrameInterval;
+    m_FrameCount++;
+    m_TimeCount += FrameInterval;
 }
 
 extern double constr;
 extern double update;
 
-void Statistics::PrintStat(void)
+void Statistics::printStat(void)
 {
 	static char cFPS[20] = "";
 	static char pos[40] = "";
 	static void *font = GLUT_BITMAP_HELVETICA_12;
 	static int h, m, s;
 
-	if (TimeCount > 100) {
-		b_sprintf(cFPS, "FPS: %0.1f\n", 1000.0*FrameCount/TimeCount);
-		TimeCount = 0.0;
-		FrameCount = 0;
+    if (m_TimeCount > 100) {
+        b_sprintf(cFPS, "FPS: %0.1f\n", 1000.0*m_FrameCount/m_TimeCount);
+        m_TimeCount = 0.0;
+        m_FrameCount = 0;
 	}
 	
-	RenderString(engine.width - 100, engine.height - 30, font, cFPS);
+    renderString(m_Engine.width - 100, m_Engine.height - 30, font, cFPS);
 
-	Character &player = engine.wWorld.player;
+    Character &player = m_Engine.m_World.player;
 
 	b_sprintf(pos, "CX: %d\n", player.position.cx);
-	RenderString(50, engine.height - 30, font, pos);
+    renderString(50, m_Engine.height - 30, font, pos);
 	b_sprintf(pos, "CZ: %d\n", player.position.cz);
-	RenderString(50, engine.height - 50, font, pos);
+    renderString(50, m_Engine.height - 50, font, pos);
 	b_sprintf(pos, "X: %0.10f\n", player.position.bx);
-	RenderString(50, engine.height - 70, font, pos);
+    renderString(50, m_Engine.height - 70, font, pos);
 	b_sprintf(pos, "Y: %0.10f\n", player.position.by);
-	RenderString(50, engine.height - 90, font, pos);
+    renderString(50, m_Engine.height - 90, font, pos);
 	b_sprintf(pos, "Z: %0.10f\n", player.position.bz);
-	RenderString(50, engine.height - 110, font, pos);
+    renderString(50, m_Engine.height - 110, font, pos);
 
 
 	b_sprintf(pos, "CX: %d\n", player.centerPos.cx);
-	RenderString(200, engine.height - 30, font, pos);
+    renderString(200, m_Engine.height - 30, font, pos);
 	b_sprintf(pos, "CZ: %d\n", player.centerPos.cz);
-	RenderString(200, engine.height - 50, font, pos);
+    renderString(200, m_Engine.height - 50, font, pos);
 	b_sprintf(pos, "X: %0.10f\n", player.centerPos.bx);
-	RenderString(200, engine.height - 70, font, pos);
+    renderString(200, m_Engine.height - 70, font, pos);
 	b_sprintf(pos, "Y: %0.10f\n", player.centerPos.by);
-	RenderString(200, engine.height - 90, font, pos);
+    renderString(200, m_Engine.height - 90, font, pos);
 	b_sprintf(pos, "Z: %0.10f\n", player.centerPos.bz);
-	RenderString(200, engine.height - 110, font, pos);
+    renderString(200, m_Engine.height - 110, font, pos);
 
 	b_sprintf(pos, "Constr: %0.10f\n", constr);
-	RenderString(200, engine.height - 130, font, pos);
+    renderString(200, m_Engine.height - 130, font, pos);
 	b_sprintf(pos, "Update: %0.10f\n", update);
-	RenderString(200, engine.height - 150, font, pos);
+    renderString(200, m_Engine.height - 150, font, pos);
 
-	b_sprintf(pos, "Rendered: %d\n", reRenderedChunks);
-	RenderString(50, engine.height - 130, font, pos);
+    b_sprintf(pos, "Rendered: %d\n", m_ReRenderedChunks);
+    renderString(50, m_Engine.height - 130, font, pos);
 
-	h = ((int)engine.TimeOfDay)/100;
-	m = ((int)(engine.TimeOfDay*0.6))%60;
-	s = ((int)(engine.TimeOfDay*36.0))%60;
+    h = ((int)m_Engine.m_TimeOfDay)/100;
+    m = ((int)(m_Engine.m_TimeOfDay*0.6))%60;
+    s = ((int)(m_Engine.m_TimeOfDay*36.0))%60;
 	b_sprintf(pos, "Time: %d:%.2d:%.2d\n", h, m, s);
-	RenderString(50, engine.height - 150, font, pos);
+    renderString(50, m_Engine.height - 150, font, pos);
 
-	h = ((int)engine.wWorld.player.LocalTimeOfDay)/100;
-	m = ((int)(engine.wWorld.player.LocalTimeOfDay*0.6))%60;
-	s = ((int)(engine.wWorld.player.LocalTimeOfDay*36.0))%60;
+    h = ((int)m_Engine.m_World.player.LocalTimeOfDay)/100;
+    m = ((int)(m_Engine.m_World.player.LocalTimeOfDay*0.6))%60;
+    s = ((int)(m_Engine.m_World.player.LocalTimeOfDay*36.0))%60;
 	b_sprintf(pos, "Local time: %d:%.2d:%.2d\n", h, m, s);
-	RenderString(50, engine.height - 170, font, pos);
+    renderString(50, m_Engine.height - 170, font, pos);
 }
 
-void Statistics::RenderString(int x, int y, void *font, const char string[])
+void Statistics::renderString(int x, int y, void *font, const char string[])
 {
 	glRasterPos2i(x, y);
 	glutBitmapString(font, (const unsigned char*) string);

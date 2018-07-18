@@ -29,14 +29,14 @@ public:
 	MaterialLibrary();
 	~MaterialLibrary();
 
-	GLuint *texture;
+    GLuint *m_Texture;
 
-	void AllocGLTextures();
-	void LoadGLTextures();
+    void allocGLTextures();
+    void loadGLTextures();
 
-	void GetTextureOffsets(double& offsetx, double& offsety, int material, char covered, int side);
+    void getTextureOffsets(double& offsetx, double& offsety, int material, char covered, int side);
 
 private:
-	int GetTextureInfo(int ColorType);
+    int getTextureInfo(int ColorType);
 	GLuint loadImage(const char *filename);
 };

@@ -11,15 +11,15 @@ public:
 	Statistics(Engine& eng);
 	~Statistics(void);
 
-	void ComputeFPS( double FrameInterval );
-	void PrintStat(void);
+    void computeFPS( double FrameInterval );
+    void printStat(void);
 
-	int reRenderedChunks;
+    int m_ReRenderedChunks;
 
 private:
-	Engine& engine;
-	void RenderString(int x, int y, void *font, const char string[]);
+    Engine& m_Engine;
+    void renderString(int x, int y, void *font, const char string[]);
 
-	double TimeCount;
-	int FrameCount;
+    double m_TimeCount;
+    int m_FrameCount;
 };

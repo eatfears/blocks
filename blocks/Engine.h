@@ -12,38 +12,37 @@ public:
 	Engine();
 	~Engine();
 
-	int InitGL();
-	void Reshape(GLsizei width, GLsizei height);
-	void Display();
-	void Keyboard(unsigned char button, int x, int y, bool KeyDown);
-	void MouseMotion(int x, int y);
-	void MouseButton(int button, int state, int x, int y);
-	void Special(int button, int x, int y, bool KeyDown);
-	void Loop();
+    int initGL();
+    void reshape(GLsizei width, GLsizei height);
+    void display();
+    void keyboard(unsigned char button, int x, int y, bool KeyDown);
+    void mouseMotion(int x, int y);
+    void mouseButton(int button, int state, int x, int y);
+    void special(int button, int x, int y, bool KeyDown);
+    void loop();
 
-	void InitGame();
+    void initGame();
 
 private:
 	int width, height;
 
-	bool	fullscreen;
-	bool	bMousing;
+    bool m_Fullscreen;
+    bool m_Mousing;
 
-	void DrawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char side);
-	void DrawInterface();
-	void DrawSelectedItem();
+    void drawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char side);
+    void drawInterface();
+    void drawSelectedItem();
 
-	void DrawBottomBorder();
-	void DrawSunMoon();
-	void DrawClouds();
+    void drawBottomBorder();
+    void drawSunMoon();
+    void drawClouds();
 
-	void OpenGL2d();
-	void OpenGL3d();
+    void openGL2d();
+    void openGL3d();
 
-	World wWorld;
+    World m_World;
 
-	double TimeOfDay; 
-	double TimeOfWinal;
+    double m_TimeOfDay;
 	void GetFogColor();
 	GLfloat FogColor[4];
 

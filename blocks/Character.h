@@ -20,10 +20,10 @@ public:
 
 	void Control(GLdouble FrameInterval);
 	void GetCenterCoords(GLsizei width, GLsizei height);
-	bool  bKeyboard[256];					// Массив, используемый для операций с клавиатурой
-	bool  bSpecial[256];					// Массив, используемый для операций с клавиатурой
+	bool  bKeyboard[256];					// РњР°СЃСЃРёРІ, РёСЃРїРѕР»СЊР·СѓРµРјС‹Р№ РґР»СЏ РѕРїРµСЂР°С†РёР№ СЃ РєР»Р°РІРёР°С‚СѓСЂРѕР№
+	bool  bSpecial[256];					// РњР°СЃСЃРёРІ, РёСЃРїРѕР»СЊР·СѓРµРјС‹Р№ РґР»СЏ РѕРїРµСЂР°С†РёР№ СЃ РєР»Р°РІРёР°С‚СѓСЂРѕР№
 
-	BlockInWorld aimedBlock;	// возвращаемые координаты куба
+	BlockInWorld aimedBlock;	// РІРѕР·РІСЂР°С‰Р°РµРјС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РєСѓР±Р°
 	BlockInWorld freeBlock;
 	PosInWorld centerPos;
 
@@ -31,10 +31,9 @@ public:
 	bool underWater;
 	Chunk *chunk;
 	int index;
-	void GetMyPosition();
-	double LocalTimeOfWinal;
+    void GetMyPosition();
 	double LocalTimeOfDay;
-	void GetLocalTime(double TimeOfDay, double TimeOfWinal);
+    void GetLocalTime(double TimeOfDay);
 
 private:
 	void GetPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr);

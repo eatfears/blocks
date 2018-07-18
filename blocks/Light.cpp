@@ -7,13 +7,13 @@
 #include "Material.h"
 
 // todo: first frame of game is in night
-char Light::InfluencingLight[6][4] = {
+char Light::m_InfluencingLight[6][4] = {
 	4, 5, 6, 7, 4, 5, 6, 7,
 	2, 3, 6, 7, 2, 3, 6, 7,
 	1, 3, 5, 7, 1, 3, 5, 7
 };
 
-float Light::LightTable[16] = {
+float Light::m_LightTable[16] = {
 	0.000f, 0.044f, 0.055f, 0.069f,
 	0.086f, 0.107f, 0.134f, 0.168f,
 	0.210f, 0.262f, 0.328f, 0.410f,
@@ -31,10 +31,10 @@ Light::Light(Chunk *ChnkArr[5][5], bool skylight)
 
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j < 5; j++) {
-			ChunkArray[i][j] = ChnkArr[i][j];
+            m_ChunkArray[i][j] = ChnkArr[i][j];
 
-			if(ChunkArray[i][j] && (i > 0)&&(i < 4)&&(j > 0)&&(j < 4)) {
-				FillLight(*ChunkArray[i][j], DAYLIGHT, skylight);
+            if(m_ChunkArray[i][j] && (i > 0)&&(i < 4)&&(j > 0)&&(j < 4)) {
+                fillLight(*m_ChunkArray[i][j], DAYLIGHT, skylight);
 			}
 		}
 	}
@@ -45,13 +45,13 @@ Light::~Light(void)
 {
 }
 
-void Light::UpdateLight(void)
+void Light::updateLight(void)
 {
 	update -= GetMillisecTime();
 	for (BlockCoord j = 0; j < CHUNK_SIZE_Y; j++) {
 		for (BlockCoord i = CHUNK_SIZE_XZ - 1; i < 4*CHUNK_SIZE_XZ + 1; i++) {
 			for (BlockCoord k = CHUNK_SIZE_XZ - 1; k < 4*CHUNK_SIZE_XZ + 1; k++) {
-				recursiveDiffuse(i, j, k, GetVal(BlockInWorld(i, j, k), NULL, NULL), true);
+                recursiveDiffuse(i, j, k, getVal(BlockInWorld(i, j, k), NULL, NULL), true);
 			}
 		}
 	}
@@ -67,11 +67,11 @@ void Light::recursiveDiffuse( BlockCoord i, BlockCoord j, BlockCoord k, int val,
 
 		if(	(i >= CHUNK_SIZE_XZ - 1)&&(j >= 0)&&(k >= CHUNK_SIZE_XZ - 1)&&
 			(i < 4*CHUNK_SIZE_XZ + 1)&&(j < CHUNK_SIZE_Y)&&(k < 4*CHUNK_SIZE_XZ + 1)) {
-			temp_val = GetVal(BlockInWorld(i, j, k), &water_flag, &wall_flag);
+            temp_val = getVal(BlockInWorld(i, j, k), &water_flag, &wall_flag);
 		
 			if(!wall_flag || initial)
 			if((temp_val < val) || (temp_val <= val) && initial) {	
-				SetVal(BlockInWorld(i, j, k), val);
+                setVal(BlockInWorld(i, j, k), val);
 
 				if(water_flag) val -= 3;
 				else val--;
@@ -87,13 +87,13 @@ void Light::recursiveDiffuse( BlockCoord i, BlockCoord j, BlockCoord k, int val,
 	}
 }
 
-int Light::GetVal( BlockInWorld pos, bool *water_flag, bool *wall_flag )
+int Light::getVal( BlockInWorld pos, bool *water_flag, bool *wall_flag )
 {
 	char ret = 0;
 	if(wall_flag) {
 		*wall_flag = true;
 	}
-	Chunk *TempChunk = ChunkArray[pos.cx][pos.cz];
+    Chunk *TempChunk = m_ChunkArray[pos.cx][pos.cz];
 	if(TempChunk) {
 		int index = TempChunk->GetIndexByPosition(pos.bx, pos.by, pos.bz);
 		char mat = TempChunk->bBlocks[index].cMaterial;
@@ -114,9 +114,9 @@ int Light::GetVal( BlockInWorld pos, bool *water_flag, bool *wall_flag )
 	return ret;
 }
 
-void Light::SetVal( BlockInWorld pos, int val )
+void Light::setVal( BlockInWorld pos, int val )
 {
-	Chunk *TempChunk = ChunkArray[pos.cx][pos.cz];
+    Chunk *TempChunk = m_ChunkArray[pos.cx][pos.cz];
 	if(TempChunk) {
 		int index = TempChunk->GetIndexByPosition(pos.bx, pos.by, pos.bz);
 
@@ -128,7 +128,7 @@ void Light::SetVal( BlockInWorld pos, int val )
 	}
 }
 
-void Light::BlockLight(World& wWorld, Chunk& chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz)
+void Light::blockLight(World& wWorld, Chunk& chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz)
 {
 	if(!wWorld.SoftLight) {
 		static Chunk *temploc;
@@ -148,7 +148,7 @@ void Light::BlockLight(World& wWorld, Chunk& chunk, char side, BlockCoord cx, Bl
 		if (temploc) {
 			int index = temploc->GetIndexByPosition(posSide.bx, posSide.by, posSide.bz);
 
-			Light::GetLight(*temploc, index, res);
+            Light::getLight(*temploc, index, res);
 		} else res = (1.0 - wWorld.SkyBright);
 
 		if ((side == FRONT)||(side == BACK)) res *= 0.85f;
@@ -158,7 +158,7 @@ void Light::BlockLight(World& wWorld, Chunk& chunk, char side, BlockCoord cx, Bl
 	}
 }
 
-void Light::SoftLight(World& wWorld, BlockInWorld pos, char side, int vertex)
+void Light::softLight(World& wWorld, BlockInWorld pos, char side, int vertex)
 {
 	if(wWorld.SoftLight) {
 		static GLfloat res = 0;
@@ -168,49 +168,49 @@ void Light::SoftLight(World& wWorld, BlockInWorld pos, char side, int vertex)
 				int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
 				int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 				int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-				res = GetBrightAverage(wWorld, pos, xx, yy, zz, side);
+                res = getBrightAverage(wWorld, pos, xx, yy, zz, side);
 			} break;
 		case 1: {
 				int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
 				int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 				int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-				res = GetBrightAverage(wWorld, pos, xx, yy, zz, side);
+                res = getBrightAverage(wWorld, pos, xx, yy, zz, side);
 			} break;
 		case 2: {
 				int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
 				int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 				int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-				res = GetBrightAverage(wWorld, pos, xx, yy, zz, side);
+                res = getBrightAverage(wWorld, pos, xx, yy, zz, side);
 			} break;
 		case 3: {
 				int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
 				int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 				int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-				res = GetBrightAverage(wWorld, pos, xx, yy, zz, side);
+                res = getBrightAverage(wWorld, pos, xx, yy, zz, side);
 			} break;
 		case 4: {
 				int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
 				int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
 				int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-				res = GetBrightAverage(wWorld, pos, xx, yy, zz, side);
+                res = getBrightAverage(wWorld, pos, xx, yy, zz, side);
 			} break;
 		case 5: {
 				int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
 				int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
 				int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-				res = GetBrightAverage(wWorld, pos, xx, yy, zz, side);
+                res = getBrightAverage(wWorld, pos, xx, yy, zz, side);
 			} break;
 		case 6: {
 				int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
 				int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
 				int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-				res = GetBrightAverage(wWorld, pos, xx, yy, zz, side);
+                res = getBrightAverage(wWorld, pos, xx, yy, zz, side);
 			} break;
 		case 7: {
 				int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
 				int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
 				int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-				res = GetBrightAverage(wWorld, pos, xx, yy, zz, side);
+                res = getBrightAverage(wWorld, pos, xx, yy, zz, side);
 			} break;
 		}
 		
@@ -221,7 +221,7 @@ void Light::SoftLight(World& wWorld, BlockInWorld pos, char side, int vertex)
 	}
 }
 
-float Light::GetBrightAverage(World& wWorld, BlockInWorld pos, int xx[8], int yy[8], int zz[8], char side)
+float Light::getBrightAverage(World& wWorld, BlockInWorld pos, int xx[8], int yy[8], int zz[8], char side)
 {
 	GLfloat mat[4] = {0, 0, 0, 0};
 	static Chunk *center;
@@ -235,7 +235,7 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld pos, int xx[8], int yy
 	center = wWorld.GetChunkByPosition(pos.cx, pos.cz);
 
 	for(int i = 0; i < 4; i++) {
-		InflLight = Light::InfluencingLight[side][i];
+        InflLight = Light::m_InfluencingLight[side][i];
 		tempPos2 = pos + BlockInChunk(xx[InflLight], yy[InflLight], zz[InflLight]);
 		if((tempPos2.cx != center->x)||(tempPos2.cz != center->z))
 			temploc = wWorld.GetChunkByPosition(tempPos2.cx, tempPos2.cz);
@@ -258,7 +258,7 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld pos, int xx[8], int yy
 					DiagonalblockInfluate = true;
 			}
 
-			Light::GetLight(*temploc, index, mat[i]);
+            Light::getLight(*temploc, index, mat[i]);
 
 			if((i == 3)&&(!DiagonalblockInfluate))
 				mat[i] = 0.0f;
@@ -276,22 +276,22 @@ float Light::GetBrightAverage(World& wWorld, BlockInWorld pos, int xx[8], int yy
 	return res /= count;
 }
 
-void Light::GetLight( Chunk& chunk, int index, GLfloat& br )
+void Light::getLight( Chunk& chunk, int index, GLfloat& br )
 {
 	if(index < 0 || index >= CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y) {
 		br = 1.0 - chunk.wWorld.SkyBright;
 		return;
 	}
 
-	br = Light::LightTable[chunk.SkyLight[index]] * ( 1.0 - chunk.wWorld.SkyBright);
+    br = Light::m_LightTable[chunk.SkyLight[index]] * ( 1.0 - chunk.wWorld.SkyBright);
 
-	GLfloat torch_light = Light::LightTable[chunk.TorchLight[index]];
+    GLfloat torch_light = Light::m_LightTable[chunk.TorchLight[index]];
 	torch_light *= chunk.wWorld.TorchBright;
 
 	if(br < torch_light) br = torch_light;
 }
 
-void Light::FillLight( Chunk& chunk, char bright, bool skylight )
+void Light::fillLight( Chunk& chunk, char bright, bool skylight )
 {
 	if(skylight) {
 		BlockCoord y;

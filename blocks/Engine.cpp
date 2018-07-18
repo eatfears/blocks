@@ -13,28 +13,27 @@ GLfloat WaterFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
 Engine::Engine()
 	:stat(*this)
 {
-	bMousing = false;
-	fullscreen = false;
+	m_Mousing = false;
+	m_Fullscreen = false;
 
 	width = 0;
 	height = 0;
 	FrameInterval = 0.0;
 	// todo: time problem! how to measure?
-	TimeOfDay = 6*100;
-	TimeOfWinal = 000.0;
+    m_TimeOfDay = 6*100;
 }
 
 Engine::~Engine()
 {
 }
 
-int Engine::InitGL()
+int Engine::initGL()
 {
-	wWorld.MaterialLib.AllocGLTextures();
-	wWorld.MaterialLib.LoadGLTextures();
+	m_World.MaterialLib.allocGLTextures();
+	m_World.MaterialLib.loadGLTextures();
 
-	wWorld.player.position = PosInWorld(0, 100, 0);
-	wWorld.player.dSpinY = -90 - 45;
+	m_World.player.position = PosInWorld(0, 100, 0);
+	m_World.player.dSpinY = -90 - 45;
 	glutSetCursor(GLUT_CURSOR_NONE);
 
 	glShadeModel(GL_SMOOTH);
@@ -50,7 +49,7 @@ int Engine::InitGL()
 	return true;
 }
 
-void Engine::Reshape(int width, int height)
+void Engine::reshape(int width, int height)
 {
 	if(height == 0) {
 		height = 1;
@@ -58,18 +57,18 @@ void Engine::Reshape(int width, int height)
 	this->width = width;
 	this->height = height;
 
-	OpenGL3d();
+	openGL3d();
 	//glutPostRedisplay();
 }
 
-void Engine::Display()
+void Engine::display()
 {
 	glEnable(GL_DEPTH_TEST);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Очистить экран и буфер глубины
-	glLoadIdentity();											// Сбросить текущую матрицу
-	OpenGL3d();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// РћС‡РёСЃС‚РёС‚СЊ СЌРєСЂР°РЅ Рё Р±СѓС„РµСЂ РіР»СѓР±РёРЅС‹
+	glLoadIdentity();											// РЎР±СЂРѕСЃРёС‚СЊ С‚РµРєСѓС‰СѓСЋ РјР°С‚СЂРёС†Сѓ
+	openGL3d();
 
-	Character &player = wWorld.player;
+	Character &player = m_World.player;
 	if(player.underWater) {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	} else {
@@ -81,8 +80,8 @@ void Engine::Display()
 	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
 	glTranslated(-player.position.bx, -player.position.by, -player.position.bz);
 
-	DrawBottomBorder();
-	DrawSunMoon();
+	drawBottomBorder();
+	drawSunMoon();
 
 	glEnable(GL_FOG);
 	glFogi(GL_FOG_MODE,  GL_LINEAR);
@@ -101,36 +100,36 @@ void Engine::Display()
 	}
 
 	if(player.position.by < CHUNK_SIZE_Y + 16) {
-		DrawClouds();
+		drawClouds();
 	}
 
 	glColor3d(1.0, 1.0, 1.0);
 
-	static GLuint *tex = wWorld.MaterialLib.texture;
+	static GLuint *tex = m_World.MaterialLib.m_Texture;
 	glBindTexture(GL_TEXTURE_2D, tex[TERRAIN]);
 	int render;
 
 	if(player.bKeyboard['Z']) {
 		player.bKeyboard['Z'] = 0;
-		wWorld.SoftLight = !wWorld.SoftLight;
-		wWorld.LightToRefresh = true;
+		m_World.SoftLight = !m_World.SoftLight;
+		m_World.LightToRefresh = true;
 	}
 
 	GLenum mod = GL_EXECUTE;
 
-	if(wWorld.LightToRefresh) {
-		wWorld.LightToRefresh = false;
+	if(m_World.LightToRefresh) {
+		m_World.LightToRefresh = false;
 		mod = GL_COMPILE;
 	}
 
-	stat.reRenderedChunks = 0;
+	stat.m_ReRenderedChunks = 0;
 
 	render = 0;
 	for(int bin = 0; bin < HASH_SIZE; bin++) {
-		auto chunk = wWorld.Chunks[bin].begin();
-		while(chunk != wWorld.Chunks[bin].end()) {
+		auto chunk = m_World.Chunks[bin].begin();
+		while(chunk != m_World.Chunks[bin].end()) {
 			if((*chunk)->LightToUpdate) {
-				wWorld.UpdateLight(**chunk);
+				m_World.UpdateLight(**chunk);
 				(*chunk)->LightToUpdate = false;
 			}
 
@@ -141,7 +140,7 @@ void Engine::Display()
 		}
 	}
 
-	stat.reRenderedChunks += render;
+	stat.m_ReRenderedChunks += render;
 
 	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
@@ -150,8 +149,8 @@ void Engine::Display()
 	//transparent tiles here
 	render = 0;
 	for(int bin = 0; bin < HASH_SIZE; bin++) {
-		auto chunk = wWorld.Chunks[bin].begin();
-		while(chunk != wWorld.Chunks[bin].end()) {
+		auto chunk = m_World.Chunks[bin].begin();
+		while(chunk != m_World.Chunks[bin].end()) {
 			if(mod == GL_COMPILE)
 				(*chunk)->NeedToRender[1] = RENDER_MAYBE;
 
@@ -163,16 +162,16 @@ void Engine::Display()
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_BLEND);
 
-	stat.reRenderedChunks += render;
+	stat.m_ReRenderedChunks += render;
 
 	if(player.position.by >= CHUNK_SIZE_Y + 16) {
-		DrawClouds();
+		drawClouds();
 	}
 
 	glDisable(GL_FOG);
 }
 
-void Engine::Keyboard(unsigned char button, int x, int y, bool KeyDown)
+void Engine::keyboard(unsigned char button, int x, int y, bool KeyDown)
 {
 	switch(button) {
 	case KEY_ESCAPE: glutExit();
@@ -181,16 +180,16 @@ void Engine::Keyboard(unsigned char button, int x, int y, bool KeyDown)
 #ifdef _WIN32
 		button = VkKeyScan(button);
 #endif
-		wWorld.player.bKeyboard[button] = KeyDown;
+		m_World.player.bKeyboard[button] = KeyDown;
 		break;
 	}
 }
 
-void Engine::MouseMotion(int x, int y)
+void Engine::mouseMotion(int x, int y)
 {
-	if(bMousing) {
-		Character &player = wWorld.player;
-		bMousing = false;
+	if(m_Mousing) {
+		Character &player = m_World.player;
+		m_Mousing = false;
 
 		player.dSpinY -= (x - width/2)/MOUSE_SENSIVITY;
 		player.dSpinX -= (y - height/2)/MOUSE_SENSIVITY;
@@ -206,15 +205,15 @@ void Engine::MouseMotion(int x, int y)
 
 		glutWarpPointer(width/2,height/2);
 	} else {
-		bMousing = true;
+		m_Mousing = true;
 	}
 }
 
-void Engine::MouseButton(int button, int state, int x, int y)
+void Engine::mouseButton(int button, int state, int x, int y)
 {
 }
 
-void Engine::InitGame()
+void Engine::initGame()
 {
 #ifdef _WIN32
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
@@ -225,14 +224,14 @@ void Engine::InitGame()
 
 	unsigned int seed = std::time(0);
 
-	wWorld.lLandscape.Init(seed);
-	wWorld.BuildWorld();
+	m_World.lLandscape.Init(seed);
+	m_World.BuildWorld();
 }
 
-void Engine::DrawSelectedItem()
+void Engine::drawSelectedItem()
 {
-	Character &player = wWorld.player;
-	if(!wWorld.FindBlock(player.aimedBlock)) {
+	Character &player = m_World.player;
+	if(!m_World.FindBlock(player.aimedBlock)) {
 		return;
 	}
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -253,32 +252,32 @@ void Engine::DrawSelectedItem()
 
 	glBegin(GL_QUADS);
 
-	//Верхняя грань
+	//Р’РµСЂС…РЅСЏСЏ РіСЂР°РЅСЊ
 	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord);
 	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord + BorderSize);
 	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord + BorderSize);
 	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord);
-	//Нижняя грань
+	//РќРёР¶РЅСЏСЏ РіСЂР°РЅСЊ
 	glVertex3d (dXcoord, dYcoord, dZcoord);
 	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord);
 	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord + BorderSize);
 	glVertex3d (dXcoord, dYcoord, dZcoord + BorderSize);
-	//Правая грань
+	//РџСЂР°РІР°СЏ РіСЂР°РЅСЊ
 	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord);
 	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord);
 	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord + BorderSize);
 	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord + BorderSize);
-	//Левая грань
+	//Р›РµРІР°СЏ РіСЂР°РЅСЊ
 	glVertex3d (dXcoord, dYcoord, dZcoord);
 	glVertex3d (dXcoord, dYcoord, dZcoord + BorderSize);
 	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord + BorderSize);
 	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord);
-	//Задняя грань
+	//Р—Р°РґРЅСЏСЏ РіСЂР°РЅСЊ
 	glVertex3d (dXcoord, dYcoord, dZcoord + BorderSize);
 	glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord + BorderSize);
 	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord + BorderSize);
 	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord + BorderSize);
-	//Передняя грань
+	//РџРµСЂРµРґРЅСЏСЏ РіСЂР°РЅСЊ
 	glVertex3d (dXcoord, dYcoord, dZcoord);
 	glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord);
 	glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord);
@@ -289,30 +288,30 @@ void Engine::DrawSelectedItem()
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void Engine::DrawInterface()
+void Engine::drawInterface()
 {
-	Character &player = wWorld.player;
+	Character &player = m_World.player;
 	//glPushMatrix();
 	//glPopMatrix();
 	int WidthBy2  = width/2;
 	int HeightBy2 = height/2;
 
-	DrawSelectedItem();
+	drawSelectedItem();
 
 	//glLoadIdentity();
-	OpenGL2d();
+	openGL2d();
 
 	//Underwater haze
 	if((player.underWater)&&(player.chunk)) {
 		GLfloat Brightness;
-		Light::GetLight(*player.chunk, player.index, Brightness);
+		Light::getLight(*player.chunk, player.index, Brightness);
 
 		GLdouble TextureRotation = player.dSpinY/90;
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[UNDERWATER]);
+		glBindTexture(GL_TEXTURE_2D, m_World.MaterialLib.m_Texture[UNDERWATER]);
 		glColor4f(Brightness, Brightness, Brightness, 0.9f);
 
 		glBegin(GL_QUADS);
@@ -333,7 +332,7 @@ void Engine::DrawInterface()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 
-	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[VIGNETTE]);
+	glBindTexture(GL_TEXTURE_2D, m_World.MaterialLib.m_Texture[VIGNETTE]);
 
 	glColor3f(0.4f, 0.4f, 0.4f);
 
@@ -368,23 +367,23 @@ void Engine::DrawInterface()
 	glVertex2i( 9 + WidthBy2, HeightBy2);
 	glEnd();
 
-	stat.PrintStat();
+	stat.printStat();
 
 	glDisable(GL_BLEND);
 }
 
-void Engine::Loop()
+void Engine::loop()
 {
 	GetFrameTime();
-	Character &player = wWorld.player;
+	Character &player = m_World.player;
 	GetFogColor();
 	player.GetMyPosition();
-	Display();
-	player.GetLocalTime(TimeOfDay, TimeOfWinal);
+	display();
+    player.GetLocalTime(m_TimeOfDay);
 	player.GetCenterCoords(width, height);
 
 	player.Control(FrameInterval);
-	DrawInterface();
+	drawInterface();
 
 	glutSwapBuffers();
 	glFinish();				//may be bad!!!!!!!
@@ -397,9 +396,9 @@ void Engine::GetFrameTime()
 	static int sleep_time;
 
 	double currentTime = GetMillisecTime();
-	static double frameTime = currentTime;  // Время последнего кадра
+	static double frameTime = currentTime;  // Р’СЂРµРјСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РєР°РґСЂР°
 
-	//Интервал времени, прошедшего с прошлого кадра
+	//РРЅС‚РµСЂРІР°Р» РІСЂРµРјРµРЅРё, РїСЂРѕС€РµРґС€РµРіРѕ СЃ РїСЂРѕС€Р»РѕРіРѕ РєР°РґСЂР°
 	FrameInterval = currentTime - frameTime;
 	sleep_time = (int) (1000.0/max_FPS - FrameInterval);
 	if(sleep_time > 0) {
@@ -408,34 +407,32 @@ void Engine::GetFrameTime()
 		FrameInterval = currentTime - frameTime;
 	}
 	frameTime = currentTime;
-	stat.ComputeFPS(FrameInterval);
+	stat.computeFPS(FrameInterval);
 
 	FrameInterval *= koef;
 
-	TimeOfDay += FrameInterval;
-	TimeOfWinal += FrameInterval;
-	while(TimeOfDay >= DAY_TIME) TimeOfDay -= DAY_TIME;
-	while(TimeOfWinal >= WINAL_TIME) TimeOfWinal -= WINAL_TIME;
+    m_TimeOfDay += FrameInterval;
+    while(m_TimeOfDay >= DAY_TIME) m_TimeOfDay -= DAY_TIME;
 }
 
-void Engine::Special(int button, int x, int y, bool KeyDown)
+void Engine::special(int button, int x, int y, bool KeyDown)
 {
 	switch(button) {
 	case GLUT_KEY_F1:
 		if(KeyDown) {
-			if(!fullscreen) glutFullScreenToggle();
+			if(!m_Fullscreen) glutFullScreenToggle();
 			else glutLeaveFullScreen();
-			fullscreen = !fullscreen;
+			m_Fullscreen = !m_Fullscreen;
 		}
 		break;
 //	case GLUT_KEY_F2: 	glutLeaveGameMode();
 //		break;
 	default:
-		wWorld.player.bSpecial[button] = KeyDown;
+		m_World.player.bSpecial[button] = KeyDown;
 	}
 }
 
-void Engine::OpenGL2d()
+void Engine::openGL2d()
 {
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
@@ -446,10 +443,10 @@ void Engine::OpenGL2d()
 	glDisable(GL_DEPTH_TEST);
 }
 
-void Engine::OpenGL3d()
+void Engine::openGL3d()
 {
 	float fovy;
-	if(wWorld.player.underWater) {
+	if(m_World.player.underWater) {
 		fovy = 60.0f;
 	} else {
 		fovy = 70.0f;
@@ -464,9 +461,9 @@ void Engine::OpenGL3d()
 	glEnable(GL_DEPTH_TEST);
 }
 
-void Engine::DrawSunMoon()
+void Engine::drawSunMoon()
 {
-	Character &player = wWorld.player;
+	Character &player = m_World.player;
 	glPushMatrix();
 	glLoadIdentity();
 
@@ -478,13 +475,12 @@ void Engine::DrawSunMoon()
 	glDisable(GL_CULL_FACE);
 
 	glColor3f(1.0f, 1.0f, 1.0f);
-	// Сбросить текущую матрицу
+	// РЎР±СЂРѕСЃРёС‚СЊ С‚РµРєСѓС‰СѓСЋ РјР°С‚СЂРёС†Сѓ
 	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
-	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
-	glRotated(-player.LocalTimeOfWinal*360.0/WINAL_TIME, 0.0, 0.0, 1.0);
+    glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
 	glRotated(-player.LocalTimeOfDay*360.0/DAY_TIME + 90.0, 1.0, 0.0, 0.0);
 
-	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[SUN]);
+	glBindTexture(GL_TEXTURE_2D, m_World.MaterialLib.m_Texture[SUN]);
 
 	glTranslated(0.0, 0.0, sundist);
 
@@ -500,7 +496,7 @@ void Engine::DrawSunMoon()
 	glVertex2d(SunSize, -SunSize);
 	glEnd();
 
-	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[MOON]);
+	glBindTexture(GL_TEXTURE_2D, m_World.MaterialLib.m_Texture[MOON]);
 	glTranslated(0.0, 0.0, -2*sundist);
 
 	glBegin(GL_QUADS);
@@ -519,20 +515,20 @@ void Engine::DrawSunMoon()
 	glPopMatrix();
 }
 
-void Engine::DrawBottomBorder()
+void Engine::drawBottomBorder()
 {
-	Character &player = wWorld.player;
+	Character &player = m_World.player;
 	GLdouble BottomBorderSize = FARCUT;
 	GLfloat res;
 
 	glPushMatrix();
 
-	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[CLOUDS]);
+	glBindTexture(GL_TEXTURE_2D, m_World.MaterialLib.m_Texture[CLOUDS]);
 	// todo: coords!!
 	glTranslated(player.position.bx, 0, player.position.bz);
 	glRotated(90, 1.0, 0.0, 0.0);
 
-	res = 1.0 - wWorld.SkyBright;
+	res = 1.0 - m_World.SkyBright;
 	glColor3f(res, res, res);
 
 	glBegin(GL_QUADS);
@@ -546,9 +542,9 @@ void Engine::DrawBottomBorder()
 	glPopMatrix();
 }
 
-void Engine::DrawClouds()
+void Engine::drawClouds()
 {
-	PosInWorld pos = wWorld.player.position;
+	PosInWorld pos = m_World.player.position;
 	GLdouble CloudSize = FARCUT*2;///4;
 	GLfloat res;
 
@@ -560,9 +556,9 @@ void Engine::DrawClouds()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glBindTexture(GL_TEXTURE_2D, wWorld.MaterialLib.texture[CLOUDS]);
+	glBindTexture(GL_TEXTURE_2D, m_World.MaterialLib.m_Texture[CLOUDS]);
 
-	res = 1.0 - wWorld.SkyBright;
+	res = 1.0 - m_World.SkyBright;
 	glColor4f(res, res, res, 0.8f);
 	// todo: wtf with coords
 
@@ -593,17 +589,17 @@ void Engine::GetFogColor()
 	static double Dawn = 100.0;
 	static float NightBright = 0.93f;
 	static float DayBright = 0.00f;
-	double LocalTimeOfDay = wWorld.player.LocalTimeOfDay;
+	double LocalTimeOfDay = m_World.player.LocalTimeOfDay;
 
 	if((LocalTimeOfDay > 600.0 + Dawn)&&(LocalTimeOfDay < 1800.0 - Dawn)) {
 		for(int i = 0; i < 4; i++)
 			FogColor[i] = DayFogColor[i];
-		wWorld.SkyBright = DayBright;
+		m_World.SkyBright = DayBright;
 	} else if((LocalTimeOfDay < 600.0 - Dawn)||(LocalTimeOfDay > 1800.0 + Dawn)) {
 		for(int i = 0; i < 4; i++)
 			FogColor[i] = NightFogColor[i];
 
-		wWorld.SkyBright = NightBright;
+		m_World.SkyBright = NightBright;
 	} else {
 		GLfloat ft = (LocalTimeOfDay - (600.0f - Dawn))*M_PI / (2.0 * Dawn);
 		GLfloat f = (1.0f - cos(ft)) * 0.5f;
@@ -613,15 +609,15 @@ void Engine::GetFogColor()
 		for(int i = 0; i < 4; i++) {
 			FogColor[i] = NightFogColor[i]*(1.0f - f) + DayFogColor[i]*f;
 		}
-		wWorld.SkyBright = NightBright*(1.0f - f) + DayBright * f;
+		m_World.SkyBright = NightBright*(1.0f - f) + DayBright * f;
 	}
 
 	static GLfloat prevBright = 0;
-	GLfloat dif = fabs(wWorld.SkyBright - prevBright);
+	GLfloat dif = fabs(m_World.SkyBright - prevBright);
 	if(dif > 0.005f) {
-		wWorld.LightToRefresh = true;
-		prevBright = wWorld.SkyBright;
+		m_World.LightToRefresh = true;
+		prevBright = m_World.SkyBright;
 	}
 
-	wWorld.TorchBright = 1.0 - 0.05*((rand()%100)/100.0 - 0.5);
+	m_World.TorchBright = 1.0 - 0.05*((rand()%100)/100.0 - 0.5);
 }

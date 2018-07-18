@@ -10,10 +10,10 @@ public:
 	Primes();
 	~Primes();
 
-	inline Int Sqrt(Int i);
-	inline Int IsPrime(Int i);
-	inline Int NextPrime(Int i);
-	Int GenPrime(Int size, boost::mt19937 *randNumGen);
+    inline Int sqrt(Int i);
+    inline Int isPrime(Int i);
+    inline Int nextPrime(Int i);
+    Int genPrime(Int size, boost::mt19937 *randNumGen);
 
-	static double Round(double x);
+    static double round(double x);
 };

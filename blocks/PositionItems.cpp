@@ -3,7 +3,7 @@
 #include "Primes.h"
 
 BlockInWorld::BlockInWorld(PosInWorld pos) 
-	:cx(pos.cx), cz(pos.cz), bx(Primes::Round(pos.bx)), by(floor(pos.by)), bz(Primes::Round(pos.bz)) { norm(); };
+	:cx(pos.cx), cz(pos.cz), bx(Primes::round(pos.bx)), by(floor(pos.by)), bz(Primes::round(pos.bz)) { norm(); };
 
 BlockInWorld BlockInWorld::getSide(char side)
 {
