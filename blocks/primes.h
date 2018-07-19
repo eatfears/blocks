@@ -1,5 +1,5 @@
 #pragma once
-#include <boost/random.hpp>
+#include <random>
 
 #include "definitions.h"
 
@@ -15,7 +15,7 @@ public:
     inline Int sqrt(Int i);
     inline Int isPrime(Int i);
     inline Int nextPrime(Int i);
-    Int genPrime(Int size, boost::mt19937 &randNumGen);
+    Int genPrime(Int size, std::mt19937 &randNumGen);
 
     static double round(double x);
 };

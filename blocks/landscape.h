@@ -41,6 +41,5 @@ public:
     PerlinNoise pnRoughness;
     PerlinNoise pnDetails;
 
-    boost::mt19937 generator;
+    std::mt19937 generator;
 };
-

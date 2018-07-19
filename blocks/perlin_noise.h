@@ -1,5 +1,5 @@
 #pragma once
-#include <boost/random.hpp>
+#include <random>
 
 #define LINEAR_INTERPOLATE		1
 #define COSINE_INTERPOLATE		2
@@ -9,7 +9,7 @@ class PerlinNoise
 public:
     PerlinNoise(double m_Persistence = 0.5, int m_NumberOfOctaves = 4);
 
-    void initNoise(boost::mt19937 &randNumGen);
+    void initNoise(std::mt19937 &randNumGen);
 
     inline double perlinNoise1d(double x) const noexcept;
     double perlinNoise2d(double x, double y) const noexcept;
