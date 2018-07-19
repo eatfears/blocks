@@ -19,7 +19,7 @@ MaterialLibrary::~MaterialLibrary()
 
 void MaterialLibrary::allocGLTextures()
 {
-    m_Texture = (GLuint *)calloc(5, sizeof(GLuint));
+    m_Texture = (GLuint *)calloc(6, sizeof(GLuint));
 }
 
 void MaterialLibrary::loadGLTextures()
