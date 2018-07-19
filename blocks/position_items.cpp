@@ -1,11 +1,10 @@
 #include "position_items.h"
 
-#include "definitions.h"
 #include "primes.h"
 
 
-BlockInWorld::BlockInWorld(const PosInWorld &pos)
-    : BlockInChunk(Primes::round(pos.bx), floor(pos.by), Primes::round(pos.bz)), ChunkInWorld(pos.cx, pos.cz) { norm(); }
+BlockInWorld::BlockInWorld(const PointInWorld &pos)
+    : TypeInWorld<BlockCoord>(pos.cx, pos.cz, Primes::round(pos.bx), floor(pos.by), Primes::round(pos.bz)) {}
 
 BlockInWorld BlockInWorld::getSide(char side) const
 {
@@ -32,56 +31,4 @@ BlockInWorld BlockInWorld::getSide(char side) const
         break;
     }
     return res;
-}
-
-void BlockInWorld::norm()
-{
-    while (bx >= CHUNK_SIZE_XZ)
-    {
-        bx -= CHUNK_SIZE_XZ;
-        cx++;
-    }
-    while (bz >= CHUNK_SIZE_XZ)
-    {
-        bz -= CHUNK_SIZE_XZ;
-        cz++;
-    }
-    while (bx < 0)
-    {
-        bx += CHUNK_SIZE_XZ;
-        cx--;
-    }
-    while (bz < 0)
-    {
-        bz += CHUNK_SIZE_XZ;
-        cz--;
-    }
-}
-
-void PosInWorld::norm()
-{
-    while (bx >= CHUNK_SIZE_XZ)
-    {
-        bx -= CHUNK_SIZE_XZ;
-        cx++;
-    }
-    while (bz >= CHUNK_SIZE_XZ)
-    {
-        bz -= CHUNK_SIZE_XZ;
-        cz++;
-    }
-    while (bx < 0)
-    {
-        bx += CHUNK_SIZE_XZ;
-        cx--;
-    }
-    while (bz < 0)
-    {
-        bz += CHUNK_SIZE_XZ;
-        cz--;
-    }
-}
-
-BlockInWorld PosInWorld::toBlockInChunk() {
-    return 	BlockInWorld(*this);
 }

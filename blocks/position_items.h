@@ -3,16 +3,21 @@
 #include "definitions.h"
 
 
-struct PosInWorld;
-typedef signed short	BlockCoord;
-typedef signed short	ChunkCoord;
+typedef signed short    BlockCoord;
+typedef float           PointCoord;
 
-struct BlockInChunk
+template<typename T>
+struct TypeInChunk
 {
-    BlockInChunk() {}
-    BlockInChunk(BlockCoord x, BlockCoord y, BlockCoord z) : bx(x), by(y), bz(z) {}
-    BlockCoord bx {}, by {}, bz {};
+    TypeInChunk() {}
+    TypeInChunk(T x, T y, T z) : bx(x), by(y), bz(z) {}
+    T bx {}, by {}, bz {};
 };
+
+typedef TypeInChunk<BlockCoord> BlockInChunk;
+typedef TypeInChunk<PointCoord> PosInChunk;
+
+typedef signed short    ChunkCoord;
 
 struct ChunkInWorld
 {
@@ -21,98 +26,76 @@ struct ChunkInWorld
     ChunkCoord cx {}, cz {};
 };
 
-struct BlockInWorld : public BlockInChunk, public ChunkInWorld
+template<typename T>
+struct TypeInWorld : public ChunkInWorld, public TypeInChunk<T>
 {
-    BlockInWorld() : BlockInChunk(), ChunkInWorld() {}
+    TypeInWorld() {}
 
-    BlockInWorld(const PosInWorld &pos);
-
-    BlockInWorld(ChunkCoord cx, ChunkCoord cz, BlockCoord bx, BlockCoord by, BlockCoord bz)
-        : BlockInChunk(bx, by, bz), ChunkInWorld(cx, cz) { norm(); }
-
-    BlockInWorld(ChunkCoord cx, ChunkCoord cz)
+    TypeInWorld(ChunkCoord cx, ChunkCoord cz)
         : ChunkInWorld(cx, cz) {}
 
-    BlockInWorld(BlockCoord bx, BlockCoord by, BlockCoord bz)
-        : BlockInChunk(bx, by, bz) { norm(); }
+    TypeInWorld(T bx, T by, T bz)
+        : TypeInChunk<T>(bx, by, bz) { norm(); }
 
-    ~BlockInWorld() {}
+    TypeInWorld(ChunkCoord cx, ChunkCoord cz, T bx, T by, T bz)
+        : ChunkInWorld(cx, cz), TypeInChunk<T>(bx, by, bz) { norm(); }
 
-    BlockInWorld operator + (const BlockInWorld &b)
+    TypeInWorld operator + (const TypeInWorld &operand)
     {
-        BlockInWorld res(cx+b.cx, cz+b.cz, bx+b.bx, by+b.by, bz+b.bz);
-        res.norm();
-        return res;
+        return TypeInWorld(cx+operand.cx, cz+operand.cz, this->bx+operand.bx, this->by+operand.by, this->bz+operand.bz);
     }
 
-    BlockInWorld operator + (const BlockInChunk &b)
+    TypeInWorld operator + (const TypeInChunk<T> &operand)
     {
-        BlockInWorld res(cx, cz, bx+b.bx, by+b.by, bz+b.bz);
-        res.norm();
-        return res;
+        return TypeInWorld(cx, cz, this->bx+operand.bx, this->by+operand.by, this->bz+operand.bz);
     }
-
-    BlockInWorld getSide(char side) const ;
-    bool overflow() { return by >= CHUNK_SIZE_Y || by < 0; }
 
 private:
-    void norm();
+    void norm()
+    {
+        while (this->bx >= CHUNK_SIZE_XZ)
+        {
+            this->bx -= CHUNK_SIZE_XZ;
+            cx++;
+        }
+        while (this->bz >= CHUNK_SIZE_XZ)
+        {
+            this->bz -= CHUNK_SIZE_XZ;
+            cz++;
+        }
+        while (this->bx < 0)
+        {
+            this->bx += CHUNK_SIZE_XZ;
+            cx--;
+        }
+        while (this->bz < 0)
+        {
+            this->bz += CHUNK_SIZE_XZ;
+            cz--;
+        }
+    }
 };
 
-struct PosInWorld : public ChunkInWorld
+class PointInWorld : public TypeInWorld<PointCoord>
 {
-    float bx {}, by {}, bz {};
+public:
+    using TypeInWorld<PointCoord>::TypeInWorld;
+    PointInWorld(const TypeInWorld<PointCoord> &p) : TypeInWorld<PointCoord>(p) {}
 
-    PosInWorld() {}
-
-    PosInWorld(ChunkCoord cx, ChunkCoord cz, float bx, float by, float bz)
-        : ChunkInWorld(cx, cz), bx(bx), by(by), bz(bz) { norm(); }
-
-    PosInWorld(ChunkCoord cx, ChunkCoord cz)
-        : ChunkInWorld(cx, cz) {}
-
-    PosInWorld(float bx, float by, float bz)
-        : bx(bx), by(by), bz(bz) { norm(); }
-
-    PosInWorld operator + (const BlockInWorld &b)
+    PointInWorld inv()
     {
-        PosInWorld res(cx + b.cx, cz + b.cz, bx + b.bx, by + b.by, bz + b.bz);
-        res.norm();
-        return res;
+        return PointInWorld(-cx, -cz, -this->bx, -this->by, -this->bz);
     }
+};
 
-    PosInWorld operator + (const BlockInChunk &b)
-    {
-        PosInWorld res(cx, cz, bx + b.bx, by + b.by, bz + b.bz);
-        res.norm();
-        return res;
-    }
+class BlockInWorld : public TypeInWorld<BlockCoord>
+{
+public:
+    using TypeInWorld<BlockCoord>::TypeInWorld;
+    BlockInWorld(const TypeInWorld<BlockCoord> &p) : TypeInWorld<BlockCoord>(p) {}
 
-    PosInWorld operator + (const PosInWorld & b)
-    {
-        PosInWorld res(cx + b.cx, cz + b.cz, bx + b.bx, by + b.by, bz + b.bz);
-        res.norm();
-        return res;
-    }
+    BlockInWorld(const PointInWorld &pos);
 
-    PosInWorld operator * (int i)
-    {
-        PosInWorld res(cx*i, cz*i, bx*i,by*i, bz*i);
-        res.norm();
-        return res;
-    }
-
-    PosInWorld inv()
-    {
-        PosInWorld res(-cx, -cz, -bx, -by, -bz);
-        res.norm();
-        return res;
-    }
-
-    //BlockInWorld getSide(char side);
-    bool overflow() { return by >= CHUNK_SIZE_Y || by < 0; }
-    BlockInWorld toBlockInChunk();
-
-private:
-    void norm();
+    BlockInWorld getSide(char side) const;
+    bool overflow() { return this->by >= CHUNK_SIZE_Y || this->by < 0; }
 };

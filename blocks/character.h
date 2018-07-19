@@ -13,7 +13,7 @@ class Character
 public:
     Character(World &ww);
 
-    PosInWorld position;
+    PointInWorld position;
 
     GLdouble dSpinY, dSpinX;
     GLdouble dVelocityX, dVelocityY, dVelocityZ;
@@ -26,7 +26,7 @@ public:
 
     BlockInWorld aimedBlock;	// возвращаемые координаты куба
     BlockInWorld freeBlock;
-    PosInWorld centerPos;
+    PointInWorld centerPos;
 
     World& wWorld;
     bool underWater;

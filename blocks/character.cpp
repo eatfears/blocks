@@ -105,24 +105,24 @@ void Character::control(GLdouble FrameInterval)
     GLdouble yerr, xerr, zerr;
     getPlane(&xerr, &yerr, &zerr);
 
-    PosInWorld pos;
+    PointInWorld pos;
     if(zerr < xerr && zerr < yerr) {
         if((position.bz < centerPos.bz && position.cz == centerPos.cz) || position.cz < centerPos.cz) {
-            pos = PosInWorld(0, 0, 0.5);
+            pos = PointInWorld(0, 0, 0.5);
         } else {
-            pos = PosInWorld(0, 0, -0.5);
+            pos = PointInWorld(0, 0, -0.5);
         }
     } else if(xerr < zerr && xerr < yerr) {
         if((position.bx < centerPos.bx && position.cx == centerPos.cx) || position.cx < centerPos.cx) {
-            pos = PosInWorld(0.5, 0, 0);
+            pos = PointInWorld(0.5, 0, 0);
         } else {
-            pos = PosInWorld(-0.5, 0, 0);
+            pos = PointInWorld(-0.5, 0, 0);
         }
     } else if(yerr < xerr && yerr < zerr) {
         if(position.by < centerPos.by) {
-            pos = PosInWorld(0, 0.5, 0);
+            pos = PointInWorld(0, 0.5, 0);
         } else {
-            pos = PosInWorld(0, -0.5, 0);
+            pos = PointInWorld(0, -0.5, 0);
         }
     }
     aimedBlock = BlockInWorld(centerPos + pos);
@@ -216,7 +216,7 @@ void Character::control(GLdouble FrameInterval)
         wWorld.saveChunks();
     }
 
-    position = position + PosInWorld(FrameInterval*dVelocityX, FrameInterval*dVelocityY, FrameInterval*dVelocityZ);
+    position = position + PointInWorld(FrameInterval*dVelocityX, FrameInterval*dVelocityY, FrameInterval*dVelocityZ);
 
     /*{
         signed short xx, yy, zz;
@@ -310,7 +310,7 @@ void Character::getCenterCoords(GLsizei width, GLsizei height)
     centerPos.by = 0;
     centerPos.bz = 0;
 
-    centerPos = centerPos + PosInWorld(dispCenterX, dispCenterY, dispCenterZ);
+    centerPos = centerPos + PointInWorld(dispCenterX, dispCenterY, dispCenterZ);
 
 }
 
@@ -325,7 +325,7 @@ void Character::getLocalTime(double TimeOfDay)
 void Character::getMyPosition()
 {
     // checks if player is under water level
-    PosInWorld pos(position);
+    PointInWorld pos(position);
     pos.by += 0.125 - 0.5;
     BlockInWorld waterPos(pos);
 

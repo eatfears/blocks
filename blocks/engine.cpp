@@ -35,7 +35,7 @@ int Engine::initGL()
 	m_World.m_MaterialLib.allocGLTextures();
 	m_World.m_MaterialLib.loadGLTextures();
 
-    m_World.m_Player.position = PosInWorld(0, 100, 0);
+    m_World.m_Player.position = PointInWorld(0, 100, 0);
     m_World.m_Player.dSpinY = -90 - 45;
 	glutSetCursor(GLUT_CURSOR_NONE);
 
@@ -569,7 +569,7 @@ void Engine::drawBottomBorder()
 
 void Engine::drawClouds()
 {
-    PosInWorld pos = m_World.m_Player.position;
+    PointInWorld pos = m_World.m_Player.position;
 	GLdouble CloudSize = FARCUT*2;///4;
 	GLfloat res;
 
