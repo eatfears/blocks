@@ -8,7 +8,7 @@ class PerlinNoise
 {
 public:
     PerlinNoise(double m_Persistence = 0.5, int m_NumberOfOctaves = 4);
-	~PerlinNoise();
+    ~PerlinNoise();
 
     void initNoise(boost::mt19937 &randNumGen);
 
@@ -42,6 +42,6 @@ private:
     double m_Persistence;
     int m_NumberOfOctaves;
 
-	int a, b, c, d, e;
+    int a, b, c, d, e;
 };
 

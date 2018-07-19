@@ -32,7 +32,8 @@ void MaterialLibrary::loadGLTextures()
 int MaterialLibrary::getTextureInfo(int ColorType)
 {
 	int ret;
-	switch(ColorType) {
+    switch(ColorType)
+    {
 	case PNG_COLOR_TYPE_GRAY:
 		ret = 1;
 		break;
@@ -49,7 +50,7 @@ int MaterialLibrary::getTextureInfo(int ColorType)
 		ret = -1;//bad
 	};
 	return ret;
-};
+}
 
 GLuint MaterialLibrary::loadImage(const char *filename)
 {
@@ -59,33 +60,35 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 	png_bytep *row_pointers = NULL;
 	int bitDepth, ColorType;
 
-	FILE *pngFile;
-	b_fopen(&pngFile, filename, "rb");
+    FILE *png_file;
+    b_fopen(&png_file, filename, "rb");
 
-	if(!pngFile)
-		return 0;
+    if(!png_file)
+    {
+        return 0;
+    }
 
 	png_byte sig[8];
 
-	fread(&sig, 8, sizeof(png_byte), pngFile);
-	rewind(pngFile);
-	if(!png_check_sig(sig, 8))
+    fread(&sig, 8, sizeof(png_byte), png_file);
+    if(png_sig_cmp(sig, 0, 8))
 		return 0;
 
-	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL,NULL,NULL);
+    png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
 	if(!png_ptr)
 		return 0;
 
-	if(setjmp(png_jmpbuf(png_ptr)))
-		return 0;
+    if(setjmp(png_jmpbuf(png_ptr)))
+        return 0;
 
 	info_ptr = png_create_info_struct(png_ptr);
 
 	if(!info_ptr)
 		return 0;
 
-	png_init_io(png_ptr, pngFile);
+    rewind(png_file);
+    png_init_io(png_ptr, png_file);
 
 	png_read_info(png_ptr, info_ptr);
 
@@ -115,7 +118,8 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 
     int components = getTextureInfo(ColorType);
 
-	if(components == -1) {
+    if(components == -1)
+    {
 		if(png_ptr)
 			png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 		return 0;
@@ -178,7 +182,7 @@ GLuint MaterialLibrary::loadImage(const char *filename)
 
 	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
-	fclose(pngFile);
+    fclose(png_file);
 	free(row_pointers);
 	free(pixels);
 
@@ -190,14 +194,17 @@ void MaterialLibrary::getTextureOffsets(double& offsetx, double& offsety, int ma
 	offsetx = 14;
 	offsety = 0;
 
-	switch(material) {
+    switch(material)
+    {
 	case MAT_DIRT: offsetx = 2; offsety = 0;
 		if (covered & (1 << SNOWCOVERED))
 		{
 			if(side == TOP) {offsetx = 2; offsety = 4;}
 			else if(side == BOTTOM) {offsetx = 2; offsety = 0;}
 			else {offsetx = 4; offsety = 4;}
-		} else if (covered & (1 << GRASSCOVERED)) {
+        }
+        else if (covered & (1 << GRASSCOVERED))
+        {
 			if(side == TOP) {offsetx = 0; offsety = 0;}
 			else if(side == BOTTOM) {offsetx = 2; offsety = 0;}
 			else {offsetx = 3; offsety = 0;}

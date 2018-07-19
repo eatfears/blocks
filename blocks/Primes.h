@@ -7,8 +7,8 @@
 class Primes
 {
 public:
-	Primes();
-	~Primes();
+    Primes();
+    ~Primes();
 
     inline Int sqrt(Int i);
     inline Int isPrime(Int i);

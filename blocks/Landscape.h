@@ -9,8 +9,8 @@ class Chunk;
 class Landscape
 {
 public:
-	Landscape();
-	~Landscape();
+    Landscape();
+    ~Landscape();
 
     void init(unsigned int seed);
 
@@ -19,25 +19,25 @@ public:
     void save(Chunk& chunk, std::fstream& savefile);
     void fill(Chunk& chunk, char mat, double fillness, int height);
 
-	int horizon;
-	double scaleHeightMapXZ;
-	double scaleRoughness;
-	double scaleDetails;
-	double scaleBubblesXZ;
-	double scaleBubblesY;
+    int horizon;
+    double scaleHeightMapXZ;
+    double scaleRoughness;
+    double scaleDetails;
+    double scaleBubblesXZ;
+    double scaleBubblesY;
 
-	double HeghtMapAmp;
-	double RoughnessAmp;
-	double DetailsAmp;
-	double BubblesAmp;
-	int HeghtMapOctaves;
-	int BubblesOctaves;
+    double HeghtMapAmp;
+    double RoughnessAmp;
+    double DetailsAmp;
+    double BubblesAmp;
+    int HeghtMapOctaves;
+    int BubblesOctaves;
 
-	PerlinNoise pnBubbles;
+    PerlinNoise pnBubbles;
 
-	PerlinNoise pnHeightMap;
-	PerlinNoise pnRoughness;
-	PerlinNoise pnDetails;
+    PerlinNoise pnHeightMap;
+    PerlinNoise pnRoughness;
+    PerlinNoise pnDetails;
 
     boost::mt19937 generator;
 };

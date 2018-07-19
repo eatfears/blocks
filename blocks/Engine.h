@@ -9,8 +9,8 @@
 class Engine
 {
 public:
-	Engine();
-	~Engine();
+    Engine();
+    ~Engine();
 
     int initGL();
     void reshape(GLsizei width, GLsizei height);
@@ -24,7 +24,7 @@ public:
     void initGame();
 
 private:
-	int width, height;
+    int width, height;
 
     bool m_Fullscreen;
     bool m_Mousing;
@@ -43,11 +43,11 @@ private:
     World m_World;
 
     double m_TimeOfDay;
-	void GetFogColor();
-	GLfloat FogColor[4];
+    void GetFogColor();
+    GLfloat FogColor[4];
 
-	void GetFrameTime();
-	double FrameInterval;
-	friend class Statistics;
-	Statistics stat;
+    void GetFrameTime();
+    double FrameInterval;
+    friend class Statistics;
+    Statistics stat;
 };

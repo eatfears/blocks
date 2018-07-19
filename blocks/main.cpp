@@ -22,49 +22,49 @@ void MouseEntry (int state) { if (state == GLUT_ENTERED){} }
 
 void GlutInit()
 {
-	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF) ;
+    glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF) ;
 
-	glutKeyboardFunc(KeyboardDown);
-	glutKeyboardUpFunc(KeyboardUp);
-	glutSpecialFunc(SpecialDown);
-	glutSpecialUpFunc(SpecialUp);
-	glutMouseFunc(MouseButton);
-	glutMotionFunc(MouseMotion);
-	glutPassiveMotionFunc(MouseMotion);
-	glutDisplayFunc(Display);
-	glutIdleFunc(Display);
-	glutReshapeFunc(Reshape);
-	glutEntryFunc(MouseEntry);
-	//glutVisibilityFunc(visible);
+    glutKeyboardFunc(KeyboardDown);
+    glutKeyboardUpFunc(KeyboardUp);
+    glutSpecialFunc(SpecialDown);
+    glutSpecialUpFunc(SpecialUp);
+    glutMouseFunc(MouseButton);
+    glutMotionFunc(MouseMotion);
+    glutPassiveMotionFunc(MouseMotion);
+    glutDisplayFunc(Display);
+    glutIdleFunc(Display);
+    glutReshapeFunc(Reshape);
+    glutEntryFunc(MouseEntry);
+    //glutVisibilityFunc(visible);
 }
 
 int main(int argc, char **argv)
 {
-	engine = new Engine();
+    engine = new Engine();
 
-	glutInit(&argc,argv);
-	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
-	glutInitWindowSize(RESX, RESY);
-	glutInitWindowPosition(0, 0);
+    glutInit(&argc,argv);
+    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
+    glutInitWindowSize(RESX, RESY);
+    glutInitWindowPosition(0, 0);
     glutCreateWindow("Blocks");
 
-	/*
-	glutGameModeString("1280x1024:32");
-	//glutGameModeString("1280x1024:16@60"); //Переход в полноэкранный режим
+    /*
+    glutGameModeString("1280x1024:32");
+    //glutGameModeString("1280x1024:16@60"); //Переход в полноэкранный режим
 
-	if(glutGameModeGet(GLUT_GAME_MODE_POSSIBLE))
-		glutEnterGameMode();
-	else
-		exit(1);
-	*/
+    if(glutGameModeGet(GLUT_GAME_MODE_POSSIBLE))
+        glutEnterGameMode();
+    else
+        exit(1);
+    */
 
-	engine->initGL();
-	engine->initGame();
+    engine->initGL();
+    engine->initGame();
 
-	GlutInit();
-	glutMainLoop();
+    GlutInit();
+    glutMainLoop();
 
     glutExit();
 
-	return 0;
+    return 0;
 }

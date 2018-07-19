@@ -103,7 +103,7 @@ void Engine::display()
 	}
 
     if (player.position.by < CHUNK_SIZE_Y + 16) {
-		drawClouds();
+        drawClouds();
 	}
 
 	glColor3d(1.0, 1.0, 1.0);
@@ -168,7 +168,7 @@ void Engine::display()
 	stat.m_ReRenderedChunks += render;
 
     if (player.position.by >= CHUNK_SIZE_Y + 16) {
-		drawClouds();
+        drawClouds();
 	}
 
 	glDisable(GL_FOG);
@@ -545,7 +545,6 @@ void Engine::drawBottomBorder()
 	glVertex2d(BottomBorderSize, BottomBorderSize);
 	glVertex2d(BottomBorderSize, -BottomBorderSize);
 	glEnd();
-
 
 	glPopMatrix();
 }

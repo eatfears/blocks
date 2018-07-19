@@ -8,31 +8,31 @@ class World;
 
 typedef struct
 {
-	ChunkCoord x;
-	ChunkCoord z;
+    ChunkCoord x;
+    ChunkCoord z;
 } ChunkPosition;
 
 typedef struct
 {
-	char cMaterial;
-	char bVisible;
+    char cMaterial;
+    char bVisible;
 } Block;
 
 class Chunk
 {
 public:
-	Chunk(ChunkCoord x, ChunkCoord z, World& wrld);
-	~Chunk();
+    Chunk(ChunkCoord x, ChunkCoord z, World& wrld);
+    ~Chunk();
 
-	Block *bBlocks;
-	char *SkyLight;
-	char *TorchLight;
-	World& wWorld;
-	std::list<Block *> *DisplayedTiles;
-	std::list<Block *> *DisplayedWaterTiles;
-	ChunkCoord x;
-	ChunkCoord z;
-	char NeedToRender[2];
+    Block *bBlocks;
+    char *SkyLight;
+    char *TorchLight;
+    World& wWorld;
+    std::list<Block *> *DisplayedTiles;
+    std::list<Block *> *DisplayedWaterTiles;
+    ChunkCoord x;
+    ChunkCoord z;
+    char NeedToRender[2];
 
     int	addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
     int removeBlock(BlockCoord x, BlockCoord y, BlockCoord z);
@@ -58,6 +58,6 @@ private:
     int setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat);
     void drawTile(BlockInWorld pos, Block* block, char side);
 
-	GLuint RenderList;
-	bool listgen;
+    GLuint RenderList;
+    bool listgen;
 };
