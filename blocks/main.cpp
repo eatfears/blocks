@@ -1,6 +1,8 @@
-#include "Definitions.h"
+#include "definitions.h"
 #include <GL/freeglut.h>
-#include "Engine.h"
+
+#include "engine.h"
+
 
 #pragma comment (lib, "libpng15.lib")
 #pragma comment (lib, "zlib.lib")

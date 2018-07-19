@@ -373,7 +373,7 @@ void Chunk::render(char mat, int *rendered)
     glPopMatrix();
 }
 
-void Chunk::drawTile(BlockInWorld tilePos, Block* block, char side)
+void Chunk::drawTile(const BlockInWorld &tilePos, Block* block, char side) const
 {
     GLdouble
             dXcoord = tilePos.bx - 0.5,
@@ -387,7 +387,7 @@ void Chunk::drawTile(BlockInWorld tilePos, Block* block, char side)
     char covered = block->bVisible;
     char material = block->cMaterial;
 
-    wWorld.MaterialLib.getTextureOffsets(offsetx, offsety, material, covered, side);
+    wWorld.m_MaterialLib.getTextureOffsets(offsetx, offsety, material, covered, side);
 
     switch(side)
     {

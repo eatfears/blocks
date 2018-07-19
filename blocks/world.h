@@ -21,25 +21,25 @@ public:
     World();
     ~World();
 
-    MaterialLibrary MaterialLib;
-    std::list<Chunk *> *Chunks;
+    MaterialLibrary m_MaterialLib;
+    std::list<Chunk*> *m_Chunks;
     Landscape m_Landscape;
     Character m_Player;
 
     void buildWorld();
-    int findBlock(BlockInWorld pos);
-    int findBlock(BlockInWorld pos, Chunk **chunk, int *index);
-    int addBlock(BlockInWorld pos, char mat, bool show);
-    int removeBlock(BlockInWorld pos, bool show);
+    int findBlock(const BlockInWorld &pos);
+    int findBlock(const BlockInWorld &pos, Chunk **chunk, int *index);
+    int addBlock(const BlockInWorld &pos, char mat, bool show);
+    int removeBlock(const BlockInWorld &pos, bool show);
 
     void drawLoadedBlocksFinish(Chunk &chunk);
     void drawUnLoadedBlocks(ChunkCoord Cx, ChunkCoord Cz);
     void loadChunk(ChunkCoord x, ChunkCoord z);
     void unLoadChunk(ChunkCoord x, ChunkCoord z);
-    Chunk* getChunkByPosition(ChunkCoord Cx, ChunkCoord Cz);
+    Chunk* getChunkByPosition(ChunkCoord Cx, ChunkCoord Cz) const;
 
-    unsigned long hash(ChunkCoord x, ChunkCoord z) {return (x + z*HASH_SIZE)&(HASH_SIZE-1);}
-    void updateLight(Chunk& chunk);
+    unsigned long hash(ChunkCoord x, ChunkCoord z) const {return (x + z*HASH_SIZE)&(HASH_SIZE-1);}
+    void updateLight(Chunk& chunk) const;
     bool LightToRefresh;
 
     bool SoftLight;

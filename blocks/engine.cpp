@@ -32,8 +32,8 @@ Engine::~Engine()
 
 int Engine::initGL()
 {
-	m_World.MaterialLib.allocGLTextures();
-	m_World.MaterialLib.loadGLTextures();
+	m_World.m_MaterialLib.allocGLTextures();
+	m_World.m_MaterialLib.loadGLTextures();
 
     m_World.m_Player.position = PosInWorld(0, 100, 0);
     m_World.m_Player.dSpinY = -90 - 45;
@@ -54,7 +54,8 @@ int Engine::initGL()
 
 void Engine::reshape(int width, int height)
 {
-    if (height == 0) {
+    if (height == 0)
+    {
 		height = 1;
 	}
 	this->width = width;
@@ -81,7 +82,7 @@ void Engine::display()
 	//Set position
 	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
 	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
-	glTranslated(-player.position.bx, -player.position.by, -player.position.bz);
+	glTranslated(-player.position.px, -player.position.py, -player.position.pz);
 
 	drawBottomBorder();
 	drawSunMoon();
@@ -105,13 +106,13 @@ void Engine::display()
 		glFogf(GL_FOG_END, MAX_VIEV_DIST);
 	}
 
-    if (player.position.by < CHUNK_SIZE_Y + 16) {
+    if (player.position.py < CHUNK_SIZE_Y + 16) {
         drawClouds();
 	}
 
 	glColor3d(1.0, 1.0, 1.0);
 
-	static GLuint *tex = m_World.MaterialLib.m_Texture;
+	static GLuint *tex = m_World.m_MaterialLib.m_Texture;
 	glBindTexture(GL_TEXTURE_2D, tex[TERRAIN]);
 	int render;
 
@@ -133,8 +134,8 @@ void Engine::display()
 	render = 0;
     for (int bin = 0; bin < HASH_SIZE; bin++)
     {
-		auto chunk = m_World.Chunks[bin].begin();
-        while (chunk != m_World.Chunks[bin].end())
+		auto chunk = m_World.m_Chunks[bin].begin();
+        while (chunk != m_World.m_Chunks[bin].end())
         {
             if ((*chunk)->m_LightToUpdate)
             {
@@ -159,8 +160,8 @@ void Engine::display()
 	render = 0;
     for (int bin = 0; bin < HASH_SIZE; bin++)
     {
-		auto chunk = m_World.Chunks[bin].begin();
-        while (chunk != m_World.Chunks[bin].end())
+		auto chunk = m_World.m_Chunks[bin].begin();
+        while (chunk != m_World.m_Chunks[bin].end())
         {
             if (mod == GL_COMPILE)
 				(*chunk)->NeedToRender[1] = RENDER_MAYBE;
@@ -175,7 +176,7 @@ void Engine::display()
 
 	stat.m_ReRenderedChunks += render;
 
-    if (player.position.by >= CHUNK_SIZE_Y + 16)
+    if (player.position.py >= CHUNK_SIZE_Y + 16)
     {
         drawClouds();
 	}
@@ -331,7 +332,7 @@ void Engine::drawInterface()
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		glBindTexture(GL_TEXTURE_2D, m_World.MaterialLib.m_Texture[UNDERWATER]);
+		glBindTexture(GL_TEXTURE_2D, m_World.m_MaterialLib.m_Texture[UNDERWATER]);
 		glColor4f(Brightness, Brightness, Brightness, 0.9f);
 
 		glBegin(GL_QUADS);
@@ -352,7 +353,7 @@ void Engine::drawInterface()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 
-	glBindTexture(GL_TEXTURE_2D, m_World.MaterialLib.m_Texture[VIGNETTE]);
+	glBindTexture(GL_TEXTURE_2D, m_World.m_MaterialLib.m_Texture[VIGNETTE]);
 
 	glColor3f(0.4f, 0.4f, 0.4f);
 
@@ -505,7 +506,7 @@ void Engine::drawSunMoon()
     glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
 	glRotated(-player.LocalTimeOfDay*360.0/DAY_TIME + 90.0, 1.0, 0.0, 0.0);
 
-	glBindTexture(GL_TEXTURE_2D, m_World.MaterialLib.m_Texture[SUN]);
+	glBindTexture(GL_TEXTURE_2D, m_World.m_MaterialLib.m_Texture[SUN]);
 
 	glTranslated(0.0, 0.0, sundist);
 
@@ -521,7 +522,7 @@ void Engine::drawSunMoon()
 	glVertex2d(SunSize, -SunSize);
 	glEnd();
 
-	glBindTexture(GL_TEXTURE_2D, m_World.MaterialLib.m_Texture[MOON]);
+	glBindTexture(GL_TEXTURE_2D, m_World.m_MaterialLib.m_Texture[MOON]);
 	glTranslated(0.0, 0.0, -2*sundist);
 
 	glBegin(GL_QUADS);
@@ -548,9 +549,9 @@ void Engine::drawBottomBorder()
 
 	glPushMatrix();
 
-	glBindTexture(GL_TEXTURE_2D, m_World.MaterialLib.m_Texture[CLOUDS]);
+	glBindTexture(GL_TEXTURE_2D, m_World.m_MaterialLib.m_Texture[CLOUDS]);
 	// todo: coords!!
-	glTranslated(player.position.bx, 0, player.position.bz);
+	glTranslated(player.position.px, 0, player.position.pz);
 	glRotated(90, 1.0, 0.0, 0.0);
 
 	res = 1.0 - m_World.SkyBright;
@@ -580,16 +581,16 @@ void Engine::drawClouds()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glBindTexture(GL_TEXTURE_2D, m_World.MaterialLib.m_Texture[CLOUDS]);
+	glBindTexture(GL_TEXTURE_2D, m_World.m_MaterialLib.m_Texture[CLOUDS]);
 
 	res = 1.0 - m_World.SkyBright;
 	glColor4f(res, res, res, 0.8f);
 	// todo: wtf with coords
 
-	GLdouble Xposition = pos.bx/(2.5*CloudSize);
-	GLdouble Zposition = pos.bz/(2.5*CloudSize);
+	GLdouble Xposition = pos.px/(2.5*CloudSize);
+	GLdouble Zposition = pos.pz/(2.5*CloudSize);
 
-	glTranslated(pos.bx, CHUNK_SIZE_Y + 16, pos.bz);
+	glTranslated(pos.px, CHUNK_SIZE_Y + 16, pos.pz);
 	glRotated(90, 1.0, 0.0, 0.0);
 	glBegin(GL_QUADS);
 

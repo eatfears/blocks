@@ -34,7 +34,7 @@ void LoadChunkThread(void* pParams)
 
     unsigned long bin = wWorld.hash(x, z);
 
-    wWorld.Chunks[bin].push_front(chunk);
+    wWorld.m_Chunks[bin].push_front(chunk);
     //	ReleaseMutex(wWorld.mutex);
 
     wWorld.drawLoadedBlocksFinish(*chunk);
@@ -85,13 +85,13 @@ void UnLoadChunkThread(void* pParams)
     //	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 
     unsigned long bin = wWorld.hash(x, z);
-    auto chunk = wWorld.Chunks[bin].begin();
+    auto chunk = wWorld.m_Chunks[bin].begin();
 
-    while(chunk != wWorld.Chunks[bin].end()) {
+    while(chunk != wWorld.m_Chunks[bin].end()) {
         if(((*chunk)->x == x)&&((*chunk)->z == z)) break;
         ++chunk;
     }
-    if(chunk == wWorld.Chunks[bin].end()) {/*
+    if(chunk == wWorld.m_Chunks[bin].end()) {/*
         ReleaseMutex(wWorld.mutex);
         ReleaseSemaphore(wWorld.semaphore, 1, NULL);*/
 
@@ -116,7 +116,7 @@ void UnLoadChunkThread(void* pParams)
     //	dwWaitResult = WaitForSingleObject((*chunk)->mutex, INFINITE);
 
     delete *chunk;
-    wWorld.Chunks[bin].erase(chunk);
+    wWorld.m_Chunks[bin].erase(chunk);
 
     wWorld.drawUnLoadedBlocks(x, z);
     //	ReleaseMutex(wWorld.mutex);

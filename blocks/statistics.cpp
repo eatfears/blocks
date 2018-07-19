@@ -49,11 +49,11 @@ void Statistics::printStat(void)
     renderString(50, m_Engine.height - 30, font, pos);
 	b_sprintf(pos, "CZ: %d\n", player.position.cz);
     renderString(50, m_Engine.height - 50, font, pos);
-	b_sprintf(pos, "X: %0.10f\n", player.position.bx);
+	b_sprintf(pos, "X: %0.10f\n", player.position.px);
     renderString(50, m_Engine.height - 70, font, pos);
-	b_sprintf(pos, "Y: %0.10f\n", player.position.by);
+	b_sprintf(pos, "Y: %0.10f\n", player.position.py);
     renderString(50, m_Engine.height - 90, font, pos);
-	b_sprintf(pos, "Z: %0.10f\n", player.position.bz);
+	b_sprintf(pos, "Z: %0.10f\n", player.position.pz);
     renderString(50, m_Engine.height - 110, font, pos);
 
 
@@ -61,11 +61,11 @@ void Statistics::printStat(void)
     renderString(200, m_Engine.height - 30, font, pos);
 	b_sprintf(pos, "CZ: %d\n", player.centerPos.cz);
     renderString(200, m_Engine.height - 50, font, pos);
-	b_sprintf(pos, "X: %0.10f\n", player.centerPos.bx);
+	b_sprintf(pos, "X: %0.10f\n", player.centerPos.px);
     renderString(200, m_Engine.height - 70, font, pos);
-	b_sprintf(pos, "Y: %0.10f\n", player.centerPos.by);
+	b_sprintf(pos, "Y: %0.10f\n", player.centerPos.py);
     renderString(200, m_Engine.height - 90, font, pos);
-	b_sprintf(pos, "Z: %0.10f\n", player.centerPos.bz);
+	b_sprintf(pos, "Z: %0.10f\n", player.centerPos.pz);
     renderString(200, m_Engine.height - 110, font, pos);
 
 	b_sprintf(pos, "Constr: %0.10f\n", constr);

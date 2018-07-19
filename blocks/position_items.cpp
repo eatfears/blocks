@@ -4,10 +4,10 @@
 #include "primes.h"
 
 
-BlockInWorld::BlockInWorld(PosInWorld pos) 
-    : BlockInChunk(Primes::round(pos.bx), floor(pos.by), Primes::round(pos.bz)), cx(pos.cx), cz(pos.cz) { norm(); }
+BlockInWorld::BlockInWorld(const PosInWorld &pos)
+    : BlockInChunk(Primes::round(pos.px), floor(pos.py), Primes::round(pos.pz)), ChunkInWorld(pos.cx, pos.cz) { norm(); }
 
-BlockInWorld BlockInWorld::getSide(char side)
+BlockInWorld BlockInWorld::getSide(char side) const
 {
 	BlockInWorld res(*this);
     switch(side)
@@ -36,19 +36,23 @@ BlockInWorld BlockInWorld::getSide(char side)
 
 void BlockInWorld::norm()
 {
-	while(bx >= CHUNK_SIZE_XZ) {
+    while (bx >= CHUNK_SIZE_XZ)
+    {
 		bx -= CHUNK_SIZE_XZ;
 		cx++;
 	}
-	while(bz >= CHUNK_SIZE_XZ) {
+    while (bz >= CHUNK_SIZE_XZ)
+    {
 		bz -= CHUNK_SIZE_XZ;
 		cz++;
 	}
-	while(bx < 0) {
+    while (bx < 0)
+    {
 		bx += CHUNK_SIZE_XZ;
 		cx--;
 	}
-	while(bz < 0) {
+    while (bz < 0)
+    {
 		bz += CHUNK_SIZE_XZ;
 		cz--;
 	}
@@ -56,20 +60,24 @@ void BlockInWorld::norm()
 
 void PosInWorld::norm()
 {
-	while(bx >= CHUNK_SIZE_XZ) {
-		bx -= CHUNK_SIZE_XZ;
+    while (px >= CHUNK_SIZE_XZ)
+    {
+        px -= CHUNK_SIZE_XZ;
 		cx++;
 	}
-	while(bz >= CHUNK_SIZE_XZ) {
-		bz -= CHUNK_SIZE_XZ;
+    while (pz >= CHUNK_SIZE_XZ)
+    {
+        pz -= CHUNK_SIZE_XZ;
 		cz++;
 	}
-	while(bx < 0) {
-		bx += CHUNK_SIZE_XZ;
+    while (px < 0)
+    {
+        px += CHUNK_SIZE_XZ;
 		cx--;
 	}
-	while(bz < 0) {
-		bz += CHUNK_SIZE_XZ;
+    while (pz < 0)
+    {
+        pz += CHUNK_SIZE_XZ;
 		cz--;
 	}
 }
