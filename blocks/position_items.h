@@ -79,6 +79,7 @@ private:
 class PointInWorld : public TypeInWorld<PointCoord>
 {
 public:
+    PointInWorld() {}
     using TypeInWorld<PointCoord>::TypeInWorld;
     PointInWorld(const TypeInWorld<PointCoord> &p) : TypeInWorld<PointCoord>(p) {}
 
@@ -91,6 +92,7 @@ public:
 class BlockInWorld : public TypeInWorld<BlockCoord>
 {
 public:
+    BlockInWorld() {}
     using TypeInWorld<BlockCoord>::TypeInWorld;
     BlockInWorld(const TypeInWorld<BlockCoord> &p) : TypeInWorld<BlockCoord>(p) {}
 
