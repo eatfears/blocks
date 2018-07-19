@@ -1,5 +1,6 @@
 #pragma once
-#include "Definitions.h"
+
+#include "definitions.h"
 #include <GL/freeglut.h>
 
 #define MAT_NO				0

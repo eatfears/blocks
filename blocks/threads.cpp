@@ -1,6 +1,7 @@
-#include "Definitions.h"
-#include "World.h"
-#include "Landscape.h"
+#include "definitions.h"
+#include "world.h"
+#include "landscape.h"
+
 
 void LoadChunkThread(void* pParams)
 {
@@ -16,7 +17,8 @@ void LoadChunkThread(void* pParams)
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 #endif // _WIN32
 
-    if(wWorld.GetChunkByPosition(x, z)) {
+    if(wWorld.getChunkByPosition(x, z))
+    {
         //		ReleaseSemaphore(wWorld.semaphore, 1, NULL);
         //		_endthread();
         //		return;
@@ -30,15 +32,16 @@ void LoadChunkThread(void* pParams)
 
     //	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 
-    unsigned long bin = wWorld.Hash(x, z);
+    unsigned long bin = wWorld.hash(x, z);
 
     wWorld.Chunks[bin].push_front(chunk);
     //	ReleaseMutex(wWorld.mutex);
 
-    wWorld.DrawLoadedBlocksFinish(*chunk);
+    wWorld.drawLoadedBlocksFinish(*chunk);
 
-    if(chunk->m_LightToUpdate) {
-        wWorld.UpdateLight(*chunk);
+    if(chunk->m_LightToUpdate)
+    {
+        wWorld.updateLight(*chunk);
         chunk->m_LightToUpdate = false;
     }
 
@@ -81,7 +84,7 @@ void UnLoadChunkThread(void* pParams)
 
     //	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
 
-    unsigned long bin = wWorld.Hash(x, z);
+    unsigned long bin = wWorld.hash(x, z);
     auto chunk = wWorld.Chunks[bin].begin();
 
     while(chunk != wWorld.Chunks[bin].end()) {
@@ -115,7 +118,7 @@ void UnLoadChunkThread(void* pParams)
     delete *chunk;
     wWorld.Chunks[bin].erase(chunk);
 
-    wWorld.DrawUnLoadedBlocks(x, z);
+    wWorld.drawUnLoadedBlocks(x, z);
     //	ReleaseMutex(wWorld.mutex);
 
     //
@@ -148,9 +151,11 @@ void LoadNGenerate(void* pParams)
 
     int size = 4;
 
-    for(int i = x*size; i < (x+1)*size*1; i++) {
-        for(int j = z*size; j < (z+1)*size; j++) {
-            wWorld.LoadChunk(i, j);
+    for(int i = x*size; i < (x+1)*size*1; i++)
+    {
+        for(int j = z*size; j < (z+1)*size; j++)
+        {
+            wWorld.loadChunk(i, j);
             //Sleep(30);
         }
     }

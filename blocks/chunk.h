@@ -1,7 +1,8 @@
 #pragma once
+
 #include <list>
 
-#include "Definitions.h"
+#include "position_items.h"
 #include <GL/freeglut.h>
 
 class World;

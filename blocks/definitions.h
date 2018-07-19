@@ -54,4 +54,3 @@
 
 #define DAY_TIME		2400.0
 
-#include "PositionItems.h"

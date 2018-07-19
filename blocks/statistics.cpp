@@ -1,7 +1,9 @@
-#include "Statistics.h"
+#include "statistics.h"
+
 #include <stdio.h>
-#include "Engine.h"
-#include "Platform.h"
+
+#include "engine.h"
+#include "platform.h"
 
 
 Statistics::Statistics(Engine& eng)
@@ -32,7 +34,8 @@ void Statistics::printStat(void)
 	static void *font = GLUT_BITMAP_HELVETICA_12;
 	static int h, m, s;
 
-    if (m_TimeCount > 100) {
+    if (m_TimeCount > 100)
+    {
         b_sprintf(cFPS, "FPS: %0.1f\n", 1000.0*m_FrameCount/m_TimeCount);
         m_TimeCount = 0.0;
         m_FrameCount = 0;
@@ -40,7 +43,7 @@ void Statistics::printStat(void)
 	
     renderString(m_Engine.width - 100, m_Engine.height - 30, font, cFPS);
 
-    Character &player = m_Engine.m_World.player;
+    Character &player = m_Engine.m_World.m_Player;
 
 	b_sprintf(pos, "CX: %d\n", player.position.cx);
     renderString(50, m_Engine.height - 30, font, pos);
@@ -79,9 +82,9 @@ void Statistics::printStat(void)
 	b_sprintf(pos, "Time: %d:%.2d:%.2d\n", h, m, s);
     renderString(50, m_Engine.height - 150, font, pos);
 
-    h = ((int)m_Engine.m_World.player.LocalTimeOfDay)/100;
-    m = ((int)(m_Engine.m_World.player.LocalTimeOfDay*0.6))%60;
-    s = ((int)(m_Engine.m_World.player.LocalTimeOfDay*36.0))%60;
+    h = ((int)m_Engine.m_World.m_Player.LocalTimeOfDay)/100;
+    m = ((int)(m_Engine.m_World.m_Player.LocalTimeOfDay*0.6))%60;
+    s = ((int)(m_Engine.m_World.m_Player.LocalTimeOfDay*36.0))%60;
 	b_sprintf(pos, "Local time: %d:%.2d:%.2d\n", h, m, s);
     renderString(50, m_Engine.height - 170, font, pos);
 }

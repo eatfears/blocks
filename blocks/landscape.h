@@ -1,6 +1,7 @@
 #pragma once
-#include "PerlinNoise.h"
-#include "Definitions.h"
+
+#include "perlin_noise.h"
+#include "definitions.h"
 
 
 class World;

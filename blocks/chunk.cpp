@@ -1,8 +1,11 @@
-#include "Chunk.h"
+#include "chunk.h"
+
 #include <fstream>
 #include <sstream>
-#include "World.h"
-#include "Light.h"
+
+#include "world.h"
+#include "light.h"
+
 
 Chunk::Chunk(ChunkCoord x, ChunkCoord z, World& wrld)
     : wWorld(wrld)
@@ -232,7 +235,7 @@ void Chunk::open()
 
     if (!loaded)
     {
-        wWorld.lLandscape.generate(*this);
+        wWorld.m_Landscape.generate(*this);
         //wWorld.lLandscape.Fill(*this, 0, 0.999, 64);
         //wWorld.lLandscape.Fill(*this, MAT_DIRT, 1, 64);
     }
@@ -250,7 +253,7 @@ void Chunk::save()
     savefile.open (filename, std::fstream::out | std::fstream::binary);
     if (savefile.is_open())
     {
-        wWorld.lLandscape.save(*this, savefile);
+        wWorld.m_Landscape.save(*this, savefile);
         savefile.close();
     }
 }
@@ -258,7 +261,7 @@ void Chunk::save()
 void Chunk::render(char mat, int *rendered)
 {
     glPushMatrix();
-    glTranslated((x-wWorld.player.position.cx)*CHUNK_SIZE_XZ, 0, (z-wWorld.player.position.cz)*CHUNK_SIZE_XZ);
+    glTranslated((x-wWorld.m_Player.position.cx)*CHUNK_SIZE_XZ, 0, (z-wWorld.m_Player.position.cz)*CHUNK_SIZE_XZ);
 
     GLenum mode = GL_EXECUTE;
 
@@ -291,7 +294,7 @@ void Chunk::render(char mat, int *rendered)
     }
 
     // todo: GL_RENDER dont compile chunk
-    Chunk *chunk = wWorld.player.chunk;
+    Chunk *chunk = wWorld.m_Player.chunk;
     if (chunk)
     {
         if (chunk->x >= x - 1 && chunk->z >= z - 1 && chunk->x <= x + 1 && chunk->z <= z + 1)

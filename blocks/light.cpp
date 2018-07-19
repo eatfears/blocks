@@ -1,10 +1,8 @@
-#include "Light.h"
-/*
-#include "Platform.h"
-#include <fstream>
-*/
-#include "World.h"
-#include "Material.h"
+#include "light.h"
+
+#include "world.h"
+#include "material.h"
+
 
 // todo: first frame of game is in night
 char Light::m_InfluencingLight[6][4] = {
@@ -20,7 +18,7 @@ float Light::m_LightTable[16] = {
 	0.512f, 0.640f, 0.800f, 1.000f
 };
 
-#include "Platform.h"
+#include "platform.h"
 double constr = 0;
 double update = 0;
 
@@ -141,7 +139,7 @@ void Light::blockLight(World& wWorld, Chunk& chunk, char side, BlockCoord cx, Bl
 
 		// if in neighbor chunk
 		if(pos.cx != posSide.cx || pos.cz != posSide.cz) {
-			temploc = wWorld.GetChunkByPosition(posSide.cx, posSide.cz);
+			temploc = wWorld.getChunkByPosition(posSide.cx, posSide.cz);
 		} else temploc = &chunk;
 
 		if(pos.overflow()) temploc = NULL;
@@ -232,13 +230,13 @@ float Light::getBrightAverage(World& wWorld, BlockInWorld pos, int xx[8], int yy
 
 	bool DiagonalblockInfluate = true;
 
-	center = wWorld.GetChunkByPosition(pos.cx, pos.cz);
+	center = wWorld.getChunkByPosition(pos.cx, pos.cz);
 
 	for(int i = 0; i < 4; i++) {
         InflLight = Light::m_InfluencingLight[side][i];
 		tempPos2 = pos + BlockInChunk(xx[InflLight], yy[InflLight], zz[InflLight]);
 		if((tempPos2.cx != center->x)||(tempPos2.cz != center->z))
-			temploc = wWorld.GetChunkByPosition(tempPos2.cx, tempPos2.cz);
+			temploc = wWorld.getChunkByPosition(tempPos2.cx, tempPos2.cz);
 		else temploc = center;
 
 		if(temploc) {

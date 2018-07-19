@@ -1,7 +1,10 @@
-#include "Landscape.h"
+#include "landscape.h"
+
 #include <fstream>
-#include "World.h"
-#include "zlib.h"
+#include <zlib.h>
+
+#include "world.h"
+
 
 Landscape::Landscape()
 {

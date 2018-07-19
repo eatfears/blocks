@@ -1,13 +1,16 @@
-#include "Character.h"
 #include <math.h>
-#include "Threads.h"
-#include "World.h"
-#include "Primes.h"
+
+#include "character.h"
+#include "threads.h"
+#include "world.h"
+#include "primes.h"
+
 
 Character::Character(World& ww)
     : wWorld(ww)
 {
-    for(int i = 0; i < 256; i++) {
+    for(int i = 0; i < 256; i++)
+    {
         bKeyboard[i] = false;
         bSpecial[i] = false;
     }
@@ -27,7 +30,6 @@ Character::Character(World& ww)
     LocalTimeOfDay = 0;
 
     Longitude = 0;
-    Longitude2 = 0;
 
     underWater = false;
 }
@@ -55,7 +57,7 @@ void Character::getPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
     if(*zerr > abs(*zerr - 1)) *zerr = abs(*zerr - 1);
 }
 
-void Character::Control(GLdouble FrameInterval)
+void Character::control(GLdouble FrameInterval)
 {
     GLdouble step = WALK_SPEED;
     if(bSpecial[GLUT_KEY_SHIFT_L])
@@ -133,14 +135,14 @@ void Character::Control(GLdouble FrameInterval)
     if(bKeyboard['1']) {
         int i = 0;
         while(i < num) {
-            if(wWorld.AddBlock(BlockInWorld(rand()%sq-sqb2, abs(rand()%sq-sqb2), rand()%sq-sqb2), rand()%14+1, true))
+            if(wWorld.addBlock(BlockInWorld(rand()%sq-sqb2, abs(rand()%sq-sqb2), rand()%sq-sqb2), rand()%14+1, true))
                 i++;
         }
     }
     if(bKeyboard['2']) {
         int i = 0;
         while(i < num) {
-            if(wWorld.RemoveBlock(BlockInWorld(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2), true))
+            if(wWorld.removeBlock(BlockInWorld(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2), true))
                 i++;
         }
     }
@@ -149,30 +151,30 @@ void Character::Control(GLdouble FrameInterval)
         for(BlockCoord i = -sqb2; i <= sqb2; i++) {
             for(BlockCoord j = -sqb2; j <= sqb2; j++) {
                 for(BlockCoord k = -sqb2; k <= sqb2; k++) {
-                    wWorld.RemoveBlock(BlockInWorld(i, j, k), true);
+                    wWorld.removeBlock(BlockInWorld(i, j, k), true);
                 }
             }
         }
     }
 
     if(bKeyboard['4']) {
-        wWorld.LoadChunk(0, 0);
+        wWorld.loadChunk(0, 0);
         bKeyboard['4'] = false;
     }
     if(bKeyboard['5']) {
-        wWorld.UnLoadChunk(0, 0);
+        wWorld.unLoadChunk(0, 0);
         bKeyboard['5'] = false;
     }
     if(bKeyboard['6']) {
         for(int i = 0; i < 8; i++)
             for(int j = 0; j < 8; j++)
-                wWorld.LoadChunk(i, j);
+                wWorld.loadChunk(i, j);
         bKeyboard['6'] = false;
     }
     if(bKeyboard['7']) {
         for(int i = 0; i < 8; i++)
             for(int j = 0; j < 8; j++)
-                wWorld.UnLoadChunk(i, j);
+                wWorld.unLoadChunk(i, j);
         bKeyboard['7'] = false;
     }
 
@@ -191,7 +193,7 @@ void Character::Control(GLdouble FrameInterval)
     if(bKeyboard['C']) {
         Chunk *chunk;
         int index;
-        wWorld.FindBlock(aimedBlock, &chunk, &index);
+        wWorld.findBlock(aimedBlock, &chunk, &index);
         if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT)) {
             chunk->bBlocks[index].bVisible ^= (1 << SNOWCOVERED);
         }
@@ -199,19 +201,19 @@ void Character::Control(GLdouble FrameInterval)
     if(bKeyboard['V']) {
         Chunk *chunk;
         int index;
-        wWorld.FindBlock(aimedBlock, &chunk, &index);
+        wWorld.findBlock(aimedBlock, &chunk, &index);
         if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT)) {
             chunk->bBlocks[index].bVisible ^= (1 << GRASSCOVERED);
         }
     }
     if(bKeyboard['E']) {
-        wWorld.RemoveBlock(aimedBlock, true);
+        wWorld.removeBlock(aimedBlock, true);
     }
     if(bKeyboard['Q']) {
-        wWorld.AddBlock(freeBlock, MAT_PUMPKIN_SHINE, true);
+        wWorld.addBlock(freeBlock, MAT_PUMPKIN_SHINE, true);
     }
     if(bKeyboard['O']) {
-        wWorld.SaveChunks();
+        wWorld.saveChunks();
     }
 
     position = position + PosInWorld(FrameInterval*dVelocityX, FrameInterval*dVelocityY, FrameInterval*dVelocityZ);
@@ -288,7 +290,7 @@ void Character::Control(GLdouble FrameInterval)
 
 }
 
-void Character::GetCenterCoords(GLsizei width, GLsizei height)
+void Character::getCenterCoords(GLsizei width, GLsizei height)
 {
     GLint    viewport[4];		// параметры viewport-a.
     GLdouble projection[16];	// матрица проекции.
@@ -327,9 +329,8 @@ void Character::getMyPosition()
     pos.by += 0.125 - 0.5;
     BlockInWorld waterPos(pos);
 
-    wWorld.FindBlock(waterPos, &chunk, &index);
+    wWorld.findBlock(waterPos, &chunk, &index);
     underWater = chunk && chunk->bBlocks[index].cMaterial == MAT_WATER;
 
     Longitude = (position.bz/CHUNK_SIZE_XZ + position.cz)/160;
-    Longitude2 = -(position.bx/CHUNK_SIZE_XZ + position.cx)/160;
 }

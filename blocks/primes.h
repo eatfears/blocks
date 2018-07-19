@@ -1,6 +1,9 @@
 #pragma once
-#include "Definitions.h"
+
 #include <boost/random.hpp>
+
+#include "definitions.h"
+
 
 #define Int unsigned long int
 

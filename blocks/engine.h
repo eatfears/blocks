@@ -1,10 +1,11 @@
 #pragma once
-#include "Definitions.h"
+
+#include "definitions.h"
 #include <GL/freeglut.h>
 
-#include "World.h"
-#include "Character.h"
-#include "Statistics.h"
+#include "world.h"
+#include "character.h"
+#include "statistics.h"
 
 class Engine
 {

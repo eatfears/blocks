@@ -1,7 +1,9 @@
-#include "PerlinNoise.h"
+#include "perlin_noise.h"
+
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include "Primes.h"
+
+#include "primes.h"
 
 PerlinNoise::PerlinNoise(double persistence, int NumberOfOctaves)
 {

@@ -1,5 +1,7 @@
-#include "Primes.h"
+#include "primes.h"
+
 #include <math.h>
+
 
 Primes::Primes()
 {

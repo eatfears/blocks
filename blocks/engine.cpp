@@ -1,10 +1,13 @@
-#include "Engine.h"
+#include "engine.h"
+
 #include <ctime>
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include "Light.h"
-#include "Primes.h"
-#include "Platform.h"
+
+#include "light.h"
+#include "primes.h"
+#include "platform.h"
+
 
 GLfloat DayFogColor[4] = {0.50f, 0.67f, 1.00f, 1.00f};
 GLfloat NightFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
@@ -32,8 +35,8 @@ int Engine::initGL()
 	m_World.MaterialLib.allocGLTextures();
 	m_World.MaterialLib.loadGLTextures();
 
-	m_World.player.position = PosInWorld(0, 100, 0);
-	m_World.player.dSpinY = -90 - 45;
+    m_World.m_Player.position = PosInWorld(0, 100, 0);
+    m_World.m_Player.dSpinY = -90 - 45;
 	glutSetCursor(GLUT_CURSOR_NONE);
 
 	glShadeModel(GL_SMOOTH);
@@ -68,7 +71,7 @@ void Engine::display()
 	glLoadIdentity();											// Сбросить текущую матрицу
 	openGL3d();
 
-	Character &player = m_World.player;
+    Character &player = m_World.m_Player;
     if (player.underWater) {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	} else {
@@ -128,11 +131,14 @@ void Engine::display()
 	stat.m_ReRenderedChunks = 0;
 
 	render = 0;
-    for (int bin = 0; bin < HASH_SIZE; bin++) {
+    for (int bin = 0; bin < HASH_SIZE; bin++)
+    {
 		auto chunk = m_World.Chunks[bin].begin();
-        while (chunk != m_World.Chunks[bin].end()) {
-            if ((*chunk)->m_LightToUpdate) {
-				m_World.UpdateLight(**chunk);
+        while (chunk != m_World.Chunks[bin].end())
+        {
+            if ((*chunk)->m_LightToUpdate)
+            {
+                m_World.updateLight(**chunk);
 				(*chunk)->m_LightToUpdate = false;
 			}
 
@@ -151,9 +157,11 @@ void Engine::display()
 
 	//transparent tiles here
 	render = 0;
-    for (int bin = 0; bin < HASH_SIZE; bin++) {
+    for (int bin = 0; bin < HASH_SIZE; bin++)
+    {
 		auto chunk = m_World.Chunks[bin].begin();
-        while (chunk != m_World.Chunks[bin].end()) {
+        while (chunk != m_World.Chunks[bin].end())
+        {
             if (mod == GL_COMPILE)
 				(*chunk)->NeedToRender[1] = RENDER_MAYBE;
 
@@ -167,7 +175,8 @@ void Engine::display()
 
 	stat.m_ReRenderedChunks += render;
 
-    if (player.position.by >= CHUNK_SIZE_Y + 16) {
+    if (player.position.by >= CHUNK_SIZE_Y + 16)
+    {
         drawClouds();
 	}
 
@@ -186,15 +195,16 @@ void Engine::keyboard(unsigned char button, int x, int y, bool KeyDown)
 #ifdef _WIN32
 		button = VkKeyScan(button);
 #endif
-		m_World.player.bKeyboard[button] = KeyDown;
+        m_World.m_Player.bKeyboard[button] = KeyDown;
 		break;
 	}
 }
 
 void Engine::mouseMotion(int x, int y)
 {
-    if (m_Mousing) {
-		Character &player = m_World.player;
+    if (m_Mousing)
+    {
+        Character &player = m_World.m_Player;
 		m_Mousing = false;
 
 		player.dSpinY -= (x - width/2)/MOUSE_SENSIVITY;
@@ -210,7 +220,9 @@ void Engine::mouseMotion(int x, int y)
         if (player.dSpinX > 90.0) player.dSpinX = 90.0;
 
 		glutWarpPointer(width/2,height/2);
-	} else {
+    }
+    else
+    {
 		m_Mousing = true;
 	}
 }
@@ -230,14 +242,15 @@ void Engine::initGame()
 
 	unsigned int seed = std::time(0);
 
-	m_World.lLandscape.init(seed);
-	m_World.BuildWorld();
+    m_World.m_Landscape.init(seed);
+    m_World.buildWorld();
 }
 
 void Engine::drawSelectedItem()
 {
-	Character &player = m_World.player;
-    if (!m_World.FindBlock(player.aimedBlock)) {
+    Character &player = m_World.m_Player;
+    if (!m_World.findBlock(player.aimedBlock))
+    {
 		return;
 	}
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -296,7 +309,7 @@ void Engine::drawSelectedItem()
 
 void Engine::drawInterface()
 {
-	Character &player = m_World.player;
+    Character &player = m_World.m_Player;
 	//glPushMatrix();
 	//glPopMatrix();
 	int WidthBy2  = width/2;
@@ -308,7 +321,8 @@ void Engine::drawInterface()
 	openGL2d();
 
 	//Underwater haze
-    if ((player.underWater)&&(player.chunk)) {
+    if ((player.underWater)&&(player.chunk))
+    {
 		GLfloat Brightness;
 		Light::getLight(*player.chunk, player.index, Brightness);
 
@@ -381,14 +395,14 @@ void Engine::drawInterface()
 void Engine::loop()
 {
 	GetFrameTime();
-	Character &player = m_World.player;
+    Character &player = m_World.m_Player;
 	GetFogColor();
 	player.getMyPosition();
 	display();
     player.getLocalTime(m_TimeOfDay);
-	player.GetCenterCoords(width, height);
+    player.getCenterCoords(width, height);
 
-	player.Control(FrameInterval);
+    player.control(FrameInterval);
 	drawInterface();
 
 	glutSwapBuffers();
@@ -436,7 +450,7 @@ void Engine::special(int button, int x, int y, bool KeyDown)
 //	case GLUT_KEY_F2: 	glutLeaveGameMode();
 //		break;
 	default:
-		m_World.player.bSpecial[button] = KeyDown;
+        m_World.m_Player.bSpecial[button] = KeyDown;
 	}
 }
 
@@ -454,9 +468,12 @@ void Engine::openGL2d()
 void Engine::openGL3d()
 {
 	float fovy;
-    if (m_World.player.underWater) {
+    if (m_World.m_Player.underWater)
+    {
 		fovy = 60.0f;
-	} else {
+    }
+    else
+    {
 		fovy = 70.0f;
 	}
 
@@ -471,7 +488,7 @@ void Engine::openGL3d()
 
 void Engine::drawSunMoon()
 {
-	Character &player = m_World.player;
+    Character &player = m_World.m_Player;
 	glPushMatrix();
 	glLoadIdentity();
 
@@ -525,7 +542,7 @@ void Engine::drawSunMoon()
 
 void Engine::drawBottomBorder()
 {
-	Character &player = m_World.player;
+    Character &player = m_World.m_Player;
 	GLdouble BottomBorderSize = FARCUT;
 	GLfloat res;
 
@@ -551,7 +568,7 @@ void Engine::drawBottomBorder()
 
 void Engine::drawClouds()
 {
-	PosInWorld pos = m_World.player.position;
+    PosInWorld pos = m_World.m_Player.position;
 	GLdouble CloudSize = FARCUT*2;///4;
 	GLfloat res;
 
@@ -596,24 +613,30 @@ void Engine::GetFogColor()
 	static double Dawn = 100.0;
 	static float NightBright = 0.93f;
 	static float DayBright = 0.00f;
-	double LocalTimeOfDay = m_World.player.LocalTimeOfDay;
+    double LocalTimeOfDay = m_World.m_Player.LocalTimeOfDay;
 
-    if ((LocalTimeOfDay > 600.0 + Dawn)&&(LocalTimeOfDay < 1800.0 - Dawn)) {
+    if ((LocalTimeOfDay > 600.0 + Dawn)&&(LocalTimeOfDay < 1800.0 - Dawn))
+    {
         for (int i = 0; i < 4; i++)
 			FogColor[i] = DayFogColor[i];
 		m_World.SkyBright = DayBright;
-    } else if ((LocalTimeOfDay < 600.0 - Dawn)||(LocalTimeOfDay > 1800.0 + Dawn)) {
+    }
+    else if ((LocalTimeOfDay < 600.0 - Dawn)||(LocalTimeOfDay > 1800.0 + Dawn))
+    {
         for (int i = 0; i < 4; i++)
 			FogColor[i] = NightFogColor[i];
 
 		m_World.SkyBright = NightBright;
-	} else {
+    }
+    else
+    {
 		GLfloat ft = (LocalTimeOfDay - (600.0f - Dawn))*M_PI / (2.0 * Dawn);
 		GLfloat f = (1.0f - cos(ft)) * 0.5f;
 
         if (LocalTimeOfDay > 1200.0) f = 1.0 - f;
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++)
+        {
 			FogColor[i] = NightFogColor[i]*(1.0f - f) + DayFogColor[i]*f;
 		}
 		m_World.SkyBright = NightBright*(1.0f - f) + DayBright * f;
@@ -621,7 +644,8 @@ void Engine::GetFogColor()
 
 	static GLfloat prevBright = 0;
 	GLfloat dif = fabs(m_World.SkyBright - prevBright);
-    if (dif > 0.005f) {
+    if (dif > 0.005f)
+    {
 		m_World.LightToRefresh = true;
 		prevBright = m_World.SkyBright;
 	}

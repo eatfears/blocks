@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Definitions.h"
-#include "Chunk.h"
+#include "definitions.h"
+#include "chunk.h"
 
 /*
 Updating light in chunk will cause updating light in neighbor chunks

@@ -1,31 +1,34 @@
-#include "Definitions.h"
-#include "PositionItems.h"
-#include "Primes.h"
+#include "position_items.h"
+
+#include "definitions.h"
+#include "primes.h"
+
 
 BlockInWorld::BlockInWorld(PosInWorld pos) 
-	:cx(pos.cx), cz(pos.cz), bx(Primes::round(pos.bx)), by(floor(pos.by)), bz(Primes::round(pos.bz)) { norm(); };
+    : BlockInChunk(Primes::round(pos.bx), floor(pos.by), Primes::round(pos.bz)), cx(pos.cx), cz(pos.cz) { norm(); }
 
 BlockInWorld BlockInWorld::getSide(char side)
 {
 	BlockInWorld res(*this);
-	switch(side) {
+    switch(side)
+    {
 	case TOP:
-		return res + BlockInWorld(0,1,0);
+        return res + BlockInChunk(0, 1, 0);
 		break;
 	case BOTTOM:
-		return res + BlockInWorld(0,-1,0);
+        return res + BlockInChunk(0, -1, 0);
 		break;
 	case RIGHT:
-		return res + BlockInWorld(1,0,0);
+        return res + BlockInChunk(1, 0, 0);
 		break;
 	case LEFT:
-		return res + BlockInWorld(-1,0,0);
+        return res + BlockInChunk(-1, 0, 0);
 		break;
 	case FRONT:
-		return res + BlockInWorld(0,0,-1);
+        return res + BlockInChunk(0, 0, -1);
 		break;
 	case BACK:
-		return res + BlockInWorld(0,0,1);
+        return res + BlockInChunk(0, 0, 1);
 		break;
 	}
 	return res;
