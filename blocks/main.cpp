@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     engine = new Engine();
 
     glutInit(&argc,argv);
-    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
+    glutInitDisplayMode(GLUT_MULTISAMPLE | GLUT_ALPHA | GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(RESX, RESY);
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Blocks");

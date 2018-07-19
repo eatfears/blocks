@@ -53,4 +53,3 @@
 #define DAYLIGHT		15
 
 #define DAY_TIME		2400.0
-
