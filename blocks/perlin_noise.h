@@ -8,35 +8,34 @@ class PerlinNoise
 {
 public:
     PerlinNoise(double m_Persistence = 0.5, int m_NumberOfOctaves = 4);
-    ~PerlinNoise();
 
     void initNoise(boost::mt19937 &randNumGen);
 
-    double perlinNoise1d(double x);
-    double perlinNoise2d(double x, double y);
-    double perlinNoise3d(double x, double y, double z);
+    inline double perlinNoise1d(double x) const noexcept;
+    double perlinNoise2d(double x, double y) const noexcept;
+    double perlinNoise3d(double x, double y, double z) const noexcept;
 
 private:
-    double noise1d(int x);
-    double noise2d(int x, int y);
-    double noise3d(int x, int y, int z);
+    inline double noise1d(int x) const noexcept;
+    inline double noise2d(int x, int y) const noexcept;
+    inline double noise3d(int x, int y, int z) const noexcept;
 
-    double smoothNoise1d(int x);
-    double smoothNoise2d(int x, int y);
-    double smoothNoise3d(int x, int y, int z);
+    inline double smoothNoise1d(int x) const noexcept;
+    inline double smoothNoise2d(int x, int y) const noexcept;
+    inline double smoothNoise3d(int x, int y, int z) const noexcept;
 
-    double useNoise1d(int x);
-    double useNoise2d(int x, int y);
-    double useNoise3d(int x, int y, int z);
+    inline double useNoise1d(int x) const noexcept ;
+    inline double useNoise2d(int x, int y) const noexcept;
+    inline double useNoise3d(int x, int y, int z) const noexcept;
 
-    double interpolatedNoise1d(double x);
-    double interpolatedNoise2d(double x, double y);
-    double interpolatedNoise3d(double x, double y, double z);
+    inline double interpolatedNoise1d(double x) const noexcept;
+    inline double interpolatedNoise2d(double x, double y) const noexcept;
+    inline double interpolatedNoise3d(double x, double y, double z) const noexcept;
 
-    double linearInterpolate(double a, double b, double x);
-    double cosineInterpolate(double a, double b, double x);
-    double cubicInterpolate(double v0, double v1, double v2, double v3, double x);
-    double interpolate(double a, double b, double x);
+    inline double linearInterpolate(double a, double b, double x) const noexcept;
+    inline double cosineInterpolate(double a, double b, double x) const noexcept;
+    inline double cubicInterpolate(double v0, double v1, double v2, double v3, double x) const noexcept;
+    inline double interpolate(double a, double b, double x) const noexcept;
 
     int m_Interpolation;
     double m_Persistence;
@@ -44,4 +43,3 @@ private:
 
     int a, b, c, d, e;
 };
-

@@ -92,8 +92,8 @@ void UnLoadChunkThread(void* pParams)
         ++chunk;
     }
     if(chunk == wWorld.m_Chunks[bin].end()) {/*
-        ReleaseMutex(wWorld.mutex);
-        ReleaseSemaphore(wWorld.semaphore, 1, NULL);*/
+            ReleaseMutex(wWorld.mutex);
+            ReleaseSemaphore(wWorld.semaphore, 1, NULL);*/
 
         // 		dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
         // 		LocationPosiion lp = {x, z};
