@@ -36,9 +36,9 @@ Character::Character(World& ww)
 
 void Character::getPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
 {
-    *xerr = centerPos.px + 0.5;
-    *yerr = centerPos.py;
-    *zerr = centerPos.pz + 0.5;
+    *xerr = centerPos.bx + 0.5;
+    *yerr = centerPos.by;
+    *zerr = centerPos.bz + 0.5;
 
     // todo: bad resolution
     while(*yerr < 0) *yerr += 1;
@@ -107,19 +107,19 @@ void Character::control(GLdouble FrameInterval)
 
     PosInWorld pos;
     if(zerr < xerr && zerr < yerr) {
-        if((position.pz < centerPos.pz && position.cz == centerPos.cz) || position.cz < centerPos.cz) {
+        if((position.bz < centerPos.bz && position.cz == centerPos.cz) || position.cz < centerPos.cz) {
             pos = PosInWorld(0, 0, 0.5);
         } else {
             pos = PosInWorld(0, 0, -0.5);
         }
     } else if(xerr < zerr && xerr < yerr) {
-        if((position.px < centerPos.px && position.cx == centerPos.cx) || position.cx < centerPos.cx) {
+        if((position.bx < centerPos.bx && position.cx == centerPos.cx) || position.cx < centerPos.cx) {
             pos = PosInWorld(0.5, 0, 0);
         } else {
             pos = PosInWorld(-0.5, 0, 0);
         }
     } else if(yerr < xerr && yerr < zerr) {
-        if(position.py < centerPos.py) {
+        if(position.by < centerPos.by) {
             pos = PosInWorld(0, 0.5, 0);
         } else {
             pos = PosInWorld(0, -0.5, 0);
@@ -306,9 +306,9 @@ void Character::getCenterCoords(GLsizei width, GLsizei height)
     gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, &dispCenterX, &dispCenterY, &dispCenterZ);
     centerPos = position;
 
-    centerPos.px = 0;
-    centerPos.py = 0;
-    centerPos.pz = 0;
+    centerPos.bx = 0;
+    centerPos.by = 0;
+    centerPos.bz = 0;
 
     centerPos = centerPos + PosInWorld(dispCenterX, dispCenterY, dispCenterZ);
 
@@ -326,11 +326,11 @@ void Character::getMyPosition()
 {
     // checks if player is under water level
     PosInWorld pos(position);
-    pos.py += 0.125 - 0.5;
+    pos.by += 0.125 - 0.5;
     BlockInWorld waterPos(pos);
 
     wWorld.findBlock(waterPos, &chunk, &index);
     underWater = chunk && chunk->bBlocks[index].cMaterial == MAT_WATER;
 
-    Longitude = (position.pz/CHUNK_SIZE_XZ + position.cz)/160;
+    Longitude = (position.bz/CHUNK_SIZE_XZ + position.cz)/160;
 }

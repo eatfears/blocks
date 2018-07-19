@@ -61,56 +61,56 @@ private:
 
 struct PosInWorld : public ChunkInWorld
 {
-    float px {}, py {}, pz {};
+    float bx {}, by {}, bz {};
 
     PosInWorld() {}
 
     PosInWorld(ChunkCoord cx, ChunkCoord cz, float bx, float by, float bz)
-        : ChunkInWorld(cx, cz), px(bx), py(by), pz(bz) { norm(); }
+        : ChunkInWorld(cx, cz), bx(bx), by(by), bz(bz) { norm(); }
 
     PosInWorld(ChunkCoord cx, ChunkCoord cz)
         : ChunkInWorld(cx, cz) {}
 
     PosInWorld(float bx, float by, float bz)
-        : px(bx), py(by), pz(bz) { norm(); }
+        : bx(bx), by(by), bz(bz) { norm(); }
 
     PosInWorld operator + (const BlockInWorld &b)
     {
-        PosInWorld res(cx + b.cx, cz + b.cz, px + b.bx, py + b.by, pz + b.bz);
+        PosInWorld res(cx + b.cx, cz + b.cz, bx + b.bx, by + b.by, bz + b.bz);
         res.norm();
         return res;
     }
 
     PosInWorld operator + (const BlockInChunk &b)
     {
-        PosInWorld res(cx, cz, px + b.bx, py + b.by, pz + b.bz);
+        PosInWorld res(cx, cz, bx + b.bx, by + b.by, bz + b.bz);
         res.norm();
         return res;
     }
 
     PosInWorld operator + (const PosInWorld & b)
     {
-        PosInWorld res(cx + b.cx, cz + b.cz, px + b.px, py + b.py, pz + b.pz);
+        PosInWorld res(cx + b.cx, cz + b.cz, bx + b.bx, by + b.by, bz + b.bz);
         res.norm();
         return res;
     }
 
     PosInWorld operator * (int i)
     {
-        PosInWorld res(cx*i, cz*i, px*i,py*i, pz*i);
+        PosInWorld res(cx*i, cz*i, bx*i,by*i, bz*i);
         res.norm();
         return res;
     }
 
     PosInWorld inv()
     {
-        PosInWorld res(-cx, -cz, -px, -py, -pz);
+        PosInWorld res(-cx, -cz, -bx, -by, -bz);
         res.norm();
         return res;
     }
 
     //BlockInWorld getSide(char side);
-    bool overflow() { return py >= CHUNK_SIZE_Y || py < 0; }
+    bool overflow() { return by >= CHUNK_SIZE_Y || by < 0; }
     BlockInWorld toBlockInChunk();
 
 private:

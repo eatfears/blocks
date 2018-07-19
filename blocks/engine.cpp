@@ -82,7 +82,7 @@ void Engine::display()
 	//Set position
 	glRotated(-player.dSpinX, 1.0, 0.0, 0.0);
 	glRotated(-player.dSpinY, 0.0, 1.0, 0.0);
-	glTranslated(-player.position.px, -player.position.py, -player.position.pz);
+    glTranslated(-player.position.bx, -player.position.by, -player.position.bz);
 
 	drawBottomBorder();
 	drawSunMoon();
@@ -106,7 +106,7 @@ void Engine::display()
 		glFogf(GL_FOG_END, MAX_VIEV_DIST);
 	}
 
-    if (player.position.py < CHUNK_SIZE_Y + 16) {
+    if (player.position.by < CHUNK_SIZE_Y + 16) {
         drawClouds();
 	}
 
@@ -176,7 +176,7 @@ void Engine::display()
 
 	stat.m_ReRenderedChunks += render;
 
-    if (player.position.py >= CHUNK_SIZE_Y + 16)
+    if (player.position.by >= CHUNK_SIZE_Y + 16)
     {
         drawClouds();
 	}
@@ -551,7 +551,7 @@ void Engine::drawBottomBorder()
 
 	glBindTexture(GL_TEXTURE_2D, m_World.m_MaterialLib.m_Texture[CLOUDS]);
 	// todo: coords!!
-	glTranslated(player.position.px, 0, player.position.pz);
+    glTranslated(player.position.bx, 0, player.position.bz);
 	glRotated(90, 1.0, 0.0, 0.0);
 
 	res = 1.0 - m_World.SkyBright;
@@ -587,10 +587,10 @@ void Engine::drawClouds()
 	glColor4f(res, res, res, 0.8f);
 	// todo: wtf with coords
 
-	GLdouble Xposition = pos.px/(2.5*CloudSize);
-	GLdouble Zposition = pos.pz/(2.5*CloudSize);
+    GLdouble Xposition = pos.bx/(2.5*CloudSize);
+    GLdouble Zposition = pos.bz/(2.5*CloudSize);
 
-	glTranslated(pos.px, CHUNK_SIZE_Y + 16, pos.pz);
+    glTranslated(pos.bx, CHUNK_SIZE_Y + 16, pos.bz);
 	glRotated(90, 1.0, 0.0, 0.0);
 	glBegin(GL_QUADS);
 
