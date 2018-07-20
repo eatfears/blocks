@@ -6,6 +6,8 @@
 #include "world.h"
 #include "character.h"
 #include "statistics.h"
+#include "logger/logger.h"
+
 
 class Engine
 {
@@ -13,7 +15,9 @@ public:
     Engine();
     ~Engine();
 
-    int initGL();
+    void initGL();
+    void initGame();
+
     void reshape(GLsizei width, GLsizei height);
     void display();
     void keyboard(unsigned char button, int x, int y, bool KeyDown);
@@ -21,8 +25,6 @@ public:
     void mouseButton(int button, int state, int x, int y);
     void special(int button, int x, int y, bool KeyDown);
     void loop();
-
-    void initGame();
 
 private:
     int width, height;
@@ -51,4 +53,6 @@ private:
     double FrameInterval;
     friend class Statistics;
     Statistics stat;
+
+    DEFINE_LOGGER(ENGINE, logger)
 };

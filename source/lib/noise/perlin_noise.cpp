@@ -21,12 +21,11 @@ PerlinNoise::PerlinNoise(double persistence, int NumberOfOctaves)
 
 void PerlinNoise::initNoise(std::mt19937 &randNumGen)
 {
-    Primes p;
-    a = p.genPrime(14, randNumGen);
-    b = p.genPrime(20, randNumGen);
-    c = p.genPrime(30, randNumGen);
-    d = p.genPrime(6, randNumGen);
-    e = p.genPrime(7, randNumGen);
+    a = Primes::genPrime(14, randNumGen);
+    b = Primes::genPrime(20, randNumGen);
+    c = Primes::genPrime(30, randNumGen);
+    d = Primes::genPrime(6, randNumGen);
+    e = Primes::genPrime(7, randNumGen);
 }
 
 double PerlinNoise::noise1d(int x) const noexcept

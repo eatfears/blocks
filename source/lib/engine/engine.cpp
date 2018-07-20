@@ -16,6 +16,8 @@ GLfloat WaterFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
 Engine::Engine()
     :stat(*this)
 {
+    logger.info() << "Starting";
+
     m_Mousing = false;
     m_Fullscreen = false;
 
@@ -28,15 +30,17 @@ Engine::Engine()
 
 Engine::~Engine()
 {
+    logger.info() << "Exit";
+    glutExit();
 }
 
-int Engine::initGL()
+void Engine::initGL()
 {
+    logger.info() << "initGL";
+
     m_World.m_MaterialLib.allocGLTextures();
     m_World.m_MaterialLib.loadGLTextures();
 
-    m_World.m_Player.position = PointInWorld(0, 100, 0);
-    m_World.m_Player.dSpinY = -90 - 45;
     glutSetCursor(GLUT_CURSOR_NONE);
 
     glShadeModel(GL_SMOOTH);
@@ -49,8 +53,26 @@ int Engine::initGL()
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_NORMALIZE);		// normales to 1
+}
 
-    return true;
+void Engine::initGame()
+{
+    logger.info() << "initGame";
+
+#ifdef _WIN32
+    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
+
+    HWND console = GetConsoleWindow();
+    ShowWindow(console, SW_HIDE);
+#endif // _WIN32
+
+    unsigned int seed = std::time(0);
+
+    m_World.m_Landscape.init(seed);
+    m_World.buildWorld();
+
+    m_World.m_Player.position = PointInWorld(0, 100, 0);
+    m_World.m_Player.dSpinY = -90 - 45;
 }
 
 void Engine::reshape(int width, int height)
@@ -256,21 +278,6 @@ void Engine::mouseMotion(int x, int y)
 
 void Engine::mouseButton(int button, int state, int x, int y)
 {
-}
-
-void Engine::initGame()
-{
-#ifdef _WIN32
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
-
-    HWND console = GetConsoleWindow();
-    ShowWindow(console, SW_HIDE);
-#endif // _WIN32
-
-    unsigned int seed = std::time(0);
-
-    m_World.m_Landscape.init(seed);
-    m_World.buildWorld();
 }
 
 void Engine::drawSelectedItem()

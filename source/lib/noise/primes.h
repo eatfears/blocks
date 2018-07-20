@@ -4,18 +4,15 @@
 #include "common_include/definitions.h"
 
 
-#define Int unsigned long int
+typedef unsigned long int ul_int;
 
 class Primes
 {
 public:
-    Primes();
-    ~Primes();
-
-    inline Int sqrt(Int i);
-    inline Int isPrime(Int i);
-    inline Int nextPrime(Int i);
-    Int genPrime(Int size, std::mt19937 &randNumGen);
+    static inline ul_int sqrt(ul_int i);
+    static inline ul_int isPrime(ul_int i);
+    static inline ul_int nextPrime(ul_int i);
+    static ul_int genPrime(size_t size, std::mt19937 &randNumGen);
 
     static double round(double x);
 };

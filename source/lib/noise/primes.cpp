@@ -1,19 +1,11 @@
 #include "primes.h"
 
-#include <math.h>
+#include <cmath>
 
 
-Primes::Primes()
+inline ul_int Primes::sqrt(ul_int i)
 {
-}
-
-Primes::~Primes()
-{
-}
-
-inline Int Primes::sqrt(Int i)
-{
-    Int r = 1, rnew = 1, rold = r;
+    ul_int r = 1, rnew = 1, rold = r;
 
     do
     {
@@ -26,43 +18,44 @@ inline Int Primes::sqrt(Int i)
     return rnew;
 }
 
-inline Int Primes::isPrime(Int i)
+inline ul_int Primes::isPrime(ul_int i)
 {
-    Int si, j;
+    ul_int si, j;
     si = sqrt(i);
 
-    for (j=2; (j <= si); j++)
+    for (j = 2; j <= si; j++)
     {
         if (i%j == 0)
+        {
             return 0;
+        }
     }
 
     return 1;
 }
 
-inline Int Primes::nextPrime(Int i)
+inline ul_int Primes::nextPrime(ul_int i)
 {
-    Int si = i;
+    ul_int si = i;
 
-    while(!isPrime(si))
+    while (!isPrime(si))
+    {
         si++;
+    }
 
     return si;
 }
 
-Int Primes::genPrime(Int size, std::mt19937 &randNumGen)
+ul_int Primes::genPrime(size_t size, std::mt19937 &randNumGen)
 {
-    Int beg = 1;
-
-    std::uniform_int_distribution<> dist(1 << (size -1), 1 << size);
-    beg = dist(randNumGen);
+    std::uniform_int_distribution<ul_int> dist((ul_int)1 << (size -1), (ul_int)1 << size);
+    ul_int beg = dist(randNumGen);
     beg = nextPrime(beg);
-
     return beg;
 }
 
 double Primes::round(double x)
 {
-    if(x - floor(x) >= 0.5) return ceil(x);
+    if (x - floor(x) >= 0.5) return ceil(x);
     return floor(x);
 }
