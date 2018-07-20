@@ -3,78 +3,74 @@
 #include "landscape.h"
 
 
-void LoadChunkThread(void* pParams)
+void LoadChunkThread(void *pParams)
 {
-    Param pParameters = *(Param*)pParams;
-    ChunkCoord x = pParameters.x;
-    ChunkCoord z = pParameters.z;
-    World &wWorld = *pParameters.pWorld;
+    Param parameters = *(Param*)pParams;
+    ChunkCoord x = parameters.x;
+    ChunkCoord z = parameters.z;
+    World &world = *parameters.pWorld;
 
-    //	SetEvent(wWorld.parget);
-    //	WaitForSingleObject(wWorld.semaphore, INFINITE);
+    //	SetEvent(world.parget);
+    //	WaitForSingleObject(world.semaphore, INFINITE);
 
 #ifdef _WIN32
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 #endif // _WIN32
 
-    if(wWorld.getChunkByPosition(x, z))
+    Chunk *chunk = world.getChunkByPosition(x, z);
+    if(!chunk)
     {
-        //		ReleaseSemaphore(wWorld.semaphore, 1, NULL);
-        //		_endthread();
-        //		return;
+        chunk = new Chunk(x, z, world);
     }
-
-    //	DWORD dwWaitResult;
-    Chunk *chunk = new Chunk(x, z, wWorld);
 
     chunk->open();
     chunk->drawLoadedBlocks();
 
-    //	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
+    //	dwWaitResult = WaitForSingleObject(world.mutex, INFINITE);
 
-    unsigned long bin = wWorld.hash(x, z);
+    unsigned long bin = world.hash(x, z);
 
-    wWorld.m_Chunks[bin].push_front(chunk);
-    //	ReleaseMutex(wWorld.mutex);
+    world.m_Chunks[bin].push_front(chunk);
+    //	ReleaseMutex(world.mutex);
 
-    wWorld.drawLoadedBlocksFinish(*chunk);
+    world.drawLoadedBlocksFinish(*chunk);
 
     if(chunk->m_LightToUpdate)
     {
-        wWorld.updateLight(*chunk);
+        world.updateLight(*chunk);
         chunk->m_LightToUpdate = false;
     }
 
-    // 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
+    // 	dwWaitResult = WaitForSingleObject(world.loading_mutex, INFINITE);
     // 	LocationPosiion lp = {x, z};
-    // 	auto locc = wWorld.LoadedLocations.begin();
-    // 	while (locc != wWorld.LoadedLocations.end()) {
+    // 	auto locc = world.LoadedLocations.begin();
+    // 	while (locc != world.LoadedLocations.end()) {
     // 		if (((*locc).x == lp.x)&&((*locc).z == lp.z)) break;
     // 		++chunk;
     // 	}
-    // 	if (locc == wWorld.LoadedLocations.end()) {
-    // 		ReleaseMutex(wWorld.loading_mutex);
+    // 	if (locc == world.LoadedLocations.end()) {
+    // 		ReleaseMutex(world.loading_mutex);
     // 		_endthread();
     // 		return;
     // 	}
-    // 	wWorld.LoadedLocations.erase(locc);
-    // 	ReleaseMutex(wWorld.loading_mutex);
+    // 	world.LoadedLocations.erase(locc);
+    // 	ReleaseMutex(world.loading_mutex);
 
-    //	ReleaseSemaphore(wWorld.semaphore, 1, NULL);
+    //	ReleaseSemaphore(world.semaphore, 1, NULL);
 
     //	_endthread();
     return;
 }
 
-void UnLoadChunkThread(void* pParams)
+void UnLoadChunkThread(void *pParams)
 {
-    Param pParameters = *(Param*)pParams;
-    ChunkCoord x = pParameters.x;
-    ChunkCoord z = pParameters.z;
-    World &wWorld = *pParameters.pWorld;
+    Param parameters = *(Param*)pParams;
+    ChunkCoord x = parameters.x;
+    ChunkCoord z = parameters.z;
+    World &world = *parameters.pWorld;
 
-    //	SetEvent(wWorld.parget);
-    //	WaitForSingleObject(wWorld.semaphore, INFINITE);
+    //	SetEvent(world.parget);
+    //	WaitForSingleObject(world.semaphore, INFINITE);
 
 #ifdef _WIN32
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
@@ -82,33 +78,34 @@ void UnLoadChunkThread(void* pParams)
 
     //	DWORD dwWaitResult;
 
-    //	dwWaitResult = WaitForSingleObject(wWorld.mutex, INFINITE);
+    //	dwWaitResult = WaitForSingleObject(world.mutex, INFINITE);
 
-    unsigned long bin = wWorld.hash(x, z);
-    auto chunk = wWorld.m_Chunks[bin].begin();
+    unsigned long bin = world.hash(x, z);
+    auto chunk = world.m_Chunks[bin].begin();
 
-    while(chunk != wWorld.m_Chunks[bin].end()) {
+    while(chunk != world.m_Chunks[bin].end())
+    {
         if(((*chunk)->m_X == x)&&((*chunk)->m_Z == z)) break;
         ++chunk;
     }
-    if(chunk == wWorld.m_Chunks[bin].end()) {/*
-            ReleaseMutex(wWorld.mutex);
-            ReleaseSemaphore(wWorld.semaphore, 1, NULL);*/
+    if(chunk == world.m_Chunks[bin].end()) {/*
+            ReleaseMutex(world.mutex);
+            ReleaseSemaphore(world.semaphore, 1, NULL);*/
 
-        // 		dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
+        // 		dwWaitResult = WaitForSingleObject(world.loading_mutex, INFINITE);
         // 		LocationPosiion lp = {x, z};
-        // 		auto locc = wWorld.LoadedLocations.begin();
-        // 		while (locc != wWorld.LoadedLocations.end()) {
+        // 		auto locc = world.LoadedLocations.begin();
+        // 		while (locc != world.LoadedLocations.end()) {
         // 			if (((*locc).x == lp.x)&&((*locc).z == lp.z)) break;
         // 			++chunk;
         // 		}
-        // 		if (locc == wWorld.LoadedLocations.end()) {
-        // 			ReleaseMutex(wWorld.loading_mutex);
+        // 		if (locc == world.LoadedLocations.end()) {
+        // 			ReleaseMutex(world.loading_mutex);
         // 			_endthread();
         // 			return;
         // 		}
-        // 		wWorld.LoadedLocations.erase(locc);
-        // 		ReleaseMutex(wWorld.loading_mutex);
+        // 		world.LoadedLocations.erase(locc);
+        // 		ReleaseMutex(world.loading_mutex);
         //		_endthread();
         return;
     }
@@ -116,38 +113,37 @@ void UnLoadChunkThread(void* pParams)
     //	dwWaitResult = WaitForSingleObject((*chunk)->mutex, INFINITE);
 
     delete *chunk;
-    wWorld.m_Chunks[bin].erase(chunk);
+    world.m_Chunks[bin].erase(chunk);
 
-    wWorld.drawUnLoadedBlocks(x, z);
-    //	ReleaseMutex(wWorld.mutex);
+    world.drawUnLoadedBlocks(x, z);
+    //	ReleaseMutex(world.mutex);
 
     //
-    // 	dwWaitResult = WaitForSingleObject(wWorld.loading_mutex, INFINITE);
+    // 	dwWaitResult = WaitForSingleObject(world.loading_mutex, INFINITE);
     // 	LocationPosiion lp = {x, z};
-    // 	auto locc = wWorld.LoadedLocations.begin();
-    // 	while (locc != wWorld.LoadedLocations.end()) {
+    // 	auto locc = world.LoadedLocations.begin();
+    // 	while (locc != world.LoadedLocations.end()) {
     // 		if (((*locc).x == lp.x)&&((*locc).z == lp.z)) break;
     // 		++chunk;
     // 	}
-    // 	if (locc == wWorld.LoadedLocations.end()) {
-    // 		ReleaseMutex(wWorld.loading_mutex);
+    // 	if (locc == world.LoadedLocations.end()) {
+    // 		ReleaseMutex(world.loading_mutex);
     // 		_endthread();
     // 		return;
     // 	}
-    // 	wWorld.LoadedLocations.erase(locc);
-    // 	ReleaseMutex(wWorld.loading_mutex);
-    //	ReleaseSemaphore(wWorld.semaphore, 1, NULL);
+    // 	world.LoadedLocations.erase(locc);
+    // 	ReleaseMutex(world.loading_mutex);
+    //	ReleaseSemaphore(world.semaphore, 1, NULL);
     //	_endthread();
     return;
 }
 
-void LoadNGenerate(void* pParams)
+void LoadNGenerate(void *pParams)
 {
-    Param pParameters = *(Param*)pParams;
-    World &wWorld = *pParameters.pWorld;
-    ChunkCoord x = pParameters.x;
-    ChunkCoord z = pParameters.z;
-    //	SetEvent(wWorld.parget2);
+    Param parameters = *(Param*)pParams;
+    World &world = *parameters.pWorld;
+    ChunkCoord x = parameters.x;
+    ChunkCoord z = parameters.z;
 
     int size = 4;
 
@@ -155,10 +151,8 @@ void LoadNGenerate(void* pParams)
     {
         for(int j = z*size; j < (z+1)*size; j++)
         {
-            wWorld.loadChunk(i, j);
-            //Sleep(30);
+            world.loadChunk(i, j);
         }
     }
-    //	_endthread();
     return;
 }

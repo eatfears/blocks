@@ -1,24 +1,21 @@
 #pragma once
 
-#define FREEGLUT_STATIC
-#include <GL/freeglut.h>
 
 class Engine;
 
 class Statistics
 {
 public:
-	Statistics(Engine& eng);
-	~Statistics(void);
+    Statistics(const Engine &eng);
 
-    void computeFPS( double FrameInterval );
-    void printStat(void);
+    void computeFPS(double FrameInterval);
+    void printStat();
 
     int m_ReRenderedChunks;
 
 private:
-    Engine& m_Engine;
-    void renderString(int x, int y, void *font, const char string[]);
+    const Engine &m_Engine;
+    void renderString(int x, int y, void *font, const char string[]) const;
 
     double m_TimeCount;
     int m_FrameCount;

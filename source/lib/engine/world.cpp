@@ -9,7 +9,7 @@
 World::World()
     : m_Player(*this)
 {
-    m_Chunks = new std::list<Chunk *>[HASH_SIZE];
+    m_Chunks = new std::list<Chunk*>[HASH_SIZE];
 
     //	parget = CreateEvent(NULL, false, false, NULL);
     //	parget2 = CreateEvent(NULL, false, false, NULL);
@@ -311,7 +311,7 @@ int World::findBlock(const BlockInWorld &pos)
     if (pos.by < 0) return 0;
     Chunk *chunk = getChunkByPosition(pos.cx, pos.cz);
     if (chunk == NULL) return 0;
-    BlockCoord chnkx, chnky, chnkz;
+
     if (chunk->getBlockMaterial(pos.bx, pos.by, pos.bz) == MAT_NO)
         return 0;
     return 1;
@@ -359,10 +359,11 @@ void World::updateLight(Chunk& chunk) const
         }
     }
 
-    Light lightfill(p_chunk_array, true);
-    lightfill.updateLight();
-    lightfill.m_Skylight = false;
-    lightfill.updateLight();
+    Light light_fill(p_chunk_array);
+    light_fill.m_Skylight = true;
+    light_fill.updateLight();
+    light_fill.m_Skylight = false;
+    light_fill.updateLight();
 
     for (int i = 0; i < 5; i++)
     {

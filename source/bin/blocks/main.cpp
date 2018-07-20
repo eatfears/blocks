@@ -1,6 +1,4 @@
-#define FREEGLUT_STATIC
-#include <GL/freeglut.h>
-
+#include "common_include/freeglut_static.h"
 #include "engine/engine.h"
 #include "logger/logger.h"
 

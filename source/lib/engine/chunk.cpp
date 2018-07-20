@@ -7,15 +7,15 @@
 #include "light.h"
 
 
-Chunk::Chunk(ChunkCoord x, ChunkCoord z, World& wrld)
-    : m_World(wrld), m_X(x), m_Z(z)
+Chunk::Chunk(ChunkCoord x, ChunkCoord z, World &world)
+    : m_World(world), m_X(x), m_Z(z)
 {
     m_pBlocks = new Block[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
     m_SkyLight = new char[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
     m_TorchLight = new char[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
 
-    m_pDisplayedTiles = new std::list<Block *>[6];
-    m_pDisplayedWaterTiles = new std::list<Block *>[6];
+    m_pDisplayedTiles = new std::list<Block*>[6];
+    m_pDisplayedWaterTiles = new std::list<Block*>[6];
 
     for (int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
     {
@@ -33,8 +33,9 @@ Chunk::Chunk(ChunkCoord x, ChunkCoord z, World& wrld)
     m_Listgen = false;
     m_LightToUpdate = true;
 
-    //	mutex = CreateMutex(NULL, false, NULL);
-    //	loadmutex = CreateMutex(NULL, false, NULL);
+    // 1 - solid tiles
+    // 2 - water tiles
+    m_RenderList = glGenLists(2);
 }
 
 Chunk::~Chunk()
@@ -152,25 +153,6 @@ int Chunk::getBlockPositionByPointer(Block *tCurrentBlock, BlockCoord *x, BlockC
     return 0;
 }
 
-int Chunk::getBlockPositionByIndex(int index, BlockCoord *x, BlockCoord *y, BlockCoord *z)
-{
-    if ((index < 0)||(index >= CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y))
-    {
-        return -1;
-    }
-    *z  = index%CHUNK_SIZE_XZ;
-    index /= CHUNK_SIZE_XZ;
-    *x = index%CHUNK_SIZE_XZ;
-    index /= CHUNK_SIZE_XZ;
-    *y = index;
-    return 0;
-}
-
-int Chunk::getIndexByPosition(BlockCoord x, BlockCoord y, BlockCoord z)
-{
-    return x*CHUNK_SIZE_XZ + z + y*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
-}
-
 void Chunk::drawLoadedBlocks()
 {
     int index = 0;
@@ -222,13 +204,11 @@ void Chunk::open()
     filename = temp.str();
 
     savefile.open(filename, std::fstream::in | std::fstream::binary);
-    //	if (savefile.is_open()
-    //  {
-    //		WaitForSingleObject(loadmutex, INFINITE);
-    //		loaded = wWorld.lLandscape.Load(*this, savefile);
-    //		ReleaseMutex(loadmutex);
-    //		savefile.close();
-    //	}
+    if (savefile.is_open())
+    {
+        loaded = m_World.m_Landscape.load(*this, savefile);
+        savefile.close();
+    }
 
     if (!loaded)
     {
@@ -255,33 +235,25 @@ void Chunk::save() const
     }
 }
 
-void Chunk::render(char mat, int *rendered)
+void Chunk::render(char material, int *rendered)
 {
     glPushMatrix();
     glTranslated((m_X-m_World.m_Player.m_Position.cx)*CHUNK_SIZE_XZ, 0, (m_Z-m_World.m_Player.m_Position.cz)*CHUNK_SIZE_XZ);
 
     GLenum mode = GL_EXECUTE;
+    int list_to_render = 0;
 
-    if (!m_Listgen)
+    if (material == MAT_WATER)
     {
-        // 1 - solid tiles
-        // 2 - water tiles
-        m_RenderList = glGenLists(2);
-        m_Listgen = true;
+        list_to_render = 1;
     }
 
-    int pointertorender = 0;
-    if (mat == MAT_WATER)
-    {
-        pointertorender = 1;
-    }
-
-    if (m_NeedToRender[pointertorender] == RENDER_NEED)
+    if (m_NeedToRender[list_to_render] == RENDER_NEED)
     {
         mode = GL_COMPILE;
     }
 
-    if (m_NeedToRender[pointertorender] == RENDER_MAYBE)
+    if (m_NeedToRender[list_to_render] == RENDER_MAYBE)
     {
         int prob = 1000/(*rendered*5 + 1);
         int r = rand()%1000;
@@ -296,7 +268,7 @@ void Chunk::render(char mat, int *rendered)
     {
         if (chunk->m_X >= m_X - 1 && chunk->m_Z >= m_Z - 1 && chunk->m_X <= m_X + 1 && chunk->m_Z <= m_Z + 1)
         {
-            m_NeedToRender[pointertorender] = RENDER_NEED;
+            m_NeedToRender[list_to_render] = RENDER_NEED;
             mode = GL_RENDER;
         }
     }
@@ -305,16 +277,16 @@ void Chunk::render(char mat, int *rendered)
     {
         if (mode != GL_RENDER)
         {
-            glNewList(m_RenderList + pointertorender, mode);
+            glNewList(m_RenderList + list_to_render, mode);
         }
 
-        std::list<Block *> *Tiles;
+        std::list<Block*> *Tiles;
         static BlockCoord cx, cy, cz;
         static BlockInWorld temp;
         static BlockInWorld blckw;
 
         //1-sided tiles
-        if (mat == MAT_WATER)
+        if (material == MAT_WATER)
         {
             glTranslated(0.0, -0.95/8, 0.0); glDisable(GL_CULL_FACE);
         }
@@ -329,7 +301,7 @@ void Chunk::render(char mat, int *rendered)
         {
             blckw = BlockInWorld(m_X, m_Z);
 
-            if (mat == MAT_WATER) {
+            if (material == MAT_WATER) {
                 Tiles = &m_pDisplayedWaterTiles[i];
             } else {
                 Tiles = &m_pDisplayedTiles[i];
@@ -347,24 +319,24 @@ void Chunk::render(char mat, int *rendered)
             }
         }
         glEnd();
-        if (mat == MAT_WATER)
+        if (material == MAT_WATER)
         {
             glTranslated(0.0, 0.95/8, 0.0);
         }
-        if (m_NeedToRender[pointertorender] == RENDER_MAYBE)
+        if (m_NeedToRender[list_to_render] == RENDER_MAYBE)
         {
             (*rendered) ++;
         }
         if (mode != GL_RENDER)
         {
             glEndList();
-            m_NeedToRender[pointertorender] = RENDER_NO_NEED;
+            m_NeedToRender[list_to_render] = RENDER_NO_NEED;
         }
     }
 
     if ((mode != GL_COMPILE_AND_EXECUTE)&&(mode != GL_RENDER))
     {
-        glCallList(m_RenderList + pointertorender);
+        glCallList(m_RenderList + list_to_render);
     }
 
     glPopMatrix();
@@ -377,15 +349,11 @@ void Chunk::drawTile(const BlockInWorld &tile_pos, Block* block, char side) cons
             y_coord = tile_pos.by,
             z_coord = tile_pos.bz - 0.5;
 
-    static double space = 0.0002;
-    static double offset_x = 0;
-    static double offset_y = 0;
+    double offset_x;
+    double offset_y;
+    m_World.m_MaterialLib.getTextureOffsets(offset_x, offset_y, block->material, block->visible, side);
 
-    char covered = block->visible;
-    char material = block->material;
-
-    m_World.m_MaterialLib.getTextureOffsets(offset_x, offset_y, material, covered, side);
-
+    static const double space = 0.0002;
     switch(side)
     {
     case TOP:

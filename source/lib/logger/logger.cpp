@@ -111,6 +111,15 @@ logger_stream& logger_stream::operator<<(long unsigned int number)
     return space();
 }
 
+logger_stream& logger_stream::operator<<(unsigned int number)
+{
+    if (m_Write)
+    {
+        m_Str += std::to_string(number);
+    }
+    return space();
+}
+
 logger_stream& logger_stream::operator<<(long int number)
 {
     if (m_Write)
@@ -121,6 +130,15 @@ logger_stream& logger_stream::operator<<(long int number)
 }
 
 logger_stream& logger_stream::operator<<(float number)
+{
+    if (m_Write)
+    {
+        m_Str += std::to_string(number);
+    }
+    return space();
+}
+
+logger_stream& logger_stream::operator<<(double number)
 {
     if (m_Write)
     {

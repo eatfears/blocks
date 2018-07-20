@@ -46,8 +46,10 @@ public:
     logger_stream& operator<<(const std::string& str);
     logger_stream& operator<<(int number);
     logger_stream& operator<<(long unsigned int number);
+    logger_stream& operator<<(unsigned int number);
     logger_stream& operator<<(long int number);
     logger_stream& operator<<(float number);
+    logger_stream& operator<<(double number);
 
     logger_stream& space() { if (m_Str.length() > 0 && m_Str[m_Str.length() - 1] != ' ') {m_Str += " ";} return *this;}
 private:

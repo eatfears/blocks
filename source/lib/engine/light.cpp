@@ -22,8 +22,7 @@ const float Light::m_LightTable[16] = {
 double constr = 0;
 double update = 0;
 
-Light::Light(Chunk *ChnkArr[5][5], bool skylight)
-    : m_Skylight(skylight)
+Light::Light(Chunk *ChnkArr[5][5])
 {
     constr -= GetMillisecTime();
 
@@ -35,7 +34,7 @@ Light::Light(Chunk *ChnkArr[5][5], bool skylight)
 
             if (m_ChunkArray[i][j] && (i > 0)&&(i < 4)&&(j > 0)&&(j < 4))
             {
-                fillLight(*m_ChunkArray[i][j], DAYLIGHT, skylight);
+                fillLight(*m_ChunkArray[i][j]);
             }
         }
     }
@@ -45,7 +44,8 @@ Light::Light(Chunk *ChnkArr[5][5], bool skylight)
 void Light::updateLight() const
 {
     update -= GetMillisecTime();
-    for (BlockCoord j = 0; j < CHUNK_SIZE_Y; j++) {
+    for (BlockCoord j = 0; j < CHUNK_SIZE_Y; j++)
+    {
         for (BlockCoord i = CHUNK_SIZE_XZ - 1; i < 4*CHUNK_SIZE_XZ + 1; i++)
         {
             for (BlockCoord k = CHUNK_SIZE_XZ - 1; k < 4*CHUNK_SIZE_XZ + 1; k++)
@@ -99,11 +99,11 @@ int Light::getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) co
     {
         *wall_flag = true;
     }
-    Chunk *TempChunk = m_ChunkArray[pos.cx][pos.cz];
-    if (TempChunk)
+    Chunk *p_temp_chunk = m_ChunkArray[pos.cx][pos.cz];
+    if (p_temp_chunk)
     {
-        int index = TempChunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
-        char mat = TempChunk->m_pBlocks[index].material;
+        int index = p_temp_chunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
+        char mat = p_temp_chunk->m_pBlocks[index].material;
 
         if ((mat == MAT_NO)||(mat == MAT_WATER))
         {
@@ -112,11 +112,11 @@ int Light::getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) co
         }
         if (m_Skylight)
         {
-            ret = TempChunk->m_SkyLight[index];
+            ret = p_temp_chunk->m_SkyLight[index];
         }
         else
         {
-            ret = TempChunk->m_TorchLight[index];
+            ret = p_temp_chunk->m_TorchLight[index];
         }
         if (water_flag)
         {
@@ -128,37 +128,37 @@ int Light::getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) co
 
 void Light::setVal(const BlockInWorld &pos, int val) const
 {
-    Chunk *TempChunk = m_ChunkArray[pos.cx][pos.cz];
-    if (TempChunk)
+    Chunk *p_temp_chunk = m_ChunkArray[pos.cx][pos.cz];
+    if (p_temp_chunk)
     {
-        int index = TempChunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
+        int index = p_temp_chunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
 
         if (m_Skylight)
         {
-            TempChunk->m_SkyLight[index] = val;
+            p_temp_chunk->m_SkyLight[index] = val;
         }
         else
         {
-            TempChunk->m_TorchLight[index] = val;
+            p_temp_chunk->m_TorchLight[index] = val;
         }
     }
 }
 
-void Light::blockLight(const World &world, Chunk& chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz)
+void Light::blockLight(const World &world, Chunk &chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz)
 {
     if (!world.m_SoftLight)
     {
         static Chunk *temploc;
-        static BlockInWorld pos, posSide;
+        static BlockInWorld pos, pos_side;
         static GLfloat res;
 
         pos = BlockInWorld(chunk.m_X, chunk.m_Z, cx, cy, cz);
-        posSide = pos.getSide(side);
+        pos_side = pos.getSide(side);
 
         // if in neighbor chunk
-        if (pos.cx != posSide.cx || pos.cz != posSide.cz)
+        if (pos.cx != pos_side.cx || pos.cz != pos_side.cz)
         {
-            temploc = world.getChunkByPosition(posSide.cx, posSide.cz);
+            temploc = world.getChunkByPosition(pos_side.cx, pos_side.cz);
         }
         else
         {
@@ -168,7 +168,7 @@ void Light::blockLight(const World &world, Chunk& chunk, char side, BlockCoord c
         if (pos.overflow()) temploc = NULL;
         if (temploc)
         {
-            int index = temploc->getIndexByPosition(posSide.bx, posSide.by, posSide.bz);
+            int index = temploc->getIndexByPosition(pos_side.bx, pos_side.by, pos_side.bz);
             res = Light::getLight(*temploc, index);
         }
         else
@@ -330,53 +330,45 @@ GLfloat Light::getLight(const Chunk &chunk, int index)
     else return torch_light;
 }
 
-void Light::fillLight(Chunk &chunk, char bright, bool skylight) const
+void Light::fillLight(Chunk &chunk) const
 {
-    if (skylight)
-    {
-        BlockCoord y;
-        int index;
+    BlockCoord y;
+    int index;
+    bool daylight;
 
-        for (int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
+    for (BlockCoord x = 0; x < CHUNK_SIZE_XZ; x++)
+    {
+        for (BlockCoord z = 0; z < CHUNK_SIZE_XZ; z++)
         {
-            chunk.m_SkyLight[i] = 0;
-            if (chunk.m_pBlocks[i].material == MAT_PUMPKIN_SHINE)
+            daylight = true;
+            y = CHUNK_SIZE_Y - 1;
+
+            while (y > 0)
             {
-                chunk.m_TorchLight[i] = 15;
-            }
-            else
-            {
-                chunk.m_TorchLight[i] = 0;
-            }
-        }
-        for(BlockCoord x = 0; x < CHUNK_SIZE_XZ; x++)
-        {
-            for(BlockCoord z = 0; z < CHUNK_SIZE_XZ; z++)
-            {
-                y = CHUNK_SIZE_Y - 1;
-                while(y > 0)
+                index = Chunk::getIndexByPosition(x, y, z);
+                if (daylight && chunk.m_pBlocks[index].material != MAT_NO)
                 {
-                    index = Chunk::getIndexByPosition(x, y, z);
-                    if (chunk.m_pBlocks[index].material != MAT_NO)
-                        break;
-
-                    chunk.m_SkyLight[index] = bright;
-                    y--;
+                    daylight = false;
                 }
-            }
-        }
-    }
-    else
-    {
-        for (int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
-        {
-            if (chunk.m_pBlocks[i].material == MAT_PUMPKIN_SHINE)
-            {
-                chunk.m_TorchLight[i] = 15;
-            }
-            else
-            {
-                chunk.m_TorchLight[i] = 0;
+
+                if (daylight)
+                {
+                    chunk.m_SkyLight[index] = DAYLIGHT;
+                }
+                else
+                {
+                    chunk.m_SkyLight[index] = 0;
+                }
+
+                if (chunk.m_pBlocks[index].material == MAT_PUMPKIN_SHINE)
+                {
+                    chunk.m_TorchLight[index] = DAYLIGHT;
+                }
+                else
+                {
+                    chunk.m_TorchLight[index] = 0;
+                }
+                y--;
             }
         }
     }

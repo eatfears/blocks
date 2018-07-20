@@ -2,8 +2,9 @@
 
 #include <list>
 
+#include "common_include/freeglut_static.h"
 #include "position_items.h"
-#include <GL/freeglut.h>
+
 
 class World;
 
@@ -29,8 +30,8 @@ public:
     char *m_SkyLight;
     char *m_TorchLight;
     World &m_World;
-    std::list<Block *> *m_pDisplayedTiles;
-    std::list<Block *> *m_pDisplayedWaterTiles;
+    std::list<Block*> *m_pDisplayedTiles;
+    std::list<Block*> *m_pDisplayedWaterTiles;
     ChunkCoord m_X, m_Z;
 
     char m_NeedToRender[2];
@@ -44,8 +45,25 @@ public:
     char getBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z);
 
     int getBlockPositionByPointer(Block *bCurrentBlock, BlockCoord *x, BlockCoord *y, BlockCoord *z) const;
-    static int getBlockPositionByIndex(int index, BlockCoord *x, BlockCoord *y, BlockCoord *z);
-    static int getIndexByPosition(BlockCoord x, BlockCoord y, BlockCoord z);
+
+    inline static int getBlockPositionByIndex(int index, BlockCoord *x, BlockCoord *y, BlockCoord *z)
+    {
+        if ((index < 0)||(index >= CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y))
+        {
+            return -1;
+        }
+        *z  = index%CHUNK_SIZE_XZ;
+        index /= CHUNK_SIZE_XZ;
+        *x = index%CHUNK_SIZE_XZ;
+        index /= CHUNK_SIZE_XZ;
+        *y = index;
+        return 0;
+    }
+
+    inline static int getIndexByPosition(BlockCoord x, BlockCoord y, BlockCoord z)
+    {
+        return x*CHUNK_SIZE_XZ + z + y*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
+    }
 
     void drawLoadedBlocks();
 
@@ -59,6 +77,6 @@ private:
     int setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat);
     void drawTile(const BlockInWorld &pos, Block* block, char side) const;
 
-    GLuint m_RenderList;
+    GLuint m_RenderList = 0;
     bool m_Listgen;
 };

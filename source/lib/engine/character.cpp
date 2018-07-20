@@ -6,7 +6,7 @@
 #include "noise/primes.h"
 
 
-Character::Character(World& world)
+Character::Character(World &world)
     : m_World(world)
 {
     for (int i = 0; i < 256; i++)

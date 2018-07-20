@@ -9,23 +9,21 @@
 #include "platform.h"
 
 
-GLfloat DayFogColor[4] = {0.50f, 0.67f, 1.00f, 1.00f};
-GLfloat NightFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
-GLfloat WaterFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
+static const GLfloat DayFogColor[4] = {0.50f, 0.67f, 1.00f, 1.00f};
+static const GLfloat NightFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
+static const GLfloat WaterFogColor[4] = {0.00f, 0.00f, 0.00f, 1.00f};
 
 Engine::Engine()
-    :stat(*this)
+    : m_StatWindow(*this)
 {
     logger.info() << "Starting";
 
     m_Mousing = false;
     m_Fullscreen = false;
 
-    width = 0;
-    height = 0;
-    FrameInterval = 0.0;
-    // todo: time problem! how to measure?
-    m_TimeOfDay = 550;
+    m_Width = 0;
+    m_Height = 0;
+    m_FrameInterval = 0.0;
 }
 
 Engine::~Engine()
@@ -46,7 +44,7 @@ void Engine::initGL()
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClearDepth(1.0f);
 
-//    glDepthFunc(GL_LEQUAL);
+    //    glDepthFunc(GL_LEQUAL);
     glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -70,6 +68,7 @@ void Engine::initGame()
 
     m_World.m_Player.m_Position = PointInWorld(0, 100, 0);
     m_World.m_Player.m_SpinY = -90 - 45;
+    m_TimeOfDay = 600;
 }
 
 void Engine::reshape(int width, int height)
@@ -78,8 +77,8 @@ void Engine::reshape(int width, int height)
     {
         height = 1;
     }
-    this->width = width;
-    this->height = height;
+    m_Width = width;
+    m_Height = height;
 
     openGL3d();
     //glutPostRedisplay();
@@ -89,7 +88,6 @@ void Engine::display()
 {
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Очистить экран и буфер глубины
-    glLoadIdentity();											// Сбросить текущую матрицу
     openGL3d();
 
     Character &player = m_World.m_Player;
@@ -154,7 +152,7 @@ void Engine::display()
         mod = GL_COMPILE;
     }
 
-    stat.m_ReRenderedChunks = 0;
+    m_StatWindow.m_ReRenderedChunks = 0;
 
     render = 0;
     for (int bin = 0; bin < HASH_SIZE; bin++)
@@ -175,7 +173,7 @@ void Engine::display()
         }
     }
 
-    stat.m_ReRenderedChunks += render;
+    m_StatWindow.m_ReRenderedChunks += render;
 
     glEnable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
@@ -199,7 +197,7 @@ void Engine::display()
     glDisable(GL_ALPHA_TEST);
     glDisable(GL_BLEND);
 
-    stat.m_ReRenderedChunks += render;
+    m_StatWindow.m_ReRenderedChunks += render;
 
     if (player.m_Position.by >= CHUNK_SIZE_Y + 16)
     {
@@ -209,8 +207,10 @@ void Engine::display()
     glDisable(GL_FOG);
 }
 
-void Engine::keyboard(unsigned char button, int x, int y, bool KeyDown)
+void Engine::keyboard(unsigned char button, int x, int y, bool key_down)
 {
+    button = toupper(button);
+
     switch(button)
     {
     case KEY_ESCAPE:
@@ -222,17 +222,17 @@ void Engine::keyboard(unsigned char button, int x, int y, bool KeyDown)
 #ifdef _WIN32
         button = VkKeyScan(button);
 #endif
-        m_World.m_Player.m_Keyboard[button] = KeyDown;
+        m_World.m_Player.m_Keyboard[button] = key_down;
         break;
     }
 }
 
-void Engine::special(int button, int x, int y, bool KeyDown)
+void Engine::special(int button, int x, int y, bool key_down)
 {
     switch(button)
     {
     case GLUT_KEY_F1:
-        if (KeyDown)
+        if (key_down)
         {
             if (!m_Fullscreen) glutFullScreenToggle();
             else glutLeaveFullScreen();
@@ -242,7 +242,7 @@ void Engine::special(int button, int x, int y, bool KeyDown)
         //	case GLUT_KEY_F2: 	glutLeaveGameMode();
         //		break;
     default:
-        m_World.m_Player.m_SpecialKeys[button] = KeyDown;
+        m_World.m_Player.m_SpecialKeys[button] = key_down;
     }
 }
 
@@ -253,8 +253,8 @@ void Engine::mouseMotion(int x, int y)
         Character &player = m_World.m_Player;
         m_Mousing = false;
 
-        player.m_SpinY -= (x - width/2)/MOUSE_SENSIVITY;
-        player.m_SpinX -= (y - height/2)/MOUSE_SENSIVITY;
+        player.m_SpinY -= (x - m_Width/2)*MOUSE_SENSIVITY;
+        player.m_SpinX -= (y - m_Height/2)*MOUSE_SENSIVITY;
 
         while (player.m_SpinY >= 360.0)
             player.m_SpinY -= 360.0;
@@ -265,7 +265,7 @@ void Engine::mouseMotion(int x, int y)
         if (player.m_SpinX < -90.0) player.m_SpinX = -90.0;
         if (player.m_SpinX > 90.0) player.m_SpinX = 90.0;
 
-        glutWarpPointer(width/2,height/2);
+        glutWarpPointer(m_Width/2, m_Height/2);
     }
     else
     {
@@ -290,48 +290,48 @@ void Engine::drawSelectedItem()
     glColor3f(0.0f, 0.0f, 0.0f);
     glLineWidth (1.4f);
 
-    GLdouble BorderSize = 1 + 0.05;
+    GLdouble border_size = 1 + 0.05;
     GLdouble
-            dXcoord = (player.m_AimedBlock.cx - player.m_Position.cx)*CHUNK_SIZE_XZ + player.m_AimedBlock.bx,
-            dYcoord = player.m_AimedBlock.by,
-            dZcoord = (player.m_AimedBlock.cz - player.m_Position.cz)*CHUNK_SIZE_XZ + player.m_AimedBlock.bz;
+            x_coord = (player.m_AimedBlock.cx - player.m_Position.cx)*CHUNK_SIZE_XZ + player.m_AimedBlock.bx,
+            y_coord = player.m_AimedBlock.by,
+            z_coord = (player.m_AimedBlock.cz - player.m_Position.cz)*CHUNK_SIZE_XZ + player.m_AimedBlock.bz;
 
-    dXcoord -= BorderSize/2;
-    dYcoord -= BorderSize/2 - 0.5;
-    dZcoord -= BorderSize/2;
+    x_coord -= border_size/2;
+    y_coord -= border_size/2 - 0.5;
+    z_coord -= border_size/2;
 
     glBegin(GL_QUADS);
 
     //Верхняя грань
-    glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord);
-    glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord + BorderSize);
-    glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord + BorderSize);
-    glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord);
+    glVertex3d (x_coord, y_coord + border_size, z_coord);
+    glVertex3d (x_coord, y_coord + border_size, z_coord + border_size);
+    glVertex3d (x_coord + border_size, y_coord + border_size, z_coord + border_size);
+    glVertex3d (x_coord + border_size, y_coord + border_size, z_coord);
     //Нижняя грань
-    glVertex3d (dXcoord, dYcoord, dZcoord);
-    glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord);
-    glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord + BorderSize);
-    glVertex3d (dXcoord, dYcoord, dZcoord + BorderSize);
+    glVertex3d (x_coord, y_coord, z_coord);
+    glVertex3d (x_coord + border_size, y_coord, z_coord);
+    glVertex3d (x_coord + border_size, y_coord, z_coord + border_size);
+    glVertex3d (x_coord, y_coord, z_coord + border_size);
     //Правая грань
-    glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord);
-    glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord);
-    glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord + BorderSize);
-    glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord + BorderSize);
+    glVertex3d (x_coord + border_size, y_coord, z_coord);
+    glVertex3d (x_coord + border_size, y_coord + border_size, z_coord);
+    glVertex3d (x_coord + border_size, y_coord + border_size, z_coord + border_size);
+    glVertex3d (x_coord + border_size, y_coord, z_coord + border_size);
     //Левая грань
-    glVertex3d (dXcoord, dYcoord, dZcoord);
-    glVertex3d (dXcoord, dYcoord, dZcoord + BorderSize);
-    glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord + BorderSize);
-    glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord);
+    glVertex3d (x_coord, y_coord, z_coord);
+    glVertex3d (x_coord, y_coord, z_coord + border_size);
+    glVertex3d (x_coord, y_coord + border_size, z_coord + border_size);
+    glVertex3d (x_coord, y_coord + border_size, z_coord);
     //Задняя грань
-    glVertex3d (dXcoord, dYcoord, dZcoord + BorderSize);
-    glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord + BorderSize);
-    glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord + BorderSize);
-    glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord + BorderSize);
+    glVertex3d (x_coord, y_coord, z_coord + border_size);
+    glVertex3d (x_coord + border_size, y_coord, z_coord + border_size);
+    glVertex3d (x_coord + border_size, y_coord + border_size, z_coord + border_size);
+    glVertex3d (x_coord, y_coord + border_size, z_coord + border_size);
     //Передняя грань
-    glVertex3d (dXcoord, dYcoord, dZcoord);
-    glVertex3d (dXcoord, dYcoord + BorderSize, dZcoord);
-    glVertex3d (dXcoord + BorderSize, dYcoord + BorderSize, dZcoord);
-    glVertex3d (dXcoord + BorderSize, dYcoord, dZcoord);
+    glVertex3d (x_coord, y_coord, z_coord);
+    glVertex3d (x_coord, y_coord + border_size, z_coord);
+    glVertex3d (x_coord + border_size, y_coord + border_size, z_coord);
+    glVertex3d (x_coord + border_size, y_coord, z_coord);
 
     glEnd();
 
@@ -343,8 +343,8 @@ void Engine::drawInterface()
     Character &player = m_World.m_Player;
     //glPushMatrix();
     //glPopMatrix();
-    int WidthBy2  = width/2;
-    int HeightBy2 = height/2;
+    int width_by_2  = m_Width/2;
+    int height_by_2 = m_Height/2;
 
     drawSelectedItem();
 
@@ -357,7 +357,7 @@ void Engine::drawInterface()
         GLfloat brightness;
         brightness = Light::getLight(*player.m_pChunk, player.m_Index);
 
-        GLdouble TextureRotation = player.m_SpinY/90;
+        GLdouble texture_rotation = player.m_SpinY/90;
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -366,14 +366,14 @@ void Engine::drawInterface()
         glColor4f(brightness, brightness, brightness, 0.9f);
 
         glBegin(GL_QUADS);
-        glTexCoord2d(0.0 - TextureRotation, 0.0);
-        glVertex2i(WidthBy2- 3*HeightBy2, 0);
-        glTexCoord2d(0.0 - TextureRotation, 1.0);
-        glVertex2i(WidthBy2 - 3*HeightBy2, height);
-        glTexCoord2d(3.0 - TextureRotation, 1.0);
-        glVertex2i(WidthBy2 + 3*HeightBy2, height);
-        glTexCoord2d(3.0 - TextureRotation, 0.0);
-        glVertex2i(WidthBy2 + 3*HeightBy2, 0);
+        glTexCoord2d(0.0 - texture_rotation, 0.0);
+        glVertex2i(width_by_2- 3*height_by_2, 0);
+        glTexCoord2d(0.0 - texture_rotation, 1.0);
+        glVertex2i(width_by_2 - 3*height_by_2, m_Height);
+        glTexCoord2d(3.0 - texture_rotation, 1.0);
+        glVertex2i(width_by_2 + 3*height_by_2, m_Height);
+        glTexCoord2d(3.0 - texture_rotation, 0.0);
+        glVertex2i(width_by_2 + 3*height_by_2, 0);
         glEnd();
 
         glDisable(GL_BLEND);
@@ -391,11 +391,11 @@ void Engine::drawInterface()
     glTexCoord2d(0.0, 0.0);
     glVertex2i(0, 0);
     glTexCoord2d(0.0, 1.0);
-    glVertex2i(0, height);
+    glVertex2i(0, m_Height);
     glTexCoord2d(1.0, 1.0);
-    glVertex2i(width, height);
+    glVertex2i(m_Width, m_Height);
     glTexCoord2d(1.0, 0.0);
-    glVertex2i(width, 0);
+    glVertex2i(m_Width, 0);
     glEnd();
 
     glDisable(GL_BLEND);
@@ -409,69 +409,71 @@ void Engine::drawInterface()
     glLineWidth (2.0);
 
     glBegin(GL_LINES);
-    glVertex2i(WidthBy2, -9 + HeightBy2);
-    glVertex2i(WidthBy2,  9 + HeightBy2);
+    glVertex2i(width_by_2, -9 + height_by_2);
+    glVertex2i(width_by_2,  9 + height_by_2);
 
-    glVertex2i(-9 + WidthBy2, HeightBy2);
-    glVertex2i(-1 + WidthBy2, HeightBy2);
-    glVertex2i( 1 + WidthBy2, HeightBy2);
-    glVertex2i( 9 + WidthBy2, HeightBy2);
+    glVertex2i(-9 + width_by_2, height_by_2);
+    glVertex2i(-1 + width_by_2, height_by_2);
+    glVertex2i( 1 + width_by_2, height_by_2);
+    glVertex2i( 9 + width_by_2, height_by_2);
     glEnd();
 
-    stat.printStat();
+    m_StatWindow.printStat();
 
     glDisable(GL_BLEND);
 }
 
 void Engine::loop()
 {
-    GetFrameTime();
+    getFrameTime();
+    getFogColor();
+
     Character &player = m_World.m_Player;
-    GetFogColor();
     player.computeMyPosition();
     display();
     player.computeLocalTime(m_TimeOfDay);
-    player.computeCenterCoords(width, height);
+    player.computeCenterCoords(m_Width, m_Height);
 
-    player.control(FrameInterval);
+    player.control(m_FrameInterval);
     drawInterface();
 
     glutSwapBuffers();
     glFinish();				//may be bad!!!!!!!
 }
 
-void Engine::GetFrameTime()
+void Engine::getFrameTime()
 {
     static double koef = 0.0005;
     static double max_FPS = 30;
     static int sleep_time;
 
-    double currentTime = GetMillisecTime();
-    static double frameTime = currentTime;  // Время последнего кадра
+    double current_time = GetMillisecTime();
+    static double frame_time = current_time;  // Время последнего кадра
 
     //Интервал времени, прошедшего с прошлого кадра
-    FrameInterval = currentTime - frameTime;
-    sleep_time = (int) (1000.0/max_FPS - FrameInterval);
-    if (sleep_time > 0) {
+    m_FrameInterval = current_time - frame_time;
+    sleep_time = (int) (1000.0/max_FPS - m_FrameInterval);
+    if (sleep_time > 0)
+    {
         Sleep(sleep_time);
-        currentTime = GetMillisecTime();
-        FrameInterval = currentTime - frameTime;
+        current_time = GetMillisecTime();
+        m_FrameInterval = current_time - frame_time;
     }
-    frameTime = currentTime;
-    stat.computeFPS(FrameInterval);
+    frame_time = current_time;
+    m_StatWindow.computeFPS(m_FrameInterval);
 
-    FrameInterval *= koef;
+    m_FrameInterval *= koef;
 
-    m_TimeOfDay += FrameInterval;
+    m_TimeOfDay += m_FrameInterval;
     while (m_TimeOfDay >= DAY_TIME) m_TimeOfDay -= DAY_TIME;
 }
 
 void Engine::openGL2d()
 {
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, m_Width, m_Height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, width, 0, height, -1.0, 1.0);
+    glOrtho(0, m_Width, 0, m_Height, -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glDisable(GL_DEPTH_TEST);
@@ -479,20 +481,20 @@ void Engine::openGL2d()
 
 void Engine::openGL3d()
 {
-    float fovy;
+    float fov_y;
     if (m_World.m_Player.m_UnderWater)
     {
-        fovy = 60.0f;
+        fov_y = 60.0f;
     }
     else
     {
-        fovy = 70.0f;
+        fov_y = 70.0f;
     }
 
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, m_Width, m_Height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(fovy, (GLfloat)width/(GLfloat)height, 1.2f, FARCUT);
+    gluPerspective(fov_y, (GLfloat) m_Width/(GLfloat) m_Height, 0.5f, FARCUT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glEnable(GL_DEPTH_TEST);
@@ -505,7 +507,7 @@ void Engine::drawSunMoon()
     glLoadIdentity();
 
     //Sun
-    GLdouble SunSize = 100, sundist = FARCUT*0.8;
+    GLdouble sun_size = 100, sun_dist = FARCUT*0.8;
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
@@ -519,32 +521,32 @@ void Engine::drawSunMoon()
 
     glBindTexture(GL_TEXTURE_2D, m_World.m_MaterialLib.m_Texture[SUN]);
 
-    glTranslated(0.0, 0.0, sundist);
+    glTranslated(0.0, 0.0, sun_dist);
 
     glBegin(GL_QUADS);
     glNormal3f(0, 0, -1);
     glTexCoord2d(0.0, 0.0);
-    glVertex2d(-SunSize, -SunSize);
+    glVertex2d(-sun_size, -sun_size);
     glTexCoord2d(0.0, 1.0);
-    glVertex2d(-SunSize, SunSize);
+    glVertex2d(-sun_size, sun_size);
     glTexCoord2d(1.0, 1.0);
-    glVertex2d(SunSize, SunSize);
+    glVertex2d(sun_size, sun_size);
     glTexCoord2d(1.0, 0.0);
-    glVertex2d(SunSize, -SunSize);
+    glVertex2d(sun_size, -sun_size);
     glEnd();
 
     glBindTexture(GL_TEXTURE_2D, m_World.m_MaterialLib.m_Texture[MOON]);
-    glTranslated(0.0, 0.0, -2*sundist);
+    glTranslated(0.0, 0.0, -2*sun_dist);
 
     glBegin(GL_QUADS);
     glTexCoord2d(0.0, 0.0);
-    glVertex2d(-SunSize, -SunSize);
+    glVertex2d(-sun_size, -sun_size);
     glTexCoord2d(0.0, 1.0);
-    glVertex2d(-SunSize, SunSize);
+    glVertex2d(-sun_size, sun_size);
     glTexCoord2d(1.0, 1.0);
-    glVertex2d(SunSize, SunSize);
+    glVertex2d(sun_size, sun_size);
     glTexCoord2d(1.0, 0.0);
-    glVertex2d(SunSize, -SunSize);
+    glVertex2d(sun_size, -sun_size);
     glEnd();
 
     glDisable(GL_BLEND);
@@ -555,8 +557,7 @@ void Engine::drawSunMoon()
 void Engine::drawBottomBorder()
 {
     Character &player = m_World.m_Player;
-    GLdouble BottomBorderSize = FARCUT;
-    GLfloat res;
+    GLdouble bottom_border_size = FARCUT;
 
     glPushMatrix();
 
@@ -565,14 +566,14 @@ void Engine::drawBottomBorder()
     glTranslated(player.m_Position.bx, 0, player.m_Position.bz);
     glRotated(90, 1.0, 0.0, 0.0);
 
-    res = 1.0 - m_World.m_SkyBright;
+    GLfloat res = 1.0 - m_World.m_SkyBright;
     glColor3f(res, res, res);
 
     glBegin(GL_QUADS);
-    glVertex2d(-BottomBorderSize, -BottomBorderSize);
-    glVertex2d(-BottomBorderSize, BottomBorderSize);
-    glVertex2d(BottomBorderSize, BottomBorderSize);
-    glVertex2d(BottomBorderSize, -BottomBorderSize);
+    glVertex2d(-bottom_border_size, -bottom_border_size);
+    glVertex2d(-bottom_border_size, bottom_border_size);
+    glVertex2d(bottom_border_size, bottom_border_size);
+    glVertex2d(bottom_border_size, -bottom_border_size);
     glEnd();
 
     glPopMatrix();
@@ -580,8 +581,7 @@ void Engine::drawBottomBorder()
 
 void Engine::drawClouds()
 {
-    PointInWorld pos = m_World.m_Player.m_Position;
-    GLdouble CloudSize = FARCUT*2;///4;
+    GLdouble cloud_size = FARCUT*2;///4;
     GLfloat res;
 
     static GLdouble time = 0.0;
@@ -596,31 +596,30 @@ void Engine::drawClouds()
 
     res = 1.0 - m_World.m_SkyBright;
     glColor4f(res, res, res, 0.8f);
-    // todo: wtf with coords
 
-    GLdouble Xposition = pos.bx/(2.5*CloudSize);
-    GLdouble Zposition = pos.bz/(2.5*CloudSize);
+    PointInWorld pos = m_World.m_Player.m_Position;
+    GLdouble x_position = (pos.cx*CHUNK_SIZE_XZ + pos.bx)/(2.5*cloud_size);
+    GLdouble z_position = (pos.cz*CHUNK_SIZE_XZ + pos.bz)/(2.5*cloud_size);
 
     glTranslated(pos.bx, CHUNK_SIZE_Y + 16, pos.bz);
     glRotated(90, 1.0, 0.0, 0.0);
+
     glBegin(GL_QUADS);
-
-    glTexCoord2d(0.0 + time + Xposition, 0.0 + Zposition);
-    glVertex2d(-CloudSize, -CloudSize);
-    glTexCoord2d(0.0 + time + Xposition, 1.0 + Zposition);
-    glVertex2d(-CloudSize, CloudSize);
-    glTexCoord2d(1.0 + time + Xposition, 1.0 + Zposition);
-    glVertex2d(CloudSize, CloudSize);
-    glTexCoord2d(1.0 + time + Xposition, 0.0 + Zposition);
-    glVertex2d(CloudSize, -CloudSize);
-
+    glTexCoord2d(0.0 + time + x_position, 0.0 + z_position);
+    glVertex2d(-cloud_size, -cloud_size);
+    glTexCoord2d(0.0 + time + x_position, 1.0 + z_position);
+    glVertex2d(-cloud_size, cloud_size);
+    glTexCoord2d(1.0 + time + x_position, 1.0 + z_position);
+    glVertex2d(cloud_size, cloud_size);
+    glTexCoord2d(1.0 + time + x_position, 0.0 + z_position);
+    glVertex2d(cloud_size, -cloud_size);
     glEnd();
 
     glDisable(GL_BLEND);
     glPopMatrix();
 }
 
-void Engine::GetFogColor()
+void Engine::getFogColor()
 {
     static double dawn = 100.0;
     static float night_bright = 0.93f;
@@ -630,14 +629,17 @@ void Engine::GetFogColor()
     if ((local_time_of_day > 600.0 + dawn)&&(local_time_of_day < 1800.0 - dawn))
     {
         for (int i = 0; i < 4; i++)
+        {
             FogColor[i] = DayFogColor[i];
+        }
         m_World.m_SkyBright = day_bright;
     }
     else if ((local_time_of_day < 600.0 - dawn)||(local_time_of_day > 1800.0 + dawn))
     {
         for (int i = 0; i < 4; i++)
+        {
             FogColor[i] = NightFogColor[i];
-
+        }
         m_World.m_SkyBright = night_bright;
     }
     else
@@ -654,12 +656,12 @@ void Engine::GetFogColor()
         m_World.m_SkyBright = night_bright*(1.0f - f) + day_bright * f;
     }
 
-    static GLfloat prevBright = 0;
-    GLfloat dif = fabs(m_World.m_SkyBright - prevBright);
-    if (dif > 0.005f)
+    static GLfloat prev_bright = 0;
+    GLfloat diff = fabs(m_World.m_SkyBright - prev_bright);
+    if (diff > 0.005f)
     {
         m_World.m_LightToRefresh = true;
-        prevBright = m_World.m_SkyBright;
+        prev_bright = m_World.m_SkyBright;
     }
 
     m_World.m_TorchBright = 1.0 - 0.05*((rand()%100)/100.0 - 0.5);

@@ -26,12 +26,12 @@ class World;
 class Light
 {
 public:
-    Light(Chunk *ChnkArr[5][5], bool m_Skylight);
+    Light(Chunk *ChnkArr[5][5]);
 
     void updateLight() const;
     static void blockLight(const World &world, Chunk& chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz);
     static void softLight(const World &world, const BlockInWorld &pos, char side, int vertex);
-    bool m_Skylight;
+    bool m_Skylight = true;
 
     static GLfloat getLight(const Chunk &chunk, int index);
 private:
@@ -44,5 +44,5 @@ private:
     inline int getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) const;
     static float getBrightAverage(const World &world, const BlockInWorld &pos, int xx[8], int yy[8], int zz[8], char side);
     void recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial) const;
-    void fillLight(Chunk &chunk, char bright, bool m_Skylight) const;
+    void fillLight(Chunk &chunk) const;
 };

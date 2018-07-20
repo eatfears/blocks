@@ -1,13 +1,10 @@
 #pragma once
 
-#define FREEGLUT_STATIC
-#include <GL/freeglut.h>
-
+#include "common_include/freeglut_static.h"
+#include "logger/logger.h"
 #include "world.h"
 #include "character.h"
 #include "statistics.h"
-#include "logger/logger.h"
-
 
 class Engine
 {
@@ -27,7 +24,7 @@ public:
     void loop();
 
 private:
-    int width, height;
+    int m_Width, m_Height;
 
     bool m_Fullscreen;
     bool m_Mousing;
@@ -46,13 +43,13 @@ private:
     World m_World;
 
     double m_TimeOfDay;
-    void GetFogColor();
+    void getFogColor();
     GLfloat FogColor[4];
 
-    void GetFrameTime();
-    double FrameInterval;
+    void getFrameTime();
+    double m_FrameInterval;
     friend class Statistics;
-    Statistics stat;
+    Statistics m_StatWindow;
 
     DEFINE_LOGGER(ENGINE, logger)
 };
