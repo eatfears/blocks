@@ -11,33 +11,33 @@ class World;
 class Character
 {
 public:
-    Character(World &ww);
+    Character(World &world);
 
-    PointInWorld position;
+    PointInWorld m_Position;
 
-    GLdouble dSpinY, dSpinX;
-    GLdouble dVelocityX, dVelocityY, dVelocityZ;
-    GLdouble Longitude;
+    GLdouble m_SpinY, m_SpinX;
+    GLdouble m_VelocityX, m_VelocityY, m_VelocityZ;
+    GLdouble m_Longitude;
 
     void control(GLdouble FrameInterval);
-    void getCenterCoords(GLsizei width, GLsizei height);
-    bool  bKeyboard[256];					// Массив, используемый для операций с клавиатурой
-    bool  bSpecial[256];					// Массив, используемый для операций с клавиатурой
+    void computeCenterCoords(GLsizei width, GLsizei height);
+    bool  m_Keyboard[256];					// Массив, используемый для операций с клавиатурой
+    bool  m_SpecialKeys[256];				// Массив, используемый для операций с клавиатурой
 
-    BlockInWorld aimedBlock;	// возвращаемые координаты куба
-    BlockInWorld freeBlock;
-    PointInWorld centerPos;
+    BlockInWorld m_AimedBlock;          	// возвращаемые координаты куба
+    BlockInWorld m_FreeBlock;
+    PointInWorld m_CenterPos;
 
-    World& wWorld;
-    bool underWater;
-    Chunk *chunk;
-    int index;
-    double LocalTimeOfDay;
+    World &m_World;
+    bool m_UnderWater;
+    Chunk *m_pChunk;
+    int m_Index;
+    double m_LocalTimeOfDay;
 
-    void getMyPosition();
-    void getLocalTime(double TimeOfDay);
+    void computeMyPosition();
+    void computeLocalTime(double TimeOfDay);
 
 private:
-    void getPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr);
+    void getPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr) const;
 };
 

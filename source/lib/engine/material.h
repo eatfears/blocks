@@ -30,14 +30,12 @@ public:
 	MaterialLibrary();
 	~MaterialLibrary();
 
-    GLuint *m_Texture;
+    GLuint *m_Texture ;
 
-    void allocGLTextures();
     void loadGLTextures();
-
-    void getTextureOffsets(double& offsetx, double& offsety, int material, char covered, int side);
+    void getTextureOffsets(double& offsetx, double& offsety, int material, char covered, int side) const;
 
 private:
-    int getTextureInfo(int ColorType);
-	GLuint loadImage(const char *filename);
+    int getTextureInfo(int ColorType) const;
+    GLuint loadImage(const char *filename) const;
 };

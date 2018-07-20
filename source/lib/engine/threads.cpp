@@ -8,7 +8,7 @@ void LoadChunkThread(void* pParams)
     Param pParameters = *(Param*)pParams;
     ChunkCoord x = pParameters.x;
     ChunkCoord z = pParameters.z;
-    World &wWorld = *pParameters.wWorld;
+    World &wWorld = *pParameters.pWorld;
 
     //	SetEvent(wWorld.parget);
     //	WaitForSingleObject(wWorld.semaphore, INFINITE);
@@ -71,7 +71,7 @@ void UnLoadChunkThread(void* pParams)
     Param pParameters = *(Param*)pParams;
     ChunkCoord x = pParameters.x;
     ChunkCoord z = pParameters.z;
-    World &wWorld = *pParameters.wWorld;
+    World &wWorld = *pParameters.pWorld;
 
     //	SetEvent(wWorld.parget);
     //	WaitForSingleObject(wWorld.semaphore, INFINITE);
@@ -88,7 +88,7 @@ void UnLoadChunkThread(void* pParams)
     auto chunk = wWorld.m_Chunks[bin].begin();
 
     while(chunk != wWorld.m_Chunks[bin].end()) {
-        if(((*chunk)->x == x)&&((*chunk)->z == z)) break;
+        if(((*chunk)->m_X == x)&&((*chunk)->m_Z == z)) break;
         ++chunk;
     }
     if(chunk == wWorld.m_Chunks[bin].end()) {/*
@@ -144,7 +144,7 @@ void UnLoadChunkThread(void* pParams)
 void LoadNGenerate(void* pParams)
 {
     Param pParameters = *(Param*)pParams;
-    World &wWorld = *pParameters.wWorld;
+    World &wWorld = *pParameters.pWorld;
     ChunkCoord x = pParameters.x;
     ChunkCoord z = pParameters.z;
     //	SetEvent(wWorld.parget2);

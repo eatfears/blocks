@@ -19,31 +19,30 @@ X - current chunk to update
 O - also need this chunks to fill * chunks
 ' - dont need this chunks
 */
+
 class World;
 // todo: rendered tiles dont saved
+
 class Light
 {
 public:
-	Light(Chunk *ChnkArr[5][5], bool skylight);
-    Light() {}
-	~Light(void);
+    Light(Chunk *ChnkArr[5][5], bool m_Skylight);
 
-    static float m_LightTable[16];
+    void updateLight() const;
+    static void blockLight(const World &world, Chunk& chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz);
+    static void softLight(const World &world, const BlockInWorld &pos, char side, int vertex);
+    bool m_Skylight;
 
-    void updateLight(void);
-    static void blockLight(World& wWorld, Chunk& chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz);
-    static void softLight(World& wWorld, BlockInWorld pos, char side, int vertex);
-	bool skylight;
-
-    static void getLight(Chunk& chunk, int index, GLfloat& br);
+    static GLfloat getLight(const Chunk &chunk, int index);
 private:
-    static char m_InfluencingLight[6][4];
+    static const float m_LightTable[16];
+    static const char m_InfluencingLight[6][4];
 
     Chunk *m_ChunkArray[5][5];
 
-    void setVal(BlockInWorld pos, int val);
-    int getVal(BlockInWorld pos, bool *water_flag, bool *wall_flag);
-    static float getBrightAverage(World& wWorld, BlockInWorld pos, int xx[8], int yy[8], int zz[8], char side);
-    void recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial);
-    void fillLight(Chunk& chunk, char bright, bool skylight);
+    inline void setVal(const BlockInWorld &pos, int val) const;
+    inline int getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) const;
+    static float getBrightAverage(const World &world, const BlockInWorld &pos, int xx[8], int yy[8], int zz[8], char side);
+    void recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial) const;
+    void fillLight(Chunk &chunk, char bright, bool m_Skylight) const;
 };

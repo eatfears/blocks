@@ -17,29 +17,29 @@ public:
     void init(unsigned int seed);
 
     void generate(Chunk &chunk);
-    bool load(Chunk& chunk, std::fstream& savefile);
-    void save(Chunk& chunk, std::fstream& savefile);
+    bool load(Chunk &chunk, std::fstream &savefile) const;
+    void save(const Chunk &chunk, std::fstream &savefile) const;
     void fill(Chunk& chunk, char mat, double fillness, int height);
 
-    int horizon;
-    double scaleHeightMapXZ;
-    double scaleRoughness;
-    double scaleDetails;
-    double scaleBubblesXZ;
-    double scaleBubblesY;
+    int m_Horizon;
+    double m_ScaleHeightMapXZ;
+    double m_ScaleRoughness;
+    double m_ScaleDetails;
+    double m_ScaleBubblesXZ;
+    double m_ScaleBubblesY;
 
-    double HeghtMapAmp;
-    double RoughnessAmp;
-    double DetailsAmp;
-    double BubblesAmp;
-    int HeghtMapOctaves;
-    int BubblesOctaves;
+    double m_HeghtMapAmp;
+    double m_RoughnessAmp;
+    double m_DetailsAmp;
+    double m_BubblesAmp;
+    int m_HeghtMapOctaves;
+    int m_BubblesOctaves;
 
-    PerlinNoise pnBubbles;
+    PerlinNoise m_NoiseBubbles;
 
-    PerlinNoise pnHeightMap;
-    PerlinNoise pnRoughness;
-    PerlinNoise pnDetails;
+    PerlinNoise m_NoiseHeightMap;
+    PerlinNoise m_NoiseRoughness;
+    PerlinNoise m_NoiseDetails;
 
-    std::mt19937 generator;
+    std::mt19937 m_Generator;
 };

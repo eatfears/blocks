@@ -8,18 +8,13 @@
 
 MaterialLibrary::MaterialLibrary()
 {
-    m_Texture = 0;
+    m_Texture = (GLuint *)calloc(6, sizeof(GLuint));
 }
 
 MaterialLibrary::~MaterialLibrary()
 {
     glDeleteTextures(5, m_Texture);
     free(m_Texture);
-}
-
-void MaterialLibrary::allocGLTextures()
-{
-    m_Texture = (GLuint *)calloc(6, sizeof(GLuint));
 }
 
 void MaterialLibrary::loadGLTextures()
@@ -32,7 +27,7 @@ void MaterialLibrary::loadGLTextures()
     m_Texture[CLOUDS] = loadImage("textures//environment//clouds.png");
 }
 
-int MaterialLibrary::getTextureInfo(int ColorType)
+int MaterialLibrary::getTextureInfo(int ColorType) const
 {
     int ret;
     switch(ColorType)
@@ -55,7 +50,7 @@ int MaterialLibrary::getTextureInfo(int ColorType)
     return ret;
 }
 
-GLuint MaterialLibrary::loadImage(const char *filename)
+GLuint MaterialLibrary::loadImage(const char *filename) const
 {
     GLuint texture;
     png_structp png_ptr = NULL;
@@ -192,7 +187,7 @@ GLuint MaterialLibrary::loadImage(const char *filename)
     return texture;
 }
 
-void MaterialLibrary::getTextureOffsets(double& offsetx, double& offsety, int material, char covered, int side)
+void MaterialLibrary::getTextureOffsets(double& offsetx, double& offsety, int material, char covered, int side) const
 {
     offsetx = 14;
     offsety = 0;

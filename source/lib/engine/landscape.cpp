@@ -8,24 +8,24 @@
 
 Landscape::Landscape()
 {
-    horizon				= CHUNK_SIZE_Y/2;
-    scaleHeightMapXZ	= 128.0;
-    scaleRoughness		= 32.0;
-    scaleDetails		= 128.0;
-    scaleBubblesXZ		= 32.0;
-    scaleBubblesY		= 16.0;
+    m_Horizon				= CHUNK_SIZE_Y/2;
+    m_ScaleHeightMapXZ	= 128.0;
+    m_ScaleRoughness		= 32.0;
+    m_ScaleDetails		= 128.0;
+    m_ScaleBubblesXZ		= 32.0;
+    m_ScaleBubblesY		= 16.0;
 
-    HeghtMapAmp			= 64;
-    RoughnessAmp		= 1.7;
-    DetailsAmp			= 64;
-    BubblesAmp			= 54;
-    HeghtMapOctaves		= 13;
-    BubblesOctaves		= 5;
+    m_HeghtMapAmp			= 64;
+    m_RoughnessAmp		= 1.7;
+    m_DetailsAmp			= 64;
+    m_BubblesAmp			= 54;
+    m_HeghtMapOctaves		= 13;
+    m_BubblesOctaves		= 5;
 
-    pnBubbles			= PerlinNoise(0.5, BubblesOctaves);
-    pnHeightMap			= PerlinNoise(0.5, HeghtMapOctaves);
-    pnRoughness			= PerlinNoise(0.5, 9);
-    pnDetails			= PerlinNoise(0.5, BubblesOctaves);
+    m_NoiseBubbles			= PerlinNoise(0.5, m_BubblesOctaves);
+    m_NoiseHeightMap			= PerlinNoise(0.5, m_HeghtMapOctaves);
+    m_NoiseRoughness			= PerlinNoise(0.5, 9);
+    m_NoiseDetails			= PerlinNoise(0.5, m_BubblesOctaves);
 }
 
 Landscape::~Landscape()
@@ -39,30 +39,34 @@ void Landscape::init(unsigned int seed)
     std::fstream savefile;
 
     savefile.open ("save//conf.wld", std::fstream::in | std::fstream::binary);
-    if(savefile.is_open()) {
+    if (savefile.is_open())
+    {
         savefile.read((char*)&seed, sizeof(seed));
         savefile.close();
-    } else {
+    }
+    else
+    {
         savefile.open ("save//conf.wld", std::fstream::out | std::fstream::binary);
 
-        if(savefile.is_open()) {
+        if (savefile.is_open())
+        {
             savefile.write((char*)&seed, sizeof(seed));
             savefile.close();
         }
     }
 
-    generator.seed(seed);
+    m_Generator.seed(seed);
 
-    pnBubbles.initNoise(generator);
-    pnHeightMap.initNoise(generator);
-    pnRoughness.initNoise(generator);
-    pnDetails.initNoise(generator);
+    m_NoiseBubbles.initNoise(m_Generator);
+    m_NoiseHeightMap.initNoise(m_Generator);
+    m_NoiseRoughness.initNoise(m_Generator);
+    m_NoiseDetails.initNoise(m_Generator);
 }
 
 void Landscape::generate(Chunk &chunk)
 {
-    ChunkCoord chunkx = chunk.x;
-    ChunkCoord chunkz = chunk.z;
+    ChunkCoord chunk_x = chunk.m_X;
+    ChunkCoord chunk_z = chunk.m_Z;
     double height;
     double density;
     double hx, hz;
@@ -74,49 +78,60 @@ void Landscape::generate(Chunk &chunk)
     double temp2 = 0;
 
     double dens[CHUNK_SIZE_XZ][CHUNK_SIZE_Y][CHUNK_SIZE_XZ];
-    for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++) {
-        bx = i/scaleBubblesXZ;
-        for(int k = chunkz*CHUNK_SIZE_XZ; k < (chunkz + 1)*CHUNK_SIZE_XZ; k++) {
-            bz = k/scaleBubblesXZ;
-            for(int j = 0; j < CHUNK_SIZE_Y; j++) {
-                by = j/scaleBubblesY;
-                dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ] = (BubblesAmp)*pnBubbles.perlinNoise3d(bx, by, bz);
+
+    for (int i = chunk_x*CHUNK_SIZE_XZ; i < (chunk_x + 1)*CHUNK_SIZE_XZ; i++)
+    {
+        bx = i/m_ScaleBubblesXZ;
+        for (int k = chunk_z*CHUNK_SIZE_XZ; k < (chunk_z + 1)*CHUNK_SIZE_XZ; k++)
+        {
+            bz = k/m_ScaleBubblesXZ;
+            for (int j = 0; j < CHUNK_SIZE_Y; j++)
+            {
+                by = j/m_ScaleBubblesY;
+                dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ] = (m_BubblesAmp)*m_NoiseBubbles.perlinNoise3d(bx, by, bz);
             }
         }
     }
 
-    for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++) {
-        hx = i/scaleHeightMapXZ;
-        rx = i/scaleRoughness;
-        dx = i/scaleDetails;
+    for (int i = chunk_x*CHUNK_SIZE_XZ; i < (chunk_x + 1)*CHUNK_SIZE_XZ; i++)
+    {
+        hx = i/m_ScaleHeightMapXZ;
+        rx = i/m_ScaleRoughness;
+        dx = i/m_ScaleDetails;
 
-        for(int k = chunkz*CHUNK_SIZE_XZ; k < (chunkz + 1)*CHUNK_SIZE_XZ; k++) {
-            hz = k/scaleHeightMapXZ;
-            rz = k/scaleRoughness;
-            dz = k/scaleDetails;
+        for (int k = chunk_z*CHUNK_SIZE_XZ; k < (chunk_z + 1)*CHUNK_SIZE_XZ; k++)
+        {
+            hz = k/m_ScaleHeightMapXZ;
+            rz = k/m_ScaleRoughness;
+            dz = k/m_ScaleDetails;
 
-            details = pnDetails.perlinNoise2d(dx, dz);
-            height = HeghtMapAmp/1.5*(pnHeightMap.perlinNoise2d(hx, hz) + RoughnessAmp*pnRoughness.perlinNoise2d(rx, rz)*details) + horizon;
+            details = m_NoiseDetails.perlinNoise2d(dx, dz);
+            height = m_HeghtMapAmp/1.5*(m_NoiseHeightMap.perlinNoise2d(hx, hz) + m_RoughnessAmp*m_NoiseRoughness.perlinNoise2d(rx, rz)*details) + m_Horizon;
 
-            for(int j = 0; j < CHUNK_SIZE_Y; j++) {
+            for (int j = 0; j < CHUNK_SIZE_Y; j++)
+            {
                 //density = j;
                 temp = dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ];
                 //temp2 = dens[i%LOCATION_SIZE_XZ][(j+1)%LOCATION_SIZE_Y][k%LOCATION_SIZE_XZ];
 
                 density = temp*(4*details + 0.3) + j;
-                if(density < height) {if(density < height - 3) chunk.addBlock(i, j, k, MAT_STONE); else if(j < horizon) chunk.addBlock(i, j, k, MAT_SAND); else chunk.addBlock(i, j, k, MAT_DIRT);}
-                else if(j < horizon) chunk.addBlock(i, j, k, MAT_WATER);
+                if (density < height) {if (density < height - 3) chunk.addBlock(i, j, k, MAT_STONE); else if (j < m_Horizon) chunk.addBlock(i, j, k, MAT_SAND); else chunk.addBlock(i, j, k, MAT_DIRT);}
+                else if (j < m_Horizon) chunk.addBlock(i, j, k, MAT_WATER);
             }
         }
     }
 
-    for(int i = 0; i < CHUNK_SIZE_XZ; i++) {
-        for(int k = 0; k < CHUNK_SIZE_XZ; k++) {
-            for(int j = CHUNK_SIZE_Y - 1; j >= 0; j--) {
+    for (int i = 0; i < CHUNK_SIZE_XZ; i++)
+    {
+        for (int k = 0; k < CHUNK_SIZE_XZ; k++)
+        {
+            for (int j = CHUNK_SIZE_Y - 1; j >= 0; j--)
+            {
                 int index = chunk.getIndexByPosition(i, j, k);
-                if(chunk.bBlocks[index].cMaterial != MAT_NO) {
-                    if(chunk.bBlocks[index].cMaterial == MAT_DIRT)
-                        chunk.bBlocks[index].bVisible |= (1 << SNOWCOVERED);
+                if (chunk.m_pBlocks[index].material != MAT_NO)
+                {
+                    if (chunk.m_pBlocks[index].material == MAT_DIRT)
+                        chunk.m_pBlocks[index].visible |= (1 << SNOWCOVERED);
                     break;
                 }
             }
@@ -124,7 +139,7 @@ void Landscape::generate(Chunk &chunk)
     }
 }
 
-bool Landscape::load(Chunk& chunk, std::fstream& savefile)
+bool Landscape::load(Chunk& chunk, std::fstream &savefile) const
 {
     int index = 0;
     int res;
@@ -132,7 +147,7 @@ bool Landscape::load(Chunk& chunk, std::fstream& savefile)
     Bytef *bufcompress;
     uLongf uncompsize = CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2;
     uLongf compsize;
-    Block *blocks = chunk.bBlocks;
+    Block *blocks = chunk.m_pBlocks;
 
     buf = new Bytef[uncompsize];
     bufcompress = new Bytef[compressBound(uncompsize)];
@@ -145,12 +160,14 @@ bool Landscape::load(Chunk& chunk, std::fstream& savefile)
 
     res = uncompress(buf, &uncompsize, bufcompress, compsize);
 
-    if((uncompsize != CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2)||(res != Z_OK)) {
+    if ((uncompsize != CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2)||(res != Z_OK))
+    {
         return false;
     }
-    while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y) {
-        blocks[index].cMaterial = buf[index];
-        blocks[index].bVisible = buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
+    while (index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
+    {
+        blocks[index].material = buf[index];
+        blocks[index].visible = buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
 
         index++;
     }
@@ -162,21 +179,22 @@ bool Landscape::load(Chunk& chunk, std::fstream& savefile)
     return true;
 }
 
-void Landscape::save(Chunk& chunk, std::fstream& savefile)
+void Landscape::save(const Chunk &chunk, std::fstream &savefile) const
 {
     int index = 0;
     Bytef *buf;
     Bytef *bufcompress;
     uLongf uncompsize = CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2;
     uLongf compsize;
-    Block *blocks = chunk.bBlocks;
+    Block *blocks = chunk.m_pBlocks;
 
     buf = new Bytef[uncompsize];
     bufcompress = new Bytef[compressBound(uncompsize)];
 
-    while(index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y) {
-        buf[index] = blocks[index].cMaterial;
-        buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y] = blocks[index].bVisible & ((1 << SNOWCOVERED) | (1 << GRASSCOVERED));
+    while (index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
+    {
+        buf[index] = blocks[index].material;
+        buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y] = blocks[index].visible & ((1 << SNOWCOVERED) | (1 << GRASSCOVERED));
         index++;
     }
     compress(bufcompress, &compsize, buf, uncompsize);
@@ -190,13 +208,16 @@ void Landscape::save(Chunk& chunk, std::fstream& savefile)
 void Landscape::fill(Chunk& chunk, char mat, double fillness, int height)
 {
     int material = mat;
-    ChunkCoord chunkx = chunk.x;
-    ChunkCoord chunkz = chunk.z;
+    ChunkCoord chunk_x = chunk.m_X;
+    ChunkCoord chunk_z = chunk.m_Z;
 
-    for(int i = chunkx*CHUNK_SIZE_XZ; i < (chunkx + 1)*CHUNK_SIZE_XZ; i++) {
-        for(int k = chunkz*CHUNK_SIZE_XZ; k < (chunkz + 1)*CHUNK_SIZE_XZ; k++) {
-            for(int j = 0; j < height; j++) {
-                if((double)rand()/(double)RAND_MAX < fillness) {
+    for (int i = chunk_x*CHUNK_SIZE_XZ; i < (chunk_x + 1)*CHUNK_SIZE_XZ; i++)
+    {
+        for (int k = chunk_z*CHUNK_SIZE_XZ; k < (chunk_z + 1)*CHUNK_SIZE_XZ; k++)
+        {
+            for (int j = 0; j < height; j++) {
+                if ((double)rand()/(double)RAND_MAX < fillness)
+                {
                     if (mat == 0) material = rand()%4+1;
                     chunk.addBlock(i, j, k, material);
                 }

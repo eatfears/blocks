@@ -45,27 +45,27 @@ void Statistics::printStat(void)
 
     Character &player = m_Engine.m_World.m_Player;
 
-	b_sprintf(pos, "CX: %d\n", player.position.cx);
+	b_sprintf(pos, "CX: %d\n", player.m_Position.cx);
     renderString(50, m_Engine.height - 30, font, pos);
-	b_sprintf(pos, "CZ: %d\n", player.position.cz);
+	b_sprintf(pos, "CZ: %d\n", player.m_Position.cz);
     renderString(50, m_Engine.height - 50, font, pos);
-	b_sprintf(pos, "X: %0.10f\n", player.position.bx);
+	b_sprintf(pos, "X: %0.10f\n", player.m_Position.bx);
     renderString(50, m_Engine.height - 70, font, pos);
-	b_sprintf(pos, "Y: %0.10f\n", player.position.by);
+	b_sprintf(pos, "Y: %0.10f\n", player.m_Position.by);
     renderString(50, m_Engine.height - 90, font, pos);
-	b_sprintf(pos, "Z: %0.10f\n", player.position.bz);
+	b_sprintf(pos, "Z: %0.10f\n", player.m_Position.bz);
     renderString(50, m_Engine.height - 110, font, pos);
 
 
-	b_sprintf(pos, "CX: %d\n", player.centerPos.cx);
+	b_sprintf(pos, "CX: %d\n", player.m_CenterPos.cx);
     renderString(200, m_Engine.height - 30, font, pos);
-	b_sprintf(pos, "CZ: %d\n", player.centerPos.cz);
+	b_sprintf(pos, "CZ: %d\n", player.m_CenterPos.cz);
     renderString(200, m_Engine.height - 50, font, pos);
-	b_sprintf(pos, "X: %0.10f\n", player.centerPos.bx);
+	b_sprintf(pos, "X: %0.10f\n", player.m_CenterPos.bx);
     renderString(200, m_Engine.height - 70, font, pos);
-	b_sprintf(pos, "Y: %0.10f\n", player.centerPos.by);
+	b_sprintf(pos, "Y: %0.10f\n", player.m_CenterPos.by);
     renderString(200, m_Engine.height - 90, font, pos);
-	b_sprintf(pos, "Z: %0.10f\n", player.centerPos.bz);
+	b_sprintf(pos, "Z: %0.10f\n", player.m_CenterPos.bz);
     renderString(200, m_Engine.height - 110, font, pos);
 
 	b_sprintf(pos, "Constr: %0.10f\n", constr);
@@ -82,9 +82,9 @@ void Statistics::printStat(void)
 	b_sprintf(pos, "Time: %d:%.2d:%.2d\n", h, m, s);
     renderString(50, m_Engine.height - 150, font, pos);
 
-    h = ((int)m_Engine.m_World.m_Player.LocalTimeOfDay)/100;
-    m = ((int)(m_Engine.m_World.m_Player.LocalTimeOfDay*0.6))%60;
-    s = ((int)(m_Engine.m_World.m_Player.LocalTimeOfDay*36.0))%60;
+    h = ((int)m_Engine.m_World.m_Player.m_LocalTimeOfDay)/100;
+    m = ((int)(m_Engine.m_World.m_Player.m_LocalTimeOfDay*0.6))%60;
+    s = ((int)(m_Engine.m_World.m_Player.m_LocalTimeOfDay*36.0))%60;
 	b_sprintf(pos, "Local time: %d:%.2d:%.2d\n", h, m, s);
     renderString(50, m_Engine.height - 170, font, pos);
 }

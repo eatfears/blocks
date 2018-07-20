@@ -12,7 +12,7 @@ typedef struct params
 {
     ChunkCoord x;
     ChunkCoord z;
-    World *wWorld;
+    World *pWorld;
 } Param;
 
 class World
@@ -33,25 +33,25 @@ public:
     int removeBlock(const BlockInWorld &pos, bool show);
 
     void drawLoadedBlocksFinish(Chunk &chunk);
-    void drawUnLoadedBlocks(ChunkCoord Cx, ChunkCoord Cz);
+    void drawUnLoadedBlocks(ChunkCoord x, ChunkCoord z);
     void loadChunk(ChunkCoord x, ChunkCoord z);
     void unLoadChunk(ChunkCoord x, ChunkCoord z);
-    Chunk* getChunkByPosition(ChunkCoord Cx, ChunkCoord Cz) const;
+    Chunk* getChunkByPosition(ChunkCoord x, ChunkCoord z) const;
 
-    unsigned long hash(ChunkCoord x, ChunkCoord z) const {return (x + z*HASH_SIZE)&(HASH_SIZE-1);}
+    unsigned long hash(ChunkCoord x, ChunkCoord z) const { return (x + z*HASH_SIZE)&(HASH_SIZE-1); }
     void updateLight(Chunk& chunk) const;
-    bool LightToRefresh;
+    bool m_LightToRefresh;
 
-    bool SoftLight;
+    bool m_SoftLight;
 
-    GLfloat SkyBright;
-    GLfloat TorchBright;
+    GLfloat m_SkyBright;
+    GLfloat m_TorchBright;
 
-    void saveChunks();
+    void saveChunks() const;
 
 private:
-    void showTile(Chunk *chunk, int index, char side);
+    void showTile(Chunk *chunk, int index, char side) const;
     void hideTile(Chunk *chunk, int index, char side);
 
-    std::list<ChunkPosition> LoadedChunks;
+    std::list<ChunkPosition> m_LoadedChunks;
 };

@@ -6,183 +6,183 @@
 #include "noise/primes.h"
 
 
-Character::Character(World& ww)
-    : wWorld(ww)
+Character::Character(World& world)
+    : m_World(world)
 {
-    for(int i = 0; i < 256; i++)
+    for (int i = 0; i < 256; i++)
     {
-        bKeyboard[i] = false;
-        bSpecial[i] = false;
+        m_Keyboard[i] = false;
+        m_SpecialKeys[i] = false;
     }
 
-    dVelocityX = 0;
-    dVelocityY = 0;
-    dVelocityZ = 0;
+    m_VelocityX = 0;
+    m_VelocityY = 0;
+    m_VelocityZ = 0;
 
-    dSpinX = 0;
-    dSpinY = 0;
+    m_SpinX = 0;
+    m_SpinY = 0;
 
-    aimedBlock.cx = 0;
-    aimedBlock.cz = 0;
-    aimedBlock.bx = 0;
-    aimedBlock.by = 0;
-    aimedBlock.bz = 0;
-    LocalTimeOfDay = 0;
+    m_AimedBlock.cx = 0;
+    m_AimedBlock.cz = 0;
+    m_AimedBlock.bx = 0;
+    m_AimedBlock.by = 0;
+    m_AimedBlock.bz = 0;
+    m_LocalTimeOfDay = 0;
 
-    Longitude = 0;
+    m_Longitude = 0;
 
-    underWater = false;
+    m_UnderWater = false;
 }
 
-void Character::getPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr)
+void Character::getPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr) const
 {
-    *xerr = centerPos.bx + 0.5;
-    *yerr = centerPos.by;
-    *zerr = centerPos.bz + 0.5;
+    *xerr = m_CenterPos.bx + 0.5;
+    *yerr = m_CenterPos.by;
+    *zerr = m_CenterPos.bz + 0.5;
 
     // todo: bad resolution
-    while(*yerr < 0) *yerr += 1;
-    while(*yerr > 1) *yerr -= 1;
+    while (*yerr < 0) *yerr += 1;
+    while (*yerr > 1) *yerr -= 1;
 
-    if(*yerr > abs(*yerr - 1)) *yerr = abs(*yerr - 1);
+    if (*yerr > abs(*yerr - 1)) *yerr = abs(*yerr - 1);
 
-    while(*xerr < 0) *xerr += 1;
-    while(*xerr > 1) *xerr -= 1;
+    while (*xerr < 0) *xerr += 1;
+    while (*xerr > 1) *xerr -= 1;
 
-    if(*xerr > abs(*xerr - 1)) *xerr = abs(*xerr - 1);
+    if (*xerr > abs(*xerr - 1)) *xerr = abs(*xerr - 1);
 
-    while(*zerr < 0) *zerr += 1;
-    while(*zerr > 1) *zerr -= 1;
+    while (*zerr < 0) *zerr += 1;
+    while (*zerr > 1) *zerr -= 1;
 
-    if(*zerr > abs(*zerr - 1)) *zerr = abs(*zerr - 1);
+    if (*zerr > abs(*zerr - 1)) *zerr = abs(*zerr - 1);
 }
 
 void Character::control(GLdouble FrameInterval)
 {
     GLdouble step = WALK_SPEED;
-    if(bSpecial[GLUT_KEY_SHIFT_L])
+    if (m_SpecialKeys[GLUT_KEY_SHIFT_L])
         step *= SPRINT_KOEF;
 
-    if(bKeyboard['W']) {
-        dVelocityX -= FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
-        dVelocityZ -= FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
+    if (m_Keyboard['W']) {
+        m_VelocityX -= FrameInterval*AIR_ACCEL*step*sin(TORAD(m_SpinY));
+        m_VelocityZ -= FrameInterval*AIR_ACCEL*step*cos(TORAD(m_SpinY));
     }
-    if(bKeyboard['S']) {
-        dVelocityX += FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
-        dVelocityZ += FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
+    if (m_Keyboard['S']) {
+        m_VelocityX += FrameInterval*AIR_ACCEL*step*sin(TORAD(m_SpinY));
+        m_VelocityZ += FrameInterval*AIR_ACCEL*step*cos(TORAD(m_SpinY));
     }
-    if(bKeyboard['D']) {
-        dVelocityX += FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
-        dVelocityZ -= FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
+    if (m_Keyboard['D']) {
+        m_VelocityX += FrameInterval*AIR_ACCEL*step*cos(TORAD(m_SpinY));
+        m_VelocityZ -= FrameInterval*AIR_ACCEL*step*sin(TORAD(m_SpinY));
     }
-    if(bKeyboard['A']) {
-        dVelocityX -= FrameInterval*AIR_ACCEL*step*cos(TORAD(dSpinY));
-        dVelocityZ += FrameInterval*AIR_ACCEL*step*sin(TORAD(dSpinY));
+    if (m_Keyboard['A']) {
+        m_VelocityX -= FrameInterval*AIR_ACCEL*step*cos(TORAD(m_SpinY));
+        m_VelocityZ += FrameInterval*AIR_ACCEL*step*sin(TORAD(m_SpinY));
     }
-    if(bKeyboard['R']) {
-        dVelocityY += FrameInterval*AIR_ACCEL*step;
+    if (m_Keyboard['R']) {
+        m_VelocityY += FrameInterval*AIR_ACCEL*step;
     }
-    if(bKeyboard['F']) {
-        dVelocityY -= FrameInterval*AIR_ACCEL*step;
+    if (m_Keyboard['F']) {
+        m_VelocityY -= FrameInterval*AIR_ACCEL*step;
     }
 
-    GLdouble ko = dVelocityX*dVelocityX + dVelocityZ*dVelocityZ;
-    if(ko > WALK_SPEED*WALK_SPEED*SPRINT_KOEF*SPRINT_KOEF) {
+    GLdouble ko = m_VelocityX*m_VelocityX + m_VelocityZ*m_VelocityZ;
+    if (ko > WALK_SPEED*WALK_SPEED*SPRINT_KOEF*SPRINT_KOEF) {
         ko = pow(ko, 0.5);
-        dVelocityX = dVelocityX*WALK_SPEED*SPRINT_KOEF/ko;
-        dVelocityZ = dVelocityZ*WALK_SPEED*SPRINT_KOEF/ko;
+        m_VelocityX = m_VelocityX*WALK_SPEED*SPRINT_KOEF/ko;
+        m_VelocityZ = m_VelocityZ*WALK_SPEED*SPRINT_KOEF/ko;
     }
 
-    //	if(bKeyboard[VK_SPACE]) {
+    //	if (bKeyboard[VK_SPACE]) {
     //	}
 
-    if(bKeyboard['X'])
+    if (m_Keyboard['X'])
     {
-        dVelocityX = 0;
-        dVelocityY = 0;
-        dVelocityZ = 0;
+        m_VelocityX = 0;
+        m_VelocityY = 0;
+        m_VelocityZ = 0;
     }
 
     GLdouble yerr, xerr, zerr;
     getPlane(&xerr, &yerr, &zerr);
 
     PointInWorld pos;
-    if(zerr < xerr && zerr < yerr)
+    if (zerr < xerr && zerr < yerr)
     {
-        if((position.bz < centerPos.bz && position.cz == centerPos.cz) || position.cz < centerPos.cz) {
+        if ((m_Position.bz < m_CenterPos.bz && m_Position.cz == m_CenterPos.cz) || m_Position.cz < m_CenterPos.cz) {
             pos = PointInWorld(0, 0, 0.5);
         } else {
             pos = PointInWorld(0, 0, -0.5);
         }
-    } else if(xerr < zerr && xerr < yerr) {
-        if((position.bx < centerPos.bx && position.cx == centerPos.cx) || position.cx < centerPos.cx) {
+    } else if (xerr < zerr && xerr < yerr) {
+        if ((m_Position.bx < m_CenterPos.bx && m_Position.cx == m_CenterPos.cx) || m_Position.cx < m_CenterPos.cx) {
             pos = PointInWorld(0.5, 0, 0);
         } else {
             pos = PointInWorld(-0.5, 0, 0);
         }
-    } else if(yerr < xerr && yerr < zerr) {
-        if(position.by < centerPos.by) {
+    } else if (yerr < xerr && yerr < zerr) {
+        if (m_Position.by < m_CenterPos.by) {
             pos = PointInWorld(0, 0.5, 0);
         } else {
             pos = PointInWorld(0, -0.5, 0);
         }
     }
-    aimedBlock = BlockInWorld(centerPos + pos);
-    freeBlock = BlockInWorld(centerPos + pos.inv());
+    m_AimedBlock = BlockInWorld(m_CenterPos + pos);
+    m_FreeBlock = BlockInWorld(m_CenterPos + pos.inv());
 
     int num = 100;
     int sq = 100;
     int sqb2 = sq/2;
 
-    if(bKeyboard['1'])
+    if (m_Keyboard['1'])
     {
         int i = 0;
-        while(i < num)
+        while (i < num)
         {
-            if(wWorld.addBlock(BlockInWorld(rand()%sq-sqb2, abs(rand()%sq-sqb2), rand()%sq-sqb2), rand()%14+1, true))
+            if (m_World.addBlock(BlockInWorld(rand()%sq-sqb2, abs(rand()%sq-sqb2), rand()%sq-sqb2), rand()%14+1, true))
                 i++;
         }
     }
-    if(bKeyboard['2']) {
+    if (m_Keyboard['2']) {
         int i = 0;
-        while(i < num) {
-            if(wWorld.removeBlock(BlockInWorld(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2), true))
+        while (i < num) {
+            if (m_World.removeBlock(BlockInWorld(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2), true))
                 i++;
         }
     }
 
-    if(bKeyboard['3']) {
-        for(BlockCoord i = -sqb2; i <= sqb2; i++) {
-            for(BlockCoord j = -sqb2; j <= sqb2; j++) {
-                for(BlockCoord k = -sqb2; k <= sqb2; k++) {
-                    wWorld.removeBlock(BlockInWorld(i, j, k), true);
+    if (m_Keyboard['3']) {
+        for (BlockCoord i = -sqb2; i <= sqb2; i++) {
+            for (BlockCoord j = -sqb2; j <= sqb2; j++) {
+                for (BlockCoord k = -sqb2; k <= sqb2; k++) {
+                    m_World.removeBlock(BlockInWorld(i, j, k), true);
                 }
             }
         }
     }
 
-    if(bKeyboard['4']) {
-        wWorld.loadChunk(0, 0);
-        bKeyboard['4'] = false;
+    if (m_Keyboard['4']) {
+        m_World.loadChunk(0, 0);
+        m_Keyboard['4'] = false;
     }
-    if(bKeyboard['5']) {
-        wWorld.unLoadChunk(0, 0);
-        bKeyboard['5'] = false;
+    if (m_Keyboard['5']) {
+        m_World.unLoadChunk(0, 0);
+        m_Keyboard['5'] = false;
     }
-    if(bKeyboard['6']) {
-        for(int i = 0; i < 8; i++)
-            for(int j = 0; j < 8; j++)
-                wWorld.loadChunk(i, j);
-        bKeyboard['6'] = false;
+    if (m_Keyboard['6']) {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                m_World.loadChunk(i, j);
+        m_Keyboard['6'] = false;
     }
-    if(bKeyboard['7']) {
-        for(int i = 0; i < 8; i++)
-            for(int j = 0; j < 8; j++)
-                wWorld.unLoadChunk(i, j);
-        bKeyboard['7'] = false;
+    if (m_Keyboard['7']) {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                m_World.unLoadChunk(i, j);
+        m_Keyboard['7'] = false;
     }
 
-    //	if(bKeyboard['0']) {
+    //	if (bKeyboard['0']) {
     //		static Param par = {0, 1, &wWorld};
 
     //		_beginthread(LoadNGenerate, 0, &par);
@@ -194,33 +194,33 @@ void Character::control(GLdouble FrameInterval)
     //		bKeyboard['0'] = false;
     //	}
 
-    if(bKeyboard['C']) {
+    if (m_Keyboard['C']) {
         Chunk *chunk;
         int index;
-        wWorld.findBlock(aimedBlock, &chunk, &index);
-        if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT)) {
-            chunk->bBlocks[index].bVisible ^= (1 << SNOWCOVERED);
+        m_World.findBlock(m_AimedBlock, &chunk, &index);
+        if ((chunk)&&(chunk->m_pBlocks[index].material == MAT_DIRT)) {
+            chunk->m_pBlocks[index].visible ^= (1 << SNOWCOVERED);
         }
     }
-    if(bKeyboard['V']) {
+    if (m_Keyboard['V']) {
         Chunk *chunk;
         int index;
-        wWorld.findBlock(aimedBlock, &chunk, &index);
-        if ((chunk)&&(chunk->bBlocks[index].cMaterial == MAT_DIRT)) {
-            chunk->bBlocks[index].bVisible ^= (1 << GRASSCOVERED);
+        m_World.findBlock(m_AimedBlock, &chunk, &index);
+        if ((chunk)&&(chunk->m_pBlocks[index].material == MAT_DIRT)) {
+            chunk->m_pBlocks[index].visible ^= (1 << GRASSCOVERED);
         }
     }
-    if(bKeyboard['E']) {
-        wWorld.removeBlock(aimedBlock, true);
+    if (m_Keyboard['E']) {
+        m_World.removeBlock(m_AimedBlock, true);
     }
-    if(bKeyboard['Q']) {
-        wWorld.addBlock(freeBlock, MAT_PUMPKIN_SHINE, true);
+    if (m_Keyboard['Q']) {
+        m_World.addBlock(m_FreeBlock, MAT_PUMPKIN_SHINE, true);
     }
-    if(bKeyboard['O']) {
-        wWorld.saveChunks();
+    if (m_Keyboard['O']) {
+        m_World.saveChunks();
     }
 
-    position = position + PointInWorld(FrameInterval*dVelocityX, FrameInterval*dVelocityY, FrameInterval*dVelocityZ);
+    m_Position = m_Position + PointInWorld(FrameInterval*m_VelocityX, FrameInterval*m_VelocityY, FrameInterval*m_VelocityZ);
 
     /*{
         signed short xx, yy, zz;
@@ -232,7 +232,7 @@ void Character::control(GLdouble FrameInterval)
         zz = floor(wz/TILE_SIZE + 0.5);
         yy = floor(wy/TILE_SIZE);
 
-        if((FindTile(xx, yy, zz) == NULL)&&(FindTile(xx, yy + 1, zz) == NULL))
+        if ((FindTile(xx, yy, zz) == NULL)&&(FindTile(xx, yy + 1, zz) == NULL))
             gfPosX += g_FrameInterval*gfVelX;
         else gfVelX = 0;
     }
@@ -246,15 +246,15 @@ void Character::control(GLdouble FrameInterval)
         zz = floor(wz/TILE_SIZE + 0.5);
         yy = floor(wy/TILE_SIZE);
 
-        if((FindTile(xx, yy, zz) == NULL)&&(FindTile(xx, yy + 1, zz) == NULL))
+        if ((FindTile(xx, yy, zz) == NULL)&&(FindTile(xx, yy + 1, zz) == NULL))
             gfPosZ += g_FrameInterval*gfVelZ;
         else gfVelZ = 0;
     }
     */
-    /*if(falling)
+    /*if (falling)
     {
         gfPosY -= g_FrameInterval*gfVelY;
-        if(gfVelY < MAX_DOWNSTEP)
+        if (gfVelY < MAX_DOWNSTEP)
             gfVelY += g_FrameInterval*STEP_DOWNSTEP;
     }*/
     /*
@@ -268,11 +268,11 @@ void Character::control(GLdouble FrameInterval)
         zz = floor(wz/TILE_SIZE + 0.5);
         yy = floor(wy/TILE_SIZE);
 
-        if(FindTile(xx, yy, zz) == NULL) falling = true;
+        if (FindTile(xx, yy, zz) == NULL) falling = true;
         else
         {
             gfVelY = 0;
-            if(falling)
+            if (falling)
             {
                 falling = false;
                 gfPosY = (yy + 1)*TILE_SIZE + PLAYER_HEIGHT - 0.001;
@@ -280,21 +280,21 @@ void Character::control(GLdouble FrameInterval)
         }
     }
 
-    if(!falling)
+    if (!falling)
     {
         gfVelX = 0;
         gfVelZ = 0;
     }*/
     //falling = 1;
 
-    // 	if(dPositionX >= LOCATION_SIZE_XZ*TILE_SIZE) { dPositionX -= LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionX++;}
-    // 	if(dPositionX < 0) { dPositionX += LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionX--;}
-    // 	if(dPositionZ >= LOCATION_SIZE_XZ*TILE_SIZE) { dPositionZ -= LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionZ++;}
-    // 	if(dPositionZ < 0) { dPositionZ += LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionZ--;}
+    // 	if (dPositionX >= LOCATION_SIZE_XZ*TILE_SIZE) { dPositionX -= LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionX++;}
+    // 	if (dPositionX < 0) { dPositionX += LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionX--;}
+    // 	if (dPositionZ >= LOCATION_SIZE_XZ*TILE_SIZE) { dPositionZ -= LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionZ++;}
+    // 	if (dPositionZ < 0) { dPositionZ += LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionZ--;}
 
 }
 
-void Character::getCenterCoords(GLsizei width, GLsizei height)
+void Character::computeCenterCoords(GLsizei width, GLsizei height)
 {
     GLint    viewport[4];		// параметры viewport-a.
     GLdouble projection[16];	// матрица проекции.
@@ -308,33 +308,31 @@ void Character::getCenterCoords(GLsizei width, GLsizei height)
 
     glReadPixels(width/2, height/2, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &vz);
     gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, &dispCenterX, &dispCenterY, &dispCenterZ);
-    centerPos = position;
+    m_CenterPos = m_Position;
 
-    centerPos.bx = 0;
-    centerPos.by = 0;
-    centerPos.bz = 0;
+    m_CenterPos.bx = 0;
+    m_CenterPos.by = 0;
+    m_CenterPos.bz = 0;
 
-    centerPos = centerPos + PointInWorld(dispCenterX, dispCenterY, dispCenterZ);
-
+    m_CenterPos = m_CenterPos + PointInWorld(dispCenterX, dispCenterY, dispCenterZ);
 }
 
-void Character::getLocalTime(double TimeOfDay)
+void Character::computeLocalTime(double TimeOfDay)
 {
-    LocalTimeOfDay = TimeOfDay + Longitude*DAY_TIME;
+    m_LocalTimeOfDay = TimeOfDay + m_Longitude*DAY_TIME;
 
-    while (LocalTimeOfDay >= DAY_TIME) LocalTimeOfDay -= DAY_TIME;
-    while (LocalTimeOfDay < 0.0) LocalTimeOfDay += DAY_TIME;
+    while (m_LocalTimeOfDay >= DAY_TIME) m_LocalTimeOfDay -= DAY_TIME;
+    while (m_LocalTimeOfDay < 0.0) m_LocalTimeOfDay += DAY_TIME;
 }
 
-void Character::getMyPosition()
+void Character::computeMyPosition()
 {
     // checks if player is under water level
-    PointInWorld pos(position);
+    PointInWorld pos(m_Position);
     pos.by += 0.125 - 0.5;
     BlockInWorld waterPos(pos);
 
-    wWorld.findBlock(waterPos, &chunk, &index);
-    underWater = chunk && chunk->bBlocks[index].cMaterial == MAT_WATER;
-
-    Longitude = (position.bz/CHUNK_SIZE_XZ + position.cz)/160;
+    m_World.findBlock(waterPos, &m_pChunk, &m_Index);
+    m_UnderWater = m_pChunk && m_pChunk->m_pBlocks[m_Index].material == MAT_WATER;
+    m_Longitude = (m_Position.bz/CHUNK_SIZE_XZ + m_Position.cz)/160;
 }

@@ -15,25 +15,25 @@ typedef struct
 
 typedef struct
 {
-    char cMaterial;
-    char bVisible;
+    char material;
+    char visible;
 } Block;
 
 class Chunk
 {
 public:
-    Chunk(ChunkCoord x, ChunkCoord z, World& wrld);
+    Chunk(ChunkCoord x, ChunkCoord z, World &wrld);
     ~Chunk();
 
-    Block *bBlocks;
-    char *SkyLight;
-    char *TorchLight;
-    World& wWorld;
-    std::list<Block *> *DisplayedTiles;
-    std::list<Block *> *DisplayedWaterTiles;
-    ChunkCoord x;
-    ChunkCoord z;
-    char NeedToRender[2];
+    Block *m_pBlocks;
+    char *m_SkyLight;
+    char *m_TorchLight;
+    World &m_World;
+    std::list<Block *> *m_pDisplayedTiles;
+    std::list<Block *> *m_pDisplayedWaterTiles;
+    ChunkCoord m_X, m_Z;
+
+    char m_NeedToRender[2];
 
     int	addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
     int removeBlock(BlockCoord x, BlockCoord y, BlockCoord z);
@@ -50,7 +50,7 @@ public:
     void drawLoadedBlocks();
 
     void open();
-    void save();
+    void save() const;
     bool m_LightToUpdate;
 
     void render(char mat, int *rendered);
@@ -59,6 +59,6 @@ private:
     int setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat);
     void drawTile(const BlockInWorld &pos, Block* block, char side) const;
 
-    GLuint RenderList;
-    bool listgen;
+    GLuint m_RenderList;
+    bool m_Listgen;
 };
