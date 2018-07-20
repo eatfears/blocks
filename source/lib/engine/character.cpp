@@ -3,7 +3,7 @@
 #include "character.h"
 #include "threads.h"
 #include "world.h"
-#include "primes.h"
+#include "noise/primes.h"
 
 
 Character::Character(World& ww)
@@ -96,7 +96,8 @@ void Character::control(GLdouble FrameInterval)
     //	if(bKeyboard[VK_SPACE]) {
     //	}
 
-    if(bKeyboard['X']) {
+    if(bKeyboard['X'])
+    {
         dVelocityX = 0;
         dVelocityY = 0;
         dVelocityZ = 0;
@@ -106,7 +107,8 @@ void Character::control(GLdouble FrameInterval)
     getPlane(&xerr, &yerr, &zerr);
 
     PointInWorld pos;
-    if(zerr < xerr && zerr < yerr) {
+    if(zerr < xerr && zerr < yerr)
+    {
         if((position.bz < centerPos.bz && position.cz == centerPos.cz) || position.cz < centerPos.cz) {
             pos = PointInWorld(0, 0, 0.5);
         } else {
@@ -132,9 +134,11 @@ void Character::control(GLdouble FrameInterval)
     int sq = 100;
     int sqb2 = sq/2;
 
-    if(bKeyboard['1']) {
+    if(bKeyboard['1'])
+    {
         int i = 0;
-        while(i < num) {
+        while(i < num)
+        {
             if(wWorld.addBlock(BlockInWorld(rand()%sq-sqb2, abs(rand()%sq-sqb2), rand()%sq-sqb2), rand()%14+1, true))
                 i++;
         }

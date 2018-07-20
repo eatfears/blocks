@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-#include "definitions.h"
+#include "common_include/definitions.h"
 #include "threads.h"
 #include "light.h"
 

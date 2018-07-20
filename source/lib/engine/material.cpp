@@ -2,7 +2,7 @@
 
 #include <libpng/png.h>
 
-#include "definitions.h"
+#include "common_include/definitions.h"
 #include "platform.h"
 
 

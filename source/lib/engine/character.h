@@ -1,6 +1,6 @@
 #pragma once
 
-#include "definitions.h"
+#define FREEGLUT_STATIC
 #include <GL/freeglut.h>
 
 #include "chunk.h"

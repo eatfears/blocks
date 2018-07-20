@@ -1,7 +1,7 @@
 #pragma once
 #include <random>
 
-#include "definitions.h"
+#include "common_include/definitions.h"
 
 
 #define Int unsigned long int

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "definitions.h"
+#define FREEGLUT_STATIC
 #include <GL/freeglut.h>
 
 #define MAT_NO				0

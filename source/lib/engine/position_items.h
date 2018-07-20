@@ -1,6 +1,6 @@
 #pragma once
 
-#include "definitions.h"
+#include "common_include/definitions.h"
 
 
 typedef signed short    BlockCoord;

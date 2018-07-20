@@ -5,7 +5,7 @@
 #include <math.h>
 
 #include "light.h"
-#include "primes.h"
+#include "noise/primes.h"
 #include "platform.h"
 
 
@@ -43,6 +43,7 @@ int Engine::initGL()
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClearDepth(1.0f);
 
+//    glDepthFunc(GL_LEQUAL);
     glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -195,7 +196,8 @@ void Engine::keyboard(unsigned char button, int x, int y, bool KeyDown)
     {
     case KEY_ESCAPE:
         // TODO: window id
-        glutDestroyWindow(1);
+        // glutDestroyWindow(1);
+        glutLeaveMainLoop();
         break;
     default:
 #ifdef _WIN32
@@ -203,6 +205,25 @@ void Engine::keyboard(unsigned char button, int x, int y, bool KeyDown)
 #endif
         m_World.m_Player.bKeyboard[button] = KeyDown;
         break;
+    }
+}
+
+void Engine::special(int button, int x, int y, bool KeyDown)
+{
+    switch(button)
+    {
+    case GLUT_KEY_F1:
+        if (KeyDown)
+        {
+            if (!m_Fullscreen) glutFullScreenToggle();
+            else glutLeaveFullScreen();
+            m_Fullscreen = !m_Fullscreen;
+        }
+        break;
+        //	case GLUT_KEY_F2: 	glutLeaveGameMode();
+        //		break;
+    default:
+        m_World.m_Player.bSpecial[button] = KeyDown;
     }
 }
 
@@ -439,25 +460,6 @@ void Engine::GetFrameTime()
 
     m_TimeOfDay += FrameInterval;
     while (m_TimeOfDay >= DAY_TIME) m_TimeOfDay -= DAY_TIME;
-}
-
-void Engine::special(int button, int x, int y, bool KeyDown)
-{
-    switch(button)
-    {
-    case GLUT_KEY_F1:
-        if (KeyDown)
-        {
-            if (!m_Fullscreen) glutFullScreenToggle();
-            else glutLeaveFullScreen();
-            m_Fullscreen = !m_Fullscreen;
-        }
-        break;
-        //	case GLUT_KEY_F2: 	glutLeaveGameMode();
-        //		break;
-    default:
-        m_World.m_Player.bSpecial[button] = KeyDown;
-    }
 }
 
 void Engine::openGL2d()

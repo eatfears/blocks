@@ -2,8 +2,8 @@
 
 #include <fstream>
 
-#include "perlin_noise.h"
-#include "definitions.h"
+#include "noise/perlin_noise.h"
+#include "common_include/definitions.h"
 
 class World;
 class Chunk;

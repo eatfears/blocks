@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "primes.h"
+#include "noise/primes.h"
 
 
 BlockInWorld::BlockInWorld(const PointInWorld &pos)
