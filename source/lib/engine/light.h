@@ -29,7 +29,7 @@ public:
     Light(Chunk *ChnkArr[5][5]);
 
     void updateLight() const;
-    static void blockLight(const World &world, Chunk& chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz);
+    static void blockLight(const World &world, const Chunk& chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz);
     static void softLight(const World &world, const BlockInWorld &pos, char side, int vertex);
     bool m_Skylight = true;
 

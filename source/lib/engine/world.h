@@ -29,8 +29,8 @@ public:
     void buildWorld();
     int findBlock(const BlockInWorld &pos);
     int findBlock(const BlockInWorld &pos, Chunk **chunk, int *index);
-    int addBlock(const BlockInWorld &pos, char mat, bool show);
-    int removeBlock(const BlockInWorld &pos, bool show);
+    int addBlock(const BlockInWorld &pos, char mat);
+    int removeBlock(const BlockInWorld &pos);
 
     void drawLoadedBlocksFinish(Chunk &chunk);
     void drawUnLoadedBlocks(ChunkCoord x, ChunkCoord z);

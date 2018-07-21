@@ -24,13 +24,13 @@ typedef struct
 class Chunk
 {
 public:
-    Chunk(ChunkCoord x, ChunkCoord z, World &wrld);
+    Chunk(ChunkCoord x, ChunkCoord z, World &world);
     ~Chunk();
 
     Block *m_pBlocks;
     char *m_SkyLight;
     char *m_TorchLight;
-    World &m_World;
+    const World &m_World;
     std::list<Block*> *m_pDisplayedTiles;
     std::list<Block*> *m_pDisplayedWaterTiles;
     ChunkCoord m_X, m_Z;

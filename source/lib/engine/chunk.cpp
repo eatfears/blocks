@@ -257,7 +257,7 @@ void Chunk::render(char material, int *rendered) /*const*/
         int prob = 1000/(*rendered*5 + 1);
         int r = rand()%1000;
 
-        if (r <= prob)
+        if (r <= prob || 1)
             mode = GL_COMPILE;
     }
 
@@ -291,7 +291,7 @@ void Chunk::render(char material, int *rendered) /*const*/
 
         glBegin(GL_QUADS);
 
-        std::list<Block*> *pTiles;
+        std::list<Block*> *p_tiles;
         static BlockCoord cx, cy, cz;
         static BlockInWorld temp;
         static BlockInWorld blckw;
@@ -302,15 +302,15 @@ void Chunk::render(char material, int *rendered) /*const*/
 
             if (material == MAT_WATER)
             {
-                pTiles = &m_pDisplayedWaterTiles[i];
+                p_tiles = &m_pDisplayedWaterTiles[i];
             }
             else
             {
-                pTiles = &m_pDisplayedTiles[i];
+                p_tiles = &m_pDisplayedTiles[i];
             }
-            auto it = pTiles->begin();
+            auto it = p_tiles->begin();
 
-            while (it != pTiles->end())
+            while (it != p_tiles->end())
             {
                 getBlockPositionByPointer(*it, &cx, &cy, &cz);
 

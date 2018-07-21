@@ -139,14 +139,14 @@ void Character::control(GLdouble FrameInterval)
         int i = 0;
         while (i < num)
         {
-            if (m_World.addBlock(BlockInWorld(rand()%sq-sqb2, abs(rand()%sq-sqb2), rand()%sq-sqb2), rand()%14+1, true))
+            if (m_World.addBlock(BlockInWorld(rand()%sq-sqb2, abs(rand()%sq-sqb2), rand()%sq-sqb2), rand()%14+1))
                 i++;
         }
     }
     if (m_Keyboard['2']) {
         int i = 0;
         while (i < num) {
-            if (m_World.removeBlock(BlockInWorld(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2), true))
+            if (m_World.removeBlock(BlockInWorld(rand()%sq-sqb2, rand()%sq-sqb2, rand()%sq-sqb2)))
                 i++;
         }
     }
@@ -155,7 +155,7 @@ void Character::control(GLdouble FrameInterval)
         for (BlockCoord i = -sqb2; i <= sqb2; i++) {
             for (BlockCoord j = -sqb2; j <= sqb2; j++) {
                 for (BlockCoord k = -sqb2; k <= sqb2; k++) {
-                    m_World.removeBlock(BlockInWorld(i, j, k), true);
+                    m_World.removeBlock(BlockInWorld(i, j, k));
                 }
             }
         }
@@ -211,10 +211,10 @@ void Character::control(GLdouble FrameInterval)
         }
     }
     if (m_Keyboard['E']) {
-        m_World.removeBlock(m_AimedBlock, true);
+        m_World.removeBlock(m_AimedBlock);
     }
     if (m_Keyboard['Q']) {
-        m_World.addBlock(m_FreeBlock, MAT_PUMPKIN_SHINE, true);
+        m_World.addBlock(m_FreeBlock, MAT_PUMPKIN_SHINE);
     }
     if (m_Keyboard['O']) {
         m_World.saveChunks();

@@ -155,10 +155,10 @@ void Engine::display()
     m_StatWindow.m_ReRenderedChunks = 0;
 
     int render = 0;
-    for (int bin = 0; bin < HASH_SIZE; bin++)
+    for (int bin_num = 0; bin_num < HASH_SIZE; bin_num++)
     {
-        auto chunk = m_World.m_Chunks[bin].begin();
-        while (chunk != m_World.m_Chunks[bin].end())
+        auto bin = m_World.m_Chunks[bin_num];
+        for (auto chunk = bin.begin(); chunk != bin.end(); chunk++)
         {
             if ((*chunk)->m_LightToUpdate)
             {
@@ -170,7 +170,6 @@ void Engine::display()
                 (*chunk)->m_NeedToRender[0] = RENDER_MAYBE;
 
             (*chunk)->render(MAT_NO, &render);
-            ++chunk;
         }
     }
 
@@ -182,16 +181,15 @@ void Engine::display()
 
     //transparent tiles here
     render = 0;
-    for (int bin = 0; bin < HASH_SIZE; bin++)
+    for (int bin_num = 0; bin_num < HASH_SIZE; bin_num++)
     {
-        auto chunk = m_World.m_Chunks[bin].begin();
-        while (chunk != m_World.m_Chunks[bin].end())
+        auto bin = m_World.m_Chunks[bin_num];
+        for (auto chunk = bin.begin(); chunk != bin.end(); chunk++)
         {
             if (mod == GL_COMPILE)
                 (*chunk)->m_NeedToRender[1] = RENDER_MAYBE;
 
             (*chunk)->render(MAT_WATER, &render);
-            ++chunk;
         }
     }
 

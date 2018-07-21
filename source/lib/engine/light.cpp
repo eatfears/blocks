@@ -144,16 +144,14 @@ void Light::setVal(const BlockInWorld &pos, int val) const
     }
 }
 
-void Light::blockLight(const World &world, Chunk &chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz)
+void Light::blockLight(const World &world, const Chunk &chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz)
 {
     if (!world.m_SoftLight)
     {
-        static Chunk *temploc;
-        static BlockInWorld pos, pos_side;
-        static GLfloat res;
+        const BlockInWorld pos = BlockInWorld(chunk.m_X, chunk.m_Z, cx, cy, cz);
+        const BlockInWorld pos_side = pos.getSide(side);
 
-        pos = BlockInWorld(chunk.m_X, chunk.m_Z, cx, cy, cz);
-        pos_side = pos.getSide(side);
+        static const Chunk *temploc;
 
         // if in neighbor chunk
         if (pos.cx != pos_side.cx || pos.cz != pos_side.cz)
@@ -166,6 +164,8 @@ void Light::blockLight(const World &world, Chunk &chunk, char side, BlockCoord c
         }
 
         if (pos.overflow()) temploc = NULL;
+
+        GLfloat res;
         if (temploc)
         {
             int index = temploc->getIndexByPosition(pos_side.bx, pos_side.by, pos_side.bz);
