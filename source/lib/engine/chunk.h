@@ -4,6 +4,7 @@
 
 #include "common_include/freeglut_static.h"
 #include "position_items.h"
+#include "logger/logger.h"
 
 
 class World;
@@ -71,7 +72,7 @@ public:
     void save() const;
     bool m_LightToUpdate;
 
-    void render(char mat, int *rendered);
+    void render(char mat, int *rendered) /*const*/;
 
 private:
     int setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat);
@@ -79,4 +80,6 @@ private:
 
     GLuint m_RenderList = 0;
     bool m_Listgen;
+
+    DEFINE_LOGGER(CHUNK, logger)
 };

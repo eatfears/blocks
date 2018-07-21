@@ -235,7 +235,7 @@ void Chunk::save() const
     }
 }
 
-void Chunk::render(char material, int *rendered)
+void Chunk::render(char material, int *rendered) /*const*/
 {
     glPushMatrix();
     glTranslated((m_X-m_World.m_Player.m_Position.cx)*CHUNK_SIZE_XZ, 0, (m_Z-m_World.m_Player.m_Position.cz)*CHUNK_SIZE_XZ);
@@ -252,8 +252,7 @@ void Chunk::render(char material, int *rendered)
     {
         mode = GL_COMPILE;
     }
-
-    if (m_NeedToRender[list_to_render] == RENDER_MAYBE)
+    else if (m_NeedToRender[list_to_render] == RENDER_MAYBE)
     {
         int prob = 1000/(*rendered*5 + 1);
         int r = rand()%1000;
@@ -280,11 +279,6 @@ void Chunk::render(char material, int *rendered)
             glNewList(m_RenderList + list_to_render, mode);
         }
 
-        std::list<Block*> *Tiles;
-        static BlockCoord cx, cy, cz;
-        static BlockInWorld temp;
-        static BlockInWorld blckw;
-
         //1-sided tiles
         if (material == MAT_WATER)
         {
@@ -297,18 +291,26 @@ void Chunk::render(char material, int *rendered)
 
         glBegin(GL_QUADS);
 
+        std::list<Block*> *pTiles;
+        static BlockCoord cx, cy, cz;
+        static BlockInWorld temp;
+        static BlockInWorld blckw;
+
         for (int i = 0; i < 6; i++)
         {
             blckw = BlockInWorld(m_X, m_Z);
 
-            if (material == MAT_WATER) {
-                Tiles = &m_pDisplayedWaterTiles[i];
-            } else {
-                Tiles = &m_pDisplayedTiles[i];
+            if (material == MAT_WATER)
+            {
+                pTiles = &m_pDisplayedWaterTiles[i];
             }
-            auto it = Tiles->begin();
+            else
+            {
+                pTiles = &m_pDisplayedTiles[i];
+            }
+            auto it = pTiles->begin();
 
-            while (it != Tiles->end())
+            while (it != pTiles->end())
             {
                 getBlockPositionByPointer(*it, &cx, &cy, &cz);
 

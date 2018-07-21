@@ -44,7 +44,7 @@ private:
 
     double m_TimeOfDay;
     void getFogColor();
-    GLfloat FogColor[4];
+    GLfloat m_FogColor[4];
 
     void getFrameTime();
     double m_FrameInterval;

@@ -97,7 +97,7 @@ void Engine::display()
     }
     else
     {
-        glClearColor(FogColor[0], FogColor[1], FogColor[2], FogColor[3]);
+        glClearColor(m_FogColor[0], m_FogColor[1], m_FogColor[2], m_FogColor[3]);
     }
 
     //Set position
@@ -121,13 +121,14 @@ void Engine::display()
     }
     else
     {
-        glFogfv(GL_FOG_COLOR, FogColor);
+        glFogfv(GL_FOG_COLOR, m_FogColor);
         glFogf(GL_FOG_DENSITY, FOG_DENSITY);
         glFogf(GL_FOG_START, FOG_START);
         glFogf(GL_FOG_END, MAX_VIEV_DIST);
     }
 
-    if (player.m_Position.by < CHUNK_SIZE_Y + 16) {
+    if (player.m_Position.by < CHUNK_SIZE_Y + 16)
+    {
         drawClouds();
     }
 
@@ -135,7 +136,6 @@ void Engine::display()
 
     static GLuint *tex = m_World.m_MaterialLib.m_Texture;
     glBindTexture(GL_TEXTURE_2D, tex[TERRAIN]);
-    int render;
 
     if (player.m_Keyboard['Z'])
     {
@@ -154,7 +154,7 @@ void Engine::display()
 
     m_StatWindow.m_ReRenderedChunks = 0;
 
-    render = 0;
+    int render = 0;
     for (int bin = 0; bin < HASH_SIZE; bin++)
     {
         auto chunk = m_World.m_Chunks[bin].begin();
@@ -168,6 +168,7 @@ void Engine::display()
 
             if (mod == GL_COMPILE)
                 (*chunk)->m_NeedToRender[0] = RENDER_MAYBE;
+
             (*chunk)->render(MAT_NO, &render);
             ++chunk;
         }
@@ -630,7 +631,7 @@ void Engine::getFogColor()
     {
         for (int i = 0; i < 4; i++)
         {
-            FogColor[i] = DayFogColor[i];
+            m_FogColor[i] = DayFogColor[i];
         }
         m_World.m_SkyBright = day_bright;
     }
@@ -638,7 +639,7 @@ void Engine::getFogColor()
     {
         for (int i = 0; i < 4; i++)
         {
-            FogColor[i] = NightFogColor[i];
+            m_FogColor[i] = NightFogColor[i];
         }
         m_World.m_SkyBright = night_bright;
     }
@@ -651,7 +652,7 @@ void Engine::getFogColor()
 
         for (int i = 0; i < 4; i++)
         {
-            FogColor[i] = NightFogColor[i]*(1.0f - f) + DayFogColor[i]*f;
+            m_FogColor[i] = NightFogColor[i]*(1.0f - f) + DayFogColor[i]*f;
         }
         m_World.m_SkyBright = night_bright*(1.0f - f) + day_bright * f;
     }
