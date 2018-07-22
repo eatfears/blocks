@@ -155,22 +155,19 @@ void Engine::display()
     m_StatWindow.m_ReRenderedChunks = 0;
 
     int render = 0;
-    for (int bin_num = 0; bin_num < HASH_SIZE; bin_num++)
+    for (auto /*const*/ &it : m_World.m_Chunks)
     {
-        auto bin = m_World.m_Chunks[bin_num];
-        for (auto chunk = bin.begin(); chunk != bin.end(); chunk++)
+        auto chunk = it.second;
+        if (chunk->m_LightToUpdate)
         {
-            if ((*chunk)->m_LightToUpdate)
-            {
-                m_World.updateLight(**chunk);
-                (*chunk)->m_LightToUpdate = false;
-            }
-
-            if (mod == GL_COMPILE)
-                (*chunk)->m_NeedToRender[0] = RENDER_MAYBE;
-
-            (*chunk)->render(MAT_NO, &render);
+            m_World.updateLight(*chunk);
+            chunk->m_LightToUpdate = false;
         }
+
+        if (mod == GL_COMPILE)
+            chunk->m_NeedToRender[0] = RENDER_MAYBE;
+
+        chunk->render(MAT_NO, &render);
     }
 
     m_StatWindow.m_ReRenderedChunks += render;
@@ -181,16 +178,13 @@ void Engine::display()
 
     //transparent tiles here
     render = 0;
-    for (int bin_num = 0; bin_num < HASH_SIZE; bin_num++)
+    for (auto /*const*/ &it : m_World.m_Chunks)
     {
-        auto bin = m_World.m_Chunks[bin_num];
-        for (auto chunk = bin.begin(); chunk != bin.end(); chunk++)
-        {
-            if (mod == GL_COMPILE)
-                (*chunk)->m_NeedToRender[1] = RENDER_MAYBE;
+        auto chunk = it.second;
+        if (mod == GL_COMPILE)
+            chunk->m_NeedToRender[1] = RENDER_MAYBE;
 
-            (*chunk)->render(MAT_WATER, &render);
-        }
+        chunk->render(MAT_WATER, &render);
     }
 
     glDisable(GL_ALPHA_TEST);

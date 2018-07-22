@@ -41,8 +41,6 @@
 #define RENDER_NEED		1
 #define RENDER_MAYBE	2
 
-#define HASH_SIZE		0x1000
-
 #define DAYLIGHT		15
 
 #define DAY_TIME		2400.0

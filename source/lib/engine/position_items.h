@@ -26,6 +26,12 @@ struct ChunkInWorld
     ChunkCoord cx {}, cz {};
 };
 
+inline bool operator < (const ChunkInWorld& a, const ChunkInWorld& b)
+{
+    if (a.cx!= b.cx) return a.cx< b.cx;
+    else return a.cz < b.cz;
+}
+
 template<typename T>
 struct TypeInWorld : public ChunkInWorld, public TypeInChunk<T>
 {

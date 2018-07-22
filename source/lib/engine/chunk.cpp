@@ -257,7 +257,7 @@ void Chunk::render(char material, int *rendered) /*const*/
         int prob = 1000/(*rendered*5 + 1);
         int r = rand()%1000;
 
-        if (r <= prob || 1)
+        if (r <= prob /*|| 1*/)
             mode = GL_COMPILE;
     }
 

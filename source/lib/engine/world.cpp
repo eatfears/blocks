@@ -9,12 +9,6 @@
 World::World()
     : m_Player(*this)
 {
-    m_Chunks = new std::list<Chunk*>[HASH_SIZE];
-
-    //	parget = CreateEvent(NULL, false, false, NULL);
-    //	parget2 = CreateEvent(NULL, false, false, NULL);
-    //	mutex = CreateMutex(NULL, false, NULL);
-    //	semaphore = CreateSemaphore(NULL, 4, 4, NULL);
     m_SoftLight = true;
 
     m_SkyBright = 1.0f;
@@ -23,11 +17,10 @@ World::World()
 
 World::~World()
 {
-    for (int i = 0; i < HASH_SIZE; i++)
+    for (auto const &it : m_Chunks)
     {
-        m_Chunks[i].clear();
+        delete it.second;
     }
-    delete[] m_Chunks;
 }
 
 void World::buildWorld()
@@ -42,20 +35,15 @@ void World::buildWorld()
 
 Chunk* World::getChunkByPosition(ChunkCoord Cx, ChunkCoord Cz) const
 {
-    unsigned long bin = hash(Cx, Cz);
-    auto chunk = m_Chunks[bin].begin();
-
-    while (chunk != m_Chunks[bin].end())
+    for (auto const &it : m_Chunks)
     {
-        if (((*chunk)->m_X == Cx)&&((*chunk)->m_Z == Cz)) break;
-        ++chunk;
+        auto chunk = it.second;
+        if (chunk->m_X == Cx && chunk->m_Z == Cz)
+        {
+            return chunk;
+        }
     }
-    if (chunk == m_Chunks[bin].end())
-    {
-        return NULL;
-    }
-
-    return *chunk;
+    return nullptr;
 }
 
 // todo: loaded block under water hides water tile
@@ -307,7 +295,7 @@ void World::unLoadChunk(ChunkCoord x, ChunkCoord z)
     UnLoadChunkThread(&par);
 }
 
-void World::updateLight(Chunk& chunk) const
+void World::updateLight(Chunk &chunk) const
 {
     Chunk *p_chunk_array[5][5];
     p_chunk_array[2][2] = &chunk;
@@ -353,13 +341,9 @@ void World::updateLight(Chunk& chunk) const
 
 void World::saveChunks() const
 {
-    for (int i = 0; i < HASH_SIZE; i++)
+    for (auto const &it : m_Chunks)
     {
-        auto chunk = m_Chunks[i].begin();
-        while (chunk != m_Chunks[i].end())
-        {
-            (*chunk)->save();
-            ++chunk;
-        }
+        auto chunk = it.second;
+        chunk->save();
     }
 }

@@ -22,7 +22,8 @@ public:
     ~World();
 
     MaterialLibrary m_MaterialLib;
-    std::list<Chunk*> *m_Chunks;
+
+    std::map<ChunkInWorld, Chunk*> m_Chunks;
     Landscape m_Landscape;
     Character m_Player;
 
@@ -38,7 +39,6 @@ public:
     void unLoadChunk(ChunkCoord x, ChunkCoord z);
     Chunk* getChunkByPosition(ChunkCoord x, ChunkCoord z) const;
 
-    unsigned long hash(ChunkCoord x, ChunkCoord z) const { return (x + z*HASH_SIZE)&(HASH_SIZE-1); }
     void updateLight(Chunk& chunk) const;
 
     bool m_LightToRefresh;

@@ -24,9 +24,8 @@ void LoadChunkThread(void *pParams)
     chunk->open();
     chunk->drawLoadedBlocks();
 
-    unsigned long bin = world.hash(x, z);
-
-    world.m_Chunks[bin].push_front(chunk);
+    //todo: leak if already exists
+    world.m_Chunks[pos] = chunk;
     world.drawLoadedBlocksFinish(*chunk);
 
     if(chunk->m_LightToUpdate)
@@ -47,18 +46,16 @@ void UnLoadChunkThread(void *pParams)
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 #endif // _WIN32
 
-    unsigned long bin = world.hash(x, z);
-    auto chunk = world.m_Chunks[bin].begin();
-
-    while(chunk != world.m_Chunks[bin].end())
+    for (auto const &it : world.m_Chunks)
     {
-        if(((*chunk)->m_X == x)&&((*chunk)->m_Z == z)) break;
-        ++chunk;
+        auto chunk = it.second;
+        if(chunk->m_X == x && chunk->m_Z == z)
+        {
+            delete chunk;
+            world.m_Chunks.erase(it.first);
+            break;
+        }
     }
-
-    delete *chunk;
-
-    world.m_Chunks[bin].erase(chunk);
     world.drawUnLoadedBlocks(x, z);
 }
 
