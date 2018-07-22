@@ -7,8 +7,8 @@
 #include "light.h"
 
 
-Chunk::Chunk(ChunkCoord x, ChunkCoord z, World &world)
-    : m_World(world), m_X(x), m_Z(z)
+Chunk::Chunk(const ChunkInWorld &pos, World &world)
+    : m_World(world), m_X(pos.cx), m_Z(pos.cz)
 {
     m_pBlocks = new Block[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
     m_SkyLight = new char[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];

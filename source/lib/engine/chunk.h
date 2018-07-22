@@ -11,12 +11,6 @@ class World;
 
 typedef struct
 {
-    ChunkCoord x;
-    ChunkCoord z;
-} ChunkPosition;
-
-typedef struct
-{
     char material;
     char visible;
 } Block;
@@ -24,7 +18,7 @@ typedef struct
 class Chunk
 {
 public:
-    Chunk(ChunkCoord x, ChunkCoord z, World &world);
+    Chunk(const ChunkInWorld &pos, World &world);
     ~Chunk();
 
     Block *m_pBlocks;

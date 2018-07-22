@@ -3,8 +3,8 @@
 #include "common_include/definitions.h"
 
 
-typedef signed short    BlockCoord;
-typedef float           PointCoord;
+typedef signed short BlockCoord;
+typedef float PointCoord;
 
 template<typename T>
 struct TypeInChunk
@@ -17,7 +17,7 @@ struct TypeInChunk
 typedef TypeInChunk<BlockCoord> BlockInChunk;
 typedef TypeInChunk<PointCoord> PosInChunk;
 
-typedef signed short    ChunkCoord;
+typedef signed short ChunkCoord;
 
 struct ChunkInWorld
 {

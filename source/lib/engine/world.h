@@ -12,7 +12,7 @@ typedef struct params
 {
     ChunkCoord x;
     ChunkCoord z;
-    World *pWorld;
+    World *p_World;
 } Param;
 
 class World
@@ -40,8 +40,8 @@ public:
 
     unsigned long hash(ChunkCoord x, ChunkCoord z) const { return (x + z*HASH_SIZE)&(HASH_SIZE-1); }
     void updateLight(Chunk& chunk) const;
-    bool m_LightToRefresh;
 
+    bool m_LightToRefresh;
     bool m_SoftLight;
 
     GLfloat m_SkyBright;
@@ -52,6 +52,4 @@ public:
 private:
     void showTile(Chunk *chunk, int index, char side) const;
     void hideTile(Chunk *chunk, int index, char side);
-
-    std::list<ChunkPosition> m_LoadedChunks;
 };
