@@ -57,33 +57,33 @@ void Character::getPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr) const
     if (*zerr > abs(*zerr - 1)) *zerr = abs(*zerr - 1);
 }
 
-void Character::control(GLdouble FrameInterval)
+void Character::control(GLdouble frame_interval)
 {
     GLdouble step = WALK_SPEED;
     if (m_SpecialKeys[GLUT_KEY_SHIFT_L])
         step *= SPRINT_KOEF;
 
     if (m_Keyboard['W']) {
-        m_VelocityX -= FrameInterval*AIR_ACCEL*step*sin(TORAD(m_SpinY));
-        m_VelocityZ -= FrameInterval*AIR_ACCEL*step*cos(TORAD(m_SpinY));
+        m_VelocityX -= frame_interval*AIR_ACCEL*step*sin(TORAD(m_SpinY));
+        m_VelocityZ -= frame_interval*AIR_ACCEL*step*cos(TORAD(m_SpinY));
     }
     if (m_Keyboard['S']) {
-        m_VelocityX += FrameInterval*AIR_ACCEL*step*sin(TORAD(m_SpinY));
-        m_VelocityZ += FrameInterval*AIR_ACCEL*step*cos(TORAD(m_SpinY));
+        m_VelocityX += frame_interval*AIR_ACCEL*step*sin(TORAD(m_SpinY));
+        m_VelocityZ += frame_interval*AIR_ACCEL*step*cos(TORAD(m_SpinY));
     }
     if (m_Keyboard['D']) {
-        m_VelocityX += FrameInterval*AIR_ACCEL*step*cos(TORAD(m_SpinY));
-        m_VelocityZ -= FrameInterval*AIR_ACCEL*step*sin(TORAD(m_SpinY));
+        m_VelocityX += frame_interval*AIR_ACCEL*step*cos(TORAD(m_SpinY));
+        m_VelocityZ -= frame_interval*AIR_ACCEL*step*sin(TORAD(m_SpinY));
     }
     if (m_Keyboard['A']) {
-        m_VelocityX -= FrameInterval*AIR_ACCEL*step*cos(TORAD(m_SpinY));
-        m_VelocityZ += FrameInterval*AIR_ACCEL*step*sin(TORAD(m_SpinY));
+        m_VelocityX -= frame_interval*AIR_ACCEL*step*cos(TORAD(m_SpinY));
+        m_VelocityZ += frame_interval*AIR_ACCEL*step*sin(TORAD(m_SpinY));
     }
     if (m_Keyboard['R']) {
-        m_VelocityY += FrameInterval*AIR_ACCEL*step;
+        m_VelocityY += frame_interval*AIR_ACCEL*step;
     }
     if (m_Keyboard['F']) {
-        m_VelocityY -= FrameInterval*AIR_ACCEL*step;
+        m_VelocityY -= frame_interval*AIR_ACCEL*step;
     }
 
     GLdouble ko = m_VelocityX*m_VelocityX + m_VelocityZ*m_VelocityZ;
@@ -196,7 +196,7 @@ void Character::control(GLdouble FrameInterval)
 
     if (m_Keyboard['C']) {
         Chunk *chunk;
-        int index;
+        unsigned int index;
         m_World.findBlock(m_AimedBlock, &chunk, &index);
         if ((chunk)&&(chunk->m_pBlocks[index].material == MAT_DIRT)) {
             chunk->m_pBlocks[index].visible ^= (1 << SNOWCOVERED);
@@ -204,7 +204,7 @@ void Character::control(GLdouble FrameInterval)
     }
     if (m_Keyboard['V']) {
         Chunk *chunk;
-        int index;
+        unsigned int index;
         m_World.findBlock(m_AimedBlock, &chunk, &index);
         if ((chunk)&&(chunk->m_pBlocks[index].material == MAT_DIRT)) {
             chunk->m_pBlocks[index].visible ^= (1 << GRASSCOVERED);
@@ -220,78 +220,7 @@ void Character::control(GLdouble FrameInterval)
         m_World.saveChunks();
     }
 
-    m_Position = m_Position + PointInWorld(FrameInterval*m_VelocityX, FrameInterval*m_VelocityY, FrameInterval*m_VelocityZ);
-
-    /*{
-        signed short xx, yy, zz;
-        GLdouble wx = gfPosX + gfVelX;
-        GLdouble wy = gfPosY - PLAYER_HEIGHT + 0.1;
-        GLdouble wz = gfPosZ;
-
-        xx = floor(wx/TILE_SIZE + 0.5);
-        zz = floor(wz/TILE_SIZE + 0.5);
-        yy = floor(wy/TILE_SIZE);
-
-        if ((FindTile(xx, yy, zz) == NULL)&&(FindTile(xx, yy + 1, zz) == NULL))
-            gfPosX += g_FrameInterval*gfVelX;
-        else gfVelX = 0;
-    }
-    {
-        signed short xx, yy, zz;
-        GLdouble wx = gfPosX;
-        GLdouble wy = gfPosY - PLAYER_HEIGHT + 0.1;
-        GLdouble wz = gfPosZ + gfVelZ;
-
-        xx = floor(wx/TILE_SIZE + 0.5);
-        zz = floor(wz/TILE_SIZE + 0.5);
-        yy = floor(wy/TILE_SIZE);
-
-        if ((FindTile(xx, yy, zz) == NULL)&&(FindTile(xx, yy + 1, zz) == NULL))
-            gfPosZ += g_FrameInterval*gfVelZ;
-        else gfVelZ = 0;
-    }
-    */
-    /*if (falling)
-    {
-        gfPosY -= g_FrameInterval*gfVelY;
-        if (gfVelY < MAX_DOWNSTEP)
-            gfVelY += g_FrameInterval*STEP_DOWNSTEP;
-    }*/
-    /*
-    {
-        signed short xx, yy, zz;
-        GLdouble wx = gfPosX;
-        GLdouble wy = gfPosY - PLAYER_HEIGHT;
-        GLdouble wz = gfPosZ;
-
-        xx = floor(wx/TILE_SIZE + 0.5);
-        zz = floor(wz/TILE_SIZE + 0.5);
-        yy = floor(wy/TILE_SIZE);
-
-        if (FindTile(xx, yy, zz) == NULL) falling = true;
-        else
-        {
-            gfVelY = 0;
-            if (falling)
-            {
-                falling = false;
-                gfPosY = (yy + 1)*TILE_SIZE + PLAYER_HEIGHT - 0.001;
-            }
-        }
-    }
-
-    if (!falling)
-    {
-        gfVelX = 0;
-        gfVelZ = 0;
-    }*/
-    //falling = 1;
-
-    // 	if (dPositionX >= LOCATION_SIZE_XZ*TILE_SIZE) { dPositionX -= LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionX++;}
-    // 	if (dPositionX < 0) { dPositionX += LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionX--;}
-    // 	if (dPositionZ >= LOCATION_SIZE_XZ*TILE_SIZE) { dPositionZ -= LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionZ++;}
-    // 	if (dPositionZ < 0) { dPositionZ += LOCATION_SIZE_XZ*TILE_SIZE; lnwPositionZ--;}
-
+    m_Position = m_Position + PointInWorld(frame_interval*m_VelocityX, frame_interval*m_VelocityY, frame_interval*m_VelocityZ);
 }
 
 void Character::computeCenterCoords(GLsizei width, GLsizei height)
@@ -300,26 +229,26 @@ void Character::computeCenterCoords(GLsizei width, GLsizei height)
     GLdouble projection[16];	// матрица проекции.
     GLdouble modelview[16];		// видовая матрица.
     GLfloat vz;					// координаты курсора мыши в системе координат viewport-a.
-    GLdouble dispCenterX, dispCenterY, dispCenterZ;			// возвращаемые мировые координаты центра
+    GLdouble disp_center_x, disp_center_y, disp_center_z;			// возвращаемые мировые координаты центра
 
-    glGetIntegerv(GL_VIEWPORT,viewport);           // узнаём параметры viewport-a.
-    glGetDoublev(GL_PROJECTION_MATRIX,projection); // узнаём матрицу проекции.
-    glGetDoublev(GL_MODELVIEW_MATRIX,modelview);   // узнаём видовую матрицу.
+    glGetIntegerv(GL_VIEWPORT, viewport);           // узнаём параметры viewport-a.
+    glGetDoublev(GL_PROJECTION_MATRIX, projection); // узнаём матрицу проекции.
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);   // узнаём видовую матрицу.
 
     glReadPixels(width/2, height/2, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &vz);
-    gluUnProject((double) width/2,(double) height/2,(double) vz, modelview, projection, viewport, &dispCenterX, &dispCenterY, &dispCenterZ);
+    gluUnProject((double) width/2, (double) height/2, (double) vz, modelview, projection, viewport, &disp_center_x, &disp_center_y, &disp_center_z);
     m_CenterPos = m_Position;
 
     m_CenterPos.bx = 0;
     m_CenterPos.by = 0;
     m_CenterPos.bz = 0;
 
-    m_CenterPos = m_CenterPos + PointInWorld(dispCenterX, dispCenterY, dispCenterZ);
+    m_CenterPos = m_CenterPos + PointInWorld(disp_center_x, disp_center_y, disp_center_z);
 }
 
-void Character::computeLocalTime(double TimeOfDay)
+void Character::computeLocalTime(double time_of_day)
 {
-    m_LocalTimeOfDay = TimeOfDay + m_Longitude*DAY_TIME;
+    m_LocalTimeOfDay = time_of_day + m_Longitude*DAY_TIME;
 
     while (m_LocalTimeOfDay >= DAY_TIME) m_LocalTimeOfDay -= DAY_TIME;
     while (m_LocalTimeOfDay < 0.0) m_LocalTimeOfDay += DAY_TIME;
@@ -330,9 +259,9 @@ void Character::computeMyPosition()
     // checks if player is under water level
     PointInWorld pos(m_Position);
     pos.by += 0.125 - 0.5;
-    BlockInWorld waterPos(pos);
+    BlockInWorld water_pos(pos);
 
-    m_World.findBlock(waterPos, &m_pChunk, &m_Index);
+    m_World.findBlock(water_pos, &m_pChunk, &m_Index);
     m_UnderWater = m_pChunk && m_pChunk->m_pBlocks[m_Index].material == MAT_WATER;
     m_Longitude = (m_Position.bz/CHUNK_SIZE_XZ + m_Position.cz)/160;
 }

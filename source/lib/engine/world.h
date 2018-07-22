@@ -28,10 +28,10 @@ public:
     Character m_Player;
 
     void buildWorld();
-    int findBlock(const BlockInWorld &pos);
-    int findBlock(const BlockInWorld &pos, Chunk **chunk, int *index);
-    int addBlock(const BlockInWorld &pos, char mat);
-    int removeBlock(const BlockInWorld &pos);
+    bool findBlock(const BlockInWorld &pos);
+    bool findBlock(const BlockInWorld &pos, Chunk **chunk, unsigned int *index);
+    bool addBlock(const BlockInWorld &pos, char mat);
+    bool removeBlock(const BlockInWorld &pos);
 
     void drawLoadedBlocksFinish(Chunk &chunk);
     void drawUnLoadedBlocks(ChunkCoord x, ChunkCoord z);
@@ -50,6 +50,6 @@ public:
     void saveChunks() const;
 
 private:
-    void showTile(Chunk *chunk, int index, char side) const;
-    void hideTile(Chunk *chunk, int index, char side);
+    void showTile(Chunk *chunk, unsigned int index, char side) const;
+    void hideTile(Chunk *chunk, unsigned int index, char side) const;
 };

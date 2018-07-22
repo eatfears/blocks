@@ -50,7 +50,7 @@ Chunk* World::getChunkByPosition(ChunkCoord Cx, ChunkCoord Cz) const
 // todo: rewrite tiling engine!
 void World::drawLoadedBlocksFinish(Chunk &chunk)
 {
-    int index = 0;
+    unsigned int index = 0;
     BlockCoord chnkx, chnky, chnkz;
 
     while (index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
@@ -68,7 +68,7 @@ void World::drawLoadedBlocksFinish(Chunk &chunk)
         if (chunk.m_pBlocks[index].material != MAT_NO)
         {
             Chunk *p_temp_chunk;
-            int temp_index;
+            unsigned int temp_index;
 
             if (chunk.m_pBlocks[index].material == MAT_WATER)
             {
@@ -116,7 +116,7 @@ void World::drawLoadedBlocksFinish(Chunk &chunk)
         {
             Chunk *temp_chunk;
             Chunk *cur_chunk = &chunk;
-            int temp_index;
+            unsigned int temp_index;
             if (findBlock(pos.getSide(RIGHT), &temp_chunk, &temp_index)&&(temp_chunk->m_pBlocks[temp_index].material != MAT_WATER)) if (temp_chunk->m_pBlocks != cur_chunk->m_pBlocks)
                 showTile(&*temp_chunk, temp_index, LEFT);
             if (findBlock(pos.getSide(LEFT), &temp_chunk, &temp_index)&&(temp_chunk->m_pBlocks[temp_index].material != MAT_WATER)) if (temp_chunk->m_pBlocks != cur_chunk->m_pBlocks)
@@ -132,23 +132,23 @@ void World::drawLoadedBlocksFinish(Chunk &chunk)
 
 void World::drawUnLoadedBlocks(ChunkCoord x, ChunkCoord z)
 {
-    int index = 0;
-    BlockCoord chnkx, chnky, chnkz;
+    unsigned int index = 0;
+    BlockCoord chnk_x, chnk_y, chnk_z;
 
     while (index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
     {
-        Chunk::getBlockPositionByIndex(index, &chnkx, &chnky, &chnkz);
+        Chunk::getBlockPositionByIndex(index, &chnk_x, &chnk_y, &chnk_z);
 
-        if ((chnkx > 0)&&(chnkx < CHUNK_SIZE_XZ - 1)&&(chnkz > 0)&&(chnkz < CHUNK_SIZE_XZ - 1))
+        if ((chnk_x > 0)&&(chnk_x < CHUNK_SIZE_XZ - 1)&&(chnk_z > 0)&&(chnk_z < CHUNK_SIZE_XZ - 1))
         {
             index++;
             continue;
         }
 
-        BlockInWorld pos(x, z, chnkx, chnky, chnkz);
+        BlockInWorld pos(x, z, chnk_x, chnk_y, chnk_z);
 
         Chunk *temp_chunk;
-        int temp_index;
+        unsigned int temp_index;
         if (findBlock(pos.getSide(RIGHT), &temp_chunk, &temp_index)) hideTile(&*temp_chunk, temp_index, LEFT);
         if (findBlock(pos.getSide(LEFT), &temp_chunk, &temp_index)) hideTile(&*temp_chunk, temp_index, RIGHT);
         if (findBlock(pos.getSide(BACK), &temp_chunk, &temp_index)) hideTile(&*temp_chunk, temp_index, FRONT);
@@ -157,18 +157,18 @@ void World::drawUnLoadedBlocks(ChunkCoord x, ChunkCoord z)
     }
 }
 
-int World::addBlock(const BlockInWorld &pos, char mat)
+bool World::addBlock(const BlockInWorld &pos, char mat)
 {
-    if ((pos.by < 0)||(pos.by >= CHUNK_SIZE_Y)) return 0;
-    if (findBlock(pos)) return 0;
+    if ((pos.by < 0)||(pos.by >= CHUNK_SIZE_Y)) return false;
+    if (findBlock(pos)) return false;
 
     Chunk *chunk = getChunkByPosition(pos.cx, pos.cz);
-    if (chunk == NULL) return 0;
+    if (chunk == nullptr) return false;
 
-    int index = chunk->addBlock(pos.bx, pos.by, pos.bz, mat);
+    unsigned int index = chunk->addBlock(pos.bx, pos.by, pos.bz, mat);
 
     Chunk *temp_chunk = 0;
-    int temp_index;
+    unsigned int temp_index;
 
     if (chunk->m_pBlocks[index].material == MAT_WATER)
     {
@@ -207,20 +207,20 @@ int World::addBlock(const BlockInWorld &pos, char mat)
         else {hideTile(temp_chunk, temp_index, BACK); if ((temp_chunk)&&(temp_chunk->m_pBlocks[temp_index].material == MAT_WATER)) showTile(chunk, index, FRONT); }
     }
 
-    return 1;
+    return true;
 }
 
-int World::removeBlock(const BlockInWorld &pos)
+bool World::removeBlock(const BlockInWorld &pos)
 {
-    if ((pos.by < 0)||(pos.by >= CHUNK_SIZE_Y)) return 0;
-    if (!findBlock(pos)) return 0;
+    if ((pos.by < 0)||(pos.by >= CHUNK_SIZE_Y)) return false;
+    if (!findBlock(pos)) return false;
 
     Chunk *chunk = getChunkByPosition(pos.cx, pos.cz);
-    if (chunk == NULL) return 0;
+    if (chunk == nullptr) return false;
 
-    int index = chunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
+    unsigned int index = chunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
     Chunk *temp_chunk = 0;
-    int temp_index;
+    unsigned int temp_index;
 
     if (!findBlock(pos.getSide(TOP), &temp_chunk, &temp_index)||chunk->m_pBlocks[index].material == MAT_WATER) hideTile(chunk, index, TOP);
     else {showTile(temp_chunk, temp_index, BOTTOM); if (temp_chunk->m_pBlocks[temp_index].material == MAT_WATER) hideTile(chunk, index, TOP); }
@@ -236,10 +236,10 @@ int World::removeBlock(const BlockInWorld &pos)
     else {showTile(temp_chunk, temp_index, BACK); if (temp_chunk->m_pBlocks[temp_index].material == MAT_WATER) hideTile(chunk, index, FRONT); }
 
     chunk->removeBlock(pos.bx, pos.by, pos.bz);
-    return 1;
+    return true;
 }
 
-void World::showTile(Chunk *chunk, int index, char side) const
+void World::showTile(Chunk *chunk, unsigned int index, char side) const
 {
     if (!(chunk->m_pBlocks[index].visible & (1 << side)))
     {
@@ -250,7 +250,7 @@ void World::showTile(Chunk *chunk, int index, char side) const
     }
 }
 
-void World::hideTile(Chunk *chunk, int index, char side)
+void World::hideTile(Chunk *chunk, unsigned int index, char side) const
 {
     if (chunk->m_pBlocks[index].visible & (1 << side))
     {
@@ -261,26 +261,26 @@ void World::hideTile(Chunk *chunk, int index, char side)
     }
 }
 
-int World::findBlock(const BlockInWorld &pos, Chunk **chunk, int *index)
+bool World::findBlock(const BlockInWorld &pos, Chunk **chunk, unsigned int *index)
 {
-    if ((pos.by < 0)||(pos.by >= CHUNK_SIZE_Y)) { *chunk = NULL; *index = 0; return 0; }
+    if ((pos.by < 0)||(pos.by >= CHUNK_SIZE_Y)) { *chunk = nullptr; *index = 0; return false; }
     (*chunk) = getChunkByPosition(pos.cx, pos.cz);
-    if ((*chunk) == NULL) { *index = 0; return 0; }
+    if ((*chunk) == nullptr) { *index = 0; return false; }
     *index = pos.bx*CHUNK_SIZE_XZ + pos.bz + pos.by*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
     if ((*chunk)->getBlockMaterial(pos.bx, pos.by, pos.bz) == MAT_NO)
-        return 0;
-    return 1;
+        return false;
+    return true;
 }
 
-int World::findBlock(const BlockInWorld &pos)
+bool World::findBlock(const BlockInWorld &pos)
 {
-    if (pos.by < 0) return 0;
+    if (pos.by < 0) return false;
     Chunk *chunk = getChunkByPosition(pos.cx, pos.cz);
-    if (chunk == NULL) return 0;
+    if (chunk == nullptr) return false;
 
     if (chunk->getBlockMaterial(pos.bx, pos.by, pos.bz) == MAT_NO)
-        return 0;
-    return 1;
+        return false;
+    return true;
 }
 
 void World::loadChunk(ChunkCoord x, ChunkCoord z)
@@ -308,7 +308,7 @@ void World::updateLight(Chunk &chunk) const
             {
                 if ((i == 0)&&(j == 0) || (i == 4)&&(j == 0) || (i == 0)&&(j == 4) || (i == 4)&&(j == 4))
                 {
-                    p_chunk_array[i][j] = NULL;
+                    p_chunk_array[i][j] = nullptr;
                 }
                 else
                 {

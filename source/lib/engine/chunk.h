@@ -31,31 +31,31 @@ public:
 
     char m_NeedToRender[2];
 
-    int	addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
-    int removeBlock(BlockCoord x, BlockCoord y, BlockCoord z);
+    unsigned int addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
+    unsigned int removeBlock(BlockCoord x, BlockCoord y, BlockCoord z);
 
     void showTile(Block *bBlock, char side);
     void hideTile(Block *bBlock, char side);
 
-    char getBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z);
+    char getBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z) const;
 
-    int getBlockPositionByPointer(Block *bCurrentBlock, BlockCoord *x, BlockCoord *y, BlockCoord *z) const;
+    bool getBlockPositionByPointer(Block *p_current_block, BlockCoord *x, BlockCoord *y, BlockCoord *z) const;
 
-    inline static int getBlockPositionByIndex(int index, BlockCoord *x, BlockCoord *y, BlockCoord *z)
+    inline static bool getBlockPositionByIndex(unsigned int index, BlockCoord *x, BlockCoord *y, BlockCoord *z)
     {
-        if ((index < 0)||(index >= CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y))
+        if (index >= CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
         {
-            return -1;
+            return false;
         }
         *z  = index%CHUNK_SIZE_XZ;
         index /= CHUNK_SIZE_XZ;
         *x = index%CHUNK_SIZE_XZ;
         index /= CHUNK_SIZE_XZ;
         *y = index;
-        return 0;
+        return true;
     }
 
-    inline static int getIndexByPosition(BlockCoord x, BlockCoord y, BlockCoord z)
+    inline static unsigned int getIndexByPosition(BlockCoord x, BlockCoord y, BlockCoord z)
     {
         return x*CHUNK_SIZE_XZ + z + y*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
     }
@@ -69,7 +69,7 @@ public:
     void render(char mat, int *rendered) /*const*/;
 
 private:
-    int setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat);
+    unsigned int setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat);
     void drawTile(const BlockInWorld &pos, Block* block, char side) const;
 
     GLuint m_RenderList = 0;

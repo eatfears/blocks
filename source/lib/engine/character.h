@@ -28,11 +28,11 @@ public:
     World &m_World;
     bool m_UnderWater;
     Chunk *m_pChunk;
-    int m_Index;
+    unsigned int m_Index;
     double m_LocalTimeOfDay;
 
     void computeMyPosition();
-    void computeLocalTime(double TimeOfDay);
+    void computeLocalTime(double time_of_day);
 
 private:
     void getPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr) const;

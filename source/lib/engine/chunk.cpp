@@ -50,25 +50,25 @@ Chunk::~Chunk()
     glDeleteLists(m_RenderList, 2);
 }
 
-int Chunk::addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat)
+unsigned int Chunk::addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat)
 {
     x = x % CHUNK_SIZE_XZ;
     y = y % CHUNK_SIZE_Y;
     z = z % CHUNK_SIZE_XZ;
     if ((getBlockMaterial(x, y, z) != MAT_NO)||(getBlockMaterial(x, y, z) == -1)) return -1;
 
-    BlockCoord index = setBlockMaterial(x, y, z, mat);
+    unsigned int index = setBlockMaterial(x, y, z, mat);
     m_pBlocks[index].visible = 0;
     m_LightToUpdate = true;
 
     return index;
 }
 
-int Chunk::removeBlock(BlockCoord x, BlockCoord y, BlockCoord z)
+unsigned int Chunk::removeBlock(BlockCoord x, BlockCoord y, BlockCoord z)
 {
     if ((getBlockMaterial(x, y, z) == MAT_NO)||(getBlockMaterial(x, y, z) == -1)) return -1;
 
-    BlockCoord index = setBlockMaterial(x, y, z, MAT_NO);
+    unsigned int index = setBlockMaterial(x, y, z, MAT_NO);
     m_pBlocks[index].visible = 0;
     m_LightToUpdate = true;
 
@@ -123,39 +123,35 @@ void Chunk::hideTile(Block *p_block, char side)
     p_tiles->erase(it);
 }
 
-char Chunk::getBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z)
+char Chunk::getBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z) const
 {
-    if ((x < 0)||(z < 0)||(y < 0)||(x >= CHUNK_SIZE_XZ)||(z >= CHUNK_SIZE_XZ)||(y >= CHUNK_SIZE_Y))
+    if (x < 0 || z < 0 || y < 0 || x >= CHUNK_SIZE_XZ || z >= CHUNK_SIZE_XZ || y >= CHUNK_SIZE_Y)
     {
         return -1;
     }
     return m_pBlocks[x*CHUNK_SIZE_XZ + z + y*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ].material;
 }
 
-int Chunk::setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat)
+unsigned int Chunk::setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat)
 {
-    if ((x >= CHUNK_SIZE_XZ)||(z >= CHUNK_SIZE_XZ)||(y >= CHUNK_SIZE_Y))
+    if (x < 0 || z < 0 || y < 0 || x >= CHUNK_SIZE_XZ || z >= CHUNK_SIZE_XZ || y >= CHUNK_SIZE_Y)
     {
         return -1;
     }
-    int index = getIndexByPosition(x, y, z);
+    unsigned int index = getIndexByPosition(x, y, z);
     m_pBlocks[index].material = cMat;
     return index;
 }
 
-int Chunk::getBlockPositionByPointer(Block *tCurrentBlock, BlockCoord *x, BlockCoord *y, BlockCoord *z) const
+bool Chunk::getBlockPositionByPointer(Block *p_current_block, BlockCoord *x, BlockCoord *y, BlockCoord *z) const
 {
-    int t = tCurrentBlock - m_pBlocks;
-    if (getBlockPositionByIndex(t, x, y, z) == -1)
-    {
-        return -1;
-    }
-    return 0;
+    unsigned int t = p_current_block - m_pBlocks;
+    return getBlockPositionByIndex(t, x, y, z);
 }
 
 void Chunk::drawLoadedBlocks()
 {
-    int index = 0;
+    unsigned int index = 0;
     BlockCoord x, y, z;
 
     while (index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
