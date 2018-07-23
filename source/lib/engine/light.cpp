@@ -18,6 +18,13 @@ const float Light::m_LightTable[16] = {
     0.512f, 0.640f, 0.800f, 1.000f
 };
 
+const int Light::m_VertexX[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+const int Light::m_VertexY[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+const int Light::m_VertexZ[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+const int Light::m_VertexMinusX[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+const int Light::m_VertexMinusY[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+const int Light::m_VertexMinusZ[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+
 #include "platform.h"
 double constr = 0;
 double update = 0;
@@ -66,14 +73,14 @@ void Light::recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, int val, 
         bool water_flag = false;
         bool wall_flag = false;
 
-        if ((i >= CHUNK_SIZE_XZ - 1) && (j >= 0) && (k >= CHUNK_SIZE_XZ - 1)
-                && (i < 4*CHUNK_SIZE_XZ + 1) && (j < CHUNK_SIZE_Y) && (k < 4*CHUNK_SIZE_XZ + 1))
+        if (i >= CHUNK_SIZE_XZ - 1 && j >= 0 && k >= CHUNK_SIZE_XZ - 1
+                && i < 4*CHUNK_SIZE_XZ + 1 && j < CHUNK_SIZE_Y && k < 4*CHUNK_SIZE_XZ + 1)
         {
             temp_val = getVal(BlockInWorld(i, j, k), &water_flag, &wall_flag);
 
             if (!wall_flag || initial)
             {
-                if ((temp_val < val) || (temp_val <= val) && initial)
+                if (temp_val < val || (temp_val == val && initial))
                 {
                     setVal(BlockInWorld(i, j, k), val);
 
@@ -173,11 +180,11 @@ void Light::blockLight(const World &world, const Chunk &chunk, char side, BlockC
         }
         else
         {
-            res = (1.0 - world.m_SkyBright);
+            res = 1.0 - world.m_SkyBright;
         }
 
-        if ((side == FRONT)||(side == BACK)) res *= 0.85f;
-        if ((side == RIGHT)||(side == LEFT)) res *= 0.90f;
+        if (side == FRONT || side == BACK) res *= 0.85f;
+        if (side == RIGHT || side == LEFT) res *= 0.90f;
 
         glColor3f(res, res, res);
     }
@@ -193,59 +200,35 @@ void Light::softLight(const World &world, const BlockInWorld &pos, char side, in
         {
         case 0:
         {
-            int x[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-            int y[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-            int z[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-            res = getBrightAverage(world, pos, x, y, z, side);
+            res = getBrightAverage(world, pos, m_VertexMinusX, m_VertexY, m_VertexMinusZ, side);
         } break;
         case 1:
         {
-            int x[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-            int y[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-            int z[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-            res = getBrightAverage(world, pos, x, y, z, side);
+            res = getBrightAverage(world, pos, m_VertexMinusX, m_VertexY, m_VertexZ, side);
         } break;
         case 2:
         {
-            int x[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-            int y[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-            int z[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-            res = getBrightAverage(world, pos, x, y, z, side);
+            res = getBrightAverage(world, pos, m_VertexX, m_VertexY, m_VertexZ, side);
         } break;
         case 3:
         {
-            int x[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-            int y[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-            int z[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-            res = getBrightAverage(world, pos, x, y, z, side);
+            res = getBrightAverage(world, pos, m_VertexX, m_VertexY, m_VertexMinusZ, side);
         } break;
         case 4:
         {
-            int x[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-            int y[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-            int z[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-            res = getBrightAverage(world, pos, x, y, z, side);
+            res = getBrightAverage(world, pos, m_VertexMinusX, m_VertexMinusY, m_VertexMinusZ, side);
         } break;
         case 5:
         {
-            int x[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-            int y[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-            int z[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-            res = getBrightAverage(world, pos, x, y, z, side);
+            res = getBrightAverage(world, pos, m_VertexMinusX, m_VertexMinusY, m_VertexZ, side);
         } break;
         case 6:
         {
-            int x[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-            int y[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-            int z[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-            res = getBrightAverage(world, pos, x, y, z, side);
+            res = getBrightAverage(world, pos, m_VertexX, m_VertexMinusY, m_VertexZ, side);
         } break;
         case 7:
         {
-            int x[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-            int y[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-            int z[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-            res = getBrightAverage(world, pos, x, y, z, side);
+            res = getBrightAverage(world, pos, m_VertexX, m_VertexMinusY, m_VertexMinusZ, side);
         } break;
         }
 
@@ -256,7 +239,7 @@ void Light::softLight(const World &world, const BlockInWorld &pos, char side, in
     }
 }
 
-float Light::getBrightAverage(const World &world, const BlockInWorld &pos, int x[8], int y[8], int z[8], char side)
+float Light::getBrightAverage(const World &world, const BlockInWorld &pos, const int x[8], const int y[8], const int z[8], char side)
 {
     const Chunk *center = world.getChunkByPosition(pos);
     if (!center)
@@ -296,20 +279,28 @@ float Light::getBrightAverage(const World &world, const BlockInWorld &pos, int x
             }
 
             unsigned int index = temploc->getIndexByPosition(temp_pos_1.bx, temp_pos_1.by, temp_pos_1.bz);
-
-            if (i == 1 && temploc->m_pBlocks[index].material != MAT_NO && temploc->m_pBlocks[index].material != MAT_WATER)
-                diagonal_block_influate = false;
-            if (i == 2)
-            {
-                if (temploc->m_pBlocks[index].material == MAT_NO || temploc->m_pBlocks[index].material == MAT_WATER)
-                    diagonal_block_influate = true;
-            }
-
             mat[i] = Light::getLight(*temploc, index);
 
-            if (i == 3 && !diagonal_block_influate)
+            if (i == 1)
             {
-                mat[i] = 0.0f;
+                if (temploc->m_pBlocks[index].material != MAT_NO && temploc->m_pBlocks[index].material != MAT_WATER)
+                {
+                    diagonal_block_influate = false;
+                }
+            }
+            else if (i == 2)
+            {
+                if (temploc->m_pBlocks[index].material == MAT_NO || temploc->m_pBlocks[index].material == MAT_WATER)
+                {
+                    diagonal_block_influate = true;
+                }
+            }
+            else if (i == 3)
+            {
+                if (!diagonal_block_influate)
+                {
+                    mat[i] = 0.0f;
+                }
             }
 
         }

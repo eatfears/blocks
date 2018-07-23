@@ -37,12 +37,18 @@ public:
 private:
     static const float m_LightTable[16];
     static const char m_InfluencingLight[6][4];
+    static const int m_VertexX[8];
+    static const int m_VertexY[8];
+    static const int m_VertexZ[8];
+    static const int m_VertexMinusX[8];
+    static const int m_VertexMinusY[8];
+    static const int m_VertexMinusZ[8];
 
     Chunk *m_ChunkArray[5][5];
 
     inline void setVal(const BlockInWorld &pos, int val) const;
     inline int getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) const;
-    static float getBrightAverage(const World &world, const BlockInWorld &pos, int x[8], int y[8], int z[8], char side);
+    static float getBrightAverage(const World &world, const BlockInWorld &pos, const int x[8], const int y[8], const int z[8], char side);
     void recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial) const;
     void fillLight(Chunk &chunk) const;
 
