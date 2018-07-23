@@ -109,7 +109,7 @@ int Light::getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) co
     Chunk *p_temp_chunk = m_ChunkArray[pos.cx][pos.cz];
     if (p_temp_chunk)
     {
-        unsigned int index = p_temp_chunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
+        unsigned int index = p_temp_chunk->getIndexByPosition(pos);
         char mat = p_temp_chunk->m_pBlocks[index].material;
 
         if ((mat == MAT_NO)||(mat == MAT_WATER))
@@ -138,7 +138,7 @@ void Light::setVal(const BlockInWorld &pos, int val) const
     Chunk *p_temp_chunk = m_ChunkArray[pos.cx][pos.cz];
     if (p_temp_chunk)
     {
-        unsigned int index = p_temp_chunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
+        unsigned int index = p_temp_chunk->getIndexByPosition(pos);
 
         if (m_Skylight)
         {
@@ -175,7 +175,7 @@ void Light::blockLight(const World &world, const Chunk &chunk, char side, BlockC
         GLfloat res;
         if (temploc)
         {
-            unsigned int index = temploc->getIndexByPosition(pos_side.bx, pos_side.by, pos_side.bz);
+            unsigned int index = temploc->getIndexByPosition(pos_side);
             res = Light::getLight(*temploc, index);
         }
         else
@@ -250,47 +250,46 @@ float Light::getBrightAverage(const World &world, const BlockInWorld &pos, const
     GLfloat max = 10.0f;
     GLfloat mat[4] = {0, 0, 0, 0};
     float res = 0;
-    const Chunk *temploc;
+    const Chunk *chunk;
     int infl_light;
-    BlockInWorld temp_pos_1, temp_pos_2;
+    BlockInWorld temp_pos;
     bool diagonal_block_influate = true;
 
     for (int i = 0; i < 4; i++)
     {
         infl_light = Light::m_InfluencingLight[side][i];
-        temp_pos_2 = pos + BlockInChunk(x[infl_light], y[infl_light], z[infl_light]);
-        if (temp_pos_2.cx == center->cx && temp_pos_2.cz == center->cz)
+        temp_pos = pos + BlockInChunk(x[infl_light], y[infl_light], z[infl_light]);
+
+        if (temp_pos.by < 0 || temp_pos.by >= CHUNK_SIZE_Y)
         {
-            temploc = center;
+            mat[i] = max;
+            continue;
+        }
+
+        if (temp_pos.cx == center->cx && temp_pos.cz == center->cz)
+        {
+            chunk = center;
         }
         else
         {
-            temploc = world.getChunkByPosition(temp_pos_2);
+            chunk = world.getChunkByPosition(temp_pos);
         }
 
-        if (temploc)
+        if (chunk)
         {
-            temp_pos_1 = pos + BlockInChunk(x[infl_light], y[infl_light], z[infl_light]); // todo: delete
-
-            if (temp_pos_1.by < 0 || temp_pos_1.by >= CHUNK_SIZE_Y)
-            {
-                mat[i] = max;
-                continue;
-            }
-
-            unsigned int index = temploc->getIndexByPosition(temp_pos_1.bx, temp_pos_1.by, temp_pos_1.bz);
-            mat[i] = Light::getLight(*temploc, index);
+            unsigned int index = chunk->getIndexByPosition(temp_pos);
+            mat[i] = Light::getLight(*chunk, index);
 
             if (i == 1)
             {
-                if (temploc->m_pBlocks[index].material != MAT_NO && temploc->m_pBlocks[index].material != MAT_WATER)
+                if (chunk->m_pBlocks[index].material != MAT_NO && chunk->m_pBlocks[index].material != MAT_WATER)
                 {
                     diagonal_block_influate = false;
                 }
             }
             else if (i == 2)
             {
-                if (temploc->m_pBlocks[index].material == MAT_NO || temploc->m_pBlocks[index].material == MAT_WATER)
+                if (chunk->m_pBlocks[index].material == MAT_NO || chunk->m_pBlocks[index].material == MAT_WATER)
                 {
                     diagonal_block_influate = true;
                 }

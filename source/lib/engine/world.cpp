@@ -210,7 +210,7 @@ bool World::removeBlock(const BlockInWorld &pos)
     if (chunk == nullptr) return false;
 
     Chunk *temp_chunk = 0;
-    unsigned int index = chunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
+    unsigned int index = chunk->getIndexByPosition(pos);
     unsigned int temp_index;
 
     if (!findBlock(pos.getSide(TOP), &temp_chunk, &temp_index)||chunk->m_pBlocks[index].material == MAT_WATER) hideTile(chunk, index, TOP);

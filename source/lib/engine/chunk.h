@@ -58,6 +58,11 @@ public:
         return true;
     }
 
+    inline static unsigned int getIndexByPosition(const BlockInChunk &pos)
+    {
+        return getIndexByPosition(pos.bx, pos.by, pos.bz);
+    }
+
     inline static unsigned int getIndexByPosition(BlockCoord x, BlockCoord y, BlockCoord z)
     {
         return x*CHUNK_SIZE_XZ + z + y*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
