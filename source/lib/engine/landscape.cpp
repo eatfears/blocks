@@ -69,8 +69,8 @@ void Landscape::init(unsigned int seed)
 
 void Landscape::generate(Chunk &chunk) const
 {
-    ChunkCoord chunk_x = chunk.m_X;
-    ChunkCoord chunk_z = chunk.m_Z;
+    ChunkCoord chunk_x = chunk.cx;
+    ChunkCoord chunk_z = chunk.cz;
 
     double height;
     double density;
@@ -223,8 +223,8 @@ void Landscape::save(const Chunk &chunk, std::fstream &savefile) const
 void Landscape::fill(Chunk& chunk, char mat, double fillness, int height) const
 {
     int material = mat;
-    ChunkCoord chunk_x = chunk.m_X;
-    ChunkCoord chunk_z = chunk.m_Z;
+    ChunkCoord chunk_x = chunk.cx;
+    ChunkCoord chunk_z = chunk.cz;
 
     for (int i = chunk_x*CHUNK_SIZE_XZ; i < (chunk_x + 1)*CHUNK_SIZE_XZ; i++)
     {

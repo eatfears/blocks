@@ -29,7 +29,7 @@ public:
     Light(Chunk *ChnkArr[5][5]);
 
     void updateLight() const;
-    static void blockLight(const World &world, const Chunk& chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz);
+    static void blockLight(const World &world, const Chunk& chunk, char side, BlockCoord x, BlockCoord y, BlockCoord z);
     static void softLight(const World &world, const BlockInWorld &pos, char side, int vertex);
     bool m_Skylight = true;
 
@@ -42,7 +42,9 @@ private:
 
     inline void setVal(const BlockInWorld &pos, int val) const;
     inline int getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) const;
-    static float getBrightAverage(const World &world, const BlockInWorld &pos, int xx[8], int yy[8], int zz[8], char side);
+    static float getBrightAverage(const World &world, const BlockInWorld &pos, int x[8], int y[8], int z[8], char side);
     void recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial) const;
     void fillLight(Chunk &chunk) const;
+
+    DEFINE_LOGGER(LIGHT, logger)
 };

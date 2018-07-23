@@ -15,7 +15,7 @@ typedef struct
     char visible;
 } Block;
 
-class Chunk
+class Chunk : public ChunkInWorld
 {
 public:
     Chunk(const ChunkInWorld &pos, World &world);
@@ -27,7 +27,6 @@ public:
     const World &m_World;
     std::list<Block*> *m_pDisplayedTiles;
     std::list<Block*> *m_pDisplayedWaterTiles;
-    ChunkCoord m_X, m_Z;
 
     char m_NeedToRender[2];
 

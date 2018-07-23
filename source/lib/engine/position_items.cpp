@@ -1,6 +1,7 @@
 #include "position_items.h"
 
 #include <cmath>
+#include <stdexcept>
 
 #include "noise/primes.h"
 
@@ -30,6 +31,9 @@ BlockInWorld BlockInWorld::getSide(char side) const
         break;
     case BACK:
         return res + BlockInChunk(0, 0, 1);
+        break;
+    default:
+        throw std::logic_error("unknown side: " + side);
         break;
     }
     return res;

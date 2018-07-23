@@ -144,11 +144,11 @@ void Light::setVal(const BlockInWorld &pos, int val) const
     }
 }
 
-void Light::blockLight(const World &world, const Chunk &chunk, char side, BlockCoord cx, BlockCoord cy, BlockCoord cz)
+void Light::blockLight(const World &world, const Chunk &chunk, char side, BlockCoord x, BlockCoord y, BlockCoord z)
 {
     if (!world.m_SoftLight)
     {
-        const BlockInWorld pos = BlockInWorld(chunk.m_X, chunk.m_Z, cx, cy, cz);
+        const BlockInWorld pos = BlockInWorld(chunk, x, y, z);
         const BlockInWorld pos_side = pos.getSide(side);
 
         static const Chunk *temploc;
@@ -187,76 +187,76 @@ void Light::softLight(const World &world, const BlockInWorld &pos, char side, in
 {
     if (world.m_SoftLight)
     {
-        static GLfloat res = 0;
+        static GLfloat res = 0.0f;
         // todo: no repeats
         switch (vertex)
         {
         case 0:
         {
-            int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-            int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-            int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-            res = getBrightAverage(world, pos, xx, yy, zz, side);
+            int x[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+            int y[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+            int z[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+            res = getBrightAverage(world, pos, x, y, z, side);
         } break;
         case 1:
         {
-            int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-            int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-            int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-            res = getBrightAverage(world, pos, xx, yy, zz, side);
+            int x[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+            int y[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+            int z[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+            res = getBrightAverage(world, pos, x, y, z, side);
         } break;
         case 2:
         {
-            int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-            int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-            int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-            res = getBrightAverage(world, pos, xx, yy, zz, side);
+            int x[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+            int y[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+            int z[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+            res = getBrightAverage(world, pos, x, y, z, side);
         } break;
         case 3:
         {
-            int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-            int yy[8] = {0, 0, 0, 0, 1, 1, 1, 1};
-            int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-            res = getBrightAverage(world, pos, xx, yy, zz, side);
+            int x[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+            int y[8] = {0, 0, 0, 0, 1, 1, 1, 1};
+            int z[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+            res = getBrightAverage(world, pos, x, y, z, side);
         } break;
         case 4:
         {
-            int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-            int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-            int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-            res = getBrightAverage(world, pos, xx, yy, zz, side);
+            int x[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+            int y[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+            int z[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+            res = getBrightAverage(world, pos, x, y, z, side);
         } break;
         case 5:
         {
-            int xx[8] = {0, 0,-1,-1, 0, 0,-1,-1};
-            int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-            int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-            res = getBrightAverage(world, pos, xx, yy, zz, side);
+            int x[8] = {0, 0,-1,-1, 0, 0,-1,-1};
+            int y[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+            int z[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+            res = getBrightAverage(world, pos, x, y, z, side);
         } break;
         case 6:
         {
-            int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-            int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-            int zz[8] = {0, 1, 0, 1, 0, 1, 0, 1};
-            res = getBrightAverage(world, pos, xx, yy, zz, side);
+            int x[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+            int y[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+            int z[8] = {0, 1, 0, 1, 0, 1, 0, 1};
+            res = getBrightAverage(world, pos, x, y, z, side);
         } break;
         case 7:
         {
-            int xx[8] = {0, 0, 1, 1, 0, 0, 1, 1};
-            int yy[8] = {0, 0, 0, 0,-1,-1,-1,-1};
-            int zz[8] = {0,-1, 0,-1, 0,-1, 0,-1};
-            res = getBrightAverage(world, pos, xx, yy, zz, side);
+            int x[8] = {0, 0, 1, 1, 0, 0, 1, 1};
+            int y[8] = {0, 0, 0, 0,-1,-1,-1,-1};
+            int z[8] = {0,-1, 0,-1, 0,-1, 0,-1};
+            res = getBrightAverage(world, pos, x, y, z, side);
         } break;
         }
 
-        if ((side == FRONT)||(side == BACK)) res *= 0.85f;
-        if ((side == RIGHT)||(side == LEFT)) res *= 0.90f;
+        if (side == FRONT || side == BACK) res *= 0.85f;
+        if (side == RIGHT || side == LEFT) res *= 0.90f;
 
         glColor3f(res, res, res);
     }
 }
 
-float Light::getBrightAverage(const World &world, const BlockInWorld &pos, int xx[8], int yy[8], int zz[8], char side)
+float Light::getBrightAverage(const World &world, const BlockInWorld &pos, int x[8], int y[8], int z[8], char side)
 {
     const Chunk *center = world.getChunkByPosition(pos);
     if (!center)
@@ -264,6 +264,7 @@ float Light::getBrightAverage(const World &world, const BlockInWorld &pos, int x
         return 1.0;
     }
 
+    GLfloat max = 10.0f;
     GLfloat mat[4] = {0, 0, 0, 0};
     float res = 0;
     const Chunk *temploc;
@@ -274,18 +275,23 @@ float Light::getBrightAverage(const World &world, const BlockInWorld &pos, int x
     for (int i = 0; i < 4; i++)
     {
         infl_light = Light::m_InfluencingLight[side][i];
-        temp_pos_2 = pos + BlockInChunk(xx[infl_light], yy[infl_light], zz[infl_light]);
-        if ((temp_pos_2.cx != center->m_X)||(temp_pos_2.cz != center->m_Z))
+        temp_pos_2 = pos + BlockInChunk(x[infl_light], y[infl_light], z[infl_light]);
+        if (temp_pos_2.cx == center->cx && temp_pos_2.cz == center->cz)
+        {
+            temploc = center;
+        }
+        else
+        {
             temploc = world.getChunkByPosition(temp_pos_2);
-        else temploc = center;
+        }
 
         if (temploc)
         {
-            temp_pos_1 = pos + BlockInChunk(xx[infl_light], yy[infl_light], zz[infl_light]); // todo: delete
+            temp_pos_1 = pos + BlockInChunk(x[infl_light], y[infl_light], z[infl_light]); // todo: delete
 
             if (temp_pos_1.by < 0 || temp_pos_1.by >= CHUNK_SIZE_Y)
             {
-                mat[i] = 10.0f;
+                mat[i] = max;
                 continue;
             }
 
@@ -302,15 +308,21 @@ float Light::getBrightAverage(const World &world, const BlockInWorld &pos, int x
             mat[i] = Light::getLight(*temploc, index);
 
             if (i == 3 && !diagonal_block_influate)
+            {
                 mat[i] = 0.0f;
+            }
 
-        } else mat[i] = 10.0f;
+        }
+        else
+        {
+            mat[i] = max;
+        }
     }
 
     int count = 0;
     for (int i = 0; i < 4; i++)
     {
-        if (mat[i] != 10.0f)
+        if (mat[i] != max)
         {
             res += mat[i];
             count ++;

@@ -51,4 +51,6 @@ public:
 private:
     void showTile(Chunk *chunk, unsigned int index, char side) const;
     void hideTile(Chunk *chunk, unsigned int index, char side) const;
+
+    DEFINE_LOGGER(WORLD, logger)
 };
