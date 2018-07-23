@@ -11,8 +11,8 @@ Chunk::Chunk(const ChunkInWorld &pos, World &world)
     : ChunkInWorld(pos), m_World(world)
 {
     m_pBlocks = new Block[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
-    m_SkyLight = new char[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
-    m_TorchLight = new char[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
+    m_SkyLight = new unsigned char[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
+    m_TorchLight = new unsigned char[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
 
     m_pDisplayedTiles = new std::list<Block*>[6];
     m_pDisplayedWaterTiles = new std::list<Block*>[6];
@@ -52,10 +52,11 @@ Chunk::~Chunk()
 
 unsigned int Chunk::addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat)
 {
-    x = x % CHUNK_SIZE_XZ;
-    y = y % CHUNK_SIZE_Y;
-    z = z % CHUNK_SIZE_XZ;
-    if (getBlockMaterial(x, y, z) != MAT_NO || getBlockMaterial(x, y, z) == -1) return -1;
+    char ex_mat = getBlockMaterial(x, y, z);
+    if (ex_mat != MAT_NO || ex_mat == -1)
+    {
+        return -1;
+    }
 
     unsigned int index = setBlockMaterial(x, y, z, mat);
     m_pBlocks[index].visible = 0;
@@ -66,7 +67,11 @@ unsigned int Chunk::addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat)
 
 unsigned int Chunk::removeBlock(BlockCoord x, BlockCoord y, BlockCoord z)
 {
-    if ( getBlockMaterial(x, y, z) == MAT_NO || getBlockMaterial(x, y, z) == -1 ) return -1;
+    char ex_mat = getBlockMaterial(x, y, z);
+    if (ex_mat == MAT_NO || ex_mat == -1 )
+    {
+        return -1;
+    }
 
     unsigned int index = setBlockMaterial(x, y, z, MAT_NO);
     m_pBlocks[index].visible = 0;
@@ -75,7 +80,7 @@ unsigned int Chunk::removeBlock(BlockCoord x, BlockCoord y, BlockCoord z)
     return index;
 }
 
-void Chunk::showTile(Block *p_block, char side)
+void Chunk::showTile(Block *p_block, unsigned char side)
 {
     if (!p_block) return;
     if (p_block->material == MAT_NO) return;
@@ -95,7 +100,7 @@ void Chunk::showTile(Block *p_block, char side)
     p_block->visible |= (1 << side);
 }
 
-void Chunk::hideTile(Block *p_block, char side)
+void Chunk::hideTile(Block *p_block, unsigned char side)
 {
     if (!p_block) return;
     if (p_block->material == MAT_NO) return;
@@ -284,12 +289,10 @@ void Chunk::render(char material, int *rendered) /*const*/
 
         std::list<Block*> *p_tiles;
         BlockCoord x, y, z;
-        BlockInWorld temp, blckw;
+        BlockInWorld temp, this_pos = BlockInWorld(cx, cz);
 
         for (int side = 0; side < 6; side++)
         {
-            blckw = BlockInWorld(cx, cz);
-
             if (material == MAT_WATER)
             {
                 p_tiles = &m_pDisplayedWaterTiles[side];
@@ -302,11 +305,13 @@ void Chunk::render(char material, int *rendered) /*const*/
             auto it = p_tiles->begin();
             while (it != p_tiles->end())
             {
-                getBlockPositionByPointer(*it, &x, &y, &z);
+                if (getBlockPositionByPointer(*it, &x, &y, &z))
+                {
+                    Light::blockLight(m_World, *this, side, x, y, z);
+                    temp = this_pos + BlockInWorld(x, y, z);
+                    drawTile(temp, *it, side);
 
-                Light::blockLight(m_World, *this, side, x, y, z);
-                temp = blckw + BlockInWorld(x, y, z);
-                drawTile(temp, *it, side);
+                }
                 ++it;
             }
         }
@@ -350,114 +355,114 @@ void Chunk::drawTile(const BlockInWorld &tile_pos, Block* block, char side) cons
     {
     case TOP:
     {
-        Light::softLight(m_World, tile_pos, side, 0);
+        Light::softLight(m_World, *this, tile_pos, side, 0);
         glTexCoord2d(0.0625 - space + offset_x, 0.0 + space + offset_y);
         glVertex3d(x_coord, y_coord + 1, z_coord);
 
-        Light::softLight(m_World, tile_pos, side, 1);
+        Light::softLight(m_World, *this, tile_pos, side, 1);
         glTexCoord2d(0.0 + space + offset_x, 0.0 + space + offset_y);
         glVertex3d(x_coord, y_coord + 1, z_coord + 1);
 
-        Light::softLight(m_World, tile_pos, side, 2);
+        Light::softLight(m_World, *this, tile_pos, side, 2);
         glTexCoord2d(0.0 + space + offset_x, 0.0625 - space + offset_y);
         glVertex3d(x_coord + 1, y_coord + 1, z_coord + 1);
 
-        Light::softLight(m_World, tile_pos, side, 3);
+        Light::softLight(m_World, *this, tile_pos, side, 3);
         glTexCoord2d(0.0625 - space + offset_x, 0.0625 - space + offset_y);
         glVertex3d(x_coord + 1, y_coord + 1, z_coord);
     }
         break;
     case BOTTOM:
     {
-        Light::softLight(m_World, tile_pos, side, 4);
+        Light::softLight(m_World, *this, tile_pos, side, 4);
         glTexCoord2d(0.0625 - space + offset_x, 0.0 + space + offset_y);
         glVertex3d(x_coord, y_coord, z_coord);
 
-        Light::softLight(m_World, tile_pos, side, 7);
+        Light::softLight(m_World, *this, tile_pos, side, 7);
         glTexCoord2d(0.0625 - space + offset_x, 0.0625 - space + offset_y);
         glVertex3d(x_coord + 1, y_coord, z_coord);
 
-        Light::softLight(m_World, tile_pos, side, 6);
+        Light::softLight(m_World, *this, tile_pos, side, 6);
         glTexCoord2d(0.0 + space + offset_x, 0.0625 - space + offset_y);
         glVertex3d(x_coord + 1, y_coord, z_coord + 1);
 
-        Light::softLight(m_World, tile_pos, side, 5);
+        Light::softLight(m_World, *this, tile_pos, side, 5);
         glTexCoord2d(0.0 + space + offset_x, 0.0 + space + offset_y);
         glVertex3d(x_coord, y_coord, z_coord + 1);
     }
         break;
     case RIGHT:
     {
-        Light::softLight(m_World, tile_pos, side, 7);
+        Light::softLight(m_World, *this, tile_pos, side, 7);
         glTexCoord2d(0.0625 - space + offset_x, 0.0625 - space + offset_y);
         glVertex3d(x_coord + 1, y_coord, z_coord);
 
-        Light::softLight(m_World, tile_pos, side, 3);
+        Light::softLight(m_World, *this, tile_pos, side, 3);
         glTexCoord2d(0.0625 - space + offset_x, 0.0 + space + offset_y);
         glVertex3d(x_coord + 1, y_coord + 1, z_coord);
 
-        Light::softLight(m_World, tile_pos, side, 2);
+        Light::softLight(m_World, *this, tile_pos, side, 2);
         glTexCoord2d(0.0 + space + offset_x, 0.0 + space + offset_y);
         glVertex3d(x_coord + 1, y_coord + 1, z_coord + 1);
 
-        Light::softLight(m_World, tile_pos, side, 6);
+        Light::softLight(m_World, *this, tile_pos, side, 6);
         glTexCoord2d(0.0 + space + offset_x, 0.0625 - space + offset_y);
         glVertex3d(x_coord + 1, y_coord, z_coord + 1);
     }
         break;
     case LEFT:
     {
-        Light::softLight(m_World, tile_pos, side, 4);
+        Light::softLight(m_World, *this, tile_pos, side, 4);
         glTexCoord2d(0.0 + space + offset_x, 0.0625 - space + offset_y);
         glVertex3d(x_coord, y_coord, z_coord);
 
-        Light::softLight(m_World, tile_pos, side, 5);
+        Light::softLight(m_World, *this, tile_pos, side, 5);
         glTexCoord2d(0.0625 - space + offset_x, 0.0625 - space + offset_y);
         glVertex3d(x_coord, y_coord, z_coord + 1);
 
-        Light::softLight(m_World, tile_pos, side, 1);
+        Light::softLight(m_World, *this, tile_pos, side, 1);
         glTexCoord2d(0.0625 - space + offset_x, 0.0 + space + offset_y);
         glVertex3d(x_coord, y_coord + 1, z_coord + 1);
 
-        Light::softLight(m_World, tile_pos, side, 0);
+        Light::softLight(m_World, *this, tile_pos, side, 0);
         glTexCoord2d(0.0 + space + offset_x, 0.0 + space + offset_y);
         glVertex3d(x_coord, y_coord + 1, z_coord);
     }
         break;
     case BACK:
     {
-        Light::softLight(m_World, tile_pos, side, 5);
+        Light::softLight(m_World, *this, tile_pos, side, 5);
         glTexCoord2d(0.0 + space + offset_x, 0.0625 - space + offset_y);
         glVertex3d(x_coord, y_coord, z_coord + 1);
 
-        Light::softLight(m_World, tile_pos, side, 6);
+        Light::softLight(m_World, *this, tile_pos, side, 6);
         glTexCoord2d(0.0625 - space + offset_x, 0.0625 - space + offset_y);
         glVertex3d(x_coord + 1, y_coord, z_coord + 1);
 
-        Light::softLight(m_World, tile_pos, side, 2);
+        Light::softLight(m_World, *this, tile_pos, side, 2);
         glTexCoord2d(0.0625 - space + offset_x, 0.0 + space + offset_y);
         glVertex3d(x_coord + 1, y_coord + 1, z_coord + 1);
 
-        Light::softLight(m_World, tile_pos, side, 1);
+        Light::softLight(m_World, *this, tile_pos, side, 1);
         glTexCoord2d(0.0 + space + offset_x, 0.0 + space + offset_y);
         glVertex3d(x_coord, y_coord + 1, z_coord + 1);
     }
         break;
     case FRONT:
     {
-        Light::softLight(m_World, tile_pos, side, 4);
+        Light::softLight(m_World, *this, tile_pos, side, 4);
         glTexCoord2d(0.0625 - space + offset_x, 0.0625 - space + offset_y);
         glVertex3d(x_coord, y_coord, z_coord);
 
-        Light::softLight(m_World, tile_pos, side, 0);
+        Light::softLight(m_World, *this, tile_pos, side, 0);
         glTexCoord2d(0.0625 - space + offset_x, 0.0 + space + offset_y);
         glVertex3d(x_coord, y_coord + 1, z_coord);
 
-        Light::softLight(m_World, tile_pos, side, 3);
+        Light::softLight(m_World, *this, tile_pos, side, 3);
         glTexCoord2d(0.0 + space + offset_x, 0.0 + space + offset_y);
         glVertex3d(x_coord + 1, y_coord + 1, z_coord);
 
-        Light::softLight(m_World, tile_pos, side, 7);
+        Light::softLight(m_World, *this, tile_pos, side, 7);
         glTexCoord2d(0.0 + space + offset_x, 0.0625 - space + offset_y);
         glVertex3d(x_coord + 1, y_coord, z_coord);
     }

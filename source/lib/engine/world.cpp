@@ -97,7 +97,7 @@ void World::drawLoadedBlocksFinish(Chunk &chunk)
     {
         chunk.getBlockPositionByPointer(chunk.m_pBlocks + index, &chunk_x, &chunk_y, &chunk_z);
 
-        if ((chunk_x > 0)&&(chunk_x < CHUNK_SIZE_XZ - 1)&&(chunk_z > 0)&&(chunk_z < CHUNK_SIZE_XZ - 1))
+        if (chunk_x > 0 && chunk_x < CHUNK_SIZE_XZ - 1 && chunk_z > 0 && chunk_z < CHUNK_SIZE_XZ - 1)
         {
             index++;
             continue;
@@ -151,13 +151,12 @@ void World::drawUnLoadedBlocks(const ChunkInWorld &pos)
 
 bool World::addBlock(const BlockInWorld &pos, char mat)
 {
-    if (pos.by < 0 || pos.by >= CHUNK_SIZE_Y) return false;
-    if (findBlock(pos)) return false;
+    if (pos.overflow() || findBlock(pos)) return false;
 
     Chunk *chunk = getChunkByPosition(pos);
     if (chunk == nullptr) return false;
 
-    Chunk *temp_chunk = 0;
+    Chunk *temp_chunk = nullptr;
      unsigned int index = chunk->addBlock(pos.bx, pos.by, pos.bz, mat);
     unsigned int temp_index;
 

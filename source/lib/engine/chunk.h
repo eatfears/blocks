@@ -22,8 +22,8 @@ public:
     ~Chunk();
 
     Block *m_pBlocks;
-    char *m_SkyLight;
-    char *m_TorchLight;
+    unsigned char *m_SkyLight;
+    unsigned char *m_TorchLight;
     const World &m_World;
     std::list<Block*> *m_pDisplayedTiles;
     std::list<Block*> *m_pDisplayedWaterTiles;
@@ -33,8 +33,8 @@ public:
     unsigned int addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
     unsigned int removeBlock(BlockCoord x, BlockCoord y, BlockCoord z);
 
-    void showTile(Block *bBlock, char side);
-    void hideTile(Block *bBlock, char side);
+    void showTile(Block *bBlock, unsigned char side);
+    void hideTile(Block *bBlock, unsigned char side);
 
     char getBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z) const;
 

@@ -108,5 +108,5 @@ public:
     BlockInWorld(const PointInWorld &pos);
 
     BlockInWorld getSide(char side) const;
-    bool overflow() const { return this->by >= CHUNK_SIZE_Y || this->by < 0; }
+    bool overflow() const { return this->by < 0 || this->by >= CHUNK_SIZE_Y; }
 };

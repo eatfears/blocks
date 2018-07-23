@@ -26,31 +26,28 @@ class World;
 class Light
 {
 public:
-    Light(Chunk *ChnkArr[5][5]);
+    Light(Chunk *chunk_array[5][5]);
 
     void updateLight() const;
-    static void blockLight(const World &world, const Chunk& chunk, char side, BlockCoord x, BlockCoord y, BlockCoord z);
-    static void softLight(const World &world, const BlockInWorld &pos, char side, int vertex);
+    static void blockLight(const World &world, const Chunk &chunk, char side, BlockCoord x, BlockCoord y, BlockCoord z);
+    static void softLight(const World &world, const Chunk &chunk, const BlockInWorld &pos, char side, int vertex);
     bool m_Skylight = true;
 
     static GLfloat getLight(const Chunk &chunk, unsigned int index);
 private:
     static const float m_LightTable[16];
-    static const char m_InfluencingLight[6][4];
+    static const unsigned char m_InfluencingLight[6][4];
     static const int m_VertexX[8];
     static const int m_VertexY[8];
     static const int m_VertexZ[8];
-    static const int m_VertexMinusX[8];
-    static const int m_VertexMinusY[8];
-    static const int m_VertexMinusZ[8];
 
     Chunk *m_ChunkArray[5][5];
 
     inline void setVal(const BlockInWorld &pos, int val) const;
     inline int getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) const;
-    static float getBrightAverage(const World &world, const BlockInWorld &pos, const int x[8], const int y[8], const int z[8], char side);
-    void recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial) const;
-    void fillLight(Chunk &chunk) const;
+    inline static float getBrightAverage(const World &world, const Chunk &chunk, const BlockInWorld &pos, bool inv_x, bool inv_y, bool inv_z, unsigned char side);
+    inline void recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial) const;
+    inline void fillLight(Chunk &chunk) const;
 
     DEFINE_LOGGER(LIGHT, logger)
 };

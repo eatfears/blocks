@@ -92,7 +92,7 @@ void Landscape::generate(Chunk &chunk) const
             for (int j = 0; j < CHUNK_SIZE_Y; j++)
             {
                 by = j/m_ScaleBubblesY;
-                dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ] = (m_AmpBubbles)*m_NoiseBubbles.perlinNoise3d(bx, by, bz);
+                dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ] = m_AmpBubbles*m_NoiseBubbles.perlinNoise3d(bx, by, bz);
             }
         }
     }
@@ -117,8 +117,13 @@ void Landscape::generate(Chunk &chunk) const
                 temp = dens[i%CHUNK_SIZE_XZ][j%CHUNK_SIZE_Y][k%CHUNK_SIZE_XZ];
 
                 density = temp*(4*details + 0.3) + j;
-                if (density < height) {if (density < height - 3) chunk.addBlock(i, j, k, MAT_STONE); else if (j < m_WaterLevel) chunk.addBlock(i, j, k, MAT_SAND); else chunk.addBlock(i, j, k, MAT_DIRT);}
-                else if (j < m_WaterLevel) chunk.addBlock(i, j, k, MAT_WATER);
+                if (density < height)
+                {
+                    if (density < height - 3) chunk.addBlock(i%CHUNK_SIZE_XZ, j, k%CHUNK_SIZE_XZ, MAT_STONE);
+                    else if (j < m_WaterLevel) chunk.addBlock(i%CHUNK_SIZE_XZ, j, k%CHUNK_SIZE_XZ, MAT_SAND);
+                    else chunk.addBlock(i%CHUNK_SIZE_XZ, j, k%CHUNK_SIZE_XZ, MAT_DIRT);
+                }
+                else if (j < m_WaterLevel) chunk.addBlock(i%CHUNK_SIZE_XZ, j, k%CHUNK_SIZE_XZ, MAT_WATER);
             }
         }
     }
