@@ -25,23 +25,16 @@ World::~World()
 
 void World::buildWorld()
 {
-    Param par = {0, 0, this};
+    Param par = {ChunkInWorld(), this};
     LoadNGenerate(&par);
-    //	_beginthread(LoadNGenerate, 0, &par);
-
-    //	WaitForSingleObject(parget2, INFINITE);
-    //	ResetEvent(parget2);
 }
 
-Chunk* World::getChunkByPosition(ChunkCoord Cx, ChunkCoord Cz) const
+Chunk* World::getChunkByPosition(const ChunkInWorld &pos) const
 {
-    for (auto const &it : m_Chunks)
+    auto it = m_Chunks.find(pos);
+    if (it != m_Chunks.end())
     {
-        auto chunk = it.second;
-        if (chunk->m_X == Cx && chunk->m_Z == Cz)
-        {
-            return chunk;
-        }
+        return it->second;
     }
     return nullptr;
 }
@@ -51,19 +44,19 @@ Chunk* World::getChunkByPosition(ChunkCoord Cx, ChunkCoord Cz) const
 void World::drawLoadedBlocksFinish(Chunk &chunk)
 {
     unsigned int index = 0;
-    BlockCoord chnkx, chnky, chnkz;
+    BlockCoord chunk_x, chunk_y, chunk_z;
 
     while (index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
     {
-        chunk.getBlockPositionByPointer(chunk.m_pBlocks + index, &chnkx, &chnky, &chnkz);
+        chunk.getBlockPositionByPointer(chunk.m_pBlocks + index, &chunk_x, &chunk_y, &chunk_z);
 
-        if ((chnkx > 0)&&(chnkx < CHUNK_SIZE_XZ - 1)&&(chnkz > 0)&&(chnkz < CHUNK_SIZE_XZ - 1))
+        if (chunk_x > 0 && chunk_x < CHUNK_SIZE_XZ - 1 && chunk_z > 0 && chunk_z < CHUNK_SIZE_XZ - 1)
         {
             index++;
             continue;
         }
 
-        BlockInWorld pos(chunk.m_X, chunk.m_Z, chnkx, chnky, chnkz);
+        BlockInWorld pos(chunk.m_X, chunk.m_Z, chunk_x, chunk_y, chunk_z);
 
         if (chunk.m_pBlocks[index].material != MAT_NO)
         {
@@ -102,15 +95,15 @@ void World::drawLoadedBlocksFinish(Chunk &chunk)
     index = 0;
     while (index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
     {
-        chunk.getBlockPositionByPointer(chunk.m_pBlocks + index, &chnkx, &chnky, &chnkz);
+        chunk.getBlockPositionByPointer(chunk.m_pBlocks + index, &chunk_x, &chunk_y, &chunk_z);
 
-        if ((chnkx > 0)&&(chnkx < CHUNK_SIZE_XZ - 1)&&(chnkz > 0)&&(chnkz < CHUNK_SIZE_XZ - 1))
+        if ((chunk_x > 0)&&(chunk_x < CHUNK_SIZE_XZ - 1)&&(chunk_z > 0)&&(chunk_z < CHUNK_SIZE_XZ - 1))
         {
             index++;
             continue;
         }
 
-        BlockInWorld pos(chunk.m_X, chunk.m_Z, chnkx, chnky, chnkz);
+        BlockInWorld pos(chunk.m_X, chunk.m_Z, chunk_x, chunk_y, chunk_z);
 
         if ((chunk.m_pBlocks[index].material == MAT_NO)||(chunk.m_pBlocks[index].material == MAT_WATER))
         {
@@ -130,44 +123,42 @@ void World::drawLoadedBlocksFinish(Chunk &chunk)
     }
 }
 
-void World::drawUnLoadedBlocks(ChunkCoord x, ChunkCoord z)
+void World::drawUnLoadedBlocks(const ChunkInWorld &pos)
 {
     unsigned int index = 0;
-    BlockCoord chnk_x, chnk_y, chnk_z;
+    BlockCoord chunk_x, chunk_y, chunk_z;
 
     while (index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
     {
-        Chunk::getBlockPositionByIndex(index, &chnk_x, &chnk_y, &chnk_z);
+        Chunk::getBlockPositionByIndex(index, &chunk_x, &chunk_y, &chunk_z);
 
-        if ((chnk_x > 0)&&(chnk_x < CHUNK_SIZE_XZ - 1)&&(chnk_z > 0)&&(chnk_z < CHUNK_SIZE_XZ - 1))
+        if (chunk_x > 0 && chunk_x < CHUNK_SIZE_XZ - 1 && chunk_z > 0 && chunk_z < CHUNK_SIZE_XZ - 1)
         {
             index++;
             continue;
         }
 
-        BlockInWorld pos(x, z, chnk_x, chnk_y, chnk_z);
-
+        BlockInWorld block_pos(pos, chunk_x, chunk_y, chunk_z);
         Chunk *temp_chunk;
         unsigned int temp_index;
-        if (findBlock(pos.getSide(RIGHT), &temp_chunk, &temp_index)) hideTile(&*temp_chunk, temp_index, LEFT);
-        if (findBlock(pos.getSide(LEFT), &temp_chunk, &temp_index)) hideTile(&*temp_chunk, temp_index, RIGHT);
-        if (findBlock(pos.getSide(BACK), &temp_chunk, &temp_index)) hideTile(&*temp_chunk, temp_index, FRONT);
-        if (findBlock(pos.getSide(FRONT), &temp_chunk, &temp_index)) hideTile(&*temp_chunk, temp_index, BACK);
+        if (findBlock(block_pos.getSide(RIGHT), &temp_chunk, &temp_index)) hideTile(&*temp_chunk, temp_index, LEFT);
+        if (findBlock(block_pos.getSide(LEFT), &temp_chunk, &temp_index)) hideTile(&*temp_chunk, temp_index, RIGHT);
+        if (findBlock(block_pos.getSide(BACK), &temp_chunk, &temp_index)) hideTile(&*temp_chunk, temp_index, FRONT);
+        if (findBlock(block_pos.getSide(FRONT), &temp_chunk, &temp_index)) hideTile(&*temp_chunk, temp_index, BACK);
         index++;
     }
 }
 
 bool World::addBlock(const BlockInWorld &pos, char mat)
 {
-    if ((pos.by < 0)||(pos.by >= CHUNK_SIZE_Y)) return false;
+    if (pos.by < 0 || pos.by >= CHUNK_SIZE_Y) return false;
     if (findBlock(pos)) return false;
 
-    Chunk *chunk = getChunkByPosition(pos.cx, pos.cz);
+    Chunk *chunk = getChunkByPosition(pos);
     if (chunk == nullptr) return false;
 
-    unsigned int index = chunk->addBlock(pos.bx, pos.by, pos.bz, mat);
-
     Chunk *temp_chunk = 0;
+     unsigned int index = chunk->addBlock(pos.bx, pos.by, pos.bz, mat);
     unsigned int temp_index;
 
     if (chunk->m_pBlocks[index].material == MAT_WATER)
@@ -212,14 +203,14 @@ bool World::addBlock(const BlockInWorld &pos, char mat)
 
 bool World::removeBlock(const BlockInWorld &pos)
 {
-    if ((pos.by < 0)||(pos.by >= CHUNK_SIZE_Y)) return false;
+    if (pos.by < 0 || pos.by >= CHUNK_SIZE_Y) return false;
     if (!findBlock(pos)) return false;
 
-    Chunk *chunk = getChunkByPosition(pos.cx, pos.cz);
+    Chunk *chunk = getChunkByPosition(pos);
     if (chunk == nullptr) return false;
 
-    unsigned int index = chunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
     Chunk *temp_chunk = 0;
+    unsigned int index = chunk->getIndexByPosition(pos.bx, pos.by, pos.bz);
     unsigned int temp_index;
 
     if (!findBlock(pos.getSide(TOP), &temp_chunk, &temp_index)||chunk->m_pBlocks[index].material == MAT_WATER) hideTile(chunk, index, TOP);
@@ -263,8 +254,8 @@ void World::hideTile(Chunk *chunk, unsigned int index, char side) const
 
 bool World::findBlock(const BlockInWorld &pos, Chunk **chunk, unsigned int *index)
 {
-    if ((pos.by < 0)||(pos.by >= CHUNK_SIZE_Y)) { *chunk = nullptr; *index = 0; return false; }
-    (*chunk) = getChunkByPosition(pos.cx, pos.cz);
+    if (pos.by < 0 || pos.by >= CHUNK_SIZE_Y) { *chunk = nullptr; *index = 0; return false; }
+    (*chunk) = getChunkByPosition(pos);
     if ((*chunk) == nullptr) { *index = 0; return false; }
     *index = pos.bx*CHUNK_SIZE_XZ + pos.bz + pos.by*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
     if ((*chunk)->getBlockMaterial(pos.bx, pos.by, pos.bz) == MAT_NO)
@@ -274,8 +265,8 @@ bool World::findBlock(const BlockInWorld &pos, Chunk **chunk, unsigned int *inde
 
 bool World::findBlock(const BlockInWorld &pos)
 {
-    if (pos.by < 0) return false;
-    Chunk *chunk = getChunkByPosition(pos.cx, pos.cz);
+    if (pos.by < 0 || pos.by >= CHUNK_SIZE_Y) return false;
+    Chunk *chunk = getChunkByPosition(pos);
     if (chunk == nullptr) return false;
 
     if (chunk->getBlockMaterial(pos.bx, pos.by, pos.bz) == MAT_NO)
@@ -285,13 +276,13 @@ bool World::findBlock(const BlockInWorld &pos)
 
 void World::loadChunk(ChunkCoord x, ChunkCoord z)
 {
-    Param par = {x, z, this};
+    Param par = {ChunkInWorld(x, z), this};
     LoadChunkThread(&par);
 }
 
 void World::unLoadChunk(ChunkCoord x, ChunkCoord z)
 {
-    Param par = {x, z, this};
+    Param par = {ChunkInWorld(x, z), this};
     UnLoadChunkThread(&par);
 }
 
@@ -304,15 +295,15 @@ void World::updateLight(Chunk &chunk) const
     {
         for (int j = 0; j < 5; j++)
         {
-            if ((i!=2)||(j!=2))
+            if (i!=2 || j!=2)
             {
-                if ((i == 0)&&(j == 0) || (i == 4)&&(j == 0) || (i == 0)&&(j == 4) || (i == 4)&&(j == 4))
+                if ((i == 0 && j == 0) || (i == 4 && j == 0) || (i == 0 && j == 4) || (i == 4 && j == 4))
                 {
                     p_chunk_array[i][j] = nullptr;
                 }
                 else
                 {
-                    p_chunk_array[i][j] = getChunkByPosition((chunk.m_X + i - 2), (chunk.m_Z + j - 2));
+                    p_chunk_array[i][j] = getChunkByPosition(ChunkInWorld(chunk.m_X + i - 2, chunk.m_Z + j - 2));
                 }
             }
         }

@@ -16,7 +16,7 @@ public:
     GLdouble m_VelocityX, m_VelocityY, m_VelocityZ;
     GLdouble m_Longitude;
 
-    void control(GLdouble FrameInterval);
+    void control(GLdouble frame_interval);
     void computeCenterCoords(GLsizei width, GLsizei height);
     bool  m_Keyboard[256];					// Массив, используемый для операций с клавиатурой
     bool  m_SpecialKeys[256];				// Массив, используемый для операций с клавиатурой

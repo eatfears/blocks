@@ -156,7 +156,7 @@ void Light::blockLight(const World &world, const Chunk &chunk, char side, BlockC
         // if in neighbor chunk
         if (pos.cx != pos_side.cx || pos.cz != pos_side.cz)
         {
-            temploc = world.getChunkByPosition(pos_side.cx, pos_side.cz);
+            temploc = world.getChunkByPosition(pos_side);
         }
         else
         {
@@ -258,30 +258,32 @@ void Light::softLight(const World &world, const BlockInWorld &pos, char side, in
 
 float Light::getBrightAverage(const World &world, const BlockInWorld &pos, int xx[8], int yy[8], int zz[8], char side)
 {
+    const Chunk *center = world.getChunkByPosition(pos);
+    if (!center)
+    {
+        return 1.0;
+    }
+
     GLfloat mat[4] = {0, 0, 0, 0};
-    static Chunk *center;
-    static Chunk *temploc;
     float res = 0;
-    static int infl_light;
+    const Chunk *temploc;
+    int infl_light;
     BlockInWorld temp_pos_1, temp_pos_2;
-
-    bool DiagonalblockInfluate = true;
-
-    center = world.getChunkByPosition(pos.cx, pos.cz);
+    bool diagonal_block_influate = true;
 
     for (int i = 0; i < 4; i++)
     {
         infl_light = Light::m_InfluencingLight[side][i];
         temp_pos_2 = pos + BlockInChunk(xx[infl_light], yy[infl_light], zz[infl_light]);
         if ((temp_pos_2.cx != center->m_X)||(temp_pos_2.cz != center->m_Z))
-            temploc = world.getChunkByPosition(temp_pos_2.cx, temp_pos_2.cz);
+            temploc = world.getChunkByPosition(temp_pos_2);
         else temploc = center;
 
         if (temploc)
         {
             temp_pos_1 = pos + BlockInChunk(xx[infl_light], yy[infl_light], zz[infl_light]); // todo: delete
 
-            if (temp_pos_1.by >= CHUNK_SIZE_Y)
+            if (temp_pos_1.by < 0 || temp_pos_1.by >= CHUNK_SIZE_Y)
             {
                 mat[i] = 10.0f;
                 continue;
@@ -289,17 +291,17 @@ float Light::getBrightAverage(const World &world, const BlockInWorld &pos, int x
 
             unsigned int index = temploc->getIndexByPosition(temp_pos_1.bx, temp_pos_1.by, temp_pos_1.bz);
 
-            if ((i == 1)&&(temploc->m_pBlocks[index].material != MAT_NO)&&(temploc->m_pBlocks[index].material != MAT_WATER))
-                DiagonalblockInfluate = false;
+            if (i == 1 && temploc->m_pBlocks[index].material != MAT_NO && temploc->m_pBlocks[index].material != MAT_WATER)
+                diagonal_block_influate = false;
             if (i == 2)
             {
-                if ((temploc->m_pBlocks[index].material == MAT_NO)||(temploc->m_pBlocks[index].material == MAT_WATER))
-                    DiagonalblockInfluate = true;
+                if (temploc->m_pBlocks[index].material == MAT_NO || temploc->m_pBlocks[index].material == MAT_WATER)
+                    diagonal_block_influate = true;
             }
 
             mat[i] = Light::getLight(*temploc, index);
 
-            if ((i == 3)&&(!DiagonalblockInfluate))
+            if (i == 3 && !diagonal_block_influate)
                 mat[i] = 0.0f;
 
         } else mat[i] = 10.0f;
@@ -308,7 +310,8 @@ float Light::getBrightAverage(const World &world, const BlockInWorld &pos, int x
     int count = 0;
     for (int i = 0; i < 4; i++)
     {
-        if (mat[i] != 10.0f) {
+        if (mat[i] != 10.0f)
+        {
             res += mat[i];
             count ++;
         }
@@ -316,9 +319,9 @@ float Light::getBrightAverage(const World &world, const BlockInWorld &pos, int x
     return res /= count;
 }
 
-GLfloat Light::getLight(const Chunk &chunk, int index)
+GLfloat Light::getLight(const Chunk &chunk, unsigned int index)
 {
-    if (index < 0 || index >= CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
+    if (index >= CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
     {
         return 1.0 - chunk.m_World.m_SkyBright;
     }

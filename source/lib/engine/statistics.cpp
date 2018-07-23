@@ -6,18 +6,18 @@
 #include "platform.h"
 
 
-Statistics::Statistics(const Engine &eng)
-    : m_Engine(eng)
+Statistics::Statistics(const Engine &engine)
+    : m_Engine(engine)
 {
     m_TimeCount = 0;
     m_FrameCount = 0;
     m_ReRenderedChunks = 0;
 }
 
-void Statistics::computeFPS(double FrameInterval)
+void Statistics::computeFPS(double frame_interval)
 {
     m_FrameCount++;
-    m_TimeCount += FrameInterval;
+    m_TimeCount += frame_interval;
 }
 
 extern double constr;

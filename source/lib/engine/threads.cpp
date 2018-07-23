@@ -6,26 +6,23 @@
 void LoadChunkThread(void *pParams)
 {
     Param parameters = *(Param*)pParams;
-    ChunkInWorld pos(parameters.x, parameters.z);
-    ChunkCoord x = parameters.x;
-    ChunkCoord z = parameters.z;
     World &world = *parameters.p_World;
 
 #ifdef _WIN32
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 #endif // _WIN32
 
-    Chunk *chunk = world.getChunkByPosition(x, z);
+    Chunk *chunk = world.getChunkByPosition(parameters.pos);
     if(!chunk)
     {
-        chunk = new Chunk(pos, world);
+        chunk = new Chunk(parameters.pos, world);
     }
 
     chunk->open();
     chunk->drawLoadedBlocks();
 
     //todo: leak if already exists
-    world.m_Chunks[pos] = chunk;
+    world.m_Chunks[parameters.pos] = chunk;
     world.drawLoadedBlocksFinish(*chunk);
 
     if(chunk->m_LightToUpdate)
@@ -38,33 +35,27 @@ void LoadChunkThread(void *pParams)
 void UnLoadChunkThread(void *pParams)
 {
     Param parameters = *(Param*)pParams;
-    ChunkCoord x = parameters.x;
-    ChunkCoord z = parameters.z;
     World &world = *parameters.p_World;
 
 #ifdef _WIN32
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 #endif // _WIN32
 
-    for (auto const &it : world.m_Chunks)
+    auto it = world.m_Chunks.find(parameters.pos);
+    if (it != world.m_Chunks.end())
     {
-        auto chunk = it.second;
-        if(chunk->m_X == x && chunk->m_Z == z)
-        {
-            delete chunk;
-            world.m_Chunks.erase(it.first);
-            break;
-        }
+        delete it->second;
+        world.m_Chunks.erase(it);
     }
-    world.drawUnLoadedBlocks(x, z);
+    world.drawUnLoadedBlocks(parameters.pos);
 }
 
 void LoadNGenerate(void *pParams)
 {
     Param parameters = *(Param*)pParams;
     World &world = *parameters.p_World;
-    ChunkCoord x = parameters.x;
-    ChunkCoord z = parameters.z;
+    ChunkCoord x = parameters.pos.cx;
+    ChunkCoord z = parameters.pos.cz;
 
     int size = 4;
 

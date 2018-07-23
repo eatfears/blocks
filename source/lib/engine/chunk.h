@@ -39,7 +39,11 @@ public:
 
     char getBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z) const;
 
-    bool getBlockPositionByPointer(Block *p_current_block, BlockCoord *x, BlockCoord *y, BlockCoord *z) const;
+    inline bool getBlockPositionByPointer(Block *p_current_block, BlockCoord *x, BlockCoord *y, BlockCoord *z) const
+    {
+        unsigned int t = p_current_block - m_pBlocks;
+        return getBlockPositionByIndex(t, x, y, z);
+    }
 
     inline static bool getBlockPositionByIndex(unsigned int index, BlockCoord *x, BlockCoord *y, BlockCoord *z)
     {

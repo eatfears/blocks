@@ -143,12 +143,6 @@ unsigned int Chunk::setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, c
     return index;
 }
 
-bool Chunk::getBlockPositionByPointer(Block *p_current_block, BlockCoord *x, BlockCoord *y, BlockCoord *z) const
-{
-    unsigned int t = p_current_block - m_pBlocks;
-    return getBlockPositionByIndex(t, x, y, z);
-}
-
 void Chunk::drawLoadedBlocks()
 {
     unsigned int index = 0;
@@ -209,8 +203,8 @@ void Chunk::open()
     if (!loaded)
     {
         m_World.m_Landscape.generate(*this);
-        //wWorld.lLandscape.Fill(*this, 0, 0.999, 64);
-        //wWorld.lLandscape.Fill(*this, MAT_DIRT, 1, 64);
+        //m_World.m_Landscape.fill(*this, 0, 0.9, 64);
+        //m_World.m_Landscape.fill(*this, MAT_DIRT, 1, 64);
     }
 }
 
@@ -292,27 +286,27 @@ void Chunk::render(char material, int *rendered) /*const*/
         static BlockInWorld temp;
         static BlockInWorld blckw;
 
-        for (int i = 0; i < 6; i++)
+        for (int side = 0; side < 6; side++)
         {
             blckw = BlockInWorld(m_X, m_Z);
 
             if (material == MAT_WATER)
             {
-                p_tiles = &m_pDisplayedWaterTiles[i];
+                p_tiles = &m_pDisplayedWaterTiles[side];
             }
             else
             {
-                p_tiles = &m_pDisplayedTiles[i];
+                p_tiles = &m_pDisplayedTiles[side];
             }
-            auto it = p_tiles->begin();
 
+            auto it = p_tiles->begin();
             while (it != p_tiles->end())
             {
                 getBlockPositionByPointer(*it, &cx, &cy, &cz);
 
-                Light::blockLight(m_World, *this, i, cx, cy, cz);
+                Light::blockLight(m_World, *this, side, cx, cy, cz);
                 temp = blckw + BlockInWorld(cx,cy,cz);
-                drawTile(temp, *it, i);
+                drawTile(temp, *it, side);
                 ++it;
             }
         }

@@ -1,5 +1,6 @@
 #include "engine.h"
 
+#include <chrono>
 #include <ctime>
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -155,7 +156,7 @@ void Engine::display()
     m_StatWindow.m_ReRenderedChunks = 0;
 
     int render = 0;
-    for (auto /*const*/ &it : m_World.m_Chunks)
+    for (auto const &it : m_World.m_Chunks)
     {
         auto chunk = it.second;
         if (chunk->m_LightToUpdate)
@@ -178,7 +179,7 @@ void Engine::display()
 
     //transparent tiles here
     render = 0;
-    for (auto /*const*/ &it : m_World.m_Chunks)
+    for (auto const &it : m_World.m_Chunks)
     {
         auto chunk = it.second;
         if (mod == GL_COMPILE)
@@ -431,13 +432,13 @@ void Engine::loop()
     drawInterface();
 
     glutSwapBuffers();
-    glFinish();				//may be bad!!!!!!!
+    //glFinish();				//may be bad
 }
 
 void Engine::getFrameTime()
 {
-    static double koef = 0.0005;
-    static double max_FPS = 30;
+    static const double koef = 0.0005;
+    static const double max_fps = 100;
     static int sleep_time;
 
     double current_time = GetMillisecTime();
@@ -445,16 +446,15 @@ void Engine::getFrameTime()
 
     //Интервал времени, прошедшего с прошлого кадра
     m_FrameInterval = current_time - frame_time;
-    sleep_time = (int) (1000.0/max_FPS - m_FrameInterval);
+    sleep_time = (int) (1000.0/max_fps - m_FrameInterval);
     if (sleep_time > 0)
     {
-        Sleep(sleep_time);
+        std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
         current_time = GetMillisecTime();
         m_FrameInterval = current_time - frame_time;
     }
     frame_time = current_time;
     m_StatWindow.computeFPS(m_FrameInterval);
-
     m_FrameInterval *= koef;
 
     m_TimeOfDay += m_FrameInterval;

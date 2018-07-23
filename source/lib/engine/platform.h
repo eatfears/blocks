@@ -14,6 +14,5 @@ double GetMillisecTime();
 #include <unistd.h>
 
 #define b_sprintf		sprintf
-#define Sleep(x)		usleep(x*1000)
 
 #endif

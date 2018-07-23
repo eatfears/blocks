@@ -6,9 +6,9 @@ class Engine;
 class Statistics
 {
 public:
-    Statistics(const Engine &eng);
+    Statistics(const Engine &engine);
 
-    void computeFPS(double FrameInterval);
+    void computeFPS(double frame_interval);
     void printStat();
 
     int m_ReRenderedChunks;

@@ -10,8 +10,7 @@
 
 typedef struct params
 {
-    ChunkCoord x;
-    ChunkCoord z;
+    ChunkInWorld pos;
     World *p_World;
 } Param;
 
@@ -34,12 +33,12 @@ public:
     bool removeBlock(const BlockInWorld &pos);
 
     void drawLoadedBlocksFinish(Chunk &chunk);
-    void drawUnLoadedBlocks(ChunkCoord x, ChunkCoord z);
+    void drawUnLoadedBlocks(const ChunkInWorld &pos);
     void loadChunk(ChunkCoord x, ChunkCoord z);
     void unLoadChunk(ChunkCoord x, ChunkCoord z);
-    Chunk* getChunkByPosition(ChunkCoord x, ChunkCoord z) const;
+    Chunk* getChunkByPosition(const ChunkInWorld &pos) const;
 
-    void updateLight(Chunk& chunk) const;
+    void updateLight(Chunk &chunk) const;
 
     bool m_LightToRefresh;
     bool m_SoftLight;

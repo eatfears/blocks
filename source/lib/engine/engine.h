@@ -17,10 +17,10 @@ public:
 
     void reshape(GLsizei width, GLsizei height);
     void display();
-    void keyboard(unsigned char button, int x, int y, bool KeyDown);
+    void keyboard(unsigned char button, int x, int y, bool key_down);
     void mouseMotion(int x, int y);
     void mouseButton(int button, int state, int x, int y);
-    void special(int button, int x, int y, bool KeyDown);
+    void special(int button, int x, int y, bool key_down);
     void loop();
 
 private:
@@ -29,7 +29,6 @@ private:
     bool m_Fullscreen;
     bool m_Mousing;
 
-    void drawTile(BlockInWorld sXcoord, BlockInWorld sYcoord, BlockInWorld sZcoord, int material, char side);
     void drawInterface();
     void drawSelectedItem();
 

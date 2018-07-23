@@ -33,7 +33,7 @@ public:
     static void softLight(const World &world, const BlockInWorld &pos, char side, int vertex);
     bool m_Skylight = true;
 
-    static GLfloat getLight(const Chunk &chunk, int index);
+    static GLfloat getLight(const Chunk &chunk, unsigned int index);
 private:
     static const float m_LightTable[16];
     static const char m_InfluencingLight[6][4];
