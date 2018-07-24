@@ -37,8 +37,8 @@ void GlutInit()
 
 int main(int argc, char **argv)
 {
-    DEFINE_LOGGER_COMMON(logger);
-    logger.trace() << "Main";
+    DEFINE_LOGGER(BLOCKS, logger);
+    logger.info() << "Launching";
 
     engine = new Engine();
 
@@ -66,6 +66,7 @@ int main(int argc, char **argv)
     glutMainLoop();
 
     delete engine;
+    logger.info() << "Exit";
     LOGGER_END;
 
     return 0;

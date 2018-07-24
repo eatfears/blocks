@@ -36,5 +36,7 @@ public:
 
 private:
     void getPlane(GLdouble *xerr,GLdouble *yerr,GLdouble *zerr) const;
+
+    DEFINE_LOGGER(CHAR, logger)
 };
 

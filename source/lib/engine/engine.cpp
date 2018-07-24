@@ -29,7 +29,7 @@ Engine::Engine()
 
 Engine::~Engine()
 {
-    logger.info() << "Exit";
+    logger.info() << "Exiting";
     glutExit();
 }
 
@@ -68,8 +68,8 @@ void Engine::initGame()
     m_World.buildWorld();
 
     m_World.m_Player.m_Position = PointInWorld(0, 100, 0);
-    m_World.m_Player.m_SpinY = 90 - 45;
-    m_TimeOfDay = 600;
+    m_World.m_Player.m_SpinY = -90 - 45;
+    m_TimeOfDay = 1300;
 }
 
 void Engine::reshape(int width, int height)

@@ -4,6 +4,7 @@
 
 #include "noise/primes.h"
 #include "common_include/definitions.h"
+#include "logger/logger.h"
 
 
 typedef signed short BlockCoord;
@@ -22,12 +23,18 @@ typedef TypeInChunk<PointCoord> PosInChunk;
 
 typedef signed short ChunkCoord;
 
+
 struct ChunkInWorld
 {
     ChunkInWorld() {}
     ChunkInWorld(ChunkCoord x, ChunkCoord z) : cx(x), cz(z) {}
     ChunkCoord cx {}, cz {};
 };
+
+inline logger_stream& operator<<(logger_stream &ss, const ChunkInWorld &a)
+{
+    return ss << "(" + std::to_string(a.cx) + ", " + std::to_string(a.cz) + ")";
+}
 
 inline bool operator < (const ChunkInWorld& a, const ChunkInWorld& b)
 {

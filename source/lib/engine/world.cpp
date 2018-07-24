@@ -9,7 +9,6 @@ World::World()
     : m_Player(*this)
 {
     m_SoftLight = true;
-
     m_SkyBright = 1.0f;
     m_LightToRefresh = true;
 }
@@ -26,9 +25,10 @@ World::~World()
 
 void World::buildWorld()
 {
-    for (ChunkCoord i = -3; i < 3; i++)
+    ChunkCoord size = 2;
+    for (ChunkCoord i = -size; i < size; i++)
     {
-        for (ChunkCoord j = -3; j < 3; j++)
+        for (ChunkCoord j = -size; j < size; j++)
         {
             loadChunk(i, j);
         }
@@ -37,11 +37,11 @@ void World::buildWorld()
 
 Chunk* World::getChunkByPosition(const ChunkInWorld &pos) const
 {
-    try
+    auto it = m_Chunks.find(pos);
+    if (it != m_Chunks.end())
     {
-        return m_Chunks.at(pos);
+        return it->second;
     }
-    catch (std::out_of_range &) {}
     return nullptr;
 }
 
@@ -96,17 +96,19 @@ bool World::findBlock(const BlockInWorld &pos) const
 void World::loadChunk(ChunkCoord x, ChunkCoord z)
 {
     auto pos = ChunkInWorld(x, z);
-
     Chunk *chunk = getChunkByPosition(pos);
     if(!chunk)
     {
         chunk = new Chunk(pos, *this);
     }
+    else
+    {
+        logger.notice() << "Chunk" << pos << "already loaded";
+        return;
+    }
 
     chunk->open();
     chunk->drawLoadedBlocks();
-
-    //todo: leak if already exists
     m_Chunks[pos] = chunk;
 
     if(chunk->m_LightToUpdate)
@@ -124,6 +126,10 @@ void World::unLoadChunk(ChunkCoord x, ChunkCoord z)
     {
         delete it->second;
         m_Chunks.erase(it);
+    }
+    else
+    {
+        logger.notice() << "Chunk" << pos << "already unloaded";
     }
 }
 

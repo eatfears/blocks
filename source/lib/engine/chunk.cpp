@@ -10,6 +10,8 @@
 Chunk::Chunk(const ChunkInWorld &pos, World &world)
     : ChunkInWorld(pos), m_World(world)
 {
+    logger.info() << "Loading chunk" << pos;
+
     m_pBlocks = new Block[CHUNK_INDEX_MAX];
     m_SkyLight = new unsigned char[CHUNK_INDEX_MAX];
     m_TorchLight = new unsigned char[CHUNK_INDEX_MAX];
@@ -40,6 +42,8 @@ Chunk::Chunk(const ChunkInWorld &pos, World &world)
 
 Chunk::~Chunk()
 {
+    logger.info() << "Unloading chunk" << *this;
+
     unsigned int index = 0;
     BlockCoord chunk_x, chunk_y, chunk_z;
 
