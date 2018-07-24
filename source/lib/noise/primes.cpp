@@ -48,7 +48,7 @@ inline ul_int Primes::nextPrime(ul_int i)
 
 ul_int Primes::genPrime(size_t size, std::mt19937 &randNumGen)
 {
-    std::uniform_int_distribution<ul_int> dist((ul_int)1 << (size -1), (ul_int)1 << size);
+    std::uniform_int_distribution<ul_int> dist((ul_int)1 << (size - 1), (ul_int)1 << size);
     ul_int beg = dist(randNumGen);
     beg = nextPrime(beg);
     return beg;

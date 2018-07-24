@@ -320,7 +320,7 @@ float Light::getBrightAverage(const World &world, const Chunk &chunk, const Bloc
 
 GLfloat Light::getLight(const Chunk &chunk, unsigned int index)
 {
-    if (index >= CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
+    if (index >= CHUNK_INDEX_MAX)
     {
         return 1.0 - chunk.m_World.m_SkyBright;
     }

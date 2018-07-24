@@ -10,14 +10,14 @@
 Chunk::Chunk(const ChunkInWorld &pos, World &world)
     : ChunkInWorld(pos), m_World(world)
 {
-    m_pBlocks = new Block[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
-    m_SkyLight = new unsigned char[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
-    m_TorchLight = new unsigned char[CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
+    m_pBlocks = new Block[CHUNK_INDEX_MAX];
+    m_SkyLight = new unsigned char[CHUNK_INDEX_MAX];
+    m_TorchLight = new unsigned char[CHUNK_INDEX_MAX];
 
     m_pDisplayedTiles = new std::list<Block*>[6];
     m_pDisplayedWaterTiles = new std::list<Block*>[6];
 
-    for (int i = 0; i < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y; i++)
+    for (int i = 0; i < CHUNK_INDEX_MAX; i++)
     {
         m_SkyLight[i] = 0;
         m_TorchLight[i] = 0;
@@ -55,13 +55,15 @@ unsigned int Chunk::addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat)
     char ex_mat = getBlockMaterial(x, y, z);
     if (ex_mat != MAT_NO || ex_mat == -1)
     {
-        return -1;
+        return CHUNK_INDEX_MAX;
     }
 
     unsigned int index = setBlockMaterial(x, y, z, mat);
-    m_pBlocks[index].visible = 0;
-    m_LightToUpdate = true;
-
+    if (index < CHUNK_INDEX_MAX)
+    {
+        m_pBlocks[index].visible = 0;
+        m_LightToUpdate = true;
+    }
     return index;
 }
 
@@ -70,13 +72,15 @@ unsigned int Chunk::removeBlock(BlockCoord x, BlockCoord y, BlockCoord z)
     char ex_mat = getBlockMaterial(x, y, z);
     if (ex_mat == MAT_NO || ex_mat == -1 )
     {
-        return -1;
+        return CHUNK_INDEX_MAX;
     }
 
     unsigned int index = setBlockMaterial(x, y, z, MAT_NO);
-    m_pBlocks[index].visible = 0;
-    m_LightToUpdate = true;
-
+    if (index < CHUNK_INDEX_MAX)
+    {
+        m_pBlocks[index].visible = 0;
+        m_LightToUpdate = true;
+    }
     return index;
 }
 
@@ -141,7 +145,7 @@ unsigned int Chunk::setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, c
 {
     if (x < 0 || z < 0 || y < 0 || x >= CHUNK_SIZE_XZ || z >= CHUNK_SIZE_XZ || y >= CHUNK_SIZE_Y)
     {
-        return -1;
+        return CHUNK_INDEX_MAX;
     }
     unsigned int index = getIndexByPosition(x, y, z);
     m_pBlocks[index].material = cMat;
@@ -153,9 +157,9 @@ void Chunk::drawLoadedBlocks()
     unsigned int index = 0;
     BlockCoord x, y, z;
 
-    while (index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
+    while (index < CHUNK_INDEX_MAX)
     {
-        getBlockPositionByPointer(m_pBlocks + index, &x, &y, &z);
+        getBlockPositionByIndex(index, &x, &y, &z);
 
         if (m_pBlocks[index].material != MAT_NO)
         {

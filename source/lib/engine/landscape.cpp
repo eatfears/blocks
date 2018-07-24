@@ -165,7 +165,7 @@ bool Landscape::load(Chunk& chunk, std::fstream &savefile) const
     int res;
     Bytef *buf;
     Bytef *bufcompress;
-    uLongf uncompsize = CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2;
+    uLongf uncompsize = CHUNK_INDEX_MAX*2;
     uLongf compsize;
     Block *blocks = chunk.m_pBlocks;
 
@@ -180,14 +180,14 @@ bool Landscape::load(Chunk& chunk, std::fstream &savefile) const
 
     res = uncompress(buf, &uncompsize, bufcompress, compsize);
 
-    if ((uncompsize != CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2)||(res != Z_OK))
+    if ((uncompsize != CHUNK_INDEX_MAX*2)||(res != Z_OK))
     {
         return false;
     }
-    while (index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
+    while (index < CHUNK_INDEX_MAX)
     {
         blocks[index].material = buf[index];
-        blocks[index].visible = buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y];
+        blocks[index].visible = buf[index + CHUNK_INDEX_MAX];
 
         index++;
     }
@@ -204,17 +204,17 @@ void Landscape::save(const Chunk &chunk, std::fstream &savefile) const
     int index = 0;
     Bytef *buf;
     Bytef *bufcompress;
-    uLongf uncompsize = CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y*2;
+    uLongf uncompsize = CHUNK_INDEX_MAX*2;
     uLongf compsize;
     Block *blocks = chunk.m_pBlocks;
 
     buf = new Bytef[uncompsize];
     bufcompress = new Bytef[compressBound(uncompsize)];
 
-    while (index < CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
+    while (index < CHUNK_INDEX_MAX)
     {
         buf[index] = blocks[index].material;
-        buf[index + CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y] = blocks[index].visible & ((1 << SNOWCOVERED) | (1 << GRASSCOVERED));
+        buf[index + CHUNK_INDEX_MAX] = blocks[index].visible & ((1 << SNOWCOVERED) | (1 << GRASSCOVERED));
         index++;
     }
     compress(bufcompress, &compsize, buf, uncompsize);

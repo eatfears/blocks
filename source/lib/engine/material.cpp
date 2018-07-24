@@ -29,7 +29,7 @@ void MaterialLibrary::loadGLTextures()
 
 int MaterialLibrary::getTextureInfo(int ColorType) const
 {
-    int ret;
+    int ret = 0;
     switch(ColorType)
     {
     case PNG_COLOR_TYPE_GRAY:
@@ -44,8 +44,6 @@ int MaterialLibrary::getTextureInfo(int ColorType) const
     case PNG_COLOR_TYPE_RGB_ALPHA:
         ret = 4;
         break;
-    default:
-        ret = -1;//bad
     };
     return ret;
 }
@@ -116,7 +114,7 @@ GLuint MaterialLibrary::loadImage(const char *filename) const
 
     int components = getTextureInfo(ColorType);
 
-    if (components == -1)
+    if (!components)
     {
         if (png_ptr)
             png_destroy_read_struct(&png_ptr, &info_ptr, NULL);

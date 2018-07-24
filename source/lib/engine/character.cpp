@@ -197,7 +197,7 @@ void Character::control(GLdouble frame_interval)
     if (m_Keyboard['C']) {
         Chunk *chunk;
         unsigned int index;
-        m_World.findBlock(m_AimedBlock, &chunk, &index);
+        m_World.findBlock(m_AimedBlock, chunk, index);
         if ((chunk)&&(chunk->m_pBlocks[index].material == MAT_DIRT)) {
             chunk->m_pBlocks[index].visible ^= (1 << SNOWCOVERED);
         }
@@ -205,7 +205,7 @@ void Character::control(GLdouble frame_interval)
     if (m_Keyboard['V']) {
         Chunk *chunk;
         unsigned int index;
-        m_World.findBlock(m_AimedBlock, &chunk, &index);
+        m_World.findBlock(m_AimedBlock, chunk, index);
         if ((chunk)&&(chunk->m_pBlocks[index].material == MAT_DIRT)) {
             chunk->m_pBlocks[index].visible ^= (1 << GRASSCOVERED);
         }
@@ -261,7 +261,7 @@ void Character::computeMyPosition()
     pos.by += 0.125 - 0.5;
     BlockInWorld water_pos(pos);
 
-    m_World.findBlock(water_pos, &m_pChunk, &m_Index);
+    m_World.findBlock(water_pos, m_pChunk, m_Index);
     m_UnderWater = m_pChunk && m_pChunk->m_pBlocks[m_Index].material == MAT_WATER;
     m_Longitude = (m_Position.bz/CHUNK_SIZE_XZ + m_Position.cz)/160;
 }

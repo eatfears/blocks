@@ -46,7 +46,7 @@ public:
 
     inline static bool getBlockPositionByIndex(unsigned int index, BlockCoord *x, BlockCoord *y, BlockCoord *z)
     {
-        if (index >= CHUNK_SIZE_XZ*CHUNK_SIZE_XZ*CHUNK_SIZE_Y)
+        if (index >= CHUNK_INDEX_MAX)
         {
             return false;
         }

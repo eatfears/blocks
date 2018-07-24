@@ -27,13 +27,14 @@ public:
     Character m_Player;
 
     void buildWorld();
-    bool findBlock(const BlockInWorld &pos);
-    bool findBlock(const BlockInWorld &pos, Chunk **chunk, unsigned int *index);
-    bool addBlock(const BlockInWorld &pos, char mat);
-    bool removeBlock(const BlockInWorld &pos);
+    bool findBlock(const BlockInWorld &pos, Chunk *&chunk, unsigned int &index) const;
+    bool findBlock(const BlockInWorld &pos, Chunk *&chunk) const;
+    bool findBlock(const BlockInWorld &pos) const;
+    bool addBlock(const BlockInWorld &pos, char mat) const;
+    bool removeBlock(const BlockInWorld &pos) const;
 
-    void drawLoadedBlocksFinish(Chunk &chunk);
-    void drawUnLoadedBlocks(const ChunkInWorld &pos);
+    void drawLoadedBlocksFinish(Chunk &chunk) const;
+    void drawUnLoadedBlocks(const ChunkInWorld &pos) const;
     void loadChunk(ChunkCoord x, ChunkCoord z);
     void unLoadChunk(ChunkCoord x, ChunkCoord z);
     Chunk* getChunkByPosition(const ChunkInWorld &pos) const;
