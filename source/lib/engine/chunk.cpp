@@ -40,6 +40,31 @@ Chunk::Chunk(const ChunkInWorld &pos, World &world)
 
 Chunk::~Chunk()
 {
+    /*
+    unsigned int index = 0;
+    BlockCoord chunk_x, chunk_y, chunk_z;
+
+    while (index < CHUNK_INDEX_MAX)
+    {
+        Chunk::getBlockPositionByIndex(index, &chunk_x, &chunk_y, &chunk_z);
+
+        if (chunk_x > 0 && chunk_x < CHUNK_SIZE_XZ - 1 && chunk_z > 0 && chunk_z < CHUNK_SIZE_XZ - 1)
+        {
+            index++;
+            continue;
+        }
+
+        BlockInWorld block_pos(*this, chunk_x, chunk_y, chunk_z);
+        Chunk *temp_chunk;
+        unsigned int temp_index;
+        if (findBlock(block_pos.getSide(RIGHT), temp_chunk, temp_index)) temp_chunk->hideTile(temp_index, LEFT);
+        if (findBlock(block_pos.getSide(LEFT), temp_chunk, temp_index)) temp_chunk->hideTile(temp_index, RIGHT);
+        if (findBlock(block_pos.getSide(BACK), temp_chunk, temp_index)) temp_chunk->hideTile(temp_index, FRONT);
+        if (findBlock(block_pos.getSide(FRONT), temp_chunk, temp_index)) temp_chunk->hideTile(temp_index, BACK);
+        index++;
+    }
+    */
+
     delete[] m_pBlocks;
     delete[] m_SkyLight;
     delete[] m_TorchLight;
@@ -86,6 +111,7 @@ unsigned int Chunk::removeBlock(BlockCoord x, BlockCoord y, BlockCoord z)
 
 bool Chunk::findBlock(const BlockInWorld &pos, Chunk *&temp_chunk, unsigned int &index) const
 {
+    if (pos.overflow()) return false;
     bool res;
     if (pos.cx == cx && pos.cz == cz)
     {
@@ -197,7 +223,6 @@ void Chunk::showTile(Block *p_block, unsigned char side)
     {
         p_tiles = &m_pDisplayedTiles[side];
     }
-    //todo: fix if already exists
     p_tiles->push_back(p_block);
 
     p_block->visible |= (1 << side);
@@ -297,6 +322,88 @@ void Chunk::drawLoadedBlocks()
                 if (getBlockMaterial(x, y, z - 1) == MAT_NO || getBlockMaterial(x, y, z - 1) == MAT_WATER)
                     showTile(p_block, FRONT);
             }
+        }
+        index++;
+    }
+
+    drawLoadedBlocksFinish();
+}
+
+void Chunk::drawLoadedBlocksFinish()
+{
+    unsigned int temp_index;
+    BlockCoord chunk_x, chunk_y, chunk_z;
+    Chunk *temp_chunk;
+    Block *p_block;
+
+    unsigned int index = 0;
+    while (index < CHUNK_INDEX_MAX)
+    {
+        getBlockPositionByIndex(index, &chunk_x, &chunk_y, &chunk_z);
+
+        if (chunk_x > 0 && chunk_x < CHUNK_SIZE_XZ - 1 && chunk_z > 0 && chunk_z < CHUNK_SIZE_XZ - 1)
+        {
+            index++;
+            continue;
+        }
+
+        if (m_pBlocks[index].material != MAT_NO)
+        {
+            BlockInWorld pos(*this, chunk_x, chunk_y, chunk_z);
+            p_block = m_pBlocks + index;
+
+            if (m_pBlocks[index].material == MAT_WATER)
+            {
+                if (!findBlock(pos.getSide(TOP), temp_chunk, temp_index)) showTile(p_block, TOP);
+                if (!findBlock(pos.getSide(BOTTOM), temp_chunk, temp_index)) { if (temp_chunk) showTile(p_block, BOTTOM); }
+                if (!findBlock(pos.getSide(RIGHT), temp_chunk, temp_index)) { if (temp_chunk) showTile(p_block, RIGHT); }
+                if (!findBlock(pos.getSide(LEFT), temp_chunk, temp_index)) { if (temp_chunk) showTile(p_block, LEFT); }
+                if (!findBlock(pos.getSide(BACK), temp_chunk, temp_index)) { if (temp_chunk) showTile(p_block, BACK); }
+                if (!findBlock(pos.getSide(FRONT), temp_chunk, temp_index)) { if (temp_chunk) showTile(p_block, FRONT); }
+            }
+            else
+            {
+                if (!findBlock(pos.getSide(TOP), temp_chunk, temp_index)||(temp_chunk->m_pBlocks[temp_index].material == MAT_WATER)) {
+                    showTile(p_block, TOP); }
+                if (!findBlock(pos.getSide(BOTTOM), temp_chunk, temp_index)||(temp_chunk->m_pBlocks[temp_index].material == MAT_WATER)) {
+                    if (temp_chunk) showTile(p_block, BOTTOM); }
+                if (!findBlock(pos.getSide(RIGHT), temp_chunk, temp_index)||(temp_chunk->m_pBlocks[temp_index].material == MAT_WATER)) {
+                    if (temp_chunk) showTile(p_block, RIGHT); }
+                if (!findBlock(pos.getSide(LEFT), temp_chunk, temp_index)||(temp_chunk->m_pBlocks[temp_index].material == MAT_WATER)) {
+                    if (temp_chunk) showTile(p_block, LEFT); }
+                if (!findBlock(pos.getSide(BACK), temp_chunk, temp_index)||(temp_chunk->m_pBlocks[temp_index].material == MAT_WATER)) {
+                    if (temp_chunk) showTile(p_block, BACK); }
+                if (!findBlock(pos.getSide(FRONT), temp_chunk, temp_index)||(temp_chunk->m_pBlocks[temp_index].material == MAT_WATER)) {
+                    if (temp_chunk) showTile(p_block, FRONT); }
+            }
+        }
+        index++;
+    }
+
+    // draw boundary tiles
+    index = 0;
+    while (index < CHUNK_INDEX_MAX)
+    {
+        getBlockPositionByIndex(index, &chunk_x, &chunk_y, &chunk_z);
+
+        if (chunk_x > 0 && chunk_x < CHUNK_SIZE_XZ - 1 && chunk_z > 0 && chunk_z < CHUNK_SIZE_XZ - 1)
+        {
+            index++;
+            continue;
+        }
+
+        BlockInWorld pos(*this, chunk_x, chunk_y, chunk_z);
+
+        if (m_pBlocks[index].material == MAT_NO || m_pBlocks[index].material == MAT_WATER)
+        {
+            if (findBlock(pos.getSide(RIGHT), temp_chunk, temp_index)&&(temp_chunk->m_pBlocks[temp_index].material != MAT_WATER)) if (temp_chunk->m_pBlocks != m_pBlocks)
+                temp_chunk->showTile(temp_index, LEFT);
+            if (findBlock(pos.getSide(LEFT), temp_chunk, temp_index)&&(temp_chunk->m_pBlocks[temp_index].material != MAT_WATER)) if (temp_chunk->m_pBlocks != m_pBlocks)
+                temp_chunk->showTile(temp_index, RIGHT);
+            if (findBlock(pos.getSide(BACK), temp_chunk, temp_index)&&(temp_chunk->m_pBlocks[temp_index].material != MAT_WATER)) if (temp_chunk->m_pBlocks != m_pBlocks)
+                temp_chunk->showTile(temp_index, FRONT);
+            if (findBlock(pos.getSide(FRONT), temp_chunk, temp_index)&&(temp_chunk->m_pBlocks[temp_index].material != MAT_WATER)) if (temp_chunk->m_pBlocks != m_pBlocks)
+                temp_chunk->showTile(temp_index, BACK);
         }
         index++;
     }

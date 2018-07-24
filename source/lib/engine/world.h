@@ -27,8 +27,6 @@ public:
     bool addBlock(const BlockInWorld &pos, char mat) const;
     bool removeBlock(const BlockInWorld &pos) const;
 
-    void drawLoadedBlocksFinish(Chunk &chunk) const;
-    void drawUnLoadedBlocks(const ChunkInWorld &pos) const;
     void loadChunk(ChunkCoord x, ChunkCoord z);
     void unLoadChunk(ChunkCoord x, ChunkCoord z);
     Chunk* getChunkByPosition(const ChunkInWorld &pos) const;
@@ -44,8 +42,5 @@ public:
     void saveChunks() const;
 
 private:
-    void showTile(Chunk *chunk, unsigned int index, char side) const;
-    void hideTile(Chunk *chunk, unsigned int index, char side) const;
-
     DEFINE_LOGGER(WORLD, logger)
 };
