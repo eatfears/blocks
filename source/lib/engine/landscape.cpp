@@ -138,7 +138,7 @@ void Landscape::generate(Chunk &chunk) const
 
             for (int j = CHUNK_SIZE_Y - 1; j >= 0; j--)
             {
-                int index = chunk.getIndexByPosition(i, j, k);
+                unsigned int index = chunk.getIndexByPosition(i, j, k);
                 if (chunk.m_pBlocks[index].material != MAT_NO)
                 {
                     if (chunk.m_pBlocks[index].material == MAT_DIRT)

@@ -21,7 +21,6 @@ SOURCES += \
     light.cpp \
     material.cpp \
     platform.cpp \
-    position_items.cpp \
     statistics.cpp \
     world.cpp
 

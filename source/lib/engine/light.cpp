@@ -54,18 +54,18 @@ void Light::updateLight() const
         {
             for (BlockCoord k = CHUNK_SIZE_XZ - 1; k < 4*CHUNK_SIZE_XZ + 1; k++)
             {
-                recursiveDiffuse(i, j, k, getVal(BlockInWorld(i, j, k), NULL, NULL), true);
+                recursiveDiffuse(i, j, k, getVal(BlockInWorld(i, j, k), nullptr, nullptr), true);
             }
         }
     }
     update += GetMillisecTime();
 }
 
-void Light::recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial) const
+void Light::recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, unsigned char val, bool initial) const
 {
-    if (val > 0 && val <= DAYLIGHT)
+    if (val <= DAYLIGHT)
     {
-        int temp_val;
+        unsigned char temp_val;
         bool water_flag = false;
         bool wall_flag = false;
 
@@ -95,9 +95,9 @@ void Light::recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, int val, 
     }
 }
 
-int Light::getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) const
+unsigned char Light::getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) const
 {
-    char ret = 0;
+    unsigned char ret = 0;
     if (wall_flag)
     {
         *wall_flag = true;
@@ -134,7 +134,7 @@ int Light::getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) co
     return ret;
 }
 
-void Light::setVal(const BlockInWorld &pos, int val) const
+void Light::setVal(const BlockInWorld &pos, unsigned char val) const
 {
     Chunk *p_temp_chunk = m_ChunkArray[pos.cx][pos.cz];
     if (p_temp_chunk)
@@ -335,7 +335,7 @@ GLfloat Light::getLight(const Chunk &chunk, unsigned int index)
 void Light::fillLight(Chunk &chunk) const
 {
     BlockCoord y;
-    int index;
+    unsigned int index;
     bool daylight;
 
     for (BlockCoord x = 0; x < CHUNK_SIZE_XZ; x++)

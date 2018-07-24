@@ -195,15 +195,15 @@ void MaterialLibrary::getTextureOffsets(double& offsetx, double& offsety, int ma
     case MAT_DIRT: offsetx = 2; offsety = 0;
         if (covered & (1 << SNOWCOVERED))
         {
-            if (side == TOP) {offsetx = 2; offsety = 4;}
-            else if (side == BOTTOM) {offsetx = 2; offsety = 0;}
-            else {offsetx = 4; offsety = 4;}
+            if (side == TOP) { offsetx = 2; offsety = 4; }
+            else if (side == BOTTOM) { offsetx = 2; offsety = 0; }
+            else { offsetx = 4; offsety = 4; }
         }
         else if (covered & (1 << GRASSCOVERED))
         {
-            if (side == TOP) {offsetx = 0; offsety = 0;}
-            else if (side == BOTTOM) {offsetx = 2; offsety = 0;}
-            else {offsetx = 3; offsety = 0;}
+            if (side == TOP) { offsetx = 0; offsety = 0; }
+            else if (side == BOTTOM) { offsetx = 2; offsety = 0; }
+            else { offsetx = 3; offsety = 0; }
         }
         break;
     case MAT_STONE: offsetx = 1; offsety = 0;
@@ -214,17 +214,17 @@ void MaterialLibrary::getTextureOffsets(double& offsetx, double& offsety, int ma
         break;
     case MAT_GLASS: offsetx = 1; offsety = 3;
         break;
-    case MAT_WOOD: if ((side == TOP)||((side == BOTTOM))) {offsetx = 5; offsety = 1;} else {offsetx = 4; offsety = 1;}
+    case MAT_WOOD: if ( side == TOP || side == BOTTOM) { offsetx = 5; offsety = 1; } else { offsetx = 4; offsety = 1; }
         break;
     case MAT_COAL: offsetx = 2; offsety = 2;
         break;
     case MAT_BRICKS: offsetx = 7; offsety = 0;
         break;
-    case MAT_PUMPKIN: if ((side == TOP)||((side == BOTTOM))) {offsetx = 6; offsety = 6;} else if (side == FRONT) {offsetx = 7; offsety = 7;} else {offsetx = 6; offsety = 7;}
+    case MAT_PUMPKIN: if (side == TOP || side == BOTTOM) { offsetx = 6; offsety = 6; } else if (side == FRONT) { offsetx = 7; offsety = 7; } else { offsetx = 6; offsety = 7; }
         break;
-    case MAT_PUMPKIN_SHINE: if ((side == TOP)||((side == BOTTOM))) {offsetx = 6; offsety = 6;} else if (side == FRONT) {offsetx = 8; offsety = 7;} else {offsetx = 6; offsety = 7;}
+    case MAT_PUMPKIN_SHINE: if (side == TOP || side == BOTTOM) { offsetx = 6; offsety = 6; } else if (side == FRONT) { offsetx = 8; offsety = 7; } else { offsetx = 6; offsety = 7; }
         break;
-    case MAT_TNT: if (side == TOP) {offsetx = 9; offsety = 0;} else if (side == BOTTOM) {offsetx = 10; offsety = 0;} else {offsetx = 8; offsety = 0;}
+    case MAT_TNT: if (side == TOP) { offsetx = 9; offsety = 0; } else if (side == BOTTOM) { offsetx = 10; offsety = 0; } else { offsetx = 8; offsety = 0; }
         break;
     case MAT_PLANK: offsetx = 4; offsety = 0;
         break;

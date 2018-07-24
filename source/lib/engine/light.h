@@ -43,10 +43,10 @@ private:
 
     Chunk *m_ChunkArray[5][5];
 
-    inline void setVal(const BlockInWorld &pos, int val) const;
-    inline int getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) const;
+    inline void setVal(const BlockInWorld &pos, unsigned char val) const;
+    inline unsigned char getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) const;
     inline static float getBrightAverage(const World &world, const Chunk &chunk, const BlockInWorld &pos, bool inv_x, bool inv_y, bool inv_z, unsigned char side);
-    inline void recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, int val, bool initial) const;
+    inline void recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, unsigned char val, bool initial) const;
     inline void fillLight(Chunk &chunk) const;
 
     DEFINE_LOGGER(LIGHT, logger)

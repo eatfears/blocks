@@ -297,35 +297,35 @@ void Engine::drawSelectedItem()
     glBegin(GL_QUADS);
 
     //Верхняя грань
-    glVertex3d (x_coord, y_coord + border_size, z_coord);
-    glVertex3d (x_coord, y_coord + border_size, z_coord + border_size);
-    glVertex3d (x_coord + border_size, y_coord + border_size, z_coord + border_size);
-    glVertex3d (x_coord + border_size, y_coord + border_size, z_coord);
+    glVertex3d(x_coord, y_coord + border_size, z_coord);
+    glVertex3d(x_coord, y_coord + border_size, z_coord + border_size);
+    glVertex3d(x_coord + border_size, y_coord + border_size, z_coord + border_size);
+    glVertex3d(x_coord + border_size, y_coord + border_size, z_coord);
     //Нижняя грань
-    glVertex3d (x_coord, y_coord, z_coord);
-    glVertex3d (x_coord + border_size, y_coord, z_coord);
-    glVertex3d (x_coord + border_size, y_coord, z_coord + border_size);
-    glVertex3d (x_coord, y_coord, z_coord + border_size);
+    glVertex3d(x_coord, y_coord, z_coord);
+    glVertex3d(x_coord + border_size, y_coord, z_coord);
+    glVertex3d(x_coord + border_size, y_coord, z_coord + border_size);
+    glVertex3d(x_coord, y_coord, z_coord + border_size);
     //Правая грань
-    glVertex3d (x_coord + border_size, y_coord, z_coord);
-    glVertex3d (x_coord + border_size, y_coord + border_size, z_coord);
-    glVertex3d (x_coord + border_size, y_coord + border_size, z_coord + border_size);
-    glVertex3d (x_coord + border_size, y_coord, z_coord + border_size);
+    glVertex3d(x_coord + border_size, y_coord, z_coord);
+    glVertex3d(x_coord + border_size, y_coord + border_size, z_coord);
+    glVertex3d(x_coord + border_size, y_coord + border_size, z_coord + border_size);
+    glVertex3d(x_coord + border_size, y_coord, z_coord + border_size);
     //Левая грань
-    glVertex3d (x_coord, y_coord, z_coord);
-    glVertex3d (x_coord, y_coord, z_coord + border_size);
-    glVertex3d (x_coord, y_coord + border_size, z_coord + border_size);
-    glVertex3d (x_coord, y_coord + border_size, z_coord);
+    glVertex3d(x_coord, y_coord, z_coord);
+    glVertex3d(x_coord, y_coord, z_coord + border_size);
+    glVertex3d(x_coord, y_coord + border_size, z_coord + border_size);
+    glVertex3d(x_coord, y_coord + border_size, z_coord);
     //Задняя грань
-    glVertex3d (x_coord, y_coord, z_coord + border_size);
-    glVertex3d (x_coord + border_size, y_coord, z_coord + border_size);
-    glVertex3d (x_coord + border_size, y_coord + border_size, z_coord + border_size);
-    glVertex3d (x_coord, y_coord + border_size, z_coord + border_size);
+    glVertex3d(x_coord, y_coord, z_coord + border_size);
+    glVertex3d(x_coord + border_size, y_coord, z_coord + border_size);
+    glVertex3d(x_coord + border_size, y_coord + border_size, z_coord + border_size);
+    glVertex3d(x_coord, y_coord + border_size, z_coord + border_size);
     //Передняя грань
-    glVertex3d (x_coord, y_coord, z_coord);
-    glVertex3d (x_coord, y_coord + border_size, z_coord);
-    glVertex3d (x_coord + border_size, y_coord + border_size, z_coord);
-    glVertex3d (x_coord + border_size, y_coord, z_coord);
+    glVertex3d(x_coord, y_coord, z_coord);
+    glVertex3d(x_coord, y_coord + border_size, z_coord);
+    glVertex3d(x_coord + border_size, y_coord + border_size, z_coord);
+    glVertex3d(x_coord + border_size, y_coord, z_coord);
 
     glEnd();
 

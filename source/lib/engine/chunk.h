@@ -35,7 +35,42 @@ public:
     bool placeBlock(const BlockInChunk &pos, char mat);
     bool unplaceBlock(const BlockInChunk &pos);
 
-    char getBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z) const;
+    inline char getBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z) const
+    {
+        if (x < 0 || z < 0 || y < 0 || x >= CHUNK_SIZE_XZ || z >= CHUNK_SIZE_XZ || y >= CHUNK_SIZE_Y)
+        {
+            return -1;
+        }
+        return m_pBlocks[x*CHUNK_SIZE_XZ + z + y*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ].material;
+    }
+
+    inline static unsigned int getIndexByPosition(const BlockInChunk &pos)
+    {
+        return getIndexByPosition(pos.bx, pos.by, pos.bz);
+    }
+
+    inline static unsigned int getIndexByPosition(BlockCoord x, BlockCoord y, BlockCoord z)
+    {
+        return x*CHUNK_SIZE_XZ + z + y*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
+    }
+
+    void drawLoadedBlocks();
+    void open();
+    void save() const;
+    bool m_LightToUpdate;
+
+    void render(char mat, int *rendered) /*const*/;
+
+private:
+    inline unsigned int setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
+    inline bool findBlock(const BlockInWorld &pos, Chunk *&temp_chunk, unsigned int &index) const;
+    void drawTile(const BlockInWorld &pos, Block* block, char side) const;
+    void drawNeighboringChunks();
+
+    void showTile(Block *bBlock, unsigned char side);
+    void hideTile(Block *bBlock, unsigned char side);
+    inline void showTile(unsigned int index, unsigned char side);
+    inline void hideTile(unsigned int index, unsigned char side);
 
     inline bool getBlockPositionByPointer(Block *p_current_block, BlockCoord *x, BlockCoord *y, BlockCoord *z) const
     {
@@ -56,35 +91,6 @@ public:
         *y = index;
         return true;
     }
-
-    inline static unsigned int getIndexByPosition(const BlockInChunk &pos)
-    {
-        return getIndexByPosition(pos.bx, pos.by, pos.bz);
-    }
-
-    inline static unsigned int getIndexByPosition(BlockCoord x, BlockCoord y, BlockCoord z)
-    {
-        return x*CHUNK_SIZE_XZ + z + y*CHUNK_SIZE_XZ*CHUNK_SIZE_XZ;
-    }
-
-    void drawLoadedBlocks();
-
-    void open();
-    void save() const;
-    bool m_LightToUpdate;
-
-    void render(char mat, int *rendered) /*const*/;
-
-private:
-    unsigned int setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
-    void drawTile(const BlockInWorld &pos, Block* block, char side) const;
-    bool findBlock(const BlockInWorld &pos, Chunk *&temp_chunk, unsigned int &index) const;
-    void drawLoadedBlocksFinish();
-
-    void showTile(Block *bBlock, unsigned char side);
-    void hideTile(Block *bBlock, unsigned char side);
-    void showTile(unsigned int index, unsigned char side);
-    void hideTile(unsigned int index, unsigned char side);
 
     GLuint m_RenderList = 0;
     bool m_Listgen;
