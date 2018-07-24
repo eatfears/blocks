@@ -23,7 +23,6 @@ SOURCES += \
     platform.cpp \
     position_items.cpp \
     statistics.cpp \
-    threads.cpp \
     world.cpp
 
 HEADERS += \
@@ -37,5 +36,4 @@ HEADERS += \
     platform.h \
     position_items.h \
     statistics.h \
-    threads.h \
     world.h

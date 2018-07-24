@@ -32,9 +32,13 @@ public:
 
     unsigned int addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
     unsigned int removeBlock(BlockCoord x, BlockCoord y, BlockCoord z);
+    bool placeBlock(const BlockInChunk &pos, char mat);
+    bool unplaceBlock(const BlockInChunk &pos);
 
     void showTile(Block *bBlock, unsigned char side);
     void hideTile(Block *bBlock, unsigned char side);
+    void showTile(unsigned int index, unsigned char side);
+    void hideTile(unsigned int index, unsigned char side);
 
     char getBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z) const;
 
@@ -77,8 +81,9 @@ public:
     void render(char mat, int *rendered) /*const*/;
 
 private:
-    unsigned int setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char cMat);
+    unsigned int setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
     void drawTile(const BlockInWorld &pos, Block* block, char side) const;
+    bool findBlock(const BlockInWorld &pos, Chunk *&temp_chunk, unsigned int &index) const;
 
     GLuint m_RenderList = 0;
     bool m_Listgen;

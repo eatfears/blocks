@@ -8,12 +8,6 @@
 #include "character.h"
 
 
-typedef struct params
-{
-    ChunkInWorld pos;
-    World *p_World;
-} Param;
-
 class World
 {
 public:

@@ -43,6 +43,9 @@ struct TypeInWorld : public ChunkInWorld, public TypeInChunk<T>
     TypeInWorld(T bx, T by, T bz)
         : TypeInChunk<T>(bx, by, bz) { norm(); }
 
+    TypeInWorld(const ChunkInWorld &pos, const TypeInChunk<T> &cpos)
+        : ChunkInWorld(pos), TypeInChunk<T>(cpos) { norm(); }
+
     TypeInWorld(ChunkCoord cx, ChunkCoord cz, T bx, T by, T bz)
         : ChunkInWorld(cx, cz), TypeInChunk<T>(bx, by, bz) { norm(); }
 

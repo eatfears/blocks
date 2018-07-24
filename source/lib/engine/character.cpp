@@ -1,7 +1,6 @@
 #include <math.h>
 
 #include "character.h"
-#include "threads.h"
 #include "world.h"
 #include "noise/primes.h"
 
@@ -176,8 +175,8 @@ void Character::control(GLdouble frame_interval)
         m_Keyboard['6'] = false;
     }
     if (m_Keyboard['7']) {
-        for (int i = 0; i < 8; i++)
-            for (int j = 0; j < 8; j++)
+        for (int i = 0; i < 1; i++)
+            for (int j = 0; j < 1; j++)
                 m_World.unLoadChunk(i, j);
         m_Keyboard['7'] = false;
     }
