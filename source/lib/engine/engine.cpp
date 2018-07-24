@@ -68,7 +68,7 @@ void Engine::initGame()
     m_World.buildWorld();
 
     m_World.m_Player.m_Position = PointInWorld(0, 100, 0);
-    m_World.m_Player.m_SpinY = -90 - 45;
+    m_World.m_Player.m_SpinY = 90 - 45;
     m_TimeOfDay = 600;
 }
 

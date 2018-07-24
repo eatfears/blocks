@@ -46,63 +46,63 @@ double PerlinNoise::noise3d(int x, int y, int z) const noexcept
 
 double PerlinNoise::interpolatedNoise1d(double x) const noexcept
 {
-    int iX = (int) x;
+    int i_x = floor(x);
 
-    double fractionalX = x - iX;
+    double frac_x = x - i_x;
 
-    double v1 = useNoise1d(iX);
-    double v2 = useNoise1d(iX + 1);
+    double v1 = useNoise1d(i_x);
+    double v2 = useNoise1d(i_x + 1);
 
-    return interpolate(v1, v2, fractionalX);
+    return interpolate(v1, v2, frac_x);
 }
 
 double PerlinNoise::interpolatedNoise2d(double x, double y) const noexcept
 {
-    int iX = (int) x;
-    int iY = (int) y;
+    int i_x = floor(x);
+    int i_y = floor(y);
 
-    double fractionalX = x - iX;
-    double fractionalY = y - iY;
+    double frac_x = x - i_x;
+    double frac_y = y - i_y;
 
-    double v1 = useNoise2d(iX, iY);
-    double v2 = useNoise2d(iX + 1, iY);
-    double v3 = useNoise2d(iX, iY + 1);
-    double v4 = useNoise2d(iX + 1, iY + 1);
+    double v1 = useNoise2d(i_x, i_y);
+    double v2 = useNoise2d(i_x + 1, i_y);
+    double v3 = useNoise2d(i_x, i_y + 1);
+    double v4 = useNoise2d(i_x + 1, i_y + 1);
 
-    double i1 = interpolate(v1, v2, fractionalX);
-    double i2 = interpolate(v3, v4, fractionalX);
+    double i1 = interpolate(v1, v2, frac_x);
+    double i2 = interpolate(v3, v4, frac_x);
 
-    return interpolate(i1, i2, fractionalY);
+    return interpolate(i1, i2, frac_y);
 }
 
 double PerlinNoise::interpolatedNoise3d(double x, double y, double z) const noexcept
 {
-    int iX = (int) x;
-    int iY = (int) y;
-    int iZ = (int) z;
+    int i_x = floor(x);
+    int i_y = floor(y);
+    int i_z = floor(z);
 
-    double fractionalX = x - iX;
-    double fractionalY = y - iY;
-    double fractionalZ = z - iZ;
+    double frac_x = x - i_x;
+    double frac_y = y - i_y;
+    double frac_z = z - i_z;
 
-    double v1 = useNoise3d(iX, iY, iZ);
-    double v2 = useNoise3d(iX + 1, iY, iZ);
-    double v3 = useNoise3d(iX, iY + 1, iZ);
-    double v4 = useNoise3d(iX + 1, iY + 1, iZ);
-    double v5 = useNoise3d(iX, iY, iZ + 1);
-    double v6 = useNoise3d(iX + 1, iY, iZ + 1);
-    double v7 = useNoise3d(iX, iY + 1, iZ + 1);
-    double v8 = useNoise3d(iX + 1, iY + 1, iZ + 1);
+    double v1 = useNoise3d(i_x, i_y, i_z);
+    double v2 = useNoise3d(i_x + 1, i_y, i_z);
+    double v3 = useNoise3d(i_x, i_y + 1, i_z);
+    double v4 = useNoise3d(i_x + 1, i_y + 1, i_z);
+    double v5 = useNoise3d(i_x, i_y, i_z + 1);
+    double v6 = useNoise3d(i_x + 1, i_y, i_z + 1);
+    double v7 = useNoise3d(i_x, i_y + 1, i_z + 1);
+    double v8 = useNoise3d(i_x + 1, i_y + 1, i_z + 1);
 
-    double i1 = interpolate(v1, v2, fractionalX);
-    double i2 = interpolate(v3, v4, fractionalX);
-    double i3 = interpolate(v5, v6, fractionalX);
-    double i4 = interpolate(v7, v8, fractionalX);
+    double i1 = interpolate(v1, v2, frac_x);
+    double i2 = interpolate(v3, v4, frac_x);
+    double i3 = interpolate(v5, v6, frac_x);
+    double i4 = interpolate(v7, v8, frac_x);
 
-    double w1 = interpolate(i1, i2, fractionalY);
-    double w2 = interpolate(i3, i4, fractionalY);
+    double w1 = interpolate(i1, i2, frac_y);
+    double w2 = interpolate(i3, i4, frac_y);
 
-    return interpolate(w1, w2, fractionalZ);
+    return interpolate(w1, w2, frac_z);
 }
 
 double PerlinNoise::linearInterpolate(double a, double b, double x) const noexcept

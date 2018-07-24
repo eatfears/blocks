@@ -16,20 +16,19 @@ World::World()
 
 World::~World()
 {
-    for (auto const &it : m_Chunks)
+    auto it = m_Chunks.begin();
+    while (it != m_Chunks.end())
     {
-        delete it.second;
+        delete it->second;
+        it = m_Chunks.erase(it);
     }
 }
 
 void World::buildWorld()
 {
-    ChunkCoord x = 0, z = 0;
-    int size = 4;
-
-    for(ChunkCoord i = x*size; i < (x+1)*size*1; i++)
+    for (ChunkCoord i = -3; i < 3; i++)
     {
-        for(ChunkCoord j = z*size; j < (z+1)*size; j++)
+        for (ChunkCoord j = -3; j < 3; j++)
         {
             loadChunk(i, j);
         }
