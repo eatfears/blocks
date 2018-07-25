@@ -144,22 +144,28 @@ GLuint MaterialLibrary::loadImage(const char *filename) const
     (components==2) ? (glcolours = GL_LUMINANCE_ALPHA): (0);
     (components==1) ? (glcolours = GL_LUMINANCE): (0);
 
-
     //GLubyte a[1000];
     //strcpy_s((char*)a, sizeof(a), (char*)glGetString(GL_VERSION));
 
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
+//    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     // stretch it
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+    //float aniso = 0.0f;
+    //glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
+    //if (aniso > 4) aniso = 4;
+    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
+
     //OpenGL 1.1
-    //	gluBuild2DMipmaps(GL_TEXTURE_2D, components, width, height, glcolours, GL_UNSIGNED_BYTE, pixels);
+    //gluBuild2DMipmaps(GL_TEXTURE_2D, components, width, height, glcolours, GL_UNSIGNED_BYTE, pixels);
 
     //OpenGL 1.4
-    //	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    //	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
     //OpenGL 3.0
     //	http://www.opengl.org/wiki/Common_Mistakes#gluBuild2DMipmaps
@@ -172,7 +178,7 @@ GLuint MaterialLibrary::loadImage(const char *filename) const
     //Perhaps by the time you read this, it will have been corrected.
     //(glGenerateMipmap doesn't work on ATI as of 2011)
     // 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    // 	glGenerateMipmap(GL_TEXTURE_2D);  //Generate mipmaps now!!!
+    // 	glGenerateMipmap(GL_TEXTURE_2D);
 
     glTexImage2D(GL_TEXTURE_2D, 0, components, width, height, 0, glcolours, GL_UNSIGNED_BYTE, pixels);
 
@@ -185,7 +191,7 @@ GLuint MaterialLibrary::loadImage(const char *filename) const
     return texture;
 }
 
-void MaterialLibrary::getTextureOffsets(double& offsetx, double& offsety, int material, char covered, int side) const
+void MaterialLibrary::getTextureOffsets(GLdouble &offsetx, GLdouble &offsety, int material, char covered, int side) const
 {
     offsetx = 14;
     offsety = 0;

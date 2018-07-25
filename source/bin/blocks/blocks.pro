@@ -14,7 +14,7 @@ INCLUDEPATH += ../../lib/
 
 LIBS += -L"$$libdir"
 LIBS += -lengine -llogger -lnoise
-LIBS += -lGL -lGLU -lglut -lz -lpng -lpthread
+LIBS += -lGL -lGLU -lGLEW -lglut -lz -lpng -lpthread
 
 #PRE_TARGETDEPS += $$libdir/libengine.so
 #PRE_TARGETDEPS += $$libdir/liblogger.so

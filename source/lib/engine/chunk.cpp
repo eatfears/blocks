@@ -631,10 +631,10 @@ void Chunk::drawTile(const BlockInWorld &pos, Block* block, char side) const
             y_coord = pos.by,
             z_coord = pos.bz - 0.5;
 
-    double offset_x, offset_y;
+    GLdouble offset_x, offset_y;
     m_World.m_MaterialLib.getTextureOffsets(offset_x, offset_y, block->material, block->visible, side);
 
-    static const double space = 0.0002;
+    static const GLdouble space = 0.002;
     switch(side)
     {
     case TOP:

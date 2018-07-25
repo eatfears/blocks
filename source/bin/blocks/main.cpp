@@ -3,6 +3,7 @@
 #include "logger/logger.h"
 
 Engine *engine;
+DEFINE_LOGGER(BLOCKS, logger)
 
 void Display() { engine->loop(); }
 void Reshape(int width, int height) { engine->reshape(width, height); }
@@ -35,29 +36,67 @@ void GlutInit()
     //glutVisibilityFunc(visible);
 }
 
+void enableMultisample(bool msaa)
+{
+    if (msaa)
+    {
+        //glEnable(GL_MULTISAMPLE);
+        glEnable(GL_MULTISAMPLE_ARB);
+        glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+        glutSetOption(GLUT_MULTISAMPLE, 8);
+
+        // detect current settings
+        GLint iMultiSample = 0;
+        GLint iNumSamples = 0;
+        glGetIntegerv(GL_SAMPLE_BUFFERS, &iMultiSample);
+        glGetIntegerv(GL_SAMPLES, &iNumSamples);
+        logger.info() << "MSAA on, GL_SAMPLE_BUFFERS =" << iMultiSample << ", GL_SAMPLES =" << iNumSamples;
+    }
+    else
+    {
+        //glDisable(GL_MULTISAMPLE);
+        glDisable(GL_MULTISAMPLE_ARB);
+        logger.info() << "MSAA off";
+    }
+}
+
 int main(int argc, char **argv)
 {
-    DEFINE_LOGGER(BLOCKS, logger);
     logger.info() << "Launching";
 
     engine = new Engine();
 
     glutInit(&argc, argv);
-    glutInitDisplayMode(/*GLUT_ALPHA |*/ GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+    glutInitDisplayMode(/*GLUT_ALPHA |*/ GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA | GLUT_MULTISAMPLE);
     glutInitWindowSize(RESX, RESY);
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Blocks");
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
 
-    /*
-    glutGameModeString("1280x1024:32");
-    //glutGameModeString("1280x1024:16@60"); //Переход в полноэкранный режим
-
-    if(glutGameModeGet(GLUT_GAME_MODE_POSSIBLE))
-        glutEnterGameMode();
-    else
+    GLenum err = glewInit();
+    if (err != GLEW_OK)
+    {
+        logger.error() << err;
+        delete engine;
+        LOGGER_END;
         exit(1);
-    */
+    }
+
+    enableMultisample(false);
+
+    bool gamemode = false;
+    if (gamemode)
+    {
+        glutGameModeString("1920x1080:32");
+        if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE))
+        {
+            glutEnterGameMode();
+        }
+        else
+        {
+            exit(1);
+        }
+    }
 
     engine->initGL();
     engine->initGame();

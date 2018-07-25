@@ -535,7 +535,7 @@ void Engine::openGL3d()
     glViewport(0, 0, m_Width, m_Height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(fov_y, (GLfloat) m_Width/(GLfloat) m_Height, 0.5f, FARCUT);
+    gluPerspective(fov_y, (GLfloat) m_Width/(GLfloat) m_Height, 0.1f, FARCUT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glEnable(GL_DEPTH_TEST);

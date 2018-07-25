@@ -32,7 +32,7 @@ public:
     GLuint *m_Texture ;
 
     void loadGLTextures();
-    void getTextureOffsets(double& offsetx, double& offsety, int material, char covered, int side) const;
+    void getTextureOffsets(GLdouble &offsetx, GLdouble &offsety, int material, char covered, int side) const;
 
 private:
     int getTextureInfo(int ColorType) const;
