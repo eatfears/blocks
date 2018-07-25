@@ -27,8 +27,8 @@ public:
     bool addBlock(const BlockInWorld &pos, char mat) const;
     bool removeBlock(const BlockInWorld &pos) const;
 
-    void loadChunk(ChunkCoord x, ChunkCoord z);
-    void unLoadChunk(ChunkCoord x, ChunkCoord z);
+    bool loadChunk(ChunkCoord x, ChunkCoord z);
+    bool unloadChunk(ChunkCoord x, ChunkCoord z);
     Chunk* getChunkByPosition(const ChunkInWorld &pos) const;
 
     void updateLight(Chunk &chunk) const;

@@ -165,7 +165,7 @@ void Character::control(GLdouble frame_interval)
         m_Keyboard['4'] = false;
     }
     if (m_Keyboard['5']) {
-        m_World.unLoadChunk(0, 0);
+        m_World.unloadChunk(0, 0);
         m_Keyboard['5'] = false;
     }
     if (m_Keyboard['6']) {
@@ -177,7 +177,7 @@ void Character::control(GLdouble frame_interval)
     if (m_Keyboard['7']) {
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++)
-                m_World.unLoadChunk(i, j);
+                m_World.unloadChunk(i, j);
         m_Keyboard['7'] = false;
     }
 

@@ -26,7 +26,7 @@ World::~World()
 
 void World::buildWorld()
 {
-    ChunkCoord size = 2;
+    ChunkCoord size = 4;
     for (ChunkCoord i = -size; i < size; i++)
     {
         for (ChunkCoord j = -size; j < size; j++)
@@ -94,7 +94,7 @@ bool World::findBlock(const BlockInWorld &pos) const
     return true;
 }
 
-void World::loadChunk(ChunkCoord x, ChunkCoord z)
+bool World::loadChunk(ChunkCoord x, ChunkCoord z)
 {
     auto pos = ChunkInWorld(x, z);
     Chunk *chunk = getChunkByPosition(pos);
@@ -104,8 +104,8 @@ void World::loadChunk(ChunkCoord x, ChunkCoord z)
     }
     else
     {
-        logger.notice() << "Chunk" << pos << "already loaded";
-        return;
+//        logger.notice() << "Chunk" << pos << "already loaded";
+        return false;
     }
 
     chunk->load();
@@ -117,21 +117,25 @@ void World::loadChunk(ChunkCoord x, ChunkCoord z)
         updateLight(*chunk);
         chunk->m_LightToUpdate = false;
     }
+    return true;
 }
 
-void World::unLoadChunk(ChunkCoord x, ChunkCoord z)
+bool World::unloadChunk(ChunkCoord x, ChunkCoord z)
 {
     auto pos = ChunkInWorld(x, z);
     auto it = m_Chunks.find(pos);
     if (it != m_Chunks.end())
     {
+        it->second->save();
         delete it->second;
         m_Chunks.erase(it);
     }
     else
     {
-        logger.notice() << "Chunk" << pos << "already unloaded";
+//        logger.notice() << "Chunk" << pos << "already unloaded";
+        return false;
     }
+    return true;
 }
 
 void World::updateLight(Chunk &chunk) const

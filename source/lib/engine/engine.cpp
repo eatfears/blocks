@@ -428,6 +428,54 @@ void Engine::loop()
     player.computeLocalTime(m_TimeOfDay);
     player.computeCenterCoords(m_Width, m_Height);
 
+    /*********************************************************/
+
+    auto pos = player.m_Position;
+    int size = 10;
+    int max_dist = 11;
+    int loaded = 0;
+
+    for (int dist = 0; dist < size; dist++)
+    {
+        for (ChunkCoord i = -dist; i <= dist; i++)
+        {
+            for (ChunkCoord j = -dist; j <= dist; j++)
+            {
+                if ((abs(i) == dist || abs(j) == dist) && loaded < 1)
+                {
+                    if (m_World.loadChunk(i + pos.cx, j + pos.cz))
+                    {
+                        loaded++;
+                    }
+                }
+            }
+        }
+    }
+
+    int unloaded = 0;
+    auto it = m_World.m_Chunks.begin();
+    while (it != m_World.m_Chunks.end())
+    {
+        Chunk *chunk = it->second;
+        if (abs(chunk->cx - pos.cx) >= max_dist || abs(chunk->cz - pos.cz) >= max_dist)
+        {
+            chunk->save();
+            delete chunk;
+            it = m_World.m_Chunks.erase(it);
+            unloaded++;
+        }
+        else
+        {
+            it++;
+        }
+        if (unloaded > 10)
+        {
+            break;
+        }
+    }
+
+    /*********************************************************/
+
     player.control(m_FrameInterval);
     drawInterface();
 
