@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <zlib.h>
 
 #include "world.h"
 #include "light.h"
@@ -381,25 +382,69 @@ void Chunk::drawNeighboringChunks()
     }
 }
 
-void Chunk::open()
+void Chunk::load()
 {
-    bool loaded = false;
+    std::string filename = "save/" + std::to_string(cx) + "_" + std::to_string(cz) + ".mp";;
     std::fstream savefile;
-    std::stringstream temp;
-    std::string filename;
-
-    temp << "save//" << cx << "_" << cz << ".mp";
-    filename = temp.str();
 
     savefile.open(filename, std::fstream::in | std::fstream::binary);
     if (savefile.is_open())
     {
-        loaded = m_World.m_Landscape.load(*this, savefile);
-        savefile.close();
-    }
+        static const size_t size = CHUNK_INDEX_MAX*2;
+        char buf[size];
 
-    if (!loaded)
+        if (true)
+        {
+            char buf_comp[size];
+            savefile.read(buf_comp, size);
+            int size_read = savefile.gcount();
+            savefile.close();
+
+            z_stream infstream;
+            infstream.zalloc = Z_NULL;
+            infstream.zfree = Z_NULL;
+            infstream.opaque = Z_NULL;
+
+            infstream.avail_in = (uInt) size_read;
+            infstream.next_in = (Bytef*)buf_comp;
+            infstream.avail_out = (uInt)size;
+            infstream.next_out = (Bytef*)buf;
+
+            int rc;
+            if ((rc = inflateInit(&infstream)) != Z_OK)
+            {
+                logger.error() << "Chunk" << *this << "loading error" << filename << "inflateInit: " << rc;
+                return;
+            }
+            if ((rc = inflate(&infstream, Z_FINISH)) != Z_STREAM_END)
+            {
+                logger.error() << "Chunk" << *this << "loading error" << filename << "inflate: " << rc;
+                return;
+            }
+            if ((rc = inflateEnd(&infstream)) != Z_OK)
+            {
+                logger.error() << "Chunk" << *this << "loading error" << filename << "inflateEnd: " << rc;
+                return;
+            }
+        }
+        else
+        {
+            savefile.read(buf, size);
+            savefile.close();
+        }
+
+        unsigned int index = 0;
+        while (index < CHUNK_INDEX_MAX)
+        {
+            m_pBlocks[index].material = buf[index];
+            m_pBlocks[index].visible = buf[index + CHUNK_INDEX_MAX];
+            index++;
+        }
+        logger.info() << "Chunk" << *this << "loaded from" << filename;
+    }
+    else
     {
+        logger.info() << "Chunk" << *this << "generating";
         m_World.m_Landscape.generate(*this);
         //m_World.m_Landscape.fill(*this, 0, 0.9, 64);
         //m_World.m_Landscape.fill(*this, MAT_DIRT, 1, 64);
@@ -408,18 +453,65 @@ void Chunk::open()
 
 void Chunk::save() const
 {
+    std::string filename = "save/" + std::to_string(cx) + "_" + std::to_string(cz) + ".mp";;
     std::fstream savefile;
-    std::stringstream temp;
-    std::string filename;
 
-    temp << "save//" << cx << "_" << cz << ".mp";
-    filename = temp.str();
-
-    savefile.open (filename, std::fstream::out | std::fstream::binary);
+    savefile.open(filename, std::fstream::out | std::fstream::binary);
     if (savefile.is_open())
     {
-        m_World.m_Landscape.save(*this, savefile);
+        static const size_t size = CHUNK_INDEX_MAX*2;
+        char buf[size];
+        unsigned int index = 0;
+        while (index < CHUNK_INDEX_MAX)
+        {
+            buf[index] = m_pBlocks[index].material;
+            buf[index + CHUNK_INDEX_MAX] = m_pBlocks[index].visible & ((1 << SNOWCOVERED) | (1 << GRASSCOVERED));
+            index++;
+        }
+
+        if (true)
+        {
+            char buf_comp[size];
+            z_stream defstream;
+            defstream.zalloc = Z_NULL;
+            defstream.zfree = Z_NULL;
+            defstream.opaque = Z_NULL;
+
+            defstream.avail_in = (uInt)size;
+            defstream.next_in = (Bytef*)buf;
+            defstream.avail_out = (uInt)size;
+            defstream.next_out = (Bytef*)buf_comp;
+
+            int rc;
+            if ((rc = deflateInit(&defstream, Z_BEST_COMPRESSION)) != Z_OK)
+            {
+                logger.error() << "Chunk" << *this << "saving error" << filename << "deflateInit: " << rc;
+                return;
+            }
+            if ((rc = deflate(&defstream, Z_FINISH)) != Z_STREAM_END)
+            {
+                logger.error() << "Chunk" << *this << "saving error" << filename << "deflate: " << rc;
+                return;
+            }
+            if ((rc = deflateEnd(&defstream)) != Z_OK)
+            {
+                logger.error() << "Chunk" << *this << "saving error" << filename << "deflateEnd: " << rc;
+                return;
+            }
+
+            savefile.write(buf_comp, defstream.total_out);
+        }
+        else
+        {
+            savefile.write(buf, size);
+        }
+
         savefile.close();
+        logger.notice() << "Chunk" << *this << "saved in" << filename;
+    }
+    else
+    {
+        logger.error() << "Can't open file" << filename << "for saving";
     }
 }
 

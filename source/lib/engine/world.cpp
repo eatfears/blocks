@@ -18,6 +18,7 @@ World::~World()
     auto it = m_Chunks.begin();
     while (it != m_Chunks.end())
     {
+        it->second->save();
         delete it->second;
         it = m_Chunks.erase(it);
     }
@@ -107,7 +108,7 @@ void World::loadChunk(ChunkCoord x, ChunkCoord z)
         return;
     }
 
-    chunk->open();
+    chunk->load();
     chunk->drawLoadedBlocks();
     m_Chunks[pos] = chunk;
 

@@ -55,7 +55,7 @@ public:
     }
 
     void drawLoadedBlocks();
-    void open();
+    void load();
     void save() const;
     bool m_LightToUpdate;
 

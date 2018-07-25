@@ -17,8 +17,6 @@ public:
     void init(unsigned int seed);
 
     void generate(Chunk &chunk) const;
-    bool load(Chunk &chunk, std::fstream &savefile) const;
-    void save(const Chunk &chunk, std::fstream &savefile) const;
     void fill(Chunk &chunk, char mat, double fillness, int height) const;
 
 private:
