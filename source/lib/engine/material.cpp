@@ -19,12 +19,12 @@ MaterialLibrary::~MaterialLibrary()
 
 void MaterialLibrary::loadGLTextures()
 {
-    m_Texture[TERRAIN] = loadImage("textures//terrain.png");
-    m_Texture[UNDERWATER] = loadImage("textures//misc//water.png");
-    m_Texture[VIGNETTE] = loadImage("textures//misc//vignette.png");
-    m_Texture[SUN] = loadImage("textures//terrain//sun.png");
-    m_Texture[MOON] = loadImage("textures//terrain//moon.png");
-    m_Texture[CLOUDS] = loadImage("textures//environment//clouds.png");
+    m_Texture[TERRAIN] = loadImage("textures/terrain.png");
+    m_Texture[UNDERWATER] = loadImage("textures/misc/water.png");
+    m_Texture[VIGNETTE] = loadImage("textures/misc/vignette.png");
+    m_Texture[SUN] = loadImage("textures/terrain/sun.png");
+    m_Texture[MOON] = loadImage("textures/terrain/moon.png");
+    m_Texture[CLOUDS] = loadImage("textures/environment/clouds.png");
 }
 
 int MaterialLibrary::getTextureInfo(int ColorType) const

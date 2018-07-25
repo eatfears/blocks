@@ -24,3 +24,7 @@ SOURCES += \
     main.cpp
 
 HEADERS +=
+
+DISTFILES += \
+    ../../../working_dir/shaders/shader.vert \
+    ../../../working_dir/shaders/shader.frag
