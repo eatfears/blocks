@@ -607,7 +607,7 @@ void Engine::drawBottomBorder()
     glTranslated(player.m_Position.bx, 0, player.m_Position.bz);
     glRotated(90, 1.0, 0.0, 0.0);
 
-    GLfloat res = 1.0 - m_World.m_SkyBright;
+    GLfloat res = m_World.m_SkyBright;
     glColor3f(res, res, res);
 
     glBegin(GL_QUADS);
@@ -623,8 +623,6 @@ void Engine::drawBottomBorder()
 void Engine::drawClouds()
 {
     GLdouble cloud_size = FARCUT*2;///4;
-    GLfloat res;
-
     static GLdouble time = 0.0;
     time += 0.0001;
 
@@ -635,7 +633,7 @@ void Engine::drawClouds()
 
     glBindTexture(GL_TEXTURE_2D, m_World.m_MaterialLib.m_Texture[CLOUDS]);
 
-    res = 1.0 - m_World.m_SkyBright;
+    GLfloat res = m_World.m_SkyBright;
     glColor4f(res, res, res, 0.8f);
 
     PointInWorld pos = m_World.m_Player.m_Position;
@@ -663,8 +661,8 @@ void Engine::drawClouds()
 void Engine::getFogColor()
 {
     static double dawn = 100.0;
-    static float night_bright = 0.93f;
-    static float day_bright = 0.00f;
+    static float night_bright = 0.1f;
+    static float day_bright = 1.00f;
     double local_time_of_day = m_World.m_Player.m_LocalTimeOfDay;
 
     if ((local_time_of_day > 600.0 + dawn)&&(local_time_of_day < 1800.0 - dawn))
@@ -694,7 +692,7 @@ void Engine::getFogColor()
         {
             m_FogColor[i] = NightFogColor[i]*(1.0f - f) + DayFogColor[i]*f;
         }
-        m_World.m_SkyBright = night_bright*(1.0f - f) + day_bright * f;
+        m_World.m_SkyBright = night_bright*(1.0f - f) + day_bright*f;
     }
 
     static GLfloat prev_bright = 0;
