@@ -26,7 +26,7 @@ class World;
 class Light
 {
 public:
-    Light(Chunk *chunk_array[5][5]);
+    Light(Chunk *chunk_array[3][3]);
 
     void updateLight() const;
     static void blockLight(const World &world, const Chunk &chunk, char side, BlockCoord x, BlockCoord y, BlockCoord z);
@@ -41,13 +41,12 @@ private:
     static const int m_VertexY[8];
     static const int m_VertexZ[8];
 
-    Chunk *m_ChunkArray[5][5];
+    Chunk *m_ChunkArray[3][3];
 
     inline void setVal(const BlockInWorld &pos, unsigned char val) const;
     inline unsigned char getVal(const BlockInWorld &pos, bool *water_flag, bool *wall_flag) const;
     inline static float getBrightAverage(const World &world, const Chunk &chunk, const BlockInWorld &pos, bool inv_x, bool inv_y, bool inv_z, unsigned char side);
     inline void recursiveDiffuse(BlockCoord i, BlockCoord j, BlockCoord k, unsigned char val, bool initial) const;
-    inline void fillLight(Chunk &chunk) const;
 
     DEFINE_LOGGER(LIGHT, logger)
 };

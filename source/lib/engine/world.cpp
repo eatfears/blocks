@@ -140,23 +140,19 @@ bool World::unloadChunk(ChunkCoord x, ChunkCoord z)
 
 void World::updateLight(Chunk &chunk) const
 {
-    Chunk *p_chunk_array[5][5];
-    p_chunk_array[2][2] = &chunk;
+    Chunk *p_chunk_array[3][3];
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 3; i++)
     {
-        for (int j = 0; j < 5; j++)
+        for (int j = 0; j < 3; j++)
         {
-            if (i!=2 || j!=2)
+            if (i==1 && j==1)
             {
-                if ((i == 0 && j == 0) || (i == 4 && j == 0) || (i == 0 && j == 4) || (i == 4 && j == 4))
-                {
-                    p_chunk_array[i][j] = nullptr;
-                }
-                else
-                {
-                    p_chunk_array[i][j] = getChunkByPosition(ChunkInWorld(chunk.cx + i - 2, chunk.cz + j - 2));
-                }
+                p_chunk_array[1][1] = &chunk;
+            }
+            else
+            {
+                p_chunk_array[i][j] = getChunkByPosition(ChunkInWorld(chunk.cx + i - 1, chunk.cz + j - 1));
             }
         }
     }
@@ -167,9 +163,9 @@ void World::updateLight(Chunk &chunk) const
     light_fill.m_Skylight = false;
     light_fill.updateLight();
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 3; i++)
     {
-        for (int j = 0; j < 5; j++)
+        for (int j = 0; j < 3; j++)
         {
             if (p_chunk_array[i][j])
             {
