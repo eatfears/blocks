@@ -26,7 +26,8 @@ const int Light::m_VertexZ[8] = {0, 1, 0, 1, 0, 1, 0, 1};
 double constr = 0;
 double update = 0;
 
-Light::Light(Chunk *chunk_array[3][3])
+Light::Light(Chunk *chunk_array[3][3], bool init)
+    : m_Init(init)
 {
     constr -= GetMillisecTime();
 
@@ -44,6 +45,12 @@ Light::Light(Chunk *chunk_array[3][3])
             }
             Chunk &chunk = *m_ChunkArray[i][j];
 
+            if (m_Init && (i != 1 || j != 1))
+            {
+                continue;
+            }
+
+            /* Filling light */
             for (BlockCoord x = 0; x < CHUNK_SIZE_XZ; x++)
             {
                 if ((i == 0 && x == 0) || (i == 2 && x == CHUNK_SIZE_XZ - 1)) continue;
@@ -94,13 +101,29 @@ void Light::updateLight() const
 {
     update -= GetMillisecTime();
 
-    for (BlockCoord j = 0; j < CHUNK_SIZE_Y; j++)
+    if (m_Init)
     {
-        for (BlockCoord i = 0; i < 3*CHUNK_SIZE_XZ; i++)
+        for (BlockCoord j = 0; j < CHUNK_SIZE_Y; j++)
         {
-            for (BlockCoord k = 0; k < 3*CHUNK_SIZE_XZ; k++)
+            for (BlockCoord i = CHUNK_SIZE_XZ-1; i < 2*CHUNK_SIZE_XZ + 1; i++)
             {
-                recursiveDiffuse(i, j, k, getVal(BlockInWorld(i, j, k), nullptr, nullptr), true);
+                for (BlockCoord k = CHUNK_SIZE_XZ-1; k < 2*CHUNK_SIZE_XZ + 1; k++)
+                {
+                    recursiveDiffuse(i, j, k, getVal(BlockInWorld(i, j, k), nullptr, nullptr), true);
+                }
+            }
+        }
+    }
+    else
+    {
+        for (BlockCoord j = 0; j < CHUNK_SIZE_Y; j++)
+        {
+            for (BlockCoord i = 0; i < 3*CHUNK_SIZE_XZ; i++)
+            {
+                for (BlockCoord k = 0; k < 3*CHUNK_SIZE_XZ; k++)
+                {
+                    recursiveDiffuse(i, j, k, getVal(BlockInWorld(i, j, k), nullptr, nullptr), true);
+                }
             }
         }
     }

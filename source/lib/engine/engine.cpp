@@ -158,10 +158,10 @@ void Engine::display()
     int render = 0;
     for (auto const &it : m_World.m_Chunks)
     {
-        auto chunk = it.second;
+        Chunk *chunk = it.second;
         if (chunk->m_LightToUpdate)
         {
-            m_World.updateLight(*chunk);
+            m_World.updateLight(*chunk, false);
             chunk->m_LightToUpdate = false;
         }
 
