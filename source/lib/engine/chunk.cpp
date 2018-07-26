@@ -30,11 +30,6 @@ Chunk::Chunk(const ChunkInWorld &pos, World &world)
             m_pBlocks[i].visible &= ~(1 << side);
         }
     }
-    m_NeedToRender[0] = RENDER_NO_NEED;
-    m_NeedToRender[1] = RENDER_NO_NEED;
-
-    m_Listgen = false;
-    m_LightToUpdate = true;
 
     // 1 - solid tiles
     // 2 - water tiles

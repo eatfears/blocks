@@ -28,7 +28,7 @@ public:
     std::list<Block*> *m_pDisplayedTiles;
     std::list<Block*> *m_pDisplayedWaterTiles;
 
-    char m_NeedToRender[2];
+    char m_NeedToRender[2] = {RENDER_NO_NEED, RENDER_NO_NEED};
 
     unsigned int addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
     unsigned int removeBlock(BlockCoord x, BlockCoord y, BlockCoord z);
@@ -57,7 +57,7 @@ public:
     void drawLoadedBlocks();
     void load();
     void save() const;
-    bool m_LightToUpdate;
+    bool m_LightToUpdate = true;
 
     void render(char mat, int *rendered) /*const*/;
 
@@ -93,7 +93,7 @@ private:
     }
 
     GLuint m_RenderList = 0;
-    bool m_Listgen;
+    bool m_Listgen = false;
 
     DEFINE_LOGGER(CHUNK, logger)
 };

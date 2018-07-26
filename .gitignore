@@ -9,6 +9,7 @@
 build-*
 working_dir/save
 blocks.log
+callgrind.out*
 
 #----------------------------
 

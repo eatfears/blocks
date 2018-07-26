@@ -26,7 +26,7 @@ World::~World()
 
 void World::buildWorld()
 {
-    ChunkCoord size = 4;
+    ChunkCoord size = 2;
     for (ChunkCoord i = -size; i < size; i++)
     {
         for (ChunkCoord j = -size; j < size; j++)

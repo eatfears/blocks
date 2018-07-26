@@ -176,7 +176,7 @@ void Light::blockLight(const World &world, const Chunk &chunk, char side, BlockC
         GLfloat res;
         if (infl_chunk)
         {
-            unsigned int index = infl_chunk->getIndexByPosition(pos_side);
+            unsigned int index = Chunk::getIndexByPosition(pos_side);
             res = Light::getLight(*infl_chunk, index);
         }
         else
@@ -325,7 +325,7 @@ GLfloat Light::getLight(const Chunk &chunk, unsigned int index)
         return 1.0 - chunk.m_World.m_SkyBright;
     }
 
-    GLfloat sky_light = Light::m_LightTable[chunk.m_SkyLight[index]] * ( 1.0 - chunk.m_World.m_SkyBright);
+    GLfloat sky_light = Light::m_LightTable[chunk.m_SkyLight[index]] * (1.0 - chunk.m_World.m_SkyBright);
     GLfloat torch_light = Light::m_LightTable[chunk.m_TorchLight[index]] * chunk.m_World.m_TorchBright;
 
     if (sky_light > torch_light) return sky_light;
