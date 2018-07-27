@@ -2,7 +2,7 @@
 
 #include <list>
 
-#include "common_include/freeglut_static.h"
+#include "common_include/blocks_opengl.h"
 #include "position_items.h"
 #include "logger/logger.h"
 

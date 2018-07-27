@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common_include/freeglut_static.h"
+#include "common_include/blocks_opengl.h"
 #include "logger/logger.h"
 #include "world.h"
 #include "character.h"

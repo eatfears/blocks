@@ -1,4 +1,4 @@
-#include "common_include/freeglut_static.h"
+#include "common_include/blocks_opengl.h"
 #include "engine/engine.h"
 #include "logger/logger.h"
 
