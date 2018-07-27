@@ -26,8 +26,8 @@ const int Light::m_VertexZ[8] = {0, 1, 0, 1, 0, 1, 0, 1};
 double constr = 0;
 double update = 0;
 
-Light::Light(Chunk *chunk_array[3][3], bool init)
-    : m_Init(init)
+Light::Light(Chunk *chunk_array[3][3], bool new_chunk)
+    : m_NewChunk(new_chunk)
 {
     constr -= GetMillisecTime();
 
@@ -45,7 +45,7 @@ Light::Light(Chunk *chunk_array[3][3], bool init)
             }
             Chunk &chunk = *m_ChunkArray[i][j];
 
-            if (m_Init && (i != 1 || j != 1))
+            if (m_NewChunk && (i != 1 || j != 1))
             {
                 continue;
             }
@@ -53,11 +53,11 @@ Light::Light(Chunk *chunk_array[3][3], bool init)
             /* Filling light */
             for (BlockCoord x = 0; x < CHUNK_SIZE_XZ; x++)
             {
-                if ((i == 0 && x == 0) || (i == 2 && x == CHUNK_SIZE_XZ - 1)) continue;
+                if ((i == 0 && x <= 1) || (i == 2 && x >= CHUNK_SIZE_XZ - 2)) continue;
 
                 for (BlockCoord z = 0; z < CHUNK_SIZE_XZ; z++)
                 {
-                    if ((j == 0 && z == 0) || (j == 2 && z == CHUNK_SIZE_XZ - 1)) continue;
+                    if ((j == 0 && z <= 1) || (j == 2 && z >= CHUNK_SIZE_XZ - 2)) continue;
 
                     daylight = true;
                     y = CHUNK_SIZE_Y - 1;
@@ -101,7 +101,7 @@ void Light::updateLight() const
 {
     update -= GetMillisecTime();
 
-    if (m_Init)
+    if (m_NewChunk)
     {
         for (BlockCoord j = 0; j < CHUNK_SIZE_Y; j++)
         {
@@ -118,9 +118,9 @@ void Light::updateLight() const
     {
         for (BlockCoord j = 0; j < CHUNK_SIZE_Y; j++)
         {
-            for (BlockCoord i = 0; i < 3*CHUNK_SIZE_XZ; i++)
+            for (BlockCoord i = 1; i < 3*CHUNK_SIZE_XZ - 1; i++)
             {
-                for (BlockCoord k = 0; k < 3*CHUNK_SIZE_XZ; k++)
+                for (BlockCoord k = 1; k < 3*CHUNK_SIZE_XZ - 1; k++)
                 {
                     recursiveDiffuse(i, j, k, getVal(BlockInWorld(i, j, k), nullptr, nullptr), true);
                 }

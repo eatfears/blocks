@@ -138,7 +138,7 @@ bool World::unloadChunk(ChunkCoord x, ChunkCoord z)
     return true;
 }
 
-void World::updateLight(Chunk &chunk, bool init) const
+void World::updateLight(Chunk &chunk, bool new_chunk) const
 {
     Chunk *p_chunk_array[3][3];
 
@@ -157,7 +157,7 @@ void World::updateLight(Chunk &chunk, bool init) const
         }
     }
 
-    Light light_fill(p_chunk_array, init);
+    Light light_fill(p_chunk_array, new_chunk);
     light_fill.m_Skylight = true;
     light_fill.updateLight();
     light_fill.m_Skylight = false;

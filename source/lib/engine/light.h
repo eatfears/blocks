@@ -26,13 +26,13 @@ class World;
 class Light
 {
 public:
-    Light(Chunk *chunk_array[3][3], bool init);
+    Light(Chunk *chunk_array[3][3], bool new_chunk);
 
     void updateLight() const;
     static void blockLight(const World &world, const Chunk &chunk, char side, BlockCoord x, BlockCoord y, BlockCoord z);
     static void softLight(const World &world, const Chunk &chunk, const BlockInWorld &pos, char side, int vertex);
     bool m_Skylight = true;
-    bool m_Init;
+    bool m_NewChunk;
 
     static GLfloat getLight(const Chunk &chunk, unsigned int index);
 private:

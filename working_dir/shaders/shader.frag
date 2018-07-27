@@ -5,3 +5,4 @@ void main()
 {
     color = vec3(1,1,0);
 }
+s

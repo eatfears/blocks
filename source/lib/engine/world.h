@@ -31,7 +31,7 @@ public:
     bool unloadChunk(ChunkCoord x, ChunkCoord z);
     Chunk* getChunkByPosition(const ChunkInWorld &pos) const;
 
-    void updateLight(Chunk &chunk, bool init) const;
+    void updateLight(Chunk &chunk, bool new_chunk) const;
 
     bool m_LightToRefresh;
     bool m_SoftLight;
