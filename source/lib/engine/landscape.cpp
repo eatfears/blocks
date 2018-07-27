@@ -119,26 +119,26 @@ void Landscape::generate(Chunk &chunk) const
                 density = temp*(4*details + 0.3) + j;
                 if (density < height)
                 {
-                    if (density < height - 3) chunk.addBlock(i, j, k, MAT_STONE);
-                    else if (j < m_WaterLevel) chunk.addBlock(i, j, k, MAT_SAND);
-                    else chunk.addBlock(i, j, k, MAT_DIRT);
+                    if (density < height - 3) chunk.setBlockMaterial(i, j, k, MAT_STONE);
+                    else if (j < m_WaterLevel) chunk.setBlockMaterial(i, j, k, MAT_SAND);
+                    else chunk.setBlockMaterial(i, j, k, MAT_DIRT);
                 }
-                else if (j < m_WaterLevel) chunk.addBlock(i, j, k, MAT_WATER);
+                else if (j < m_WaterLevel) chunk.setBlockMaterial(i, j, k, MAT_WATER);
             }
         }
     }
 
-    for (int i = 0; i < CHUNK_SIZE_XZ; i++)
+    for (BlockCoord i = 0; i < CHUNK_SIZE_XZ; i++)
     {
-        for (int k = 0; k < CHUNK_SIZE_XZ; k++)
+        for (BlockCoord k = 0; k < CHUNK_SIZE_XZ; k++)
         {
             double xx = (chunk_x*CHUNK_SIZE_XZ + i)/m_ScaleTemperature;
             double zz = (chunk_z*CHUNK_SIZE_XZ + k)/m_ScaleTemperature;
             double dd = m_NoiseTemperature.perlinNoise2d(xx, zz) + 0.15;
 
-            for (int j = CHUNK_SIZE_Y - 1; j >= 0; j--)
+            for (BlockCoord j = CHUNK_SIZE_Y - 1; j >= 0; j--)
             {
-                unsigned int index = chunk.getIndexByPosition(i, j, k);
+                unsigned int index = Chunk::getIndexByPosition(i, j, k);
                 if (chunk.m_pBlocks[index].material != MAT_NO)
                 {
                     if (chunk.m_pBlocks[index].material == MAT_DIRT)
@@ -173,7 +173,7 @@ void Landscape::fill(Chunk& chunk, char mat, double fillness, int height) const
                 if ((double)rand()/(double)RAND_MAX < fillness)
                 {
                     if (mat == 0) material = rand()%4+1;
-                    chunk.addBlock(i, j, k, material);
+                    chunk.setBlockMaterial(i, j, k, material);
                 }
             }
         }

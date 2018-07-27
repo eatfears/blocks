@@ -63,6 +63,11 @@ Chunk::~Chunk()
         index++;
     }
 
+    if (m_NeedSave)
+    {
+        save();
+    }
+
     delete[] m_pBlocks;
     delete[] m_SkyLight;
     delete[] m_TorchLight;
@@ -84,8 +89,8 @@ unsigned int Chunk::addBlock(BlockCoord x, BlockCoord y, BlockCoord z, char mat)
     unsigned int index = setBlockMaterial(x, y, z, mat);
     if (index < CHUNK_INDEX_MAX)
     {
-        m_pBlocks[index].visible = 0;
         m_LightToUpdate = true;
+        m_NeedSave = true;
     }
     return index;
 }
@@ -101,8 +106,8 @@ unsigned int Chunk::removeBlock(BlockCoord x, BlockCoord y, BlockCoord z)
     unsigned int index = setBlockMaterial(x, y, z, MAT_NO);
     if (index < CHUNK_INDEX_MAX)
     {
-        m_pBlocks[index].visible = 0;
         m_LightToUpdate = true;
+        m_NeedSave = true;
     }
     return index;
 }
@@ -248,27 +253,6 @@ void Chunk::hideTile(Block *p_block, unsigned char side)
 
     (*it)->visible &= ~(1 << side);
     p_tiles->erase(it);
-}
-
-void Chunk::showTile(unsigned int index, unsigned char side)
-{
-    showTile(m_pBlocks + index, side);
-}
-
-void Chunk::hideTile(unsigned int index, unsigned char side)
-{
-    hideTile(m_pBlocks + index, side);
-}
-
-unsigned int Chunk::setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char mat)
-{
-    if (x < 0 || z < 0 || y < 0 || x >= CHUNK_SIZE_XZ || z >= CHUNK_SIZE_XZ || y >= CHUNK_SIZE_Y)
-    {
-        return CHUNK_INDEX_MAX;
-    }
-    unsigned int index = getIndexByPosition(x, y, z);
-    m_pBlocks[index].material = mat;
-    return index;
 }
 
 void Chunk::drawLoadedBlocks()
@@ -443,6 +427,8 @@ void Chunk::load()
         m_World.m_Landscape.generate(*this);
         //m_World.m_Landscape.fill(*this, 0, 0.9, 64);
         //m_World.m_Landscape.fill(*this, MAT_DIRT, 1, 64);
+
+        m_NeedSave = true;
     }
 }
 

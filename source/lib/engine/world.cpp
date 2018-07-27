@@ -16,10 +16,14 @@ World::World()
 World::~World()
 {
     auto it = m_Chunks.begin();
+    Chunk *chunk;
     while (it != m_Chunks.end())
     {
-        it->second->save();
-        delete it->second;
+        chunk = it->second;
+        if (chunk)
+        {
+            delete chunk;
+        }
         it = m_Chunks.erase(it);
     }
 }
@@ -124,10 +128,14 @@ bool World::unloadChunk(ChunkCoord x, ChunkCoord z)
 {
     auto pos = ChunkInWorld(x, z);
     auto it = m_Chunks.find(pos);
+    Chunk *chunk;
     if (it != m_Chunks.end())
     {
-        it->second->save();
-        delete it->second;
+        chunk = it->second;
+        if (chunk)
+        {
+            delete chunk;
+        }
         m_Chunks.erase(it);
     }
     else
@@ -182,7 +190,10 @@ void World::saveChunks() const
 {
     for (auto const &it : m_Chunks)
     {
-        auto chunk = it.second;
-        chunk->save();
+        Chunk *chunk = it.second;
+        if (chunk)
+        {
+            chunk->save();
+        }
     }
 }

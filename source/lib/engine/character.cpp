@@ -257,7 +257,7 @@ void Character::computeMyPosition()
 {
     // checks if player is under water level
     PointInWorld pos(m_Position);
-    pos.by += 0.125 - 0.5;
+    //pos.by += -0.125 - 0.5;
     BlockInWorld water_pos(pos);
 
     m_World.findBlock(water_pos, m_pChunk, m_Index);

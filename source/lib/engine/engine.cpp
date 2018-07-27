@@ -166,7 +166,9 @@ void Engine::display()
         }
 
         if (mod == GL_COMPILE)
+        {
             chunk->m_NeedToRender[0] = RENDER_MAYBE;
+        }
 
         chunk->render(MAT_NO, &render);
     }
@@ -181,9 +183,11 @@ void Engine::display()
     render = 0;
     for (auto const &it : m_World.m_Chunks)
     {
-        auto chunk = it.second;
+        Chunk *chunk = it.second;
         if (mod == GL_COMPILE)
+        {
             chunk->m_NeedToRender[1] = RENDER_MAYBE;
+        }
 
         chunk->render(MAT_WATER, &render);
     }
@@ -459,7 +463,6 @@ void Engine::loop()
         Chunk *chunk = it->second;
         if (abs(chunk->cx - pos.cx) >= max_dist || abs(chunk->cz - pos.cz) >= max_dist)
         {
-            chunk->save();
             delete chunk;
             it = m_World.m_Chunks.erase(it);
             unloaded++;

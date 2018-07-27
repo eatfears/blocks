@@ -62,20 +62,38 @@ public:
     void render(char mat, int *rendered) /*const*/;
 
 private:
-    inline unsigned int setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char mat);
+    friend class Landscape;
+
+    inline unsigned int setBlockMaterial(BlockCoord x, BlockCoord y, BlockCoord z, char mat)
+    {
+        if (x < 0 || z < 0 || y < 0 || x >= CHUNK_SIZE_XZ || z >= CHUNK_SIZE_XZ || y >= CHUNK_SIZE_Y)
+        {
+            return CHUNK_INDEX_MAX;
+        }
+        unsigned int index = getIndexByPosition(x, y, z);
+        m_pBlocks[index].material = mat;
+        m_pBlocks[index].visible = 0;
+        return index;
+    }
+
     inline bool findBlock(const BlockInWorld &pos, Chunk *&temp_chunk, unsigned int &index) const;
     void drawTile(const BlockInWorld &pos, Block* block, char side) const;
     void drawNeighboringChunks();
 
     void showTile(Block *bBlock, unsigned char side);
     void hideTile(Block *bBlock, unsigned char side);
-    inline void showTile(unsigned int index, unsigned char side);
-    inline void hideTile(unsigned int index, unsigned char side);
+    inline void showTile(unsigned int index, unsigned char side)
+    {
+        showTile(m_pBlocks + index, side);
+    }
+    inline void hideTile(unsigned int index, unsigned char side)
+    {
+        hideTile(m_pBlocks + index, side);
+    }
 
     inline bool getBlockPositionByPointer(Block *p_current_block, BlockCoord *x, BlockCoord *y, BlockCoord *z) const
     {
-        unsigned int t = p_current_block - m_pBlocks;
-        return getBlockPositionByIndex(t, x, y, z);
+        return getBlockPositionByIndex(p_current_block - m_pBlocks, x, y, z);
     }
 
     inline static bool getBlockPositionByIndex(unsigned int index, BlockCoord *x, BlockCoord *y, BlockCoord *z)
@@ -94,6 +112,7 @@ private:
 
     GLuint m_RenderList = 0;
     bool m_Listgen = false;
+    bool m_NeedSave = false;
 
     DEFINE_LOGGER(CHUNK, logger)
 };
